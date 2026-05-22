@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { signUp, supabase } from "../lib/supabase";
 import WePromptLogo from "../components/WePromptLogo";
@@ -41,6 +41,20 @@ function CadastroForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  // Set when the user already has an active auth session (logged in but missing profile)
+  const [existingUser, setExistingUser] = useState(null);
+
+  useEffect(() => {
+    async function checkSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setExistingUser(session.user);
+        // Pre-fill email from the authenticated account — it can't be changed
+        setEmail(session.user.email || "");
+      }
+    }
+    checkSession();
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -51,12 +65,32 @@ function CadastroForm() {
       setError("Selecione se você é Criador ou Empresa.");
       return;
     }
-    if (senha.length < 8) {
-      setError("A senha deve ter pelo menos 8 caracteres.");
+
+    setLoading(true);
+
+    if (existingUser) {
+      // User is already authenticated — just create the missing profile row
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({ id: existingUser.id, nome, role });
+
+      if (profileError) {
+        setError(profileError.message || "Erro ao salvar perfil. Tente novamente.");
+        setLoading(false);
+        return;
+      }
+
+      router.replace(role === "criador" ? "/dashboard/criador" : "/dashboard/empresa");
       return;
     }
 
-    setLoading(true);
+    // New user — full signup flow
+    if (senha.length < 8) {
+      setError("A senha deve ter pelo menos 8 caracteres.");
+      setLoading(false);
+      return;
+    }
+
     const { data, error } = await signUp(email, senha, nome, role);
 
     if (error) {
@@ -65,16 +99,14 @@ function CadastroForm() {
       return;
     }
 
-    // Insert profile row
     if (data.user) {
       await supabase.from("profiles").insert({ id: data.user.id, nome, role });
     }
 
     if (data.session) {
-      // Email confirmation disabled — redirect immediately
       router.replace(role === "criador" ? "/dashboard/criador" : "/dashboard/empresa");
     } else {
-      // Email confirmation required — ask user to verify
+      // Email confirmation required
       setSuccess("Conta criada! Verifique seu email para confirmar o cadastro.");
       setLoading(false);
     }
@@ -104,10 +136,12 @@ function CadastroForm() {
         padding: "36px 32px",
       }}>
         <h1 style={{ fontSize: 24, fontWeight: 800, color: DARK, marginBottom: 4, letterSpacing: "-0.5px" }}>
-          Crie sua conta
+          {existingUser ? "Complete seu perfil" : "Crie sua conta"}
         </h1>
         <p style={{ fontSize: 14, color: GRAY, marginBottom: 28 }}>
-          Junte-se ao 1º marketplace de IA da América Latina.
+          {existingUser
+            ? "Falta pouco! Preencha seu nome e escolha seu perfil."
+            : "Junte-se ao 1º marketplace de IA da América Latina."}
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -127,7 +161,7 @@ function CadastroForm() {
             />
           </div>
 
-          {/* Email */}
+          {/* Email — read-only when user already has a session */}
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>Email</label>
             <input
@@ -135,40 +169,46 @@ function CadastroForm() {
               required
               placeholder="seu@email.com"
               value={email}
-              onChange={e => setEmail(e.target.value)}
-              style={inputStyle}
-              onFocus={e => (e.target.style.borderColor = PURPLE)}
+              onChange={e => !existingUser && setEmail(e.target.value)}
+              readOnly={!!existingUser}
+              style={{
+                ...inputStyle,
+                ...(existingUser ? { background: "#F3F4F6", color: GRAY, cursor: "default" } : {}),
+              }}
+              onFocus={e => { if (!existingUser) e.target.style.borderColor = PURPLE; }}
               onBlur={e => (e.target.style.borderColor = "rgba(0,0,0,0.12)")}
             />
           </div>
 
-          {/* Senha */}
-          <div style={{ marginBottom: 24 }}>
-            <label style={labelStyle}>Senha</label>
-            <input
-              type="password"
-              required
-              placeholder="Mínimo 8 caracteres"
-              value={senha}
-              onChange={e => setSenha(e.target.value)}
-              style={inputStyle}
-              onFocus={e => (e.target.style.borderColor = PURPLE)}
-              onBlur={e => (e.target.style.borderColor = "rgba(0,0,0,0.12)")}
-            />
-            {senha.length > 0 && (
-              <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
-                {[1, 2, 3, 4].map(n => (
-                  <div key={n} style={{
-                    flex: 1, height: 3, borderRadius: 99,
-                    background: senha.length >= n * 2
-                      ? (senha.length >= 8 ? "#16A34A" : PURPLE)
-                      : "rgba(0,0,0,0.1)",
-                    transition: "background 0.2s",
-                  }} />
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Senha — only required for new accounts */}
+          {!existingUser && (
+            <div style={{ marginBottom: 24 }}>
+              <label style={labelStyle}>Senha</label>
+              <input
+                type="password"
+                required
+                placeholder="Mínimo 8 caracteres"
+                value={senha}
+                onChange={e => setSenha(e.target.value)}
+                style={inputStyle}
+                onFocus={e => (e.target.style.borderColor = PURPLE)}
+                onBlur={e => (e.target.style.borderColor = "rgba(0,0,0,0.12)")}
+              />
+              {senha.length > 0 && (
+                <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
+                  {[1, 2, 3, 4].map(n => (
+                    <div key={n} style={{
+                      flex: 1, height: 3, borderRadius: 99,
+                      background: senha.length >= n * 2
+                        ? (senha.length >= 8 ? "#16A34A" : PURPLE)
+                        : "rgba(0,0,0,0.1)",
+                      transition: "background 0.2s",
+                    }} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Role selector */}
           <div style={{ marginBottom: 24 }}>

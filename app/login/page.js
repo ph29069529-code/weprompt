@@ -63,7 +63,8 @@ export default function LoginPage() {
         .single();
 
       if (!profile) {
-        router.replace("/cadastro");
+        // No profile yet — send to criador dashboard as default; it handles the missing profile gracefully
+        router.replace("/dashboard/criador");
       } else if (profile.role === "criador") {
         router.replace("/dashboard/criador");
       } else if (profile.role === "empresa") {
