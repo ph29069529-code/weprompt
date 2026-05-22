@@ -56,21 +56,26 @@ export default function LoginPage() {
 
       setSuccess("Login realizado com sucesso! Redirecionando…");
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", data.user.id)
         .single();
 
+      console.log("[login] user id:", data.user.id);
+      console.log("[login] profile:", profile, "error:", profileError?.message);
+
+      const role = profile?.role;
+
       if (!profile) {
-        // No profile yet — send to criador dashboard as default; it handles the missing profile gracefully
-        router.replace("/dashboard/criador");
-      } else if (profile.role === "criador") {
-        router.replace("/dashboard/criador");
-      } else if (profile.role === "empresa") {
-        router.replace("/dashboard/empresa");
+        router.push("/dashboard/criador");
+      } else if (role === "criador" || role === "creator") {
+        router.push("/dashboard/criador");
+      } else if (role === "empresa" || role === "business") {
+        router.push("/dashboard/empresa");
       } else {
-        router.replace("/");
+        console.warn("[login] unrecognised role:", role, "— defaulting to /dashboard/criador");
+        router.push("/dashboard/criador");
       }
     } else {
       // Quick signup — redirect to full cadastro for nome/role
