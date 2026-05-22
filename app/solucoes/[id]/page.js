@@ -26,26 +26,68 @@ function SolutionDetail() {
   const [solution, setSolution] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [user, setUser] = useState(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   useEffect(() => {
     if (!id) return;
-    async function fetchSolution() {
-      const { data, error } = await supabase
-        .from("solutions")
-        .select("*")
-        .eq("id", id)
-        .eq("ativo", true)
-        .single();
+    async function init() {
+      const [solutionRes, sessionRes] = await Promise.all([
+        supabase.from("solutions").select("*").eq("id", id).eq("ativo", true).single(),
+        supabase.auth.getSession(),
+      ]);
 
-      if (error || !data) {
+      if (solutionRes.error || !solutionRes.data) {
         setNotFound(true);
       } else {
-        setSolution(data);
+        setSolution(solutionRes.data);
       }
+
+      if (sessionRes.data?.session?.user) {
+        setUser(sessionRes.data.session.user);
+      }
+
       setLoading(false);
     }
-    fetchSolution();
+    init();
   }, [id]);
+
+  async function handleCheckout() {
+    if (!user) {
+      window.location.href = `/login`;
+      return;
+    }
+
+    setCheckoutLoading(true);
+    setCheckoutError("");
+
+    try {
+      const res = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          solution_id: solution.id,
+          solution_titulo: solution.titulo,
+          solution_preco: solution.preco,
+          user_id: user.id,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.url) {
+        setCheckoutError(json.error || "Erro ao iniciar pagamento. Tente novamente.");
+        setCheckoutLoading(false);
+        return;
+      }
+
+      window.location.href = json.url;
+    } catch {
+      setCheckoutError("Erro ao iniciar pagamento. Tente novamente.");
+      setCheckoutLoading(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -175,32 +217,63 @@ function SolutionDetail() {
             </div>
           </div>
 
-          <a
-            href={solution.url_checkout || "/cadastro"}
-            style={{
+          {solution.preco != null ? (
+            <button
+              onClick={handleCheckout}
+              disabled={checkoutLoading}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: checkoutLoading ? "#9B8DE8" : PURPLE,
+                color: "#fff",
+                padding: "14px 28px", borderRadius: 12,
+                fontSize: 16, fontWeight: 700,
+                border: "none", cursor: checkoutLoading ? "not-allowed" : "pointer",
+                fontFamily: "inherit",
+                transition: "background 0.15s, box-shadow 0.15s",
+                boxShadow: checkoutLoading ? "none" : "0 4px 16px rgba(107,92,231,0.3)",
+              }}
+              onMouseEnter={e => {
+                if (!checkoutLoading) {
+                  e.currentTarget.style.background = "#5A4BD6";
+                  e.currentTarget.style.boxShadow = "0 6px 24px rgba(107,92,231,0.45)";
+                }
+              }}
+              onMouseLeave={e => {
+                if (!checkoutLoading) {
+                  e.currentTarget.style.background = PURPLE;
+                  e.currentTarget.style.boxShadow = "0 4px 16px rgba(107,92,231,0.3)";
+                }
+              }}
+            >
+              {checkoutLoading
+                ? "Redirecionando…"
+                : `Assinar por R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês`}
+              {!checkoutLoading && <Arrow />}
+            </button>
+          ) : (
+            <a href="/cadastro" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               background: PURPLE, color: "#fff",
               padding: "14px 28px", borderRadius: 12,
               fontSize: 16, fontWeight: 700,
               textDecoration: "none",
-              transition: "background 0.15s, box-shadow 0.15s",
               boxShadow: "0 4px 16px rgba(107,92,231,0.3)",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = "#5A4BD6";
-              e.currentTarget.style.boxShadow = "0 6px 24px rgba(107,92,231,0.45)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = PURPLE;
-              e.currentTarget.style.boxShadow = "0 4px 16px rgba(107,92,231,0.3)";
-            }}
-          >
-            {solution.preco != null
-              ? `Assinar por R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês`
-              : "Começar gratuitamente"}
-            <Arrow />
-          </a>
+            }}>
+              Começar gratuitamente <Arrow />
+            </a>
+          )}
         </div>
+
+        {checkoutError && (
+          <div style={{
+            marginTop: 16,
+            background: "#FEF2F2", border: "1px solid #FECACA",
+            borderRadius: 8, padding: "10px 14px",
+            fontSize: 13, color: "#DC2626",
+          }}>
+            {checkoutError}
+          </div>
+        )}
       </div>
     </div>
   );

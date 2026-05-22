@@ -1,0 +1,42 @@
+import { NextResponse } from "next/server";
+import { stripe } from "../../lib/stripe";
+
+export async function POST(request) {
+  try {
+    const { solution_id, solution_titulo, solution_preco, user_id } = await request.json();
+
+    if (!solution_id || !solution_titulo || solution_preco == null || !user_id) {
+      return NextResponse.json({ error: "Dados inválidos." }, { status: 400 });
+    }
+
+    const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      line_items: [
+        {
+          price_data: {
+            currency: "brl",
+            unit_amount: Math.round(Number(solution_preco) * 100),
+            recurring: { interval: "month" },
+            product_data: {
+              name: solution_titulo,
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${origin}/dashboard/empresa?success=true`,
+      cancel_url: `${origin}/solucoes`,
+      metadata: {
+        solution_id: String(solution_id),
+        user_id: String(user_id),
+      },
+    });
+
+    return NextResponse.json({ url: session.url });
+  } catch (err) {
+    console.error("Stripe checkout error:", err);
+    return NextResponse.json({ error: err.message || "Erro interno." }, { status: 500 });
+  }
+}
