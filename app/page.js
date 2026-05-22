@@ -48,14 +48,26 @@ export default function Home() {
             ))}
           </nav>
 
-          <a href="#" className="btn-dark" style={{
-            borderRadius: 999, padding: "9px 20px",
-            fontSize: 14, fontWeight: 600,
-            display: "inline-flex", alignItems: "center", gap: 6,
-            textDecoration: "none",
-          }}>
-            Começar agora <Arrow />
-          </a>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <a href="/login" style={{
+              borderRadius: 999, padding: "8px 18px",
+              fontSize: 14, fontWeight: 500,
+              textDecoration: "none", color: DARK,
+              border: "1.5px solid rgba(0,0,0,0.14)",
+              background: "transparent",
+              transition: "background 0.15s",
+            }}>
+              Entrar
+            </a>
+            <a href="/cadastro" className="btn-dark" style={{
+              borderRadius: 999, padding: "9px 20px",
+              fontSize: 14, fontWeight: 600,
+              display: "inline-flex", alignItems: "center", gap: 6,
+              textDecoration: "none",
+            }}>
+              Criar conta <Arrow />
+            </a>
+          </div>
         </div>
       </header>
 
