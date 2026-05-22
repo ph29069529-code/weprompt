@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "../lib/supabase";
+import { useRouter } from "next/navigation";
+import { signIn, supabase } from "../lib/supabase";
 import WePromptLogo from "../components/WePromptLogo";
 
 const PURPLE = "#6B5CE7";
@@ -31,6 +32,7 @@ const labelStyle = {
 };
 
 export default function LoginPage() {
+  const router = useRouter();
   const [tab, setTab] = useState("entrar"); // "entrar" | "criar"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,11 +47,29 @@ export default function LoginPage() {
     setLoading(true);
 
     if (tab === "entrar") {
-      const { error } = await signIn(email, password);
+      const { data, error } = await signIn(email, password);
       if (error) {
         setError("Email ou senha incorretos. Tente novamente.");
+        setLoading(false);
+        return;
+      }
+
+      setSuccess("Login realizado com sucesso! Redirecionando…");
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+
+      if (!profile) {
+        router.replace("/cadastro");
+      } else if (profile.role === "criador") {
+        router.replace("/dashboard/criador");
+      } else if (profile.role === "empresa") {
+        router.replace("/dashboard/empresa");
       } else {
-        setSuccess("Login realizado com sucesso! Redirecionando…");
+        router.replace("/");
       }
     } else {
       // Quick signup — redirect to full cadastro for nome/role

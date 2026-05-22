@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { signUp } from "../lib/supabase";
+import { useSearchParams, useRouter } from "next/navigation";
+import { signUp, supabase } from "../lib/supabase";
 import WePromptLogo from "../components/WePromptLogo";
 
 const PURPLE = "#6B5CE7";
@@ -32,6 +32,7 @@ const labelStyle = {
 };
 
 function CadastroForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState(searchParams.get("email") || "");
@@ -60,10 +61,23 @@ function CadastroForm() {
 
     if (error) {
       setError(error.message || "Erro ao criar conta. Tente novamente.");
-    } else {
-      setSuccess("Conta criada! Verifique seu email para confirmar o cadastro.");
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    // Insert profile row
+    if (data.user) {
+      await supabase.from("profiles").insert({ id: data.user.id, nome, role });
+    }
+
+    if (data.session) {
+      // Email confirmation disabled — redirect immediately
+      router.replace(role === "criador" ? "/dashboard/criador" : "/dashboard/empresa");
+    } else {
+      // Email confirmation required — ask user to verify
+      setSuccess("Conta criada! Verifique seu email para confirmar o cadastro.");
+      setLoading(false);
+    }
   }
 
   return (
