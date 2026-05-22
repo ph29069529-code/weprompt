@@ -118,7 +118,9 @@ function SolutionCard({ solution, onToggleAtivo }) {
             : "Gratuito"}
         </div>
         {solution.preco != null && (
-          <div style={{ fontSize: 11, color: GRAY }}>/mês</div>
+          <div style={{ fontSize: 11, color: GRAY }}>
+            {solution.payment_type === "one_time" ? "único" : "/mês"}
+          </div>
         )}
       </div>
 
@@ -139,6 +141,7 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
   const [descricao, setDescricao] = useState("");
   const [categoria, setCategoria] = useState(CATEGORIES[0]);
   const [preco, setPreco] = useState("");
+  const [paymentType, setPaymentType] = useState("subscription"); // "subscription" | "one_time"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -152,6 +155,7 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
       descricao,
       categoria,
       preco: preco === "" ? null : parseFloat(preco),
+      payment_type: paymentType,
       creator_id: userId,
       ativo: true,
     }).select().single();
@@ -242,6 +246,37 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
             />
           </div>
 
+          {/* Payment type selector */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>Modelo de pagamento</label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              {[
+                { value: "subscription", label: "Assinatura Mensal", icon: "↻", sub: "Cobrança recorrente" },
+                { value: "one_time", label: "Venda Única", icon: "✦", sub: "Pagamento único" },
+              ].map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setPaymentType(opt.value)}
+                  style={{
+                    padding: "12px",
+                    borderRadius: 10,
+                    border: `2px solid ${paymentType === opt.value ? PURPLE : "rgba(0,0,0,0.1)"}`,
+                    background: paymentType === opt.value ? `${PURPLE}0D` : "#fff",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    fontFamily: "inherit",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  <div style={{ fontSize: 16, marginBottom: 4 }}>{opt.icon}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: DARK }}>{opt.label}</div>
+                  <div style={{ fontSize: 11, color: GRAY, marginTop: 2 }}>{opt.sub}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Row: Categoria + Preço */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
             <div>
@@ -257,7 +292,9 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Preço mensal (R$)</label>
+              <label style={labelStyle}>
+                {paymentType === "one_time" ? "Preço único (R$)" : "Preço mensal (R$)"}
+              </label>
               <input
                 type="number"
                 min="0" step="0.01"

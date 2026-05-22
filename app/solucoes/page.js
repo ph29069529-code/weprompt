@@ -94,11 +94,22 @@ function SolutionCard({ solution }) {
 
       {/* Footer */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
-        <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>
-          {solution.preco != null
-            ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês`
-            : "Gratuito"}
-        </span>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>
+            {solution.preco != null
+              ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+              : "Gratuito"}
+          </span>
+          {solution.preco != null && (
+            <span style={{
+              fontSize: 11, fontWeight: 600, padding: "2px 7px", borderRadius: 99,
+              background: solution.payment_type === "one_time" ? "rgba(22,163,74,0.1)" : `${PURPLE}12`,
+              color: solution.payment_type === "one_time" ? "#16A34A" : PURPLE,
+            }}>
+              {solution.payment_type === "one_time" ? "Único" : "Mensal"}
+            </span>
+          )}
+        </div>
         <a
           href={`/solucoes/${solution.id}`}
           style={{

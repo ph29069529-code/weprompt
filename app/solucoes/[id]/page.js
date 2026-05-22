@@ -71,6 +71,7 @@ function SolutionDetail() {
           solution_titulo: solution.titulo,
           solution_preco: solution.preco,
           user_id: user.id,
+          payment_type: solution.payment_type || "subscription",
         }),
       });
 
@@ -150,18 +151,28 @@ function SolutionDetail() {
         boxShadow: "0 1px 3px rgba(0,0,0,0.07), 0 16px 48px rgba(0,0,0,0.08)",
         padding: "40px",
       }}>
-        {/* Category */}
-        <span style={{
-          display: "inline-block",
-          background: `${PURPLE}12`,
-          color: PURPLE,
-          fontSize: 11, fontWeight: 600,
-          padding: "4px 10px", borderRadius: 99,
-          letterSpacing: "0.2px",
-          marginBottom: 16,
-        }}>
-          {solution.categoria}
-        </span>
+        {/* Category + payment type badges */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+          <span style={{
+            display: "inline-block",
+            background: `${PURPLE}12`, color: PURPLE,
+            fontSize: 11, fontWeight: 600,
+            padding: "4px 10px", borderRadius: 99, letterSpacing: "0.2px",
+          }}>
+            {solution.categoria}
+          </span>
+          {solution.preco != null && (
+            <span style={{
+              display: "inline-block",
+              background: solution.payment_type === "one_time" ? "rgba(22,163,74,0.1)" : "rgba(107,92,231,0.08)",
+              color: solution.payment_type === "one_time" ? "#16A34A" : PURPLE,
+              fontSize: 11, fontWeight: 600,
+              padding: "4px 10px", borderRadius: 99,
+            }}>
+              {solution.payment_type === "one_time" ? "Venda Única" : "Assinatura Mensal"}
+            </span>
+          )}
+        </div>
 
         {/* Title */}
         <h1 style={{
@@ -206,13 +217,21 @@ function SolutionDetail() {
           flexWrap: "wrap", gap: 16,
         }}>
           <div>
-            <div style={{ fontSize: 12, color: GRAY, marginBottom: 4 }}>Preço</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: DARK, letterSpacing: "-0.5px" }}>
-              {solution.preco != null
-                ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-                : "Gratuito"}
+            <div style={{ fontSize: 12, color: GRAY, marginBottom: 6 }}>Preço</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: DARK, letterSpacing: "-0.5px" }}>
+                {solution.preco != null
+                  ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                  : "Gratuito"}
+              </div>
               {solution.preco != null && (
-                <span style={{ fontSize: 14, fontWeight: 500, color: GRAY }}>/mês</span>
+                <span style={{
+                  fontSize: 12, fontWeight: 600, padding: "3px 9px", borderRadius: 99,
+                  background: solution.payment_type === "one_time" ? "rgba(22,163,74,0.1)" : `${PURPLE}12`,
+                  color: solution.payment_type === "one_time" ? "#16A34A" : PURPLE,
+                }}>
+                  {solution.payment_type === "one_time" ? "Pagamento único" : "por mês"}
+                </span>
               )}
             </div>
           </div>
@@ -247,7 +266,9 @@ function SolutionDetail() {
             >
               {checkoutLoading
                 ? "Redirecionando…"
-                : `Assinar por R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês`}
+                : solution.payment_type === "one_time"
+                  ? `Comprar por R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                  : `Assinar por R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês`}
               {!checkoutLoading && <Arrow />}
             </button>
           ) : (
