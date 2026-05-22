@@ -43,8 +43,8 @@ export default function Home() {
           </a>
 
           <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {["Explorar", "Preços", "Como funciona", "Para Criadores"].map(l => (
-              <a key={l} href="#" className="nav-link">{l}</a>
+            {[["Explorar", "/solucoes"], ["Preços", "#"], ["Como funciona", "#"], ["Para Criadores", "#"]].map(([label, href]) => (
+              <a key={label} href={href} className="nav-link">{label}</a>
             ))}
           </nav>
 
