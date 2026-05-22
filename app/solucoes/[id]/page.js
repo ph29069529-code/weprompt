@@ -34,7 +34,7 @@ function SolutionDetail() {
     if (!id) return;
     async function init() {
       const [solutionRes, sessionRes] = await Promise.all([
-        supabase.from("solutions").select("*").eq("id", id).eq("ativo", true).single(),
+        supabase.from("solutions").select("*").eq("id", id).eq("ativo", true).eq("status", "approved").single(),
         supabase.auth.getSession(),
       ]);
 
@@ -150,7 +150,19 @@ function SolutionDetail() {
         border: "1px solid rgba(0,0,0,0.07)",
         boxShadow: "0 1px 3px rgba(0,0,0,0.07), 0 16px 48px rgba(0,0,0,0.08)",
         padding: "40px",
+        overflow: "hidden",
       }}>
+        {/* Cover image */}
+        {solution.cover_url ? (
+          <div style={{ margin: "-40px -40px 28px", height: 280, flexShrink: 0 }}>
+            <img
+              src={solution.cover_url}
+              alt={solution.titulo}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
+        ) : null}
+
         {/* Category + payment type badges */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
           <span style={{

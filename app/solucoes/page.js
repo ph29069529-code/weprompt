@@ -38,19 +38,25 @@ function SkeletonCard() {
   );
 }
 
-function SolutionCard({ solution }) {
+const CARD_GRADIENTS = [
+  "linear-gradient(135deg, rgba(107,92,231,0.12) 0%, rgba(56,189,248,0.1) 100%)",
+  "linear-gradient(135deg, rgba(56,189,248,0.12) 0%, rgba(107,92,231,0.08) 100%)",
+  "linear-gradient(135deg, rgba(22,163,74,0.1) 0%, rgba(107,92,231,0.1) 100%)",
+];
+
+function SolutionCard({ solution, index = 0 }) {
+  const isOneTime = solution.payment_type === "one_time";
   return (
-    <div style={{
-      background: "#fff",
-      borderRadius: 16,
-      border: "1px solid rgba(0,0,0,0.07)",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
-      padding: "24px",
-      display: "flex",
-      flexDirection: "column",
-      gap: 12,
-      transition: "box-shadow 0.2s, transform 0.2s",
-    }}
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: 16,
+        border: "1px solid rgba(0,0,0,0.07)",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
+        display: "flex", flexDirection: "column",
+        overflow: "hidden",
+        transition: "box-shadow 0.2s, transform 0.2s",
+      }}
       onMouseEnter={e => {
         e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(107,92,231,0.1)";
         e.currentTarget.style.transform = "translateY(-2px)";
@@ -60,71 +66,85 @@ function SolutionCard({ solution }) {
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      {/* Category badge */}
-      <span style={{
-        display: "inline-block",
-        background: `${PURPLE}12`,
-        color: PURPLE,
-        fontSize: 11,
-        fontWeight: 600,
-        padding: "4px 10px",
-        borderRadius: 99,
-        alignSelf: "flex-start",
-        letterSpacing: "0.2px",
-      }}>
-        {solution.categoria}
-      </span>
+      {/* Cover image — 16:9 */}
+      <div style={{ position: "relative", paddingTop: "56.25%", flexShrink: 0 }}>
+        {solution.cover_url ? (
+          <img
+            src={solution.cover_url}
+            alt={solution.titulo}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        ) : (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: CARD_GRADIENTS[index % CARD_GRADIENTS.length],
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <span style={{ fontSize: 36, opacity: 0.18 }}>✦</span>
+          </div>
+        )}
+      </div>
 
-      {/* Title */}
-      <h2 style={{ fontSize: 17, fontWeight: 700, color: DARK, margin: 0, lineHeight: 1.3 }}>
-        {solution.titulo}
-      </h2>
+      {/* Content */}
+      <div style={{ padding: "16px 20px 20px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+        {/* Category badge */}
+        <span style={{
+          display: "inline-block",
+          background: `${PURPLE}12`, color: PURPLE,
+          fontSize: 11, fontWeight: 600,
+          padding: "3px 10px", borderRadius: 99,
+          alignSelf: "flex-start", letterSpacing: "0.2px",
+        }}>
+          {solution.categoria}
+        </span>
 
-      {/* Description */}
-      <p style={{
-        fontSize: 14, color: GRAY, margin: 0, lineHeight: 1.6,
-        display: "-webkit-box",
-        WebkitLineClamp: 3,
-        WebkitBoxOrient: "vertical",
-        overflow: "hidden",
-        flex: 1,
-      }}>
-        {solution.descricao}
-      </p>
+        {/* Title */}
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: DARK, margin: 0, lineHeight: 1.35 }}>
+          {solution.titulo}
+        </h2>
 
-      {/* Footer */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-          <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>
-            {solution.preco != null
-              ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-              : "Gratuito"}
-          </span>
-          {solution.preco != null && (
-            <span style={{
-              fontSize: 11, fontWeight: 600, padding: "2px 7px", borderRadius: 99,
-              background: solution.payment_type === "one_time" ? "rgba(22,163,74,0.1)" : `${PURPLE}12`,
-              color: solution.payment_type === "one_time" ? "#16A34A" : PURPLE,
-            }}>
-              {solution.payment_type === "one_time" ? "Único" : "Mensal"}
+        {/* Description */}
+        <p style={{
+          fontSize: 13, color: GRAY, margin: 0, lineHeight: 1.6, flex: 1,
+          display: "-webkit-box", WebkitLineClamp: 3,
+          WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
+          {solution.descricao}
+        </p>
+
+        {/* Footer */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 4 }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: DARK }}>
+              {solution.preco != null
+                ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                : "Gratuito"}
             </span>
-          )}
+            {solution.preco != null && (
+              <span style={{
+                fontSize: 11, fontWeight: 600, padding: "2px 7px", borderRadius: 99,
+                background: isOneTime ? "rgba(22,163,74,0.1)" : `${PURPLE}12`,
+                color: isOneTime ? "#16A34A" : PURPLE,
+              }}>
+                {isOneTime ? "Único" : "Mensal"}
+              </span>
+            )}
+          </div>
+          <a
+            href={`/solucoes/${solution.id}`}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              background: PURPLE, color: "#fff",
+              padding: "8px 14px", borderRadius: 8,
+              fontSize: 13, fontWeight: 600, textDecoration: "none",
+              transition: "background 0.15s",
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = "#5A4BD6")}
+            onMouseLeave={e => (e.currentTarget.style.background = PURPLE)}
+          >
+            Ver <Arrow />
+          </a>
         </div>
-        <a
-          href={`/solucoes/${solution.id}`}
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 6,
-            background: PURPLE, color: "#fff",
-            padding: "9px 16px", borderRadius: 8,
-            fontSize: 13, fontWeight: 600,
-            textDecoration: "none",
-            transition: "background 0.15s",
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = "#5A4BD6")}
-          onMouseLeave={e => (e.currentTarget.style.background = PURPLE)}
-        >
-          Ver solução <Arrow />
-        </a>
       </div>
     </div>
   );
@@ -141,6 +161,7 @@ export default function SolucoesPage() {
         .from("solutions")
         .select("*")
         .eq("ativo", true)
+        .eq("status", "approved")
         .order("created_at", { ascending: false });
 
       if (!error && data) setSolutions(data);
@@ -282,7 +303,7 @@ export default function SolucoesPage() {
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 24 }}>
-            {filtered.map(s => <SolutionCard key={s.id} solution={s} />)}
+            {filtered.map((s, i) => <SolutionCard key={s.id} solution={s} index={i} />)}
           </div>
         )}
       </main>

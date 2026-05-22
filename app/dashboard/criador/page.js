@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
@@ -76,6 +76,25 @@ function Toggle({ checked, onChange }) {
   );
 }
 
+/* ── Status badge ── */
+const STATUS_CONFIG = {
+  pending:  { label: "Em análise", bg: "#FEFCE8", border: "#FDE047", color: "#854D0E" },
+  approved: { label: "Aprovado",   bg: "#F0FDF4", border: "#BBF7D0", color: "#16A34A" },
+  rejected: { label: "Reprovado",  bg: "#FEF2F2", border: "#FECACA", color: "#DC2626" },
+};
+function StatusBadge({ status }) {
+  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+  return (
+    <span style={{
+      display: "inline-block",
+      background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color,
+      fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 99,
+    }}>
+      {cfg.label}
+    </span>
+  );
+}
+
 /* ── Solution card ── */
 function SolutionCard({ solution, onToggleAtivo }) {
   return (
@@ -94,8 +113,11 @@ function SolutionCard({ solution, onToggleAtivo }) {
 
       {/* Info */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: DARK, marginBottom: 3 }}>
-          {solution.titulo}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+          <span style={{ fontWeight: 700, fontSize: 15, color: DARK }}>
+            {solution.titulo}
+          </span>
+          <StatusBadge status={solution.status || "pending"} />
         </div>
         <div style={{ fontSize: 12, color: GRAY }}>
           <span style={{
@@ -137,18 +159,59 @@ function SolutionCard({ solution, onToggleAtivo }) {
 
 /* ── Modal ── */
 function NovasolucaoModal({ onClose, onCreated, userId }) {
+  const fileInputRef = useRef(null);
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [categoria, setCategoria] = useState(CATEGORIES[0]);
   const [preco, setPreco] = useState("");
-  const [paymentType, setPaymentType] = useState("subscription"); // "subscription" | "one_time"
+  const [paymentType, setPaymentType] = useState("subscription");
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState("");
+  const [coverError, setCoverError] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setCoverError("Formato inválido. Use JPG, PNG ou WebP.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setCoverError("Imagem muito grande. Máximo 2MB.");
+      return;
+    }
+    setCoverError("");
+    setCoverFile(file);
+    setCoverPreview(URL.createObjectURL(file));
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    let coverUrl = null;
+    if (coverFile) {
+      const ext = coverFile.name.split(".").pop().toLowerCase();
+      const filePath = `${userId}/${Date.now()}.${ext}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("solution-covers")
+        .upload(filePath, coverFile, { cacheControl: "3600", upsert: false });
+
+      if (uploadError) {
+        setError("Erro ao enviar imagem: " + uploadError.message);
+        setLoading(false);
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("solution-covers")
+        .getPublicUrl(uploadData.path);
+      coverUrl = publicUrl;
+    }
 
     const { data, error } = await supabase.from("solutions").insert({
       titulo,
@@ -156,16 +219,20 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
       categoria,
       preco: preco === "" ? null : parseFloat(preco),
       payment_type: paymentType,
+      cover_url: coverUrl,
+      status: "pending",
       creator_id: userId,
       ativo: true,
     }).select().single();
 
     if (error) {
       setError(error.message || "Erro ao criar solução.");
-    } else {
-      onCreated(data);
-      onClose();
+      setLoading(false);
+      return;
     }
+
+    onCreated(data);
+    setSubmitted(true);
     setLoading(false);
   }
 
@@ -185,26 +252,63 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
     color: DARK, marginBottom: 6,
   };
 
+  const backdropStyle = {
+    position: "fixed", inset: 0, zIndex: 200,
+    background: "rgba(10,10,26,0.4)",
+    backdropFilter: "blur(4px)",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    padding: 24,
+  };
+
+  const panelStyle = {
+    background: "#fff", borderRadius: 20,
+    boxShadow: "0 8px 40px rgba(0,0,0,0.18)",
+    width: "100%", maxWidth: 520,
+    padding: "32px",
+    animation: "modalIn 0.2s ease",
+    maxHeight: "90vh", overflowY: "auto",
+  };
+
+  // ── Success screen ──
+  if (submitted) {
+    return (
+      <div style={backdropStyle}>
+        <div style={{ ...panelStyle, textAlign: "center" }}>
+          <style>{`@keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(8px) } to { opacity:1; transform:scale(1) translateY(0) } }`}</style>
+          <div style={{
+            width: 64, height: 64, borderRadius: "50%",
+            background: "#F0FDF4", border: "1px solid #BBF7D0",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            margin: "0 auto 20px",
+            fontSize: 28,
+          }}>✦</div>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: DARK, margin: "0 0 10px" }}>
+            Solução enviada para curadoria!
+          </h2>
+          <p style={{ fontSize: 14, color: GRAY, margin: "0 0 24px", lineHeight: 1.6 }}>
+            Nossa equipe irá analisar sua solução em até{" "}
+            <strong style={{ color: DARK }}>48 horas</strong>. Você poderá acompanhar
+            o status aqui no dashboard.
+          </p>
+          <button onClick={onClose} style={{
+            background: PURPLE, color: "#fff", border: "none",
+            borderRadius: 10, padding: "11px 28px",
+            fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+          }}>
+            Entendido
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Form ──
   return (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 200,
-      background: "rgba(10,10,26,0.4)",
-      backdropFilter: "blur(4px)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      padding: 24,
-    }}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div style={{
-        background: "#fff", borderRadius: 20,
-        boxShadow: "0 8px 40px rgba(0,0,0,0.18)",
-        width: "100%", maxWidth: 520,
-        padding: "32px",
-        animation: "modalIn 0.2s ease",
-      }}>
+    <div style={backdropStyle} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div style={panelStyle}>
         <style>{`@keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(8px) } to { opacity:1; transform:scale(1) translateY(0) } }`}</style>
 
-        {/* Modal header */}
+        {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: DARK, margin: 0 }}>Nova Solução</h2>
           <button onClick={onClose} style={{
@@ -217,6 +321,67 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
         </div>
 
         <form onSubmit={handleSubmit}>
+
+          {/* Cover image upload */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>Imagem de capa</label>
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                position: "relative", paddingTop: "42%",
+                borderRadius: 10, overflow: "hidden",
+                border: coverPreview ? "none" : "2px dashed rgba(0,0,0,0.12)",
+                background: coverPreview ? "transparent" : "#FAFAFA",
+                cursor: "pointer", transition: "border-color 0.15s",
+              }}
+              onMouseEnter={e => { if (!coverPreview) e.currentTarget.style.borderColor = PURPLE; }}
+              onMouseLeave={e => { if (!coverPreview) e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)"; }}
+            >
+              {coverPreview ? (
+                <img
+                  src={coverPreview} alt="Preview"
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ) : (
+                <div style={{
+                  position: "absolute", inset: 0,
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                  gap: 6,
+                }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={GRAY} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                  </svg>
+                  <span style={{ fontSize: 12, color: GRAY }}>Clique para enviar · JPG, PNG ou WebP · máx. 2MB</span>
+                </div>
+              )}
+              {coverPreview && (
+                <button
+                  type="button"
+                  onClick={ev => { ev.stopPropagation(); setCoverFile(null); setCoverPreview(""); }}
+                  style={{
+                    position: "absolute", top: 8, right: 8,
+                    background: "rgba(0,0,0,0.5)", color: "#fff",
+                    border: "none", borderRadius: "50%",
+                    width: 28, height: 28, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  <Icon d={icons.close} size={14} />
+                </button>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+            />
+            {coverError && (
+              <div style={{ fontSize: 12, color: "#DC2626", marginTop: 6 }}>{coverError}</div>
+            )}
+          </div>
+
           {/* Título */}
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>Título</label>
@@ -235,8 +400,7 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
           <div style={{ marginBottom: 16 }}>
             <label style={labelStyle}>Descrição</label>
             <textarea
-              required
-              rows={4}
+              required rows={4}
               placeholder="Descreva o que sua solução faz e como ela ajuda o cliente…"
               value={descricao}
               onChange={e => setDescricao(e.target.value)}
@@ -252,23 +416,14 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               {[
                 { value: "subscription", label: "Assinatura Mensal", icon: "↻", sub: "Cobrança recorrente" },
-                { value: "one_time", label: "Venda Única", icon: "✦", sub: "Pagamento único" },
+                { value: "one_time",     label: "Venda Única",       icon: "✦", sub: "Pagamento único" },
               ].map(opt => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setPaymentType(opt.value)}
-                  style={{
-                    padding: "12px",
-                    borderRadius: 10,
-                    border: `2px solid ${paymentType === opt.value ? PURPLE : "rgba(0,0,0,0.1)"}`,
-                    background: paymentType === opt.value ? `${PURPLE}0D` : "#fff",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    fontFamily: "inherit",
-                    transition: "all 0.15s",
-                  }}
-                >
+                <button key={opt.value} type="button" onClick={() => setPaymentType(opt.value)} style={{
+                  padding: "12px", borderRadius: 10, textAlign: "left", fontFamily: "inherit",
+                  border: `2px solid ${paymentType === opt.value ? PURPLE : "rgba(0,0,0,0.1)"}`,
+                  background: paymentType === opt.value ? `${PURPLE}0D` : "#fff",
+                  cursor: "pointer", transition: "all 0.15s",
+                }}>
                   <div style={{ fontSize: 16, marginBottom: 4 }}>{opt.icon}</div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: DARK }}>{opt.label}</div>
                   <div style={{ fontSize: 11, color: GRAY, marginTop: 2 }}>{opt.sub}</div>
@@ -277,13 +432,12 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
             </div>
           </div>
 
-          {/* Row: Categoria + Preço */}
+          {/* Categoria + Preço */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
             <div>
               <label style={labelStyle}>Categoria</label>
               <select
-                value={categoria}
-                onChange={e => setCategoria(e.target.value)}
+                value={categoria} onChange={e => setCategoria(e.target.value)}
                 style={{ ...inputStyle, cursor: "pointer" }}
                 onFocus={e => (e.target.style.borderColor = PURPLE)}
                 onBlur={e => (e.target.style.borderColor = "rgba(0,0,0,0.12)")}
@@ -296,11 +450,8 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
                 {paymentType === "one_time" ? "Preço único (R$)" : "Preço mensal (R$)"}
               </label>
               <input
-                type="number"
-                min="0" step="0.01"
-                placeholder="Ex: 97.00"
-                value={preco}
-                onChange={e => setPreco(e.target.value)}
+                type="number" min="0" step="0.01" placeholder="Ex: 97.00"
+                value={preco} onChange={e => setPreco(e.target.value)}
                 style={inputStyle}
                 onFocus={e => (e.target.style.borderColor = PURPLE)}
                 onBlur={e => (e.target.style.borderColor = "rgba(0,0,0,0.12)")}
@@ -323,8 +474,7 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
               padding: "10px 20px", borderRadius: 10,
               border: "1.5px solid rgba(0,0,0,0.12)",
               background: "transparent", color: GRAY,
-              fontSize: 14, fontWeight: 600,
-              cursor: "pointer", fontFamily: "inherit",
+              fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
             }}>
               Cancelar
             </button>
@@ -337,9 +487,7 @@ function NovasolucaoModal({ onClose, onCreated, userId }) {
               fontFamily: "inherit",
               display: "flex", alignItems: "center", gap: 8,
             }}>
-              {loading ? "Criando…" : (
-                <><Icon d={icons.check} size={14} /> Publicar solução</>
-              )}
+              {loading ? "Enviando…" : <><Icon d={icons.check} size={14} /> Enviar para curadoria</>}
             </button>
           </div>
         </form>
