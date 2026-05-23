@@ -1,3 +1,5 @@
+"use client";
+
 import WePromptLogo from "./components/WePromptLogo";
 
 const PURPLE = "#6B5CE7";
