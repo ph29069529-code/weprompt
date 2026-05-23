@@ -1,83 +1,32 @@
 @import "tailwindcss";
 
-body {
-  background: linear-gradient(135deg, #0a0a1a 0%, #0d0a2e 50%, #0a1628 100%);
-  background-attachment: fixed;
-  color: #ffffff;
+html, body {
+  background: linear-gradient(135deg, #0a0a1a 0%, #0d0a2e 50%, #0a1628 100%) !important;
+  background-attachment: fixed !important;
+  min-height: 100vh !important;
+  color: #ffffff !important;
   font-family: 'DM Sans', sans-serif;
 }
 
-/* Glassmorphism card */
+* {
+  box-sizing: border-box;
+}
+
 .card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
 }
 
-/* Primary button — purple gradient */
 .btn-primary {
   background: linear-gradient(135deg, #6B5CE7, #8B5CF6);
   color: #ffffff;
   transition: opacity 0.2s, box-shadow 0.2s;
 }
+
 .btn-primary:hover {
   opacity: 0.88;
   box-shadow: 0 4px 24px rgba(107, 92, 231, 0.55);
-}
-
-/* Dark/glass button */
-.btn-dark {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: background 0.2s;
-}
-.btn-dark:hover {
-  background: rgba(255, 255, 255, 0.16);
-}
-
-/* Outline button */
-.btn-outline-gray {
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.8);
-  background: transparent;
-  transition: border-color 0.2s, background 0.2s;
-}
-.btn-outline-gray:hover {
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-/* Nav links */
-.nav-link {
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 14px;
-  text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  transition: color 0.15s, background 0.15s;
-}
-.nav-link:hover {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* Footer links */
-.footer-link {
-  color: rgba(255, 255, 255, 0.35);
-  font-size: 13px;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.footer-link:hover {
-  color: rgba(255, 255, 255, 0.75);
-}
-
-/* Glow on hover helper */
-.glow-hover {
-  transition: box-shadow 0.2s;
-}
-.glow-hover:hover {
-  box-shadow: 0 0 24px rgba(107, 92, 231, 0.4);
 }
