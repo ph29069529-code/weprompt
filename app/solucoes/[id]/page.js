@@ -55,7 +55,7 @@ function SolutionDetail() {
 
   async function handleCheckout() {
     if (!user) {
-      window.location.href = `/login`;
+      window.location.href = `/login?redirect=/solucoes/${id}`;
       return;
     }
 

@@ -34,6 +34,7 @@ const labelStyle = {
 function CadastroForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [senha, setSenha] = useState("");
@@ -80,7 +81,7 @@ function CadastroForm() {
         return;
       }
 
-      router.replace(role === "criador" ? "/dashboard/criador" : "/dashboard/empresa");
+      router.replace(redirectTo || (role === "criador" ? "/dashboard/criador" : "/dashboard/empresa"));
       return;
     }
 
@@ -104,7 +105,7 @@ function CadastroForm() {
     }
 
     if (data.session) {
-      router.replace(role === "criador" ? "/dashboard/criador" : "/dashboard/empresa");
+      router.replace(redirectTo || (role === "criador" ? "/dashboard/criador" : "/dashboard/empresa"));
     } else {
       // Email confirmation required
       setSuccess("Conta criada! Verifique seu email para confirmar o cadastro.");

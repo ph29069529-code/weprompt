@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, supabase } from "../lib/supabase";
 import WePromptLogo from "../components/WePromptLogo";
 
@@ -31,8 +31,10 @@ const labelStyle = {
   display: "block",
 };
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [tab, setTab] = useState("entrar"); // "entrar" | "criar"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,7 +69,9 @@ export default function LoginPage() {
 
       const role = profile?.role;
 
-      if (!profile) {
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else if (!profile) {
         router.push("/dashboard/criador");
       } else if (role === "criador" || role === "creator") {
         router.push("/dashboard/criador");
@@ -259,5 +263,13 @@ export default function LoginPage() {
         <a href="#" style={{ color: PURPLE, textDecoration: "none" }}>Política de Privacidade</a>.
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
