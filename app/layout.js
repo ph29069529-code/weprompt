@@ -19,7 +19,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
-      <body className={`${dmSans.className} min-h-full flex flex-col`}>{children}</body>
+      <body className={`${dmSans.className} min-h-full flex flex-col`} style={{background: "linear-gradient(135deg, #0a0a1a 0%, #0d0a2e 50%, #0a1628 100%)", minHeight: "100vh"}}>{children}</body>
     </html>
   );
 }
