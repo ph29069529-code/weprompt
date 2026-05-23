@@ -1,0 +1,51 @@
+import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import {
+  sendPurchaseConfirmation,
+  sendSolutionApproved,
+  sendSolutionRejected,
+} from '../../lib/email';
+
+export const runtime = 'nodejs';
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+export async function POST(request) {
+  const { type, to, user_id, solution_titulo, rejection_reason } = await request.json();
+
+  let recipientEmail = to;
+  if (!recipientEmail && user_id) {
+    const { data: { user } } = await supabaseAdmin.auth.admin.getUserById(user_id);
+    recipientEmail = user?.email;
+  }
+
+  if (!recipientEmail) {
+    return NextResponse.json({ error: 'No recipient email' }, { status: 400 });
+  }
+  if (!solution_titulo) {
+    return NextResponse.json({ error: 'solution_titulo is required' }, { status: 400 });
+  }
+
+  try {
+    switch (type) {
+      case 'purchase_confirmation':
+        await sendPurchaseConfirmation({ to: recipientEmail, solutionTitulo: solution_titulo });
+        break;
+      case 'solution_approved':
+        await sendSolutionApproved({ to: recipientEmail, solutionTitulo: solution_titulo });
+        break;
+      case 'solution_rejected':
+        await sendSolutionRejected({ to: recipientEmail, solutionTitulo: solution_titulo, reason: rejection_reason });
+        break;
+      default:
+        return NextResponse.json({ error: 'Unknown email type' }, { status: 400 });
+    }
+    return NextResponse.json({ sent: true });
+  } catch (err) {
+    console.error('[send-email] error:', err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}

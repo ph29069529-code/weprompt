@@ -611,6 +611,18 @@ export default function AdminDashboard() {
     ));
     setActionLoading(null);
     setSelectedSolution(prev => prev?.id === id ? null : prev);
+
+    if (sol?.creator_id) {
+      fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "solution_approved",
+          user_id: sol.creator_id,
+          solution_titulo: sol.titulo,
+        }),
+      }).catch(console.error);
+    }
   }
 
   function handleReject(solution) { setRejectTarget(solution); }
@@ -629,6 +641,19 @@ export default function AdminDashboard() {
     setActionLoading(null);
     setRejectTarget(null);
     setSelectedSolution(prev => prev?.id === targetId ? null : prev);
+
+    if (rejectTarget?.creator_id) {
+      fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "solution_rejected",
+          user_id: rejectTarget.creator_id,
+          solution_titulo: rejectTarget.titulo,
+          rejection_reason: reason,
+        }),
+      }).catch(console.error);
+    }
   }
 
   async function handleSignOut() { await signOut(); router.replace("/login"); }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "../../lib/stripe";
 import { createClient } from "@supabase/supabase-js";
+import { sendPurchaseConfirmation } from "../../lib/email";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -39,7 +40,20 @@ export async function POST(request) {
             payment_type: payment_type || "subscription",
             stripe_session_id: session.id,
           });
-          if (error) console.error("Supabase insert error:", error);
+          if (error) {
+            console.error("Supabase insert error:", error);
+          } else {
+            const buyerEmail = session.customer_details?.email;
+            const { data: sol } = await supabaseAdmin
+              .from("solutions")
+              .select("titulo")
+              .eq("id", solution_id)
+              .single();
+            if (buyerEmail && sol?.titulo) {
+              sendPurchaseConfirmation({ to: buyerEmail, solutionTitulo: sol.titulo })
+                .catch(err => console.error("Email send error:", err));
+            }
+          }
         }
         break;
       }
