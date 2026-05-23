@@ -1,32 +1,73 @@
 @import "tailwindcss";
 
-html, body {
-  background: linear-gradient(135deg, #0a0a1a 0%, #0d0a2e 50%, #0a1628 100%) !important;
-  background-attachment: fixed !important;
-  min-height: 100vh !important;
-  color: #ffffff !important;
+body {
+  background: linear-gradient(135deg, #F0F0FF 0%, #E8E8F8 30%, #EEF0FF 60%, #F5F0FF 100%);
+  background-attachment: fixed;
+  color: #0A0A1A;
   font-family: 'DM Sans', sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-}
-
+/* Reusable card */
 .card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 8px 24px rgba(0, 0, 0, 0.04);
 }
 
+/* Primary button — purple */
 .btn-primary {
-  background: linear-gradient(135deg, #6B5CE7, #8B5CF6);
+  background: #6B5CE7;
   color: #ffffff;
-  transition: opacity 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  background: #5A4BD6;
+  box-shadow: 0 4px 20px rgba(107, 92, 231, 0.4);
 }
 
-.btn-primary:hover {
-  opacity: 0.88;
-  box-shadow: 0 4px 24px rgba(107, 92, 231, 0.55);
+/* Dark pill button */
+.btn-dark {
+  background: #0A0A1A;
+  color: #ffffff;
+  transition: background 0.2s;
+}
+.btn-dark:hover {
+  background: #1a1a2e;
+}
+
+/* Gray outline button */
+.btn-outline-gray {
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  color: #374151;
+  background: transparent;
+  transition: border-color 0.2s, background 0.2s;
+}
+.btn-outline-gray:hover {
+  border-color: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* Nav links */
+.nav-link {
+  color: #374151;
+  font-size: 14px;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+.nav-link:hover {
+  color: #0A0A1A;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Footer links */
+.footer-link {
+  color: #6B7280;
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-link:hover {
+  color: #0A0A1A;
 }
