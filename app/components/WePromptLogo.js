@@ -3,7 +3,7 @@ export default function WePromptLogo({ id, textColor }) {
     <img
       src="/logo.png"
       alt="WePrompt"
-      style={{ height: 48, width: "auto", display: "block" }}
+      style={{ height: 120, width: "auto", display: "block" }}
     />
   );
 }
