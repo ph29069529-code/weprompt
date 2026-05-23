@@ -7,7 +7,7 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-export const config = { api: { bodyParser: false } };
+export const runtime = "nodejs";
 
 export async function POST(request) {
   const rawBody = await request.text();
