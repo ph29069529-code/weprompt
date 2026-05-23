@@ -58,27 +58,39 @@ function LoginForm() {
 
       setSuccess("Login realizado com sucesso! Redirecionando…");
 
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", data.user.id)
         .single();
 
-      console.log("[login] user id:", data.user.id);
-      console.log("[login] profile:", profile, "error:", profileError?.message);
+      if (!profile) {
+        const pending = localStorage.getItem("weprompt_pending_profile");
+        if (pending) {
+          const { nome, role: pendingRole } = JSON.parse(pending);
+          const { error: profileError } = await supabase
+            .from("profiles")
+            .insert({ id: data.user.id, nome, role: pendingRole });
+          if (profileError) {
+            console.error("[login] profile insert error:", profileError);
+          } else {
+            localStorage.removeItem("weprompt_pending_profile");
+          }
+          router.push(redirectTo || (pendingRole === "empresa" ? "/dashboard/empresa" : "/dashboard/criador"));
+        } else {
+          router.push("/completar-perfil");
+        }
+        return;
+      }
 
-      const role = profile?.role;
-
+      const role = profile.role;
       if (redirectTo) {
         router.push(redirectTo);
-      } else if (!profile) {
-        router.push("/dashboard/criador");
       } else if (role === "criador" || role === "creator") {
         router.push("/dashboard/criador");
       } else if (role === "empresa" || role === "business") {
         router.push("/dashboard/empresa");
       } else {
-        console.warn("[login] unrecognised role:", role, "— defaulting to /dashboard/criador");
         router.push("/dashboard/criador");
       }
     } else {

@@ -100,14 +100,15 @@ function CadastroForm() {
       return;
     }
 
-    if (data.user) {
-      await supabase.from("profiles").insert({ id: data.user.id, nome, role });
-    }
-
     if (data.session) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({ id: data.session.user.id, nome, role });
+      if (profileError) console.error("[cadastro] profile insert error:", profileError);
       router.replace(redirectTo || (role === "criador" ? "/dashboard/criador" : "/dashboard/empresa"));
     } else {
-      // Email confirmation required
+      // Email confirmation required — persist registration data so login can create the profile
+      localStorage.setItem("weprompt_pending_profile", JSON.stringify({ nome, role }));
       setSuccess("Conta criada! Verifique seu email para confirmar o cadastro.");
       setLoading(false);
     }
