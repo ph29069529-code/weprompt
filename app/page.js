@@ -1,10 +1,11 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import WePromptLogo from "./components/WePromptLogo";
 
-/* ── Shared tokens ── */
 const PURPLE = "#6B5CE7";
 const DARK = "#0A0A1A";
 const GRAY = "#6B7280";
-const CARD_SHADOW = "0 1px 3px rgba(0,0,0,0.07), 0 8px 24px rgba(0,0,0,0.04)";
 
 const Arrow = () => (
   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ display: "inline-block", flexShrink: 0 }}>
@@ -19,69 +20,156 @@ const Check = ({ color = PURPLE }) => (
   </svg>
 );
 
+function useWindowSize() {
+  const [width, setWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
+  useEffect(() => {
+    function onResize() { setWidth(window.innerWidth); }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return width;
+}
+
+const NAV_LINKS = [
+  ["Explorar", "/solucoes"],
+  ["Preços", "#"],
+  ["Como funciona", "#"],
+  ["Para Criadores", "#"],
+];
+
 export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const width = useWindowSize();
+  const isMobile = width < 768;
+
   return (
     <div style={{ minHeight: "100vh", color: DARK }}>
 
-      {/* ══════════════════════════════
-          HEADER
-      ══════════════════════════════ */}
+      {/* ══════════ NAVBAR ══════════ */}
       <header style={{
-        position: "sticky", top: 0, zIndex: 50,
-        background: "rgba(255,255,255,0.9)",
+        position: "sticky", top: 0, zIndex: 100,
+        background: "rgba(255,255,255,0.92)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
         borderBottom: "1px solid rgba(0,0,0,0.07)",
       }}>
         <div style={{
-          maxWidth: 1200, margin: "0 auto",
+          maxWidth: 1200, margin: "0 auto", width: "100%",
           padding: "0 24px", height: 60,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          <a href="#" style={{ textDecoration: "none" }}>
+          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
             <WePromptLogo id="header" textColor={DARK} />
           </a>
 
-          <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {[["Explorar", "/solucoes"], ["Preços", "#"], ["Como funciona", "#"], ["Para Criadores", "#"]].map(([label, href]) => (
-              <a key={label} href={href} className="nav-link">{label}</a>
-            ))}
-          </nav>
+          {/* Desktop nav */}
+          {!isMobile && (
+            <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              {NAV_LINKS.map(([label, href]) => (
+                <a key={label} href={href} className="nav-link">{label}</a>
+              ))}
+            </nav>
+          )}
 
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <a href="/login" style={{
-              borderRadius: 999, padding: "8px 18px",
-              fontSize: 14, fontWeight: 500,
-              textDecoration: "none", color: DARK,
-              border: "1.5px solid rgba(0,0,0,0.14)",
-              background: "transparent",
-              transition: "background 0.15s",
-            }}>
-              Entrar
-            </a>
-            <a href="/cadastro" className="btn-dark" style={{
-              borderRadius: 999, padding: "9px 20px",
-              fontSize: 14, fontWeight: 600,
-              display: "inline-flex", alignItems: "center", gap: 6,
-              textDecoration: "none",
-            }}>
-              Criar conta <Arrow />
-            </a>
-          </div>
+          {/* Desktop action buttons */}
+          {!isMobile && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <a href="/login" style={{
+                borderRadius: 999, padding: "8px 18px",
+                fontSize: 14, fontWeight: 500,
+                textDecoration: "none", color: DARK,
+                border: "1.5px solid rgba(0,0,0,0.14)",
+                background: "transparent",
+              }}>
+                Entrar
+              </a>
+              <a href="/cadastro" className="btn-dark" style={{
+                borderRadius: 999, padding: "9px 20px",
+                fontSize: 14, fontWeight: 600,
+                display: "inline-flex", alignItems: "center", gap: 6,
+                textDecoration: "none",
+              }}>
+                Criar conta <Arrow />
+              </a>
+            </div>
+          )}
+
+          {/* Mobile hamburger */}
+          {isMobile && (
+            <button
+              onClick={() => setMenuOpen(o => !o)}
+              aria-label="Menu"
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: 22, color: DARK, padding: "4px 8px",
+                display: "flex", alignItems: "center",
+              }}
+            >
+              {menuOpen ? "✕" : "☰"}
+            </button>
+          )}
         </div>
+
+        {/* Mobile dropdown */}
+        {isMobile && menuOpen && (
+          <div style={{
+            position: "fixed", top: 60, left: 0, right: 0, zIndex: 99,
+            background: "rgba(255,255,255,0.97)",
+            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            borderBottom: "1px solid rgba(0,0,0,0.07)",
+            padding: "12px 24px 20px",
+            display: "flex", flexDirection: "column", gap: 4,
+          }}>
+            {NAV_LINKS.map(([label, href]) => (
+              <a key={label} href={href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  padding: "12px 4px", fontSize: 16, fontWeight: 500,
+                  color: DARK, textDecoration: "none",
+                  borderBottom: "1px solid rgba(0,0,0,0.05)",
+                }}>
+                {label}
+              </a>
+            ))}
+            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+              <a href="/login" style={{
+                flex: 1, textAlign: "center",
+                borderRadius: 999, padding: "11px",
+                fontSize: 14, fontWeight: 500,
+                textDecoration: "none", color: DARK,
+                border: "1.5px solid rgba(0,0,0,0.14)",
+              }}>
+                Entrar
+              </a>
+              <a href="/cadastro" className="btn-dark" style={{
+                flex: 1, textAlign: "center",
+                borderRadius: 999, padding: "11px",
+                fontSize: 14, fontWeight: 600,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                textDecoration: "none",
+              }}>
+                Criar conta <Arrow />
+              </a>
+            </div>
+          </div>
+        )}
       </header>
 
       <main>
 
-        {/* ══════════════════════════════
-            HERO — 2 column
-        ══════════════════════════════ */}
-        <section style={{ padding: "80px 24px 64px", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
+        {/* ══════════ HERO ══════════ */}
+        <section style={{ padding: isMobile ? "48px 20px 40px" : "80px 24px 64px", maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: isMobile ? 40 : 64,
+            alignItems: "center",
+          }}>
 
-            {/* LEFT */}
-            <div>
-              {/* Badge */}
+            {/* LEFT — text content */}
+            <div style={{ textAlign: isMobile ? "center" : "left" }}>
               <div style={{
                 display: "inline-flex", alignItems: "center", gap: 6,
                 background: PURPLE, color: "#fff",
@@ -94,7 +182,8 @@ export default function Home() {
               </div>
 
               <h1 style={{
-                fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 800,
+                fontSize: isMobile ? 36 : "clamp(32px, 4vw, 52px)",
+                fontWeight: 800,
                 lineHeight: 1.1, letterSpacing: "-1.5px",
                 color: DARK, marginBottom: 20,
               }}>
@@ -103,13 +192,19 @@ export default function Home() {
 
               <p style={{
                 fontSize: 17, lineHeight: 1.7,
-                color: GRAY, marginBottom: 36, maxWidth: 440,
+                color: GRAY, marginBottom: 36,
+                maxWidth: isMobile ? "100%" : 440,
+                margin: isMobile ? "0 auto 36px" : "0 0 36px",
               }}>
                 Curadoria especializada, suporte em português e centenas de soluções prontas para usar — tudo em um só lugar.
               </p>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                <a href="#" className="btn-primary" style={{
+              <div style={{
+                display: "flex", alignItems: "center", gap: 12,
+                flexWrap: "wrap",
+                justifyContent: isMobile ? "center" : "flex-start",
+              }}>
+                <a href="/solucoes" className="btn-primary" style={{
                   borderRadius: 999, padding: "13px 26px",
                   fontSize: 15, fontWeight: 600,
                   display: "inline-flex", alignItems: "center", gap: 8,
@@ -130,19 +225,16 @@ export default function Home() {
 
             {/* RIGHT — mock dashboard card */}
             <div style={{ position: "relative" }}>
-              {/* Floating elements */}
               <div style={{ position: "absolute", top: -18, right: -10, width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg, #7C3AED, #4F46E5)", transform: "rotate(14deg)", zIndex: 1 }} />
               <div style={{ position: "absolute", top: 56, left: -22, width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg, #67E8F9, #3B82F6)", transform: "rotate(-10deg)", zIndex: 1 }} />
               <div style={{ position: "absolute", bottom: 32, right: -14, width: 22, height: 22, borderRadius: 6, background: PURPLE, opacity: 0.7, transform: "rotate(20deg)", zIndex: 1 }} />
               <div style={{ position: "absolute", bottom: -14, left: 24, width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #F59E0B, #EC4899)", transform: "rotate(-6deg)", zIndex: 1 }} />
 
-              {/* Dark dashboard card */}
               <div style={{
                 background: DARK, borderRadius: 24, padding: 28,
                 boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
                 position: "relative", zIndex: 0,
               }}>
-                {/* Window chrome */}
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 24 }}>
                   {["#FF5F57", "#FFBD2E", "#28C840"].map(c => (
                     <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
@@ -150,7 +242,6 @@ export default function Home() {
                   <span style={{ marginLeft: 8, fontSize: 12, color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>WePrompt Dashboard</span>
                 </div>
 
-                {/* Stats row */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
                   {[["500+", "Soluções de IA"], ["180+", "Criadores"]].map(([n, l]) => (
                     <div key={l} style={{
@@ -163,7 +254,6 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Progress bars */}
                 <div style={{ marginBottom: 20 }}>
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 10, fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>Categorias em alta</div>
                   {[["Automação", 78, PURPLE], ["Marketing IA", 62, "#3B82F6"], ["Analytics", 45, "#06B6D4"]].map(([label, pct, color]) => (
@@ -179,7 +269,6 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Mini feature pills */}
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {["Agentes IA", "Chatbots", "Análise de dados", "Automação"].map(tag => (
                     <span key={tag} style={{
@@ -197,31 +286,29 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            STATS STRIP
-        ══════════════════════════════ */}
+        {/* ══════════ STATS STRIP ══════════ */}
         <section style={{ padding: "0 24px 72px", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+            gap: 16,
+          }}>
             {[
               ["500+", "Soluções de IA"],
               ["180+", "Criadores"],
               ["10.000+", "Empresas"],
               ["98%", "Satisfação"],
             ].map(([num, label]) => (
-              <div key={label} className="card" style={{ borderRadius: 16, padding: "24px 28px" }}>
+              <div key={label} className="card" style={{ borderRadius: 16, padding: "24px 20px" }}>
                 <div style={{ fontSize: 13, color: GRAY, fontWeight: 500, marginBottom: 6 }}>{label}</div>
-                <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-1px", color: DARK }}>{num}</div>
+                <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-1px", color: DARK }}>{num}</div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            FEATURES — BENTO GRID
-        ══════════════════════════════ */}
+        {/* ══════════ FEATURES BENTO ══════════ */}
         <section style={{ padding: "0 24px 80px", maxWidth: 1200, margin: "0 auto" }}>
-
-          {/* Section label */}
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <span style={{
               display: "inline-flex", alignItems: "center", gap: 6,
@@ -236,14 +323,15 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Bento */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "stretch" }}>
-
-            {/* LEFT — tall dark */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: 16, alignItems: "stretch",
+          }}>
             <div style={{
-              background: DARK, borderRadius: 20, padding: 40,
+              background: DARK, borderRadius: 20, padding: isMobile ? 28 : 40,
               display: "flex", flexDirection: "column", justifyContent: "space-between",
-              minHeight: 400,
+              minHeight: isMobile ? "auto" : 400,
             }}>
               <div>
                 <div style={{
@@ -280,13 +368,9 @@ export default function Home() {
               </a>
             </div>
 
-            {/* RIGHT — stacked */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-
-              {/* Top right — white */}
               <div className="card" style={{ borderRadius: 20, padding: 32, flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-                  {/* Avatar cluster */}
                   <div style={{ display: "flex" }}>
                     {["#6B5CE7", "#3B82F6", "#10B981", "#F59E0B"].map((color, i) => (
                       <div key={i} style={{
@@ -314,7 +398,6 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Bottom right — dark purple */}
               <div style={{
                 background: "linear-gradient(135deg, #2D1B69 0%, #4F46E5 100%)",
                 borderRadius: 20, padding: 32, flex: 1,
@@ -326,24 +409,20 @@ export default function Home() {
                   Toda a plataforma e suporte técnico em português. Sem barreiras de idioma para adotar IA.
                 </p>
                 <div style={{ display: "flex", gap: 16 }}>
-                  {[["99%", "uptime"], ["&lt;2h", "resposta"], ["PT-BR", "suporte"]].map(([n, l]) => (
+                  {[["99%", "uptime"], ["<2h", "resposta"], ["PT-BR", "suporte"]].map(([n, l]) => (
                     <div key={l}>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }} dangerouslySetInnerHTML={{ __html: n }} />
+                      <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>{n}</div>
                       <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{l}</div>
                     </div>
                   ))}
                 </div>
               </div>
-
             </div>
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            HOW IT WORKS — pricing-style cards
-        ══════════════════════════════ */}
+        {/* ══════════ HOW IT WORKS ══════════ */}
         <section style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
-
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <span style={{
               display: "inline-flex", alignItems: "center", gap: 6,
@@ -361,26 +440,15 @@ export default function Home() {
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+            gap: 16,
+          }}>
             {[
-              {
-                step: "01", title: "Explore o catálogo",
-                sub: "Grátis para começar",
-                features: ["Acesso a 500+ soluções", "Filtros por categoria", "Demos gratuitas", "Reviews verificados"],
-                cta: "Explorar grátis", highlight: false,
-              },
-              {
-                step: "02", title: "Escolha a solução",
-                sub: "Mais popular",
-                features: ["Comparativo detalhado", "Suporte da equipe WePrompt", "Documentação em português", "Trial disponível"],
-                cta: "Falar com especialista", highlight: true,
-              },
-              {
-                step: "03", title: "Comece a usar",
-                sub: "Em produção hoje",
-                features: ["Integração simplificada", "Onboarding guiado", "Suporte técnico dedicado", "Dashboard de uso"],
-                cta: "Começar agora", highlight: false,
-              },
+              { step: "01", title: "Explore o catálogo", sub: "Grátis para começar", features: ["Acesso a 500+ soluções", "Filtros por categoria", "Demos gratuitas", "Reviews verificados"], cta: "Explorar grátis", highlight: false },
+              { step: "02", title: "Escolha a solução", sub: "Mais popular", features: ["Comparativo detalhado", "Suporte da equipe WePrompt", "Documentação em português", "Trial disponível"], cta: "Falar com especialista", highlight: true },
+              { step: "03", title: "Comece a usar", sub: "Em produção hoje", features: ["Integração simplificada", "Onboarding guiado", "Suporte técnico dedicado", "Dashboard de uso"], cta: "Começar agora", highlight: false },
             ].map((card) => (
               <div key={card.step} className={card.highlight ? "" : "card"} style={{
                 borderRadius: 20, padding: "32px 28px",
@@ -390,28 +458,15 @@ export default function Home() {
                   boxShadow: "0 24px 60px rgba(0,0,0,0.2)",
                 } : {}),
               }}>
-                <div style={{
-                  fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
-                  color: card.highlight ? "rgba(255,255,255,0.4)" : GRAY,
-                  marginBottom: 12,
-                }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", color: card.highlight ? "rgba(255,255,255,0.4)" : GRAY, marginBottom: 12 }}>
                   PASSO {card.step}
                 </div>
-                <div style={{
-                  fontSize: 22, fontWeight: 800, letterSpacing: "-0.4px",
-                  color: card.highlight ? "#fff" : DARK,
-                  marginBottom: 6,
-                }}>
+                <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.4px", color: card.highlight ? "#fff" : DARK, marginBottom: 6 }}>
                   {card.title}
                 </div>
-                <div style={{
-                  fontSize: 13, fontWeight: 500,
-                  color: card.highlight ? "#C4B5FD" : PURPLE,
-                  marginBottom: 28,
-                }}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: card.highlight ? "#C4B5FD" : PURPLE, marginBottom: 28 }}>
                   {card.sub}
                 </div>
-
                 <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1, marginBottom: 28 }}>
                   {card.features.map(f => (
                     <div key={f} style={{ display: "flex", alignItems: "center", gap: 9 }}>
@@ -420,7 +475,6 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-
                 <a href="#" style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                   borderRadius: 999, padding: "12px 20px",
@@ -428,7 +482,7 @@ export default function Home() {
                   ...(card.highlight ? {
                     background: PURPLE, color: "#fff",
                   } : {
-                    border: `1.5px solid rgba(0,0,0,0.15)`,
+                    border: "1.5px solid rgba(0,0,0,0.15)",
                     color: DARK, background: "transparent",
                   }),
                 }}>
@@ -439,27 +493,24 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            CTA BANNER
-        ══════════════════════════════ */}
+        {/* ══════════ CTA BANNER ══════════ */}
         <section style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{
-            background: DARK, borderRadius: 24, padding: "64px 48px",
+            background: DARK, borderRadius: 24,
+            padding: isMobile ? "48px 24px" : "64px 48px",
             textAlign: "center", position: "relative", overflow: "hidden",
           }}>
             <div style={{
               position: "absolute", inset: 0, pointerEvents: "none",
               background: `radial-gradient(ellipse 60% 70% at 50% 110%, ${PURPLE}33 0%, transparent 65%)`,
             }} />
-            {/* Decorative blobs */}
             <div style={{ position: "absolute", top: -32, left: -32, width: 120, height: 120, borderRadius: "50%", background: `${PURPLE}18` }} />
             <div style={{ position: "absolute", bottom: -20, right: -20, width: 90, height: 90, borderRadius: "50%", background: "#4F46E533" }} />
-
             <div style={{ position: "relative" }}>
               <h2 style={{ fontSize: "clamp(26px, 4vw, 44px)", fontWeight: 800, color: "#fff", letterSpacing: "-1px", marginBottom: 16 }}>
                 Pronto para transformar seu negócio com IA?
               </h2>
-              <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", marginBottom: 36, maxWidth: 500, margin: "0 auto 36px", lineHeight: 1.7 }}>
+              <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", maxWidth: 500, margin: "0 auto 36px", lineHeight: 1.7 }}>
                 Junte-se a mais de 10.000 empresas que já adotam soluções de IA com suporte em português.
               </p>
               <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
@@ -488,19 +539,19 @@ export default function Home() {
 
       </main>
 
-      {/* ══════════════════════════════
-          FOOTER
-      ══════════════════════════════ */}
+      {/* ══════════ FOOTER ══════════ */}
       <footer style={{ background: "#F3F4F6", borderTop: "1px solid rgba(0,0,0,0.07)", padding: "40px 24px" }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          flexWrap: "wrap", gap: 16,
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: "center", justifyContent: "space-between",
+          gap: 16, textAlign: isMobile ? "center" : "left",
         }}>
-          <a href="#" style={{ textDecoration: "none" }}>
+          <a href="/" style={{ textDecoration: "none" }}>
             <WePromptLogo id="footer" textColor={DARK} />
           </a>
-          <p style={{ fontSize: 13, color: GRAY, margin: 0, textAlign: "center" }}>
+          <p style={{ fontSize: 13, color: GRAY, margin: 0 }}>
             © 2026 WePrompt. O 1º marketplace de IA da América Latina. Todos os direitos reservados.
           </p>
           <div style={{ display: "flex", gap: 20 }}>

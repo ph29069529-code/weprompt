@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+* {
+  max-width: 100%;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 body {
   background: linear-gradient(135deg, #F0F0FF 0%, #E8E8F8 30%, #EEF0FF 60%, #F5F0FF 100%);
   background-attachment: fixed;
