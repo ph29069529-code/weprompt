@@ -275,10 +275,10 @@ export default function EmpresaDashboard() {
 
   useEffect(() => {
     async function init() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { router.replace("/login"); return; }
+      const { data: { user: u }, error: userError } = await supabase.auth.getUser();
+      if (userError || !u) { router.replace("/login"); return; }
 
-      const u = session.user;
+      console.log("[empresa] user.id:", u.id);
       setUser(u);
 
       const [profileRes, subsRes] = await Promise.all([
@@ -289,6 +289,9 @@ export default function EmpresaDashboard() {
           .eq("business_id", u.id)
           .order("created_at", { ascending: false }),
       ]);
+
+      console.log("[empresa] subscriptions data:", subsRes.data);
+      console.log("[empresa] subscriptions error:", subsRes.error);
 
       if (profileRes.data) setProfile(profileRes.data);
       if (subsRes.data) setSubscriptions(subsRes.data);
