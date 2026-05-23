@@ -1,10 +1,8 @@
 import WePromptLogo from "./components/WePromptLogo";
 
-/* ── Shared tokens ── */
 const PURPLE = "#6B5CE7";
-const DARK = "#0A0A1A";
-const GRAY = "#6B7280";
-const CARD_SHADOW = "0 1px 3px rgba(0,0,0,0.07), 0 8px 24px rgba(0,0,0,0.04)";
+const TEXT2 = "rgba(255,255,255,0.6)";
+const BORDER = "rgba(255,255,255,0.1)";
 
 const Arrow = () => (
   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ display: "inline-block", flexShrink: 0 }}>
@@ -12,7 +10,7 @@ const Arrow = () => (
   </svg>
 );
 
-const Check = ({ color = PURPLE }) => (
+const Check = ({ color = "#a78bfa" }) => (
   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
     <circle cx="8" cy="8" r="7" fill={color + "22"} />
     <path d="M5 8l2 2 4-4" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -21,17 +19,15 @@ const Check = ({ color = PURPLE }) => (
 
 export default function Home() {
   return (
-    <div style={{ minHeight: "100vh", color: DARK }}>
+    <div style={{ minHeight: "100vh", color: "#fff" }}>
 
-      {/* ══════════════════════════════
-          HEADER
-      ══════════════════════════════ */}
+      {/* ══════════ HEADER ══════════ */}
       <header style={{
         position: "sticky", top: 0, zIndex: 50,
-        background: "rgba(255,255,255,0.9)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "1px solid rgba(0,0,0,0.07)",
+        background: "rgba(10,10,26,0.85)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
       }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto",
@@ -39,31 +35,26 @@ export default function Home() {
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
           <a href="#" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="header" textColor={DARK} />
+            <WePromptLogo id="header" />
           </a>
-
           <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
             {[["Explorar", "/solucoes"], ["Preços", "#"], ["Como funciona", "#"], ["Para Criadores", "#"]].map(([label, href]) => (
               <a key={label} href={href} className="nav-link">{label}</a>
             ))}
           </nav>
-
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <a href="/login" style={{
-              borderRadius: 999, padding: "8px 18px",
-              fontSize: 14, fontWeight: 500,
-              textDecoration: "none", color: DARK,
-              border: "1.5px solid rgba(0,0,0,0.14)",
-              background: "transparent",
-              transition: "background 0.15s",
+              borderRadius: 999, padding: "8px 18px", fontSize: 14, fontWeight: 500,
+              textDecoration: "none", color: "rgba(255,255,255,0.8)",
+              border: "1.5px solid rgba(255,255,255,0.15)", background: "transparent",
             }}>
               Entrar
             </a>
-            <a href="/cadastro" className="btn-dark" style={{
-              borderRadius: 999, padding: "9px 20px",
-              fontSize: 14, fontWeight: 600,
-              display: "inline-flex", alignItems: "center", gap: 6,
-              textDecoration: "none",
+            <a href="/cadastro" style={{
+              borderRadius: 999, padding: "9px 20px", fontSize: 14, fontWeight: 600,
+              display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none",
+              background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)", color: "#fff",
+              boxShadow: "0 4px 16px rgba(107,92,231,0.4)",
             }}>
               Criar conta <Arrow />
             </a>
@@ -73,21 +64,17 @@ export default function Home() {
 
       <main>
 
-        {/* ══════════════════════════════
-            HERO — 2 column
-        ══════════════════════════════ */}
+        {/* ══════════ HERO ══════════ */}
         <section style={{ padding: "80px 24px 64px", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
 
-            {/* LEFT */}
             <div>
-              {/* Badge */}
               <div style={{
                 display: "inline-flex", alignItems: "center", gap: 6,
-                background: PURPLE, color: "#fff",
+                background: "rgba(107,92,231,0.2)", color: "#a78bfa",
+                border: "1px solid rgba(107,92,231,0.4)",
                 borderRadius: 999, padding: "5px 14px",
-                fontSize: 12, fontWeight: 600, letterSpacing: "0.03em",
-                marginBottom: 28,
+                fontSize: 12, fontWeight: 600, letterSpacing: "0.03em", marginBottom: 28,
               }}>
                 <span style={{ fontSize: 10 }}>✦</span>
                 1º Marketplace de IA da América Latina
@@ -96,81 +83,75 @@ export default function Home() {
               <h1 style={{
                 fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 800,
                 lineHeight: 1.1, letterSpacing: "-1.5px",
-                color: DARK, marginBottom: 20,
+                color: "#fff", marginBottom: 20,
               }}>
                 Encontre a solução de IA perfeita para o seu negócio
               </h1>
 
-              <p style={{
-                fontSize: 17, lineHeight: 1.7,
-                color: GRAY, marginBottom: 36, maxWidth: 440,
-              }}>
+              <p style={{ fontSize: 17, lineHeight: 1.7, color: TEXT2, marginBottom: 36, maxWidth: 440 }}>
                 Curadoria especializada, suporte em português e centenas de soluções prontas para usar — tudo em um só lugar.
               </p>
 
               <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                <a href="#" className="btn-primary" style={{
-                  borderRadius: 999, padding: "13px 26px",
-                  fontSize: 15, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  textDecoration: "none",
+                <a href="/solucoes" className="btn-primary" style={{
+                  borderRadius: 999, padding: "13px 26px", fontSize: 15, fontWeight: 600,
+                  display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
+                  boxShadow: "0 4px 24px rgba(107,92,231,0.5)",
                 }}>
                   Explorar Soluções <Arrow />
                 </a>
                 <a href="#" className="btn-outline-gray" style={{
-                  borderRadius: 999, padding: "13px 26px",
-                  fontSize: 15, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  textDecoration: "none",
+                  borderRadius: 999, padding: "13px 26px", fontSize: 15, fontWeight: 600,
+                  display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
                 }}>
                   Quero ser Criador
                 </a>
               </div>
             </div>
 
-            {/* RIGHT — mock dashboard card */}
+            {/* Hero card — glassmorphism */}
             <div style={{ position: "relative" }}>
-              {/* Floating elements */}
-              <div style={{ position: "absolute", top: -18, right: -10, width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg, #7C3AED, #4F46E5)", transform: "rotate(14deg)", zIndex: 1 }} />
-              <div style={{ position: "absolute", top: 56, left: -22, width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg, #67E8F9, #3B82F6)", transform: "rotate(-10deg)", zIndex: 1 }} />
-              <div style={{ position: "absolute", bottom: 32, right: -14, width: 22, height: 22, borderRadius: 6, background: PURPLE, opacity: 0.7, transform: "rotate(20deg)", zIndex: 1 }} />
-              <div style={{ position: "absolute", bottom: -14, left: 24, width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #F59E0B, #EC4899)", transform: "rotate(-6deg)", zIndex: 1 }} />
+              {/* Floating accent blobs */}
+              <div style={{ position: "absolute", top: -18, right: -10, width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg, #7C3AED, #4F46E5)", transform: "rotate(14deg)", zIndex: 1, boxShadow: "0 0 20px rgba(124,58,237,0.6)" }} />
+              <div style={{ position: "absolute", top: 56, left: -22, width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg, #67E8F9, #3B82F6)", transform: "rotate(-10deg)", zIndex: 1, boxShadow: "0 0 16px rgba(56,189,248,0.5)" }} />
+              <div style={{ position: "absolute", bottom: 32, right: -14, width: 22, height: 22, borderRadius: 6, background: PURPLE, opacity: 0.8, transform: "rotate(20deg)", zIndex: 1 }} />
+              <div style={{ position: "absolute", bottom: -14, left: 24, width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #F59E0B, #EC4899)", transform: "rotate(-6deg)", zIndex: 1, boxShadow: "0 0 16px rgba(245,158,11,0.4)" }} />
 
-              {/* Dark dashboard card */}
               <div style={{
-                background: DARK, borderRadius: 24, padding: 28,
-                boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
+                background: "rgba(255,255,255,0.04)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: 24, padding: 28,
+                boxShadow: "0 32px 80px rgba(0,0,0,0.4)",
                 position: "relative", zIndex: 0,
               }}>
-                {/* Window chrome */}
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 24 }}>
                   {["#FF5F57", "#FFBD2E", "#28C840"].map(c => (
                     <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
                   ))}
-                  <span style={{ marginLeft: 8, fontSize: 12, color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>WePrompt Dashboard</span>
+                  <span style={{ marginLeft: 8, fontSize: 12, color: "rgba(255,255,255,0.35)", fontWeight: 500 }}>WePrompt Dashboard</span>
                 </div>
 
-                {/* Stats row */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
                   {[["500+", "Soluções de IA"], ["180+", "Criadores"]].map(([n, l]) => (
                     <div key={l} style={{
-                      background: "rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px",
+                      background: "rgba(255,255,255,0.06)", borderRadius: 12, padding: "14px 16px",
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}>
                       <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", letterSpacing: "-0.5px" }}>{n}</div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>{l}</div>
+                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>{l}</div>
                     </div>
                   ))}
                 </div>
 
-                {/* Progress bars */}
                 <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 10, fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>Categorias em alta</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginBottom: 10, fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>Categorias em alta</div>
                   {[["Automação", 78, PURPLE], ["Marketing IA", 62, "#3B82F6"], ["Analytics", 45, "#06B6D4"]].map(([label, pct, color]) => (
                     <div key={label} style={{ marginBottom: 10 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>{label}</span>
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>{pct}%</span>
+                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.55)" }}>{label}</span>
+                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>{pct}%</span>
                       </div>
                       <div style={{ height: 4, borderRadius: 99, background: "rgba(255,255,255,0.08)" }}>
                         <div style={{ height: "100%", width: `${pct}%`, borderRadius: 99, background: color }} />
@@ -179,14 +160,13 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Mini feature pills */}
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {["Agentes IA", "Chatbots", "Análise de dados", "Automação"].map(tag => (
                     <span key={tag} style={{
                       fontSize: 11, fontWeight: 500,
-                      background: "rgba(255,255,255,0.08)",
+                      background: "rgba(255,255,255,0.06)",
                       border: "1px solid rgba(255,255,255,0.1)",
-                      color: "rgba(255,255,255,0.6)",
+                      color: "rgba(255,255,255,0.55)",
                       borderRadius: 999, padding: "4px 10px",
                     }}>{tag}</span>
                   ))}
@@ -197,9 +177,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            STATS STRIP
-        ══════════════════════════════ */}
+        {/* ══════════ STATS ══════════ */}
         <section style={{ padding: "0 24px 72px", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
             {[
@@ -208,47 +186,51 @@ export default function Home() {
               ["10.000+", "Empresas"],
               ["98%", "Satisfação"],
             ].map(([num, label]) => (
-              <div key={label} className="card" style={{ borderRadius: 16, padding: "24px 28px" }}>
-                <div style={{ fontSize: 13, color: GRAY, fontWeight: 500, marginBottom: 6 }}>{label}</div>
-                <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-1px", color: DARK }}>{num}</div>
+              <div key={label} className="card" style={{
+                borderRadius: 16, padding: "24px 28px",
+                transition: "border-color 0.2s, box-shadow 0.2s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(107,92,231,0.4)"; e.currentTarget.style.boxShadow = "0 0 24px rgba(107,92,231,0.15)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = "none"; }}
+              >
+                <div style={{ fontSize: 13, color: TEXT2, fontWeight: 500, marginBottom: 6 }}>{label}</div>
+                <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-1px", color: "#fff" }}>{num}</div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            FEATURES — BENTO GRID
-        ══════════════════════════════ */}
+        {/* ══════════ FEATURES BENTO ══════════ */}
         <section style={{ padding: "0 24px 80px", maxWidth: 1200, margin: "0 auto" }}>
-
-          {/* Section label */}
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <span style={{
               display: "inline-flex", alignItems: "center", gap: 6,
-              border: `1px solid ${PURPLE}55`,
-              color: PURPLE, fontSize: 12, fontWeight: 600,
+              border: "1px solid rgba(107,92,231,0.4)",
+              color: "#a78bfa", fontSize: 12, fontWeight: 600,
               borderRadius: 999, padding: "5px 14px", letterSpacing: "0.05em",
             }}>
               <span>●</span> Funcionalidades
             </span>
-            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.8px", marginTop: 16, marginBottom: 0 }}>
+            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.8px", marginTop: 16, marginBottom: 0, color: "#fff" }}>
               Tudo para você adotar IA com confiança
             </h2>
           </div>
 
-          {/* Bento */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "stretch" }}>
 
-            {/* LEFT — tall dark */}
+            {/* LEFT — gradient dark */}
             <div style={{
-              background: DARK, borderRadius: 20, padding: 40,
+              background: "linear-gradient(135deg, rgba(107,92,231,0.2) 0%, rgba(79,70,229,0.15) 100%)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(107,92,231,0.3)",
+              borderRadius: 20, padding: 40,
               display: "flex", flexDirection: "column", justifyContent: "space-between",
               minHeight: 400,
             }}>
               <div>
                 <div style={{
                   display: "inline-flex", alignItems: "center", gap: 6,
-                  background: "rgba(107,92,231,0.25)", color: "#C4B5FD",
+                  background: "rgba(107,92,231,0.3)", color: "#C4B5FD",
                   borderRadius: 999, padding: "4px 12px", fontSize: 11, fontWeight: 600,
                   marginBottom: 28, letterSpacing: "0.04em",
                 }}>
@@ -257,7 +239,7 @@ export default function Home() {
                 <h3 style={{ fontSize: 28, fontWeight: 800, color: "#fff", letterSpacing: "-0.5px", lineHeight: 1.25, marginBottom: 16 }}>
                   Para Criadores de IA
                 </h3>
-                <p style={{ fontSize: 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, marginBottom: 32, maxWidth: 340 }}>
+                <p style={{ fontSize: 15, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, marginBottom: 32, maxWidth: 340 }}>
                   Publique suas soluções de IA no maior marketplace da América Latina. Alcance milhares de empresas prontas para comprar.
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 36 }}>
@@ -271,10 +253,10 @@ export default function Home() {
               </div>
               <a href="#" style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
-                background: PURPLE, color: "#fff",
-                borderRadius: 999, padding: "12px 24px",
-                fontSize: 14, fontWeight: 600, textDecoration: "none",
-                alignSelf: "flex-start",
+                background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)", color: "#fff",
+                borderRadius: 999, padding: "12px 24px", fontSize: 14, fontWeight: 600,
+                textDecoration: "none", alignSelf: "flex-start",
+                boxShadow: "0 4px 20px rgba(107,92,231,0.4)",
               }}>
                 Começar como Criador <Arrow />
               </a>
@@ -283,16 +265,14 @@ export default function Home() {
             {/* RIGHT — stacked */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-              {/* Top right — white */}
               <div className="card" style={{ borderRadius: 20, padding: 32, flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-                  {/* Avatar cluster */}
                   <div style={{ display: "flex" }}>
                     {["#6B5CE7", "#3B82F6", "#10B981", "#F59E0B"].map((color, i) => (
                       <div key={i} style={{
                         width: 34, height: 34, borderRadius: "50%",
                         background: `linear-gradient(135deg, ${color}, ${color}bb)`,
-                        border: "2px solid #fff",
+                        border: "2px solid rgba(255,255,255,0.15)",
                         marginLeft: i > 0 ? -10 : 0,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: 13, color: "#fff", fontWeight: 700,
@@ -302,21 +282,22 @@ export default function Home() {
                     ))}
                   </div>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: DARK }}>+180 Criadores</div>
-                    <div style={{ fontSize: 11, color: GRAY }}>já publicaram no marketplace</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>+180 Criadores</div>
+                    <div style={{ fontSize: 11, color: TEXT2 }}>já publicaram no marketplace</div>
                   </div>
                 </div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, color: DARK, letterSpacing: "-0.3px", marginBottom: 8 }}>
+                <h3 style={{ fontSize: 20, fontWeight: 800, color: "#fff", letterSpacing: "-0.3px", marginBottom: 8 }}>
                   Curadoria Especializada
                 </h3>
-                <p style={{ fontSize: 14, color: GRAY, lineHeight: 1.65, margin: 0 }}>
+                <p style={{ fontSize: 14, color: TEXT2, lineHeight: 1.65, margin: 0 }}>
                   Cada solução é revisada e validada pela nossa equipe. Zero ruído, apenas o que realmente funciona para empresas brasileiras.
                 </p>
               </div>
 
-              {/* Bottom right — dark purple */}
               <div style={{
-                background: "linear-gradient(135deg, #2D1B69 0%, #4F46E5 100%)",
+                background: "linear-gradient(135deg, rgba(79,70,229,0.3) 0%, rgba(107,92,231,0.2) 100%)",
+                backdropFilter: "blur(20px)",
+                border: "1px solid rgba(107,92,231,0.3)",
                 borderRadius: 20, padding: 32, flex: 1,
               }}>
                 <h3 style={{ fontSize: 20, fontWeight: 800, color: "#fff", letterSpacing: "-0.3px", marginBottom: 8 }}>
@@ -329,7 +310,7 @@ export default function Home() {
                   {[["99%", "uptime"], ["&lt;2h", "resposta"], ["PT-BR", "suporte"]].map(([n, l]) => (
                     <div key={l}>
                       <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }} dangerouslySetInnerHTML={{ __html: n }} />
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{l}</div>
+                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>{l}</div>
                     </div>
                   ))}
                 </div>
@@ -339,97 +320,68 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            HOW IT WORKS — pricing-style cards
-        ══════════════════════════════ */}
+        {/* ══════════ HOW IT WORKS ══════════ */}
         <section style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
-
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <span style={{
               display: "inline-flex", alignItems: "center", gap: 6,
-              border: `1px solid ${PURPLE}55`,
-              color: PURPLE, fontSize: 12, fontWeight: 600,
+              border: "1px solid rgba(107,92,231,0.4)",
+              color: "#a78bfa", fontSize: 12, fontWeight: 600,
               borderRadius: 999, padding: "5px 14px", letterSpacing: "0.05em",
             }}>
               <span>●</span> Como funciona
             </span>
-            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.8px", marginTop: 16, marginBottom: 8 }}>
+            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.8px", marginTop: 16, marginBottom: 8, color: "#fff" }}>
               Simples passos para usar IA no seu negócio
             </h2>
-            <p style={{ fontSize: 16, color: GRAY, maxWidth: 480, margin: "0 auto" }}>
+            <p style={{ fontSize: 16, color: TEXT2, maxWidth: 480, margin: "0 auto" }}>
               Do cadastro à primeira solução rodando, em minutos.
             </p>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
             {[
-              {
-                step: "01", title: "Explore o catálogo",
-                sub: "Grátis para começar",
-                features: ["Acesso a 500+ soluções", "Filtros por categoria", "Demos gratuitas", "Reviews verificados"],
-                cta: "Explorar grátis", highlight: false,
-              },
-              {
-                step: "02", title: "Escolha a solução",
-                sub: "Mais popular",
-                features: ["Comparativo detalhado", "Suporte da equipe WePrompt", "Documentação em português", "Trial disponível"],
-                cta: "Falar com especialista", highlight: true,
-              },
-              {
-                step: "03", title: "Comece a usar",
-                sub: "Em produção hoje",
-                features: ["Integração simplificada", "Onboarding guiado", "Suporte técnico dedicado", "Dashboard de uso"],
-                cta: "Começar agora", highlight: false,
-              },
+              { step: "01", title: "Explore o catálogo", sub: "Grátis para começar", features: ["Acesso a 500+ soluções", "Filtros por categoria", "Demos gratuitas", "Reviews verificados"], cta: "Explorar grátis", highlight: false },
+              { step: "02", title: "Escolha a solução", sub: "Mais popular", features: ["Comparativo detalhado", "Suporte da equipe WePrompt", "Documentação em português", "Trial disponível"], cta: "Falar com especialista", highlight: true },
+              { step: "03", title: "Comece a usar", sub: "Em produção hoje", features: ["Integração simplificada", "Onboarding guiado", "Suporte técnico dedicado", "Dashboard de uso"], cta: "Começar agora", highlight: false },
             ].map((card) => (
               <div key={card.step} className={card.highlight ? "" : "card"} style={{
                 borderRadius: 20, padding: "32px 28px",
                 display: "flex", flexDirection: "column",
                 ...(card.highlight ? {
-                  background: DARK,
-                  boxShadow: "0 24px 60px rgba(0,0,0,0.2)",
+                  background: "linear-gradient(135deg, rgba(107,92,231,0.35), rgba(79,70,229,0.25))",
+                  backdropFilter: "blur(20px)",
+                  border: "1px solid rgba(107,92,231,0.5)",
+                  boxShadow: "0 0 40px rgba(107,92,231,0.2)",
                 } : {}),
               }}>
-                <div style={{
-                  fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
-                  color: card.highlight ? "rgba(255,255,255,0.4)" : GRAY,
-                  marginBottom: 12,
-                }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>
                   PASSO {card.step}
                 </div>
-                <div style={{
-                  fontSize: 22, fontWeight: 800, letterSpacing: "-0.4px",
-                  color: card.highlight ? "#fff" : DARK,
-                  marginBottom: 6,
-                }}>
+                <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.4px", color: "#fff", marginBottom: 6 }}>
                   {card.title}
                 </div>
-                <div style={{
-                  fontSize: 13, fontWeight: 500,
-                  color: card.highlight ? "#C4B5FD" : PURPLE,
-                  marginBottom: 28,
-                }}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: card.highlight ? "#C4B5FD" : "#a78bfa", marginBottom: 28 }}>
                   {card.sub}
                 </div>
-
                 <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1, marginBottom: 28 }}>
                   {card.features.map(f => (
                     <div key={f} style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                      <Check color={card.highlight ? "#C4B5FD" : PURPLE} />
-                      <span style={{ fontSize: 14, color: card.highlight ? "rgba(255,255,255,0.7)" : "#374151" }}>{f}</span>
+                      <Check color={card.highlight ? "#C4B5FD" : "#a78bfa"} />
+                      <span style={{ fontSize: 14, color: "rgba(255,255,255,0.7)" }}>{f}</span>
                     </div>
                   ))}
                 </div>
-
                 <a href="#" style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                   borderRadius: 999, padding: "12px 20px",
                   fontSize: 14, fontWeight: 600, textDecoration: "none",
                   ...(card.highlight ? {
-                    background: PURPLE, color: "#fff",
+                    background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)", color: "#fff",
+                    boxShadow: "0 4px 16px rgba(107,92,231,0.5)",
                   } : {
-                    border: `1.5px solid rgba(0,0,0,0.15)`,
-                    color: DARK, background: "transparent",
+                    border: "1.5px solid rgba(255,255,255,0.15)",
+                    color: "rgba(255,255,255,0.8)", background: "transparent",
                   }),
                 }}>
                   {card.cta} <Arrow />
@@ -439,45 +391,42 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ══════════════════════════════
-            CTA BANNER
-        ══════════════════════════════ */}
+        {/* ══════════ CTA BANNER ══════════ */}
         <section style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{
-            background: DARK, borderRadius: 24, padding: "64px 48px",
+            background: "linear-gradient(135deg, rgba(107,92,231,0.25), rgba(79,70,229,0.15))",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(107,92,231,0.35)",
+            borderRadius: 24, padding: "64px 48px",
             textAlign: "center", position: "relative", overflow: "hidden",
+            boxShadow: "0 0 80px rgba(107,92,231,0.15)",
           }}>
             <div style={{
               position: "absolute", inset: 0, pointerEvents: "none",
-              background: `radial-gradient(ellipse 60% 70% at 50% 110%, ${PURPLE}33 0%, transparent 65%)`,
+              background: `radial-gradient(ellipse 60% 70% at 50% 110%, rgba(107,92,231,0.3) 0%, transparent 65%)`,
             }} />
-            {/* Decorative blobs */}
-            <div style={{ position: "absolute", top: -32, left: -32, width: 120, height: 120, borderRadius: "50%", background: `${PURPLE}18` }} />
-            <div style={{ position: "absolute", bottom: -20, right: -20, width: 90, height: 90, borderRadius: "50%", background: "#4F46E533" }} />
+            <div style={{ position: "absolute", top: -32, left: -32, width: 120, height: 120, borderRadius: "50%", background: "rgba(107,92,231,0.15)" }} />
+            <div style={{ position: "absolute", bottom: -20, right: -20, width: 90, height: 90, borderRadius: "50%", background: "rgba(79,70,229,0.15)" }} />
 
             <div style={{ position: "relative" }}>
               <h2 style={{ fontSize: "clamp(26px, 4vw, 44px)", fontWeight: 800, color: "#fff", letterSpacing: "-1px", marginBottom: 16 }}>
                 Pronto para transformar seu negócio com IA?
               </h2>
-              <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", marginBottom: 36, maxWidth: 500, margin: "0 auto 36px", lineHeight: 1.7 }}>
+              <p style={{ fontSize: 16, color: TEXT2, marginBottom: 36, maxWidth: 500, margin: "0 auto 36px", lineHeight: 1.7 }}>
                 Junte-se a mais de 10.000 empresas que já adotam soluções de IA com suporte em português.
               </p>
               <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
                 <a href="#" className="btn-primary" style={{
-                  borderRadius: 999, padding: "14px 30px",
-                  fontSize: 15, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  textDecoration: "none",
+                  borderRadius: 999, padding: "14px 30px", fontSize: 15, fontWeight: 600,
+                  display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
+                  boxShadow: "0 4px 24px rgba(107,92,231,0.5)",
                 }}>
                   Começar gratuitamente <Arrow />
                 </a>
                 <a href="#" style={{
-                  borderRadius: 999, padding: "14px 30px",
-                  fontSize: 15, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  textDecoration: "none",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  color: "rgba(255,255,255,0.8)",
+                  borderRadius: 999, padding: "14px 30px", fontSize: 15, fontWeight: 600,
+                  display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
+                  border: "1px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.8)",
                 }}>
                   Falar com a equipe
                 </a>
@@ -488,19 +437,21 @@ export default function Home() {
 
       </main>
 
-      {/* ══════════════════════════════
-          FOOTER
-      ══════════════════════════════ */}
-      <footer style={{ background: "#F3F4F6", borderTop: "1px solid rgba(0,0,0,0.07)", padding: "40px 24px" }}>
+      {/* ══════════ FOOTER ══════════ */}
+      <footer style={{
+        background: "rgba(255,255,255,0.03)",
+        borderTop: "1px solid rgba(255,255,255,0.08)",
+        padding: "40px 24px",
+      }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto",
           display: "flex", alignItems: "center", justifyContent: "space-between",
           flexWrap: "wrap", gap: 16,
         }}>
           <a href="#" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="footer" textColor={DARK} />
+            <WePromptLogo id="footer" />
           </a>
-          <p style={{ fontSize: 13, color: GRAY, margin: 0, textAlign: "center" }}>
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", margin: 0, textAlign: "center" }}>
             © 2026 WePrompt. O 1º marketplace de IA da América Latina. Todos os direitos reservados.
           </p>
           <div style={{ display: "flex", gap: 20 }}>

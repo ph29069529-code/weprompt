@@ -6,22 +6,18 @@ import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
 
 const PURPLE = "#6B5CE7";
-const DARK = "#0A0A1A";
-const GRAY = "#6B7280";
-const LIGHT_BG = "#F7F7FC";
+const BORDER = "rgba(255,255,255,0.1)";
+const TEXT2 = "rgba(255,255,255,0.6)";
 const GREEN = "#16A34A";
-const RED = "#DC2626";
-const AMBER = "#D97706";
 
 const ADMIN_EMAIL = "ph29069529@gmail.com";
 
 const TABS = [
-  { key: "pending",  label: "Pendentes",  color: AMBER },
-  { key: "approved", label: "Aprovadas",  color: GREEN },
-  { key: "rejected", label: "Reprovadas", color: RED },
+  { key: "pending",  label: "Pendentes",  color: "#fbbf24" },
+  { key: "approved", label: "Aprovadas",  color: "#4ade80" },
+  { key: "rejected", label: "Reprovadas", color: "#fca5a5" },
 ];
 
-/* ── Icons ── */
 const Icon = ({ d, size = 16 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
     strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -59,56 +55,57 @@ function RejectDialog({ solution, onConfirm, onClose }) {
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 400,
-      background: "rgba(10,10,26,0.45)", backdropFilter: "blur(4px)",
+      background: "rgba(10,10,26,0.7)", backdropFilter: "blur(8px)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
     }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{
-        background: "#fff", borderRadius: 20,
-        boxShadow: "0 8px 40px rgba(0,0,0,0.2)",
+        background: "rgba(13,10,46,0.95)",
+        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+        border: `1px solid ${BORDER}`, borderRadius: 20,
+        boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
         width: "100%", maxWidth: 460, padding: "32px",
         animation: "modalIn 0.2s ease",
       }}>
         <style>{`@keyframes modalIn { from { opacity:0; transform:scale(0.96) translateY(6px) } to { opacity:1; transform:none } }`}</style>
         <div style={{
           width: 48, height: 48, borderRadius: "50%",
-          background: "#FEF2F2", border: "1px solid #FECACA",
+          background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.3)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          marginBottom: 16, color: RED,
+          marginBottom: 16, color: "#fca5a5",
         }}>
           <Icon d={icons.x} size={20} />
         </div>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: DARK, margin: "0 0 8px" }}>Reprovar solução</h2>
-        <p style={{ fontSize: 14, color: GRAY, margin: "0 0 20px" }}>
-          <strong style={{ color: DARK }}>{solution.titulo}</strong> — informe o motivo da reprovação para o criador.
+        <h2 style={{ fontSize: 18, fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>Reprovar solução</h2>
+        <p style={{ fontSize: 14, color: TEXT2, margin: "0 0 20px" }}>
+          <strong style={{ color: "#fff" }}>{solution.titulo}</strong> — informe o motivo da reprovação para o criador.
         </p>
         <textarea autoFocus rows={4}
           placeholder="Ex: Descrição insuficiente, categoria incorreta, conteúdo inadequado…"
           value={reason} onChange={e => setReason(e.target.value)}
           style={{
             width: "100%", padding: "10px 14px",
-            borderRadius: 10, border: "1.5px solid rgba(0,0,0,0.12)",
-            fontSize: 14, color: DARK, background: "#FAFAFA",
+            borderRadius: 10, border: "1.5px solid rgba(255,255,255,0.12)",
+            fontSize: 14, color: "#fff", background: "rgba(255,255,255,0.07)",
             outline: "none", resize: "vertical", lineHeight: 1.6,
             boxSizing: "border-box", fontFamily: "inherit", marginBottom: 20,
           }}
-          onFocus={e => (e.target.style.borderColor = RED)}
-          onBlur={e => (e.target.style.borderColor = "rgba(0,0,0,0.12)")} />
+          onFocus={e => (e.target.style.borderColor = "rgba(220,38,38,0.6)")}
+          onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.12)")} />
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
           <button onClick={onClose} style={{
             padding: "10px 20px", borderRadius: 10,
-            border: "1.5px solid rgba(0,0,0,0.12)",
-            background: "transparent", color: GRAY,
+            border: `1.5px solid ${BORDER}`,
+            background: "transparent", color: TEXT2,
             fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
           }}>
             Cancelar
           </button>
           <button onClick={handleConfirm} disabled={loading || !reason.trim()} style={{
             padding: "10px 22px", borderRadius: 10,
-            background: loading || !reason.trim() ? "#EF8888" : RED,
+            background: loading || !reason.trim() ? "rgba(220,38,38,0.3)" : "rgba(220,38,38,0.75)",
             color: "#fff", border: "none",
             fontSize: 14, fontWeight: 600,
-            cursor: loading || !reason.trim() ? "not-allowed" : "pointer",
-            fontFamily: "inherit",
+            cursor: loading || !reason.trim() ? "not-allowed" : "pointer", fontFamily: "inherit",
           }}>
             {loading ? "Reprovando…" : "Confirmar reprovação"}
           </button>
@@ -161,23 +158,18 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        style={{
-          position: "fixed", inset: 0, zIndex: 300,
-          background: "rgba(10,10,26,0.25)",
-          backdropFilter: "blur(2px)",
-        }}
-      />
+      <div onClick={onClose} style={{
+        position: "fixed", inset: 0, zIndex: 300,
+        background: "rgba(10,10,26,0.5)", backdropFilter: "blur(2px)",
+      }} />
 
-      {/* Drawer */}
       <div style={{
         position: "fixed", top: 0, right: 0, bottom: 0,
         width: 580, maxWidth: "100vw",
-        background: "#fff",
-        borderLeft: "1px solid rgba(0,0,0,0.08)",
-        boxShadow: "-8px 0 40px rgba(0,0,0,0.12)",
+        background: "rgba(13,10,46,0.98)",
+        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+        borderLeft: "1px solid rgba(255,255,255,0.1)",
+        boxShadow: "-8px 0 60px rgba(0,0,0,0.5)",
         zIndex: 301,
         display: "flex", flexDirection: "column",
         animation: "drawerIn 0.25s ease",
@@ -188,22 +180,22 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
         <div style={{
           display: "flex", justifyContent: "space-between", alignItems: "center",
           padding: "18px 24px",
-          borderBottom: "1px solid rgba(0,0,0,0.07)",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
           flexShrink: 0,
         }}>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: DARK }}>Detalhes da solução</div>
-            <div style={{ fontSize: 12, color: GRAY, marginTop: 1 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>Detalhes da solução</div>
+            <div style={{ fontSize: 12, color: TEXT2, marginTop: 1 }}>
               {solution.profiles?.nome || "—"} · enviada para curadoria
             </div>
           </div>
           <button onClick={onClose} style={{
             background: "none", border: "none", cursor: "pointer",
-            color: GRAY, padding: 6, borderRadius: 8,
+            color: TEXT2, padding: 6, borderRadius: 8,
             display: "flex", alignItems: "center", justifyContent: "center",
             transition: "background 0.15s",
           }}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.06)")}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
             onMouseLeave={e => (e.currentTarget.style.background = "none")}
           >
             <Icon d={icons.x} size={20} />
@@ -213,7 +205,6 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
         {/* Scrollable content */}
         <div style={{ flex: 1, overflowY: "auto", padding: "24px" }}>
 
-          {/* Cover */}
           {solution.cover_url && (
             <div style={{ borderRadius: 12, overflow: "hidden", marginBottom: 20 }}>
               <img src={solution.cover_url} alt={solution.titulo}
@@ -221,24 +212,23 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
             </div>
           )}
 
-          {/* Badges */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
             <span style={{
-              background: `${PURPLE}12`, color: PURPLE,
+              background: "rgba(107,92,231,0.2)", color: "#a78bfa",
               fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
             }}>
               {solution.categoria}
             </span>
             <span style={{
-              background: solution.payment_type === "one_time" ? "rgba(22,163,74,0.1)" : `${PURPLE}10`,
-              color: solution.payment_type === "one_time" ? GREEN : PURPLE,
+              background: solution.payment_type === "one_time" ? "rgba(74,222,128,0.15)" : "rgba(107,92,231,0.15)",
+              color: solution.payment_type === "one_time" ? "#4ade80" : "#a78bfa",
               fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
             }}>
               {solution.payment_type === "one_time" ? "Venda Única" : "Assinatura Mensal"}
             </span>
             {(solution.version || 1) > 1 && (
               <span style={{
-                background: "rgba(107,92,231,0.08)", color: PURPLE,
+                background: "rgba(107,92,231,0.2)", color: "#a78bfa",
                 fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 99,
               }}>
                 v{solution.version}
@@ -246,38 +236,35 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
             )}
           </div>
 
-          {/* Title + description */}
-          <h3 style={{ fontSize: 20, fontWeight: 800, color: DARK, margin: "0 0 10px", letterSpacing: "-0.3px" }}>
+          <h3 style={{ fontSize: 20, fontWeight: 800, color: "#fff", margin: "0 0 10px", letterSpacing: "-0.3px" }}>
             {solution.titulo}
           </h3>
-          <p style={{ fontSize: 14, color: GRAY, lineHeight: 1.7, margin: "0 0 12px", whiteSpace: "pre-line" }}>
+          <p style={{ fontSize: 14, color: TEXT2, lineHeight: 1.7, margin: "0 0 12px", whiteSpace: "pre-line" }}>
             {solution.descricao}
           </p>
-          <div style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 4 }}>{priceLabel}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{priceLabel}</div>
 
-          {/* Divider */}
-          <div style={{ height: 1, background: "rgba(0,0,0,0.07)", margin: "20px 0" }} />
+          <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "20px 0" }} />
 
           {/* Delivery section */}
           <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#a78bfa", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 16 }}>
               Material de entrega
             </div>
 
             {!hasDelivery && (
               <div style={{
                 padding: "16px", borderRadius: 10,
-                background: "#F7F7FC", border: "1px solid rgba(0,0,0,0.07)",
-                fontSize: 13, color: GRAY, fontStyle: "italic",
+                background: "rgba(255,255,255,0.04)", border: `1px solid ${BORDER}`,
+                fontSize: 13, color: TEXT2, fontStyle: "italic",
               }}>
                 Nenhum material de entrega enviado pelo criador.
               </div>
             )}
 
-            {/* Files */}
             {solution.delivery_files?.length > 0 && (
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: GRAY, marginBottom: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 8 }}>
                   Arquivos ({solution.delivery_files.length})
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -285,16 +272,16 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
                     <div key={i} style={{
                       display: "flex", alignItems: "center", justifyContent: "space-between",
                       padding: "10px 14px", borderRadius: 8,
-                      border: "1px solid rgba(0,0,0,0.08)", background: "#FAFAFA",
+                      border: `1px solid ${BORDER}`, background: "rgba(255,255,255,0.04)",
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                        <Icon d={icons.file} size={16} />
+                        <span style={{ color: TEXT2 }}><Icon d={icons.file} size={16} /></span>
                         <div style={{ minWidth: 0 }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: DARK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {f.name}
                           </div>
                           {f.size_bytes && (
-                            <div style={{ fontSize: 11, color: GRAY }}>{formatBytes(f.size_bytes)}</div>
+                            <div style={{ fontSize: 11, color: TEXT2 }}>{formatBytes(f.size_bytes)}</div>
                           )}
                         </div>
                       </div>
@@ -302,14 +289,13 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
                         <a href={fileUrls[f.path]} download target="_blank" rel="noreferrer" style={{
                           display: "inline-flex", alignItems: "center", gap: 5,
                           padding: "6px 12px", borderRadius: 6,
-                          background: `${PURPLE}10`, color: PURPLE,
-                          fontSize: 12, fontWeight: 600, textDecoration: "none",
-                          flexShrink: 0,
+                          background: "rgba(107,92,231,0.2)", color: "#a78bfa",
+                          fontSize: 12, fontWeight: 600, textDecoration: "none", flexShrink: 0,
                         }}>
                           <Icon d={icons.download} size={12} /> Download
                         </a>
                       ) : (
-                        <span style={{ fontSize: 11, color: GRAY, flexShrink: 0 }}>Carregando…</span>
+                        <span style={{ fontSize: 11, color: TEXT2, flexShrink: 0 }}>Carregando…</span>
                       )}
                     </div>
                   ))}
@@ -317,10 +303,9 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
               </div>
             )}
 
-            {/* Links */}
             {solution.delivery_links?.length > 0 && (
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: GRAY, marginBottom: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 8 }}>
                   Links de acesso ({solution.delivery_links.length})
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -328,12 +313,12 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
                     <a key={i} href={l.url} target="_blank" rel="noreferrer" style={{
                       display: "inline-flex", alignItems: "center", gap: 8,
                       padding: "10px 14px", borderRadius: 8,
-                      border: "1px solid rgba(107,92,231,0.2)", background: `${PURPLE}05`,
-                      color: PURPLE, fontSize: 13, fontWeight: 600, textDecoration: "none",
+                      border: "1px solid rgba(107,92,231,0.3)", background: "rgba(107,92,231,0.08)",
+                      color: "#a78bfa", fontSize: 13, fontWeight: 600, textDecoration: "none",
                       transition: "background 0.15s",
                     }}
-                      onMouseEnter={e => (e.currentTarget.style.background = `${PURPLE}10`)}
-                      onMouseLeave={e => (e.currentTarget.style.background = `${PURPLE}05`)}
+                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(107,92,231,0.18)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "rgba(107,92,231,0.08)")}
                     >
                       <Icon d={icons.link} size={14} />
                       <span>{l.label || l.url}</span>
@@ -344,16 +329,15 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
               </div>
             )}
 
-            {/* Instructions */}
             {solution.delivery_instructions && (
               <div style={{ marginBottom: 8 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: GRAY, marginBottom: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 8 }}>
                   Instruções do criador
                 </div>
                 <div style={{
                   padding: "14px 16px", borderRadius: 10,
-                  background: "#F7F7FC", border: "1px solid rgba(0,0,0,0.07)",
-                  fontSize: 13, color: DARK, lineHeight: 1.75, whiteSpace: "pre-line",
+                  background: "rgba(255,255,255,0.04)", border: `1px solid ${BORDER}`,
+                  fontSize: 13, color: "#fff", lineHeight: 1.75, whiteSpace: "pre-line",
                 }}>
                   {solution.delivery_instructions}
                 </div>
@@ -361,12 +345,11 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
             )}
           </div>
 
-          {/* Divider */}
-          <div style={{ height: 1, background: "rgba(0,0,0,0.07)", margin: "20px 0" }} />
+          <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "20px 0" }} />
 
           {/* Curation notes */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: DARK, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#fff", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 12 }}>
               Notas internas de curadoria
             </div>
             <textarea
@@ -376,50 +359,48 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
               placeholder="Observações internas, histórico de decisões, notas de revisão…"
               style={{
                 width: "100%", padding: "10px 14px",
-                borderRadius: 10, border: "1.5px solid rgba(0,0,0,0.12)",
-                fontSize: 14, color: DARK, background: "#FAFAFA",
+                borderRadius: 10, border: "1.5px solid rgba(255,255,255,0.12)",
+                fontSize: 14, color: "#fff", background: "rgba(255,255,255,0.07)",
                 outline: "none", resize: "vertical", lineHeight: 1.6,
                 boxSizing: "border-box", fontFamily: "inherit",
               }}
               onFocus={e => (e.target.style.borderColor = PURPLE)}
-              onBlur={e => (e.target.style.borderColor = "rgba(0,0,0,0.12)")}
+              onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.12)")}
             />
             <button onClick={saveNotes} disabled={savingNotes} style={{
               marginTop: 8,
               padding: "8px 18px", borderRadius: 8,
-              background: notesSaved ? "#16A34A" : DARK,
+              background: notesSaved ? "#16A34A" : "rgba(255,255,255,0.1)",
               color: "#fff", border: "none",
               fontSize: 13, fontWeight: 600,
-              cursor: savingNotes ? "wait" : "pointer",
-              fontFamily: "inherit",
+              cursor: savingNotes ? "wait" : "pointer", fontFamily: "inherit",
               transition: "background 0.2s",
             }}>
               {savingNotes ? "Salvando…" : notesSaved ? "✓ Salvo" : "Salvar notas"}
             </button>
           </div>
 
-          {/* Bottom padding for sticky footer */}
           {solution.status === "pending" && <div style={{ height: 24 }} />}
         </div>
 
-        {/* Sticky footer with approve/reject */}
+        {/* Sticky footer */}
         {solution.status === "pending" && (
           <div style={{
             padding: "16px 24px",
-            borderTop: "1px solid rgba(0,0,0,0.07)",
+            borderTop: "1px solid rgba(255,255,255,0.08)",
             display: "flex", gap: 10, flexShrink: 0,
-            background: "#fff",
+            background: "rgba(13,10,46,0.98)",
           }}>
             <button
               onClick={() => onApprove(solution.id)}
               disabled={isLoading}
               style={{
                 flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                background: isLoading ? "#86EFAC" : GREEN, color: "#fff",
+                background: isLoading ? "rgba(22,163,74,0.4)" : GREEN, color: "#fff",
                 border: "none", borderRadius: 10, padding: "13px",
                 fontSize: 14, fontWeight: 700,
-                cursor: isLoading ? "not-allowed" : "pointer",
-                fontFamily: "inherit", transition: "background 0.15s",
+                cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit",
+                transition: "background 0.15s",
               }}
               onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = "#15803D"; }}
               onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = GREEN; }}
@@ -431,15 +412,15 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
               disabled={isLoading}
               style={{
                 flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                background: "transparent", color: RED,
-                border: "1.5px solid rgba(220,38,38,0.3)",
+                background: "transparent", color: "#fca5a5",
+                border: "1.5px solid rgba(220,38,38,0.35)",
                 borderRadius: 10, padding: "13px",
                 fontSize: 14, fontWeight: 700,
-                cursor: isLoading ? "not-allowed" : "pointer",
-                fontFamily: "inherit", transition: "all 0.15s",
+                cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit",
+                transition: "all 0.15s",
               }}
-              onMouseEnter={e => { if (!isLoading) { e.currentTarget.style.background = "#FEF2F2"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.6)"; } }}
-              onMouseLeave={e => { if (!isLoading) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.3)"; } }}
+              onMouseEnter={e => { if (!isLoading) { e.currentTarget.style.background = "rgba(220,38,38,0.15)"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.6)"; } }}
+              onMouseLeave={e => { if (!isLoading) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.35)"; } }}
             >
               <Icon d={icons.x} size={16} /> Reprovar
             </button>
@@ -461,52 +442,50 @@ function SolutionRow({ solution, onApprove, onReject, onView, actionLoading }) {
 
   return (
     <div style={{
-      background: "#fff", borderRadius: 14,
-      border: "1px solid rgba(0,0,0,0.07)",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+      background: "rgba(255,255,255,0.04)",
+      backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+      border: `1px solid ${BORDER}`, borderRadius: 14,
       padding: "20px 24px",
       display: "flex", gap: 16, alignItems: "flex-start",
     }}>
-      {/* Cover thumbnail */}
       <div style={{
         width: 88, height: 56, borderRadius: 8, flexShrink: 0, overflow: "hidden",
-        background: "linear-gradient(135deg, rgba(107,92,231,0.1), rgba(56,189,248,0.08))",
+        background: "linear-gradient(135deg, rgba(107,92,231,0.2), rgba(139,92,246,0.1))",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
         {solution.cover_url ? (
           <img src={solution.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
-          <span style={{ fontSize: 20, opacity: 0.2 }}>✦</span>
+          <span style={{ fontSize: 20, opacity: 0.25 }}>✦</span>
         )}
       </div>
 
-      {/* Info */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-          <span style={{ fontWeight: 700, fontSize: 15, color: DARK }}>{solution.titulo}</span>
+          <span style={{ fontWeight: 700, fontSize: 15, color: "#fff" }}>{solution.titulo}</span>
           {(solution.version || 1) > 1 && (
             <span style={{
               fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 99,
-              background: "rgba(107,92,231,0.08)", color: PURPLE,
+              background: "rgba(107,92,231,0.2)", color: "#a78bfa",
             }}>
               v{solution.version}
             </span>
           )}
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 6 }}>
-          <span style={{ background: `${PURPLE}12`, color: PURPLE, fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 99 }}>
+          <span style={{ background: "rgba(107,92,231,0.2)", color: "#a78bfa", fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 99 }}>
             {solution.categoria}
           </span>
-          <span style={{ fontSize: 12, color: GRAY, fontWeight: 600 }}>{priceLabel}</span>
-          <span style={{ fontSize: 12, color: GRAY }}>· {creatorNome}</span>
+          <span style={{ fontSize: 12, color: TEXT2, fontWeight: 600 }}>{priceLabel}</span>
+          <span style={{ fontSize: 12, color: TEXT2 }}>· {creatorNome}</span>
           {hasDelivery && (
-            <span style={{ fontSize: 11, color: GREEN, fontWeight: 600, background: "rgba(22,163,74,0.08)", padding: "2px 8px", borderRadius: 99 }}>
+            <span style={{ fontSize: 11, color: "#4ade80", fontWeight: 600, background: "rgba(74,222,128,0.12)", padding: "2px 8px", borderRadius: 99 }}>
               Material enviado
             </span>
           )}
         </div>
         <p style={{
-          fontSize: 13, color: GRAY, margin: 0, lineHeight: 1.5,
+          fontSize: 13, color: TEXT2, margin: 0, lineHeight: 1.5,
           display: "-webkit-box", WebkitLineClamp: 2,
           WebkitBoxOrient: "vertical", overflow: "hidden",
         }}>
@@ -514,32 +493,29 @@ function SolutionRow({ solution, onApprove, onReject, onView, actionLoading }) {
         </p>
       </div>
 
-      {/* Actions */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0, alignItems: "stretch", minWidth: 120 }}>
-        {/* Ver detalhes — always visible */}
         <button
           onClick={() => onView(solution)}
           style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            background: "transparent", color: DARK,
-            border: "1.5px solid rgba(0,0,0,0.14)",
+            background: "transparent", color: TEXT2,
+            border: `1.5px solid rgba(255,255,255,0.15)`,
             borderRadius: 8, padding: "7px 12px",
             fontSize: 12, fontWeight: 600, cursor: "pointer",
             fontFamily: "inherit", whiteSpace: "nowrap",
             transition: "background 0.15s, border-color 0.15s",
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.25)"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.14)"; }}
+          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; }}
         >
           <Icon d={icons.eye} size={13} /> Ver detalhes
         </button>
 
-        {/* Approve/reject only for pending */}
         {solution.status === "pending" && (
           <>
             <button onClick={() => onApprove(solution.id)} disabled={isLoading} style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-              background: isLoading ? "#86EFAC" : GREEN, color: "#fff",
+              background: isLoading ? "rgba(22,163,74,0.4)" : GREEN, color: "#fff",
               border: "none", borderRadius: 8, padding: "7px 12px",
               fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer",
               fontFamily: "inherit", whiteSpace: "nowrap", transition: "background 0.15s",
@@ -551,14 +527,14 @@ function SolutionRow({ solution, onApprove, onReject, onView, actionLoading }) {
             </button>
             <button onClick={() => onReject(solution)} disabled={isLoading} style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-              background: "transparent", color: RED,
-              border: "1.5px solid rgba(220,38,38,0.25)",
+              background: "transparent", color: "#fca5a5",
+              border: "1.5px solid rgba(220,38,38,0.3)",
               borderRadius: 8, padding: "6px 12px",
               fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer",
               fontFamily: "inherit", whiteSpace: "nowrap", transition: "all 0.15s",
             }}
-              onMouseEnter={e => { if (!isLoading) { e.currentTarget.style.background = "#FEF2F2"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.5)"; } }}
-              onMouseLeave={e => { if (!isLoading) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.25)"; } }}
+              onMouseEnter={e => { if (!isLoading) { e.currentTarget.style.background = "rgba(220,38,38,0.15)"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.5)"; } }}
+              onMouseLeave={e => { if (!isLoading) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.3)"; } }}
             >
               <Icon d={icons.x} size={13} /> Reprovar
             </button>
@@ -667,39 +643,37 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: "100vh", background: LIGHT_BG,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontFamily: "'DM Sans', sans-serif",
-      }}>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
-          <WePromptLogo id="admin-loading" textColor={DARK} />
-          <div style={{ fontSize: 13, color: GRAY, marginTop: 16 }}>Carregando painel…</div>
+          <WePromptLogo id="admin-loading" />
+          <div style={{ fontSize: 13, color: TEXT2, marginTop: 16 }}>Carregando painel…</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", background: LIGHT_BG, color: DARK }}>
+    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: "#fff" }}>
 
       {/* ── SIDEBAR ── */}
       <aside style={{
-        width: 240, flexShrink: 0, background: "#fff",
-        borderRight: "1px solid rgba(0,0,0,0.07)",
+        width: 240, flexShrink: 0,
+        background: "rgba(5,3,15,0.8)",
+        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+        borderRight: "1px solid rgba(255,255,255,0.08)",
         display: "flex", flexDirection: "column",
         position: "fixed", top: 0, bottom: 0, left: 0,
       }}>
         <div style={{ padding: "20px 20px 16px" }}>
           <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="admin-sidebar" textColor={DARK} />
+            <WePromptLogo id="admin-sidebar" />
           </a>
         </div>
-        <div style={{ height: 1, background: "rgba(0,0,0,0.07)", margin: "0 16px 12px" }} />
+        <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "0 16px 12px" }} />
         <div style={{ padding: "4px 16px 0" }}>
           <div style={{
             padding: "10px 12px", borderRadius: 8,
-            background: `${PURPLE}10`, color: PURPLE,
+            background: "rgba(107,92,231,0.2)", color: "#a78bfa",
             fontSize: 12, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase",
           }}>
             Curadoria
@@ -709,15 +683,19 @@ export default function AdminDashboard() {
               <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
                 width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "9px 12px", borderRadius: 8, border: "none",
-                background: activeTab === tab.key ? `${PURPLE}10` : "transparent",
-                color: activeTab === tab.key ? PURPLE : "#374151",
+                background: activeTab === tab.key ? "rgba(107,92,231,0.2)" : "transparent",
+                color: activeTab === tab.key ? "#a78bfa" : TEXT2,
                 fontSize: 14, fontWeight: activeTab === tab.key ? 600 : 500,
                 cursor: "pointer", fontFamily: "inherit", marginBottom: 2,
-              }}>
+                transition: "background 0.15s",
+              }}
+                onMouseEnter={e => { if (activeTab !== tab.key) e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+                onMouseLeave={e => { if (activeTab !== tab.key) e.currentTarget.style.background = "transparent"; }}
+              >
                 {tab.label}
                 <span style={{
-                  background: activeTab === tab.key ? PURPLE : "rgba(0,0,0,0.08)",
-                  color: activeTab === tab.key ? "#fff" : GRAY,
+                  background: activeTab === tab.key ? PURPLE : "rgba(255,255,255,0.1)",
+                  color: activeTab === tab.key ? "#fff" : TEXT2,
                   fontSize: 11, fontWeight: 700,
                   padding: "1px 7px", borderRadius: 99,
                   minWidth: 20, textAlign: "center",
@@ -729,18 +707,18 @@ export default function AdminDashboard() {
           </div>
         </div>
         <div style={{ flex: 1 }} />
-        <div style={{ padding: "16px", borderTop: "1px solid rgba(0,0,0,0.07)" }}>
-          <div style={{ fontSize: 12, color: GRAY, fontWeight: 500, padding: "4px 12px 8px" }}>
+        <div style={{ padding: "16px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          <div style={{ fontSize: 12, color: TEXT2, fontWeight: 500, padding: "4px 12px 8px" }}>
             Admin · {ADMIN_EMAIL}
           </div>
           <button onClick={handleSignOut} style={{
             width: "100%", display: "flex", alignItems: "center", gap: 10,
             padding: "10px 12px", borderRadius: 8, border: "none",
-            background: "transparent", color: RED,
+            background: "transparent", color: "#fca5a5",
             fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit",
             transition: "background 0.15s",
           }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#FEF2F2")}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(220,38,38,0.1)")}
             onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
           >
             <Icon d={icons.logout} size={14} /> Sair
@@ -752,10 +730,10 @@ export default function AdminDashboard() {
       <main style={{ flex: 1, marginLeft: 240, minWidth: 0 }}>
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 32px" }}>
           <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontSize: 26, fontWeight: 800, color: DARK, margin: 0, letterSpacing: "-0.5px" }}>
+            <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-0.5px" }}>
               {TABS.find(t => t.key === activeTab)?.label}
             </h1>
-            <p style={{ fontSize: 14, color: GRAY, margin: "4px 0 0" }}>
+            <p style={{ fontSize: 14, color: TEXT2, margin: "4px 0 0" }}>
               {activeTab === "pending"
                 ? "Soluções aguardando sua análise."
                 : activeTab === "approved"
@@ -766,14 +744,15 @@ export default function AdminDashboard() {
 
           {filtered.length === 0 ? (
             <div style={{
-              background: "#fff", borderRadius: 16,
-              border: "1px solid rgba(0,0,0,0.07)",
+              background: "rgba(255,255,255,0.04)",
+              backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+              border: `1px solid ${BORDER}`, borderRadius: 16,
               padding: "60px 32px", textAlign: "center",
             }}>
-              <div style={{ fontSize: 36, marginBottom: 12 }}>
+              <div style={{ fontSize: 36, marginBottom: 12, opacity: 0.3 }}>
                 {activeTab === "pending" ? "✦" : activeTab === "approved" ? "✓" : "×"}
               </div>
-              <p style={{ fontSize: 15, color: GRAY, margin: 0 }}>
+              <p style={{ fontSize: 15, color: TEXT2, margin: 0 }}>
                 {activeTab === "pending"
                   ? "Nenhuma solução pendente no momento."
                   : activeTab === "approved"
@@ -798,7 +777,6 @@ export default function AdminDashboard() {
         </div>
       </main>
 
-      {/* ── DETAIL DRAWER ── */}
       {selectedSolution && (
         <DetailDrawer
           solution={selectedSolution}
@@ -809,7 +787,6 @@ export default function AdminDashboard() {
         />
       )}
 
-      {/* ── REJECT DIALOG ── */}
       {rejectTarget && (
         <RejectDialog
           solution={rejectTarget}
