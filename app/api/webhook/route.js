@@ -9,6 +9,10 @@ const supabaseAdmin = createClient(
 
 export const runtime = "nodejs";
 
+export async function GET() {
+  return Response.json({ ok: true });
+}
+
 export async function POST(request) {
   const rawBody = await request.text();
   const sig = request.headers.get("stripe-signature");
