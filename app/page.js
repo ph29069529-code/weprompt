@@ -13,7 +13,7 @@ function getDashboardUrl(session) {
   return "/dashboard/empresa";
 }
 
-const PURPLE = "#6B5CE7";
+const PURPLE = "#0EA5E9";
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT = "#6E6E73";
 const BG_GRAY = "#F5F5F7";
@@ -154,7 +154,7 @@ function CreatorCard() {
             <div style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 99 }}>
               <div style={{
                 width: `${pct}%`, height: "100%",
-                background: `linear-gradient(90deg, ${PURPLE}, #A78BFA)`,
+                background: `linear-gradient(90deg, ${PURPLE}, #38BDF8)`,
                 borderRadius: 99,
               }} />
             </div>
@@ -203,10 +203,10 @@ function GlassStack() {
         {[["500+", "Soluções"], ["180+", "Criadores"]].map(([val, lbl]) => (
           <div key={lbl} style={{
             flex: 1, background: "rgba(14,165,233,0.08)", borderRadius: 10,
-            padding: "12px 14px", border: "1px solid rgba(56,189,248,0.2)",
+            padding: "12px 14px", border: "1px solid rgba(14,165,233,0.2)",
           }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#0EA5E9" }}>{val}</div>
-            <div style={{ fontSize: 11, color: "rgba(14,165,233,0.7)", marginTop: 2 }}>{lbl}</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: "#0EA5E9" }}>{val}</div>
+            <div style={{ fontSize: 11, color: "#0369A1", marginTop: 2 }}>{lbl}</div>
           </div>
         ))}
       </div>
@@ -215,7 +215,7 @@ function GlassStack() {
           <span style={{ fontSize: 12, fontWeight: 600, color: "#0369A1" }}>Automação</span>
           <span style={{ fontSize: 12, color: "#0369A1" }}>78%</span>
         </div>
-        <div style={{ height: 6, background: "rgba(56,189,248,0.15)", borderRadius: 99 }}>
+        <div style={{ height: 6, background: "rgba(14,165,233,0.15)", borderRadius: 99 }}>
           <div style={{ width: "78%", height: "100%", background: "linear-gradient(90deg, #38BDF8, #0EA5E9)", borderRadius: 99 }} />
         </div>
       </div>
@@ -228,28 +228,28 @@ function GlassStack() {
         {["Agentes IA", "WhatsApp", "Marketing"].map(tag => (
           <span key={tag} style={{
             padding: "5px 12px", borderRadius: 99,
-            background: "rgba(56,189,248,0.12)", border: "1px solid rgba(56,189,248,0.3)",
-            fontSize: 11, fontWeight: 600, color: "#0EA5E9",
+            background: "rgba(14,165,233,0.15)", border: "1px solid rgba(14,165,233,0.3)",
+            fontSize: 11, fontWeight: 600, color: "#0369A1",
           }}>{tag}</span>
         ))}
       </div>
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        background: "rgba(14,165,233,0.06)", border: "1px solid rgba(56,189,248,0.2)",
+        background: "rgba(14,165,233,0.06)", border: "1px solid rgba(14,165,233,0.2)",
         borderRadius: 10, padding: "12px 14px",
       }}>
-        <span style={{ fontSize: 13, color: "#0369A1" }}>🤖 Agente de Vendas</span>
+        <span style={{ fontSize: 13, color: "#1e40af" }}>🤖 Agente de Vendas</span>
         <span style={{ fontSize: 13, fontWeight: 700, color: "#0EA5E9" }}>R$ 97/mês</span>
       </div>
     </div>,
 
     /* card 2: Suas Compras */
     <div key="purchases" style={{ padding: "20px 24px" }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: "#0369A1", marginBottom: 16 }}>Suas Compras</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: "#0369A1", marginBottom: 16 }}>Suas Compras</div>
       {[0, 1].map(i => (
         <div key={i} style={{
-          height: 44, borderRadius: 10, marginBottom: 10,
-          background: "rgba(56,189,248,0.07)", border: "1px solid rgba(56,189,248,0.15)",
+          height: 12, borderRadius: 6, marginBottom: 10,
+          background: "rgba(14,165,233,0.12)",
           filter: "blur(1.5px)", opacity: 0.6,
         }} />
       ))}
@@ -429,7 +429,7 @@ export default function Home() {
                     fontSize: 14, fontWeight: 600,
                     display: "inline-flex", alignItems: "center", gap: 6,
                     textDecoration: "none",
-                    boxShadow: "0 4px 14px rgba(107,92,231,0.35)",
+                    boxShadow: "0 4px 14px rgba(14,165,233,0.35)",
                   }}>
                     Criar conta <Arrow />
                   </a>
@@ -527,11 +527,11 @@ export default function Home() {
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             background: "#fff",
-            border: "1.5px solid rgba(107,92,231,0.22)",
+            border: "1.5px solid rgba(14,165,233,0.22)",
             borderRadius: 999, padding: "8px 20px",
             fontSize: 13, fontWeight: 600, color: PURPLE,
             marginBottom: 40,
-            boxShadow: "0 2px 16px rgba(107,92,231,0.1)",
+            boxShadow: "0 2px 16px rgba(14,165,233,0.1)",
             letterSpacing: "0.01em",
           }}>
             <span>✦</span>
@@ -569,11 +569,11 @@ export default function Home() {
               borderRadius: 999, padding: isMobile ? "15px 28px" : "17px 36px",
               background: PURPLE, color: "#fff",
               fontSize: isMobile ? 15 : 17, fontWeight: 700, textDecoration: "none",
-              boxShadow: "0 8px 32px rgba(107,92,231,0.38)",
+              boxShadow: "0 8px 32px rgba(14,165,233,0.38)",
               transition: "transform 0.15s, box-shadow 0.15s",
             }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 14px 40px rgba(107,92,231,0.48)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(107,92,231,0.38)"; }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 14px 40px rgba(14,165,233,0.48)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(14,165,233,0.38)"; }}
             >
               Explorar Soluções <Arrow />
             </a>
@@ -994,7 +994,7 @@ export default function Home() {
           FINAL CTA — purple gradient
       ════════════════════════════════════════ */}
       <section style={{
-        background: `linear-gradient(135deg, #4F46E5 0%, ${PURPLE} 50%, #8B5CF6 100%)`,
+        background: `linear-gradient(135deg, #0369A1 0%, ${PURPLE} 50%, #38BDF8 100%)`,
         padding: isMobile ? "88px 24px" : "128px 48px",
         position: "relative", overflow: "hidden",
       }}>
