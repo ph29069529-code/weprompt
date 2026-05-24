@@ -10,6 +10,18 @@ const DARK = "#0A0A1A";
 const GRAY = "#6B7280";
 const BORDER = "rgba(0,0,0,0.08)";
 
+function useWindowSize() {
+  const [width, setWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
+  useEffect(() => {
+    function onResize() { setWidth(window.innerWidth); }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return width;
+}
+
 const icons = {
   subscriptions: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
   explore: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
@@ -143,7 +155,7 @@ function CancelDialog({ solution, onConfirm, onClose }) {
   );
 }
 
-function SubscriptionCard({ sub, onCancel }) {
+function SubscriptionCard({ sub, onCancel, isMobile }) {
   const solution = sub.solutions;
   const statusActive = sub.status === "active";
   const isOneTime = solution?.payment_type === "one_time";
@@ -153,8 +165,10 @@ function SubscriptionCard({ sub, onCancel }) {
       border: `1px solid ${BORDER}`,
       boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
       borderRadius: 14,
-      padding: "20px 24px",
-      display: "flex", alignItems: "center", gap: 20,
+      padding: isMobile ? "14px 16px" : "20px 24px",
+      display: "flex", alignItems: isMobile ? "flex-start" : "center",
+      gap: isMobile ? 10 : 20, flexWrap: isMobile ? "wrap" : "nowrap",
+      overflow: "hidden",
     }}>
       <div style={{
         width: 4, height: 48, borderRadius: 99, flexShrink: 0,
@@ -163,10 +177,10 @@ function SubscriptionCard({ sub, onCancel }) {
           : "rgba(0,0,0,0.12)",
       }} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: DARK, marginBottom: 4 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: DARK, marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {solution?.titulo || "Solução removida"}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           {solution?.categoria && (
             <span style={{
               display: "inline-block",
@@ -181,39 +195,50 @@ function SubscriptionCard({ sub, onCancel }) {
           </span>
         </div>
       </div>
-      <div style={{ textAlign: "right", flexShrink: 0 }}>
-        <div style={{ fontSize: 17, fontWeight: 700, color: DARK }}>
-          {solution?.preco != null
-            ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-            : "Gratuito"}
-        </div>
-        {solution?.preco != null && (
-          <div style={{ fontSize: 11, color: GRAY }}>{isOneTime ? "único" : "/mês"}</div>
-        )}
-      </div>
       <div style={{
-        padding: "4px 12px", borderRadius: 99, flexShrink: 0,
-        background: statusActive ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
-        border: `1px solid ${statusActive ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
-        fontSize: 12, fontWeight: 600,
-        color: statusActive ? "#15803D" : "#B91C1C",
+        display: "flex", alignItems: "center",
+        justifyContent: isMobile ? "space-between" : "flex-end",
+        gap: 10, flex: isMobile ? "1 1 100%" : "0 0 auto",
+        marginTop: isMobile ? 4 : 0,
       }}>
-        {statusActive ? "Ativa" : "Cancelada"}
+        <div style={{ textAlign: isMobile ? "left" : "right" }}>
+          <div style={{ fontSize: 17, fontWeight: 700, color: DARK }}>
+            {solution?.preco != null
+              ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+              : "Gratuito"}
+          </div>
+          {solution?.preco != null && (
+            <div style={{ fontSize: 11, color: GRAY }}>{isOneTime ? "único" : "/mês"}</div>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+          <div style={{
+            padding: "4px 12px", borderRadius: 99,
+            background: statusActive ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
+            border: `1px solid ${statusActive ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
+            fontSize: 12, fontWeight: 600,
+            color: statusActive ? "#15803D" : "#B91C1C",
+            whiteSpace: "nowrap",
+          }}>
+            {statusActive ? "Ativa" : "Cancelada"}
+          </div>
+          {statusActive && (
+            <button onClick={onCancel} style={{
+              padding: "8px 16px", borderRadius: 8,
+              border: "1.5px solid rgba(220,38,38,0.25)",
+              background: "transparent", color: "#DC2626",
+              fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+              transition: "background 0.15s, border-color 0.15s",
+              whiteSpace: "nowrap",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(220,38,38,0.07)"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.4)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.25)"; }}
+            >
+              Cancelar
+            </button>
+          )}
+        </div>
       </div>
-      {statusActive && (
-        <button onClick={onCancel} style={{
-          padding: "8px 16px", borderRadius: 8, flexShrink: 0,
-          border: "1.5px solid rgba(220,38,38,0.25)",
-          background: "transparent", color: "#DC2626",
-          fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-          transition: "background 0.15s, border-color 0.15s",
-        }}
-          onMouseEnter={e => { e.currentTarget.style.background = "rgba(220,38,38,0.07)"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.4)"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.25)"; }}
-        >
-          Cancelar
-        </button>
-      )}
     </div>
   );
 }
@@ -226,6 +251,9 @@ export default function EmpresaDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeNav, setActiveNav] = useState("subscriptions");
   const [cancelTarget, setCancelTarget] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const width = useWindowSize();
+  const isMobile = width < 768;
 
   useEffect(() => {
     async function init() {
@@ -289,6 +317,14 @@ export default function EmpresaDashboard() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: DARK }}>
 
+      {/* Mobile backdrop */}
+      {isMobile && sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 49, background: "rgba(0,0,0,0.4)" }}
+        />
+      )}
+
       {/* ── SIDEBAR ── */}
       <aside style={{
         width: 240, flexShrink: 0,
@@ -296,7 +332,11 @@ export default function EmpresaDashboard() {
         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
         borderRight: `1px solid ${BORDER}`,
         display: "flex", flexDirection: "column",
-        position: "fixed", top: 0, bottom: 0, left: 0, overflowY: "auto",
+        position: "fixed", top: 0, bottom: 0,
+        left: isMobile && !sidebarOpen ? -240 : 0,
+        zIndex: 50,
+        transition: "left 0.25s ease",
+        overflowY: "auto",
       }}>
         <div style={{ padding: "20px 20px 16px" }}>
           <a href="/" style={{ textDecoration: "none" }}>
@@ -311,7 +351,7 @@ export default function EmpresaDashboard() {
               icon={item.icon}
               label={item.label}
               active={activeNav === item.key}
-              onClick={item.href ? undefined : () => setActiveNav(item.key)}
+              onClick={item.href ? undefined : () => { setActiveNav(item.key); if (isMobile) setSidebarOpen(false); }}
               href={item.href}
             />
           ))}
@@ -349,8 +389,32 @@ export default function EmpresaDashboard() {
       </aside>
 
       {/* ── MAIN CONTENT ── */}
-      <main style={{ flex: 1, marginLeft: 240, minWidth: 0 }}>
-        <div style={{ maxWidth: 960, margin: "0 auto", padding: "40px 32px" }}>
+      <main style={{ flex: 1, marginLeft: isMobile ? 0 : 240, minWidth: 0 }}>
+        {isMobile && (
+          <div style={{
+            position: "sticky", top: 0, zIndex: 40,
+            background: "rgba(255,255,255,0.95)",
+            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            borderBottom: `1px solid ${BORDER}`,
+            padding: "0 16px", height: 56,
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <a href="/" style={{ textDecoration: "none" }}>
+              <WePromptLogo id="empresa-mobile" textColor={DARK} />
+            </a>
+            <button
+              onClick={() => setSidebarOpen(o => !o)}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: 22, color: DARK, padding: "4px 8px",
+                display: "flex", alignItems: "center",
+              }}
+            >
+              {sidebarOpen ? "✕" : "☰"}
+            </button>
+          </div>
+        )}
+        <div style={{ maxWidth: 960, margin: "0 auto", padding: isMobile ? "24px 16px 32px" : "40px 32px" }}>
 
           {activeNav === "subscriptions" && (
             <>
@@ -363,7 +427,7 @@ export default function EmpresaDashboard() {
                 </p>
               </div>
 
-              <div style={{ display: "flex", gap: 16, marginBottom: 32 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 16, marginBottom: 32 }}>
                 <StatCard
                   label="Assinaturas ativas"
                   value={activeSubs.length}
@@ -422,6 +486,7 @@ export default function EmpresaDashboard() {
                         key={sub.id}
                         sub={sub}
                         onCancel={() => setCancelTarget({ id: sub.id, titulo: sub.solutions?.titulo || "esta solução" })}
+                        isMobile={isMobile}
                       />
                     ))}
                 </div>

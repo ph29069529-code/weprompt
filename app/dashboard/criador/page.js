@@ -12,6 +12,18 @@ const BORDER = "rgba(0,0,0,0.08)";
 
 const CATEGORIES = ["Automação", "Agentes de IA", "Chatbots", "Análise de Dados", "Marketing IA"];
 
+function useWindowSize() {
+  const [width, setWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
+  useEffect(() => {
+    function onResize() { setWidth(window.innerWidth); }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return width;
+}
+
 const Icon = ({ d, size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
     strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -95,23 +107,33 @@ function StatusBadge({ status }) {
 }
 
 /* ── Solution card ── */
-function SolutionCard({ solution, onToggleAtivo, onEdit }) {
+function SolutionCard({ solution, onToggleAtivo, onEdit, isMobile }) {
   return (
     <div style={{
       background: "#fff",
       border: `1px solid ${BORDER}`,
       boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
       borderRadius: 14,
-      padding: "20px 24px",
-      display: "flex", alignItems: "center", gap: 20,
+      padding: isMobile ? "14px 16px" : "20px 24px",
+      display: "flex", alignItems: isMobile ? "flex-start" : "center",
+      gap: isMobile ? 10 : 20, flexWrap: isMobile ? "wrap" : "nowrap",
+      overflow: "hidden",
     }}>
-      <div style={{
-        width: 10, height: 10, borderRadius: "50%", flexShrink: 0,
-        background: solution.ativo ? PURPLE : "rgba(0,0,0,0.15)",
-      }} />
+      {!isMobile && (
+        <div style={{
+          width: 10, height: 10, borderRadius: "50%", flexShrink: 0,
+          background: solution.ativo ? PURPLE : "rgba(0,0,0,0.15)",
+        }} />
+      )}
 
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ flex: isMobile ? "1 1 100%" : 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+          {isMobile && (
+            <div style={{
+              width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+              background: solution.ativo ? PURPLE : "rgba(0,0,0,0.15)",
+            }} />
+          )}
           <span style={{ fontWeight: 700, fontSize: 15, color: DARK }}>{solution.titulo}</span>
           <StatusBadge status={solution.status || "pending"} />
           {(solution.version || 1) > 1 && (
@@ -123,7 +145,7 @@ function SolutionCard({ solution, onToggleAtivo, onEdit }) {
             </span>
           )}
         </div>
-        <div style={{ fontSize: 12, color: GRAY }}>
+        <div style={{ fontSize: 12, color: GRAY, overflow: "hidden" }}>
           <span style={{
             display: "inline-block",
             background: "rgba(107,92,231,0.08)", color: PURPLE,
@@ -144,40 +166,45 @@ function SolutionCard({ solution, onToggleAtivo, onEdit }) {
         )}
       </div>
 
-      <div style={{ textAlign: "right", flexShrink: 0 }}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: DARK }}>
-          {solution.preco != null
-            ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-            : "Gratuito"}
-        </div>
-        {solution.preco != null && (
-          <div style={{ fontSize: 11, color: GRAY }}>
-            {solution.payment_type === "one_time" ? "único" : "/mês"}
+      <div style={{
+        display: "flex", alignItems: "center",
+        justifyContent: isMobile ? "space-between" : "flex-end",
+        gap: 16, flex: isMobile ? "1 1 100%" : "0 0 auto",
+      }}>
+        <div style={{ textAlign: isMobile ? "left" : "right" }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: DARK }}>
+            {solution.preco != null
+              ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+              : "Gratuito"}
           </div>
-        )}
-      </div>
-
-      <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-        <button
-          onClick={() => onEdit(solution)}
-          style={{
-            padding: "6px 14px", borderRadius: 8,
-            border: `1.5px solid rgba(107,92,231,0.25)`,
-            background: "transparent", color: PURPLE,
-            fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-            display: "flex", alignItems: "center", gap: 5,
-            transition: "background 0.15s",
-          }}
-          onMouseEnter={e => (e.currentTarget.style.background = "rgba(107,92,231,0.07)")}
-          onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-        >
-          <Icon d={icons.edit} size={12} /> Editar
-        </button>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-          <Toggle checked={solution.ativo} onChange={v => onToggleAtivo(solution.id, v)} />
-          <span style={{ fontSize: 10, color: solution.ativo ? PURPLE : GRAY, fontWeight: 600 }}>
-            {solution.ativo ? "Ativo" : "Inativo"}
-          </span>
+          {solution.preco != null && (
+            <div style={{ fontSize: 11, color: GRAY }}>
+              {solution.payment_type === "one_time" ? "único" : "/mês"}
+            </div>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+          <button
+            onClick={() => onEdit(solution)}
+            style={{
+              padding: "6px 14px", borderRadius: 8,
+              border: `1.5px solid rgba(107,92,231,0.25)`,
+              background: "transparent", color: PURPLE,
+              fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+              display: "flex", alignItems: "center", gap: 5,
+              transition: "background 0.15s",
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(107,92,231,0.07)")}
+            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+          >
+            <Icon d={icons.edit} size={12} /> Editar
+          </button>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            <Toggle checked={solution.ativo} onChange={v => onToggleAtivo(solution.id, v)} />
+            <span style={{ fontSize: 10, color: solution.ativo ? PURPLE : GRAY, fontWeight: 600 }}>
+              {solution.ativo ? "Ativo" : "Inativo"}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -724,6 +751,9 @@ export default function CriadorDashboard() {
   const [activeNav, setActiveNav] = useState("solutions");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingSolution, setEditingSolution] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const width = useWindowSize();
+  const isMobile = width < 768;
 
   useEffect(() => {
     async function init() {
@@ -778,6 +808,14 @@ export default function CriadorDashboard() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: DARK }}>
 
+      {/* Mobile backdrop */}
+      {isMobile && sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 49, background: "rgba(0,0,0,0.4)" }}
+        />
+      )}
+
       {/* ── SIDEBAR ── */}
       <aside style={{
         width: 240, flexShrink: 0,
@@ -785,7 +823,11 @@ export default function CriadorDashboard() {
         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
         borderRight: `1px solid ${BORDER}`,
         display: "flex", flexDirection: "column",
-        position: "fixed", top: 0, bottom: 0, left: 0, overflowY: "auto",
+        position: "fixed", top: 0, bottom: 0,
+        left: isMobile && !sidebarOpen ? -240 : 0,
+        zIndex: 50,
+        transition: "left 0.25s ease",
+        overflowY: "auto",
       }}>
         <div style={{ padding: "20px 20px 16px" }}>
           <a href="/" style={{ textDecoration: "none" }}>
@@ -796,7 +838,8 @@ export default function CriadorDashboard() {
         <nav style={{ flex: 1, padding: "0 12px", display: "flex", flexDirection: "column", gap: 2 }}>
           {navItems.map(item => (
             <NavItem key={item.key} icon={item.icon} label={item.label}
-              active={activeNav === item.key} onClick={() => setActiveNav(item.key)} />
+              active={activeNav === item.key}
+              onClick={() => { setActiveNav(item.key); if (isMobile) setSidebarOpen(false); }} />
           ))}
         </nav>
         <div style={{ padding: "16px 12px", borderTop: `1px solid ${BORDER}` }}>
@@ -832,12 +875,36 @@ export default function CriadorDashboard() {
       </aside>
 
       {/* ── MAIN CONTENT ── */}
-      <main style={{ flex: 1, marginLeft: 240, minWidth: 0 }}>
-        <div style={{ maxWidth: 960, margin: "0 auto", padding: "40px 32px" }}>
+      <main style={{ flex: 1, marginLeft: isMobile ? 0 : 240, minWidth: 0 }}>
+        {isMobile && (
+          <div style={{
+            position: "sticky", top: 0, zIndex: 40,
+            background: "rgba(255,255,255,0.95)",
+            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            borderBottom: `1px solid ${BORDER}`,
+            padding: "0 16px", height: 56,
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <a href="/" style={{ textDecoration: "none" }}>
+              <WePromptLogo id="dash-mobile" textColor={DARK} />
+            </a>
+            <button
+              onClick={() => setSidebarOpen(o => !o)}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: 22, color: DARK, padding: "4px 8px",
+                display: "flex", alignItems: "center",
+              }}
+            >
+              {sidebarOpen ? "✕" : "☰"}
+            </button>
+          </div>
+        )}
+        <div style={{ maxWidth: 960, margin: "0 auto", padding: isMobile ? "24px 16px 32px" : "40px 32px" }}>
 
           {activeNav === "solutions" && (
             <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexWrap: "wrap", gap: 12, marginBottom: 28 }}>
                 <div>
                   <h1 style={{ fontSize: 26, fontWeight: 800, color: DARK, margin: 0, letterSpacing: "-0.5px" }}>
                     Minhas Soluções
@@ -862,7 +929,7 @@ export default function CriadorDashboard() {
                 </button>
               </div>
 
-              <div style={{ display: "flex", gap: 16, marginBottom: 32 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16, marginBottom: 32 }}>
                 <StatCard label="Total de soluções" value={solutions.length} sub={`${solutions.filter(s => s.ativo).length} ativas`} />
                 <StatCard label="Assinantes" value="0" sub="Nenhum ainda" />
                 <StatCard label="Receita mensal" value="R$ 0" sub="Sem assinaturas ativas" />
@@ -898,7 +965,8 @@ export default function CriadorDashboard() {
                   {solutions.map(s => (
                     <SolutionCard key={s.id} solution={s}
                       onToggleAtivo={handleToggleAtivo}
-                      onEdit={openEdit} />
+                      onEdit={openEdit}
+                      isMobile={isMobile} />
                   ))}
                 </div>
               )}

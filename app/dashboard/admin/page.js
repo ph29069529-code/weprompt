@@ -13,6 +13,18 @@ const GREEN = "#16A34A";
 
 const ADMIN_EMAIL = "ph29069529@gmail.com";
 
+function useWindowSize() {
+  const [width, setWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
+  useEffect(() => {
+    function onResize() { setWidth(window.innerWidth); }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return width;
+}
+
 const TABS = [
   { key: "pending",  label: "Pendentes",  color: "#B45309" },
   { key: "approved", label: "Aprovadas",  color: "#15803D" },
@@ -432,7 +444,7 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
 }
 
 /* ── Solution row ── */
-function SolutionRow({ solution, onApprove, onReject, onView, actionLoading }) {
+function SolutionRow({ solution, onApprove, onReject, onView, actionLoading, isMobile }) {
   const isLoading = actionLoading === solution.id;
   const creatorNome = solution.profiles?.nome || "—";
   const priceLabel = solution.preco != null
@@ -446,25 +458,29 @@ function SolutionRow({ solution, onApprove, onReject, onView, actionLoading }) {
       border: `1px solid ${BORDER}`,
       boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
       borderRadius: 14,
-      padding: "20px 24px",
-      display: "flex", gap: 16, alignItems: "flex-start",
+      padding: isMobile ? "14px 16px" : "20px 24px",
+      display: "flex", gap: isMobile ? 12 : 16, alignItems: "flex-start",
+      flexWrap: isMobile ? "wrap" : "nowrap",
+      overflow: "hidden",
     }}>
-      <div style={{
-        width: 88, height: 56, borderRadius: 8, flexShrink: 0, overflow: "hidden",
-        background: "rgba(107,92,231,0.06)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        border: `1px solid ${BORDER}`,
-      }}>
-        {solution.cover_url ? (
-          <img src={solution.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        ) : (
-          <span style={{ fontSize: 20, opacity: 0.2, color: PURPLE }}>✦</span>
-        )}
-      </div>
+      {!isMobile && (
+        <div style={{
+          width: 88, height: 56, borderRadius: 8, flexShrink: 0, overflow: "hidden",
+          background: "rgba(107,92,231,0.06)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          border: `1px solid ${BORDER}`,
+        }}>
+          {solution.cover_url ? (
+            <img src={solution.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          ) : (
+            <span style={{ fontSize: 20, opacity: 0.2, color: PURPLE }}>✦</span>
+          )}
+        </div>
+      )}
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-          <span style={{ fontWeight: 700, fontSize: 15, color: DARK }}>{solution.titulo}</span>
+          <span style={{ fontWeight: 700, fontSize: 15, color: DARK, overflow: "hidden", textOverflow: "ellipsis" }}>{solution.titulo}</span>
           {(solution.version || 1) > 1 && (
             <span style={{
               fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 99,
@@ -495,10 +511,20 @@ function SolutionRow({ solution, onApprove, onReject, onView, actionLoading }) {
         </p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0, alignItems: "stretch", minWidth: 120 }}>
+      <div style={{
+        display: "flex",
+        flexDirection: isMobile ? "row" : "column",
+        flexWrap: isMobile ? "wrap" : "nowrap",
+        gap: 8,
+        flex: isMobile ? "1 1 100%" : "0 0 auto",
+        alignItems: "stretch",
+        minWidth: isMobile ? "auto" : 120,
+        marginTop: isMobile ? 4 : 0,
+      }}>
         <button
           onClick={() => onView(solution)}
           style={{
+            flex: 1,
             display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
             background: "transparent", color: GRAY,
             border: `1.5px solid ${BORDER}`,
@@ -516,6 +542,7 @@ function SolutionRow({ solution, onApprove, onReject, onView, actionLoading }) {
         {solution.status === "pending" && (
           <>
             <button onClick={() => onApprove(solution.id)} disabled={isLoading} style={{
+              flex: 1,
               display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
               background: isLoading ? "rgba(22,163,74,0.4)" : GREEN, color: "#fff",
               border: "none", borderRadius: 8, padding: "7px 12px",
@@ -528,6 +555,7 @@ function SolutionRow({ solution, onApprove, onReject, onView, actionLoading }) {
               <Icon d={icons.check} size={13} /> Aprovar
             </button>
             <button onClick={() => onReject(solution)} disabled={isLoading} style={{
+              flex: 1,
               display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
               background: "transparent", color: "#DC2626",
               border: "1.5px solid rgba(220,38,38,0.25)",
@@ -558,6 +586,9 @@ export default function AdminDashboard() {
   const [rejectTarget, setRejectTarget] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedSolution, setSelectedSolution] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const width = useWindowSize();
+  const isMobile = width < 768;
 
   useEffect(() => {
     async function init() {
@@ -657,6 +688,14 @@ export default function AdminDashboard() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: DARK }}>
 
+      {/* Mobile backdrop */}
+      {isMobile && sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 49, background: "rgba(0,0,0,0.4)" }}
+        />
+      )}
+
       {/* ── SIDEBAR ── */}
       <aside style={{
         width: 240, flexShrink: 0,
@@ -664,7 +703,10 @@ export default function AdminDashboard() {
         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
         borderRight: `1px solid ${BORDER}`,
         display: "flex", flexDirection: "column",
-        position: "fixed", top: 0, bottom: 0, left: 0,
+        position: "fixed", top: 0, bottom: 0,
+        left: isMobile && !sidebarOpen ? -240 : 0,
+        zIndex: 50,
+        transition: "left 0.25s ease",
       }}>
         <div style={{ padding: "20px 20px 16px" }}>
           <a href="/" style={{ textDecoration: "none" }}>
@@ -682,7 +724,7 @@ export default function AdminDashboard() {
           </div>
           <div style={{ marginTop: 20, padding: "0 4px" }}>
             {TABS.map(tab => (
-              <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
+              <button key={tab.key} onClick={() => { setActiveTab(tab.key); if (isMobile) setSidebarOpen(false); }} style={{
                 width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "9px 12px", borderRadius: 8, border: "none",
                 background: activeTab === tab.key ? "rgba(107,92,231,0.1)" : "transparent",
@@ -729,8 +771,32 @@ export default function AdminDashboard() {
       </aside>
 
       {/* ── MAIN CONTENT ── */}
-      <main style={{ flex: 1, marginLeft: 240, minWidth: 0 }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: "40px 32px" }}>
+      <main style={{ flex: 1, marginLeft: isMobile ? 0 : 240, minWidth: 0 }}>
+        {isMobile && (
+          <div style={{
+            position: "sticky", top: 0, zIndex: 40,
+            background: "rgba(255,255,255,0.95)",
+            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            borderBottom: `1px solid ${BORDER}`,
+            padding: "0 16px", height: 56,
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <a href="/" style={{ textDecoration: "none" }}>
+              <WePromptLogo id="admin-mobile" textColor={DARK} />
+            </a>
+            <button
+              onClick={() => setSidebarOpen(o => !o)}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: 22, color: DARK, padding: "4px 8px",
+                display: "flex", alignItems: "center",
+              }}
+            >
+              {sidebarOpen ? "✕" : "☰"}
+            </button>
+          </div>
+        )}
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "24px 16px 32px" : "40px 32px" }}>
           <div style={{ marginBottom: 32 }}>
             <h1 style={{ fontSize: 26, fontWeight: 800, color: DARK, margin: 0, letterSpacing: "-0.5px" }}>
               {TABS.find(t => t.key === activeTab)?.label}
@@ -773,6 +839,7 @@ export default function AdminDashboard() {
                   onReject={handleReject}
                   onView={sol => setSelectedSolution(sol)}
                   actionLoading={actionLoading}
+                  isMobile={isMobile}
                 />
               ))}
             </div>
