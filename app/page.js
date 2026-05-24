@@ -166,27 +166,124 @@ function CreatorCard() {
 }
 
 function GlassStack() {
-  const layers = [
-    { tx: 60, ty: 60, bg: "rgba(147,197,253,0.07)" },
-    { tx: 45, ty: 45, bg: "rgba(139,92,246,0.09)" },
-    { tx: 30, ty: 30, bg: "rgba(107,92,231,0.10)" },
-    { tx: 15, ty: 15, bg: "rgba(147,197,253,0.12)" },
-    { tx:  0, ty:  0, bg: "rgba(167,139,250,0.15)" },
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setActiveIndex(i => (i + 1) % 3), 3000);
+    return () => clearInterval(id);
+  }, []);
+
+  const positionStyles = [
+    {
+      transform: "perspective(800px) rotateY(-5deg) translateZ(0px) translateX(0px) translateY(0px)",
+      zIndex: 3, opacity: 1,
+    },
+    {
+      transform: "perspective(800px) rotateY(-15deg) translateZ(-60px) translateX(40px) translateY(30px)",
+      zIndex: 2, opacity: 0.85,
+    },
+    {
+      transform: "perspective(800px) rotateY(-20deg) translateZ(-120px) translateX(80px) translateY(60px)",
+      zIndex: 1, opacity: 0.6,
+    },
   ];
-  return (
-    <div style={{ position: "relative", width: 480, height: 380, flexShrink: 0, animation: "float 4s ease-in-out infinite" }}>
-      {layers.map(({ tx, ty, bg }, i) => (
+
+  const bgs = [
+    "rgba(14,165,233,0.12)",
+    "rgba(56,189,248,0.09)",
+    "rgba(56,189,248,0.07)",
+  ];
+
+  const contents = [
+    /* card 0: Dashboard */
+    <div key="dash" style={{ padding: "20px 24px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: 5 }}>
+          {["#FF5F56", "#FFBD2E", "#27C93F"].map(c => (
+            <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
+          ))}
+        </div>
+        <span style={{ fontSize: 12, fontWeight: 600, color: "#0EA5E9" }}>WePrompt Dashboard</span>
+      </div>
+      <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+        {[["500+", "Soluções"], ["180+", "Criadores"]].map(([val, lbl]) => (
+          <div key={lbl} style={{
+            flex: 1, background: "rgba(14,165,233,0.08)", borderRadius: 10,
+            padding: "12px 14px", border: "1px solid rgba(56,189,248,0.2)",
+          }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#0EA5E9" }}>{val}</div>
+            <div style={{ fontSize: 11, color: "rgba(14,165,233,0.7)", marginTop: 2 }}>{lbl}</div>
+          </div>
+        ))}
+      </div>
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: "#0369A1" }}>Automação</span>
+          <span style={{ fontSize: 12, color: "#0369A1" }}>78%</span>
+        </div>
+        <div style={{ height: 6, background: "rgba(56,189,248,0.15)", borderRadius: 99 }}>
+          <div style={{ width: "78%", height: "100%", background: "linear-gradient(90deg, #38BDF8, #0EA5E9)", borderRadius: 99 }} />
+        </div>
+      </div>
+    </div>,
+
+    /* card 1: Soluções em Alta */
+    <div key="high" style={{ padding: "20px 24px" }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: "#0369A1", marginBottom: 16 }}>Soluções em Alta</div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+        {["Agentes IA", "WhatsApp", "Marketing"].map(tag => (
+          <span key={tag} style={{
+            padding: "5px 12px", borderRadius: 99,
+            background: "rgba(56,189,248,0.12)", border: "1px solid rgba(56,189,248,0.3)",
+            fontSize: 11, fontWeight: 600, color: "#0EA5E9",
+          }}>{tag}</span>
+        ))}
+      </div>
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        background: "rgba(14,165,233,0.06)", border: "1px solid rgba(56,189,248,0.2)",
+        borderRadius: 10, padding: "12px 14px",
+      }}>
+        <span style={{ fontSize: 13, color: "#0369A1" }}>🤖 Agente de Vendas</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: "#0EA5E9" }}>R$ 97/mês</span>
+      </div>
+    </div>,
+
+    /* card 2: Suas Compras */
+    <div key="purchases" style={{ padding: "20px 24px" }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: "#0369A1", marginBottom: 16 }}>Suas Compras</div>
+      {[0, 1].map(i => (
         <div key={i} style={{
-          position: "absolute", top: 0, left: 0,
-          width: 400, height: 300,
-          background: bg,
-          border: "1px solid rgba(107,92,231,0.2)",
-          borderRadius: 16,
-          boxShadow: "0 8px 32px rgba(107,92,231,0.1)",
-          backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-          transform: `perspective(800px) rotateY(-20deg) rotateX(5deg) translateX(${tx}px) translateY(${ty}px)`,
+          height: 44, borderRadius: 10, marginBottom: 10,
+          background: "rgba(56,189,248,0.07)", border: "1px solid rgba(56,189,248,0.15)",
+          filter: "blur(1.5px)", opacity: 0.6,
         }} />
       ))}
+    </div>,
+  ];
+
+  return (
+    <div style={{ position: "relative", width: 520, height: 400, flexShrink: 0, animation: "float 4s ease-in-out infinite" }}>
+      {[0, 1, 2].map(cardIndex => {
+        const pos = (cardIndex - activeIndex + 3) % 3;
+        const { transform, zIndex, opacity } = positionStyles[pos];
+        return (
+          <div key={cardIndex} style={{
+            position: "absolute", top: 0, left: 0,
+            width: 400, height: 280,
+            background: bgs[pos],
+            border: "1px solid rgba(56,189,248,0.3)",
+            borderRadius: 16,
+            boxShadow: "0 8px 32px rgba(14,165,233,0.15)",
+            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            overflow: "hidden",
+            transform, zIndex, opacity,
+            transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}>
+            {contents[cardIndex]}
+          </div>
+        );
+      })}
     </div>
   );
 }
