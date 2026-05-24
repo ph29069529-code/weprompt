@@ -376,17 +376,18 @@ export default function Home() {
         alignItems: "center", justifyContent: "center",
         padding: isMobile ? "120px 24px 80px" : "148px 32px 80px",
         textAlign: "center",
-        background: "#fff",
+        background: "linear-gradient(135deg, #EEF2FF 0%, #F3E8FF 40%, #EDE9FE 70%, #E0F2FE 100%)",
         position: "relative", overflow: "hidden",
       }}>
         {/* Ambient glow */}
         <div style={{
-          position: "absolute", top: "25%", left: "50%", transform: "translateX(-50%)",
-          width: 700, height: 500, pointerEvents: "none",
-          background: `radial-gradient(ellipse, ${PURPLE}10 0%, transparent 68%)`,
+          position: "absolute", top: "20%", left: "50%", transform: "translateX(-50%)",
+          width: 600, height: 400, pointerEvents: "none", zIndex: 0,
+          background: "radial-gradient(ellipse, rgba(107,92,231,0.12) 0%, transparent 70%)",
+          filter: "blur(40px)",
         }} />
 
-        <div style={{ maxWidth: 820, position: "relative" }}>
+        <div style={{ maxWidth: 820, position: "relative", zIndex: 1 }}>
           {/* Badge pill */}
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
