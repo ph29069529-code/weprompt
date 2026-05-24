@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import WePromptLogo from "./components/WePromptLogo";
 import { supabase } from "./lib/supabase";
 
@@ -14,21 +14,9 @@ function getDashboardUrl(session) {
 }
 
 const PURPLE = "#6B5CE7";
-const DARK = "#0A0A1A";
-const GRAY = "#6B7280";
-
-const Arrow = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ display: "inline-block", flexShrink: 0 }}>
-    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const Check = ({ color = PURPLE }) => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-    <circle cx="8" cy="8" r="7" fill={color + "22"} />
-    <path d="M5 8l2 2 4-4" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+const NEAR_BLACK = "#1D1D1F";
+const GRAY_TEXT = "#6E6E73";
+const BG_GRAY = "#F5F5F7";
 
 function useWindowSize() {
   const [width, setWidth] = useState(
@@ -49,55 +37,242 @@ const NAV_LINKS = [
   ["Para Criadores", "/criadores"],
 ];
 
+const Arrow = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ display: "inline-block", flexShrink: 0 }}>
+    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+    <circle cx="12" cy="12" r="11" fill={PURPLE + "18"} />
+    <path d="M7 12l3 3 7-7" stroke={PURPLE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+function CatalogMockup() {
+  const solutions = [
+    { cat: "WhatsApp IA", name: "Agente de Vendas WhatsApp", price: "R$ 97/mês", badge: "Verificado ✦" },
+    { cat: "Automação",   name: "Auto Proposta Comercial",   price: "R$ 149/mês", badge: null },
+    { cat: "Chatbots",    name: "Suporte Inteligente 24h",   price: "R$ 67/mês",  badge: "Verificado ✦" },
+  ];
+  return (
+    <div style={{
+      background: "#fff",
+      borderRadius: 24,
+      padding: "24px",
+      width: "100%", maxWidth: 360,
+      boxShadow: "0 40px 80px rgba(0,0,0,0.13), 0 8px 24px rgba(0,0,0,0.06)",
+      border: "1px solid rgba(0,0,0,0.06)",
+      animation: "float 4s ease-in-out infinite",
+    }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16 }}>
+        Catálogo WePrompt
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {solutions.map(({ cat, name, price, badge }) => (
+          <div key={name} style={{
+            background: BG_GRAY, borderRadius: 14, padding: "14px 16px",
+            border: "1px solid rgba(0,0,0,0.05)",
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, color: PURPLE,
+                    background: PURPLE + "12", padding: "2px 8px", borderRadius: 99,
+                  }}>
+                    {cat}
+                  </span>
+                  {badge && (
+                    <span style={{ fontSize: 9, fontWeight: 700, color: "#15803D", background: "rgba(22,163,74,0.1)", padding: "2px 7px", borderRadius: 99 }}>
+                      {badge}
+                    </span>
+                  )}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: NEAR_BLACK, lineHeight: 1.35 }}>{name}</div>
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: PURPLE, flexShrink: 0, marginTop: 2 }}>{price}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 14, padding: "11px 16px", background: PURPLE, borderRadius: 12, textAlign: "center" }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>Ver todas as soluções →</span>
+      </div>
+    </div>
+  );
+}
+
+function CreatorCard() {
+  return (
+    <div style={{
+      background: NEAR_BLACK,
+      borderRadius: 24,
+      padding: "32px 28px",
+      width: "100%", maxWidth: 360,
+      boxShadow: "0 40px 80px rgba(0,0,0,0.3)",
+      animation: "float 4s ease-in-out infinite",
+    }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 24 }}>
+        Painel do Criador
+      </div>
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 6 }}>Receita este mês</div>
+        <div style={{ fontSize: 42, fontWeight: 800, color: "#fff", letterSpacing: "-1.5px", lineHeight: 1 }}>R$ 4.832</div>
+        <div style={{
+          display: "inline-flex", alignItems: "center", gap: 5, marginTop: 8,
+          background: "rgba(22,163,74,0.18)", border: "1px solid rgba(22,163,74,0.3)",
+          borderRadius: 99, padding: "3px 10px",
+        }}>
+          <span style={{ color: "#4ADE80", fontSize: 12, fontWeight: 700 }}>↑ +38%</span>
+          <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>vs. mês anterior</span>
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+        {[{ label: "Assinantes", value: "47" }, { label: "Novas vendas", value: "12" }].map(({ label, value }) => (
+          <div key={label} style={{
+            flex: 1, background: "rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px",
+          }}>
+            <div style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}>{value}</div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 2 }}>{label}</div>
+          </div>
+        ))}
+      </div>
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,0.35)", marginBottom: 12 }}>Desempenho por solução</div>
+        {[
+          { name: "Agente WhatsApp", pct: 82 },
+          { name: "Chatbot Suporte", pct: 61 },
+          { name: "Auto Proposta IA", pct: 43 },
+        ].map(({ name, pct }) => (
+          <div key={name} style={{ marginBottom: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.55)" }}>{name}</span>
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }}>{pct}%</span>
+            </div>
+            <div style={{ height: 4, background: "rgba(255,255,255,0.08)", borderRadius: 99 }}>
+              <div style={{
+                width: `${pct}%`, height: "100%",
+                background: `linear-gradient(90deg, ${PURPLE}, #A78BFA)`,
+                borderRadius: 99,
+              }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [session, setSession] = useState(null);
+  const [counts, setCounts] = useState({ solutions: 0, creators: 0, companies: 0 });
   const width = useWindowSize();
   const isMobile = width < 768;
+  const dashboardUrl = getDashboardUrl(session);
+  const statsRef = useRef(null);
+  const statsTriggered = useRef(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => setSession(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, s) => setSession(s));
     return () => subscription.unsubscribe();
   }, []);
 
-  const dashboardUrl = getDashboardUrl(session);
+  /* ── Reveal animations ── */
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); }),
+      { threshold: 0.12, rootMargin: "0px 0px -50px 0px" }
+    );
+    document.querySelectorAll(".reveal, .reveal-left, .reveal-right").forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  /* ── Count-up animation ── */
+  useEffect(() => {
+    if (!statsRef.current) return;
+    const observer = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting || statsTriggered.current) return;
+      statsTriggered.current = true;
+      const targets = { solutions: 500, creators: 180, companies: 10000 };
+      const duration = 1600;
+      const startTime = performance.now();
+      function tick(now) {
+        const p = Math.min((now - startTime) / duration, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        setCounts({
+          solutions: Math.floor(ease * targets.solutions),
+          creators: Math.floor(ease * targets.creators),
+          companies: Math.floor(ease * targets.companies),
+        });
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }, { threshold: 0.3 });
+    observer.observe(statsRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div style={{ minHeight: "100vh", color: DARK, background: "linear-gradient(135deg, #F0F0FF 0%, #E8E8F8 30%, #EEF0FF 60%, #F5F0FF 100%)" }}>
+    <div style={{ minHeight: "100vh", color: NEAR_BLACK, background: "#fff", fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal-left.visible { opacity: 1; transform: translateX(0); }
+        .reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal-right.visible { opacity: 1; transform: translateX(0); }
+        @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+        @keyframes pulse-orb { 0%,100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.06); } }
+        .nav-hover:hover { color: ${NEAR_BLACK} !important; background: rgba(0,0,0,0.04) !important; }
+      `}</style>
 
-      {/* ══════════ NAVBAR ══════════ */}
+      {/* ════════════════════════════════════════
+          NAVBAR
+      ════════════════════════════════════════ */}
       <header style={{
-        position: "sticky", top: 0, zIndex: 100,
-        background: "rgba(255,255,255,0.92)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        background: "rgba(255,255,255,0.86)",
+        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
         borderBottom: "1px solid rgba(0,0,0,0.07)",
       }}>
         <div style={{
-          maxWidth: 1200, margin: "0 auto", width: "100%",
-          padding: "0 24px", height: 60,
+          maxWidth: 1200, margin: "0 auto",
+          padding: "0 32px", height: 64,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <WePromptLogo id="header" textColor={DARK} />
+            <WePromptLogo id="header" textColor={NEAR_BLACK} />
           </a>
 
-          {/* Desktop nav */}
           {!isMobile && (
             <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
               {NAV_LINKS.map(([label, href]) => (
-                <a key={label} href={href} className="nav-link">{label}</a>
+                <a key={label} href={href} style={{
+                  fontSize: 14, fontWeight: 500, color: GRAY_TEXT,
+                  textDecoration: "none", padding: "6px 14px", borderRadius: 8,
+                  transition: "color 0.15s, background 0.15s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.color = NEAR_BLACK; e.currentTarget.style.background = "rgba(0,0,0,0.05)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = GRAY_TEXT; e.currentTarget.style.background = "transparent"; }}
+                >
+                  {label}
+                </a>
               ))}
             </nav>
           )}
 
-          {/* Desktop action buttons */}
           {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               {session ? (
-                <a href={dashboardUrl} className="btn-dark" style={{
-                  borderRadius: 999, padding: "9px 20px",
+                <a href={dashboardUrl} style={{
+                  borderRadius: 999, padding: "9px 22px",
+                  background: NEAR_BLACK, color: "#fff",
                   fontSize: 14, fontWeight: 600,
                   display: "inline-flex", alignItems: "center", gap: 6,
                   textDecoration: "none",
@@ -107,19 +282,19 @@ export default function Home() {
               ) : (
                 <>
                   <a href="/login" style={{
-                    borderRadius: 999, padding: "8px 18px",
-                    fontSize: 14, fontWeight: 500,
-                    textDecoration: "none", color: DARK,
-                    border: "1.5px solid rgba(0,0,0,0.14)",
-                    background: "transparent",
+                    borderRadius: 999, padding: "8px 20px", fontSize: 14, fontWeight: 500,
+                    textDecoration: "none", color: NEAR_BLACK,
+                    border: "1.5px solid rgba(0,0,0,0.15)", background: "transparent",
                   }}>
                     Entrar
                   </a>
-                  <a href="/cadastro" className="btn-dark" style={{
-                    borderRadius: 999, padding: "9px 20px",
+                  <a href="/cadastro" style={{
+                    borderRadius: 999, padding: "9px 22px",
+                    background: PURPLE, color: "#fff",
                     fontSize: 14, fontWeight: 600,
                     display: "inline-flex", alignItems: "center", gap: 6,
                     textDecoration: "none",
+                    boxShadow: "0 4px 14px rgba(107,92,231,0.35)",
                   }}>
                     Criar conta <Arrow />
                   </a>
@@ -128,48 +303,39 @@ export default function Home() {
             </div>
           )}
 
-          {/* Mobile hamburger */}
           {isMobile && (
-            <button
-              onClick={() => setMenuOpen(o => !o)}
-              aria-label="Menu"
-              style={{
-                background: "none", border: "none", cursor: "pointer",
-                fontSize: 22, color: DARK, padding: "4px 8px",
-                display: "flex", alignItems: "center",
-              }}
-            >
+            <button onClick={() => setMenuOpen(o => !o)} aria-label="Menu" style={{
+              background: "none", border: "none", cursor: "pointer",
+              fontSize: 22, color: NEAR_BLACK, padding: "4px 8px", display: "flex", alignItems: "center",
+            }}>
               {menuOpen ? "✕" : "☰"}
             </button>
           )}
         </div>
 
-        {/* Mobile dropdown */}
         {isMobile && menuOpen && (
           <div style={{
-            position: "fixed", top: 60, left: 0, right: 0, zIndex: 99,
+            position: "fixed", top: 64, left: 0, right: 0, zIndex: 99,
             background: "rgba(255,255,255,0.97)",
-            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             borderBottom: "1px solid rgba(0,0,0,0.07)",
-            padding: "12px 24px 20px",
+            padding: "12px 24px 24px",
             display: "flex", flexDirection: "column", gap: 4,
           }}>
             {NAV_LINKS.map(([label, href]) => (
-              <a key={label} href={href}
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  padding: "12px 4px", fontSize: 16, fontWeight: 500,
-                  color: DARK, textDecoration: "none",
-                  borderBottom: "1px solid rgba(0,0,0,0.05)",
-                }}>
+              <a key={label} href={href} onClick={() => setMenuOpen(false)} style={{
+                padding: "13px 4px", fontSize: 17, fontWeight: 500,
+                color: NEAR_BLACK, textDecoration: "none",
+                borderBottom: "1px solid rgba(0,0,0,0.05)",
+              }}>
                 {label}
               </a>
             ))}
-            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
               {session ? (
-                <a href={dashboardUrl} className="btn-dark" style={{
-                  flex: 1, textAlign: "center",
-                  borderRadius: 999, padding: "11px",
+                <a href={dashboardUrl} style={{
+                  flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
+                  background: NEAR_BLACK, color: "#fff",
                   fontSize: 14, fontWeight: 600,
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                   textDecoration: "none",
@@ -179,17 +345,15 @@ export default function Home() {
               ) : (
                 <>
                   <a href="/login" style={{
-                    flex: 1, textAlign: "center",
-                    borderRadius: 999, padding: "11px",
-                    fontSize: 14, fontWeight: 500,
-                    textDecoration: "none", color: DARK,
+                    flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
+                    fontSize: 14, fontWeight: 500, textDecoration: "none", color: NEAR_BLACK,
                     border: "1.5px solid rgba(0,0,0,0.14)",
                   }}>
                     Entrar
                   </a>
-                  <a href="/cadastro" className="btn-dark" style={{
-                    flex: 1, textAlign: "center",
-                    borderRadius: 999, padding: "11px",
+                  <a href="/cadastro" style={{
+                    flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
+                    background: PURPLE, color: "#fff",
                     fontSize: 14, fontWeight: 600,
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                     textDecoration: "none",
@@ -203,287 +367,437 @@ export default function Home() {
         )}
       </header>
 
-      <main>
+      {/* ════════════════════════════════════════
+          HERO — 100vh, white
+      ════════════════════════════════════════ */}
+      <section style={{
+        minHeight: "100vh",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        padding: isMobile ? "120px 24px 80px" : "148px 32px 80px",
+        textAlign: "center",
+        background: "#fff",
+        position: "relative", overflow: "hidden",
+      }}>
+        {/* Ambient glow */}
+        <div style={{
+          position: "absolute", top: "25%", left: "50%", transform: "translateX(-50%)",
+          width: 700, height: 500, pointerEvents: "none",
+          background: `radial-gradient(ellipse, ${PURPLE}10 0%, transparent 68%)`,
+        }} />
 
-        {/* ══════════ HERO ══════════ */}
-        <section style={{ padding: isMobile ? "48px 20px 40px" : "80px 24px 64px", maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ maxWidth: 820, position: "relative" }}>
+          {/* Badge pill */}
           <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-            gap: isMobile ? 40 : 64,
-            alignItems: "center",
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: "#fff",
+            border: "1.5px solid rgba(107,92,231,0.22)",
+            borderRadius: 999, padding: "8px 20px",
+            fontSize: 13, fontWeight: 600, color: PURPLE,
+            marginBottom: 40,
+            boxShadow: "0 2px 16px rgba(107,92,231,0.1)",
+            letterSpacing: "0.01em",
           }}>
-
-            {/* LEFT — text content */}
-            <div style={{ textAlign: isMobile ? "center" : "left" }}>
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                background: PURPLE, color: "#fff",
-                borderRadius: 999, padding: "5px 14px",
-                fontSize: 12, fontWeight: 600, letterSpacing: "0.03em",
-                marginBottom: 28,
-              }}>
-                <span style={{ fontSize: 10 }}>✦</span>
-                1º Marketplace de IA da América Latina
-              </div>
-
-              <h1 style={{
-                fontSize: isMobile ? 36 : "clamp(32px, 4vw, 52px)",
-                fontWeight: 800,
-                lineHeight: 1.1, letterSpacing: "-1.5px",
-                color: DARK, marginBottom: 20,
-              }}>
-                Encontre a solução de IA perfeita para o seu negócio
-              </h1>
-
-              <p style={{
-                fontSize: 17, lineHeight: 1.7,
-                color: GRAY, marginBottom: 36,
-                maxWidth: isMobile ? "100%" : 440,
-                margin: isMobile ? "0 auto 36px" : "0 0 36px",
-              }}>
-                Curadoria especializada, suporte em português e centenas de soluções prontas para usar — tudo em um só lugar.
-              </p>
-
-              <div style={{
-                display: "flex", alignItems: "center", gap: 12,
-                flexWrap: "wrap",
-                justifyContent: isMobile ? "center" : "flex-start",
-              }}>
-                <a href="/solucoes" className="btn-primary" style={{
-                  borderRadius: 999, padding: "13px 26px",
-                  fontSize: 15, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  textDecoration: "none",
-                }}>
-                  Explorar Soluções <Arrow />
-                </a>
-                <a href="/cadastro?role=criador" className="btn-outline-gray" style={{
-                  borderRadius: 999, padding: "13px 26px",
-                  fontSize: 15, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  textDecoration: "none",
-                }}>
-                  Quero ser Criador
-                </a>
-              </div>
-            </div>
-
-            {/* RIGHT — mock dashboard card */}
-            <div style={{ position: "relative" }}>
-              <div style={{ position: "absolute", top: -18, right: -10, width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg, #7C3AED, #4F46E5)", transform: "rotate(14deg)", zIndex: 1 }} />
-              <div style={{ position: "absolute", top: 56, left: -22, width: 28, height: 28, borderRadius: 8, background: "linear-gradient(135deg, #67E8F9, #3B82F6)", transform: "rotate(-10deg)", zIndex: 1 }} />
-              <div style={{ position: "absolute", bottom: 32, right: -14, width: 22, height: 22, borderRadius: 6, background: PURPLE, opacity: 0.7, transform: "rotate(20deg)", zIndex: 1 }} />
-              <div style={{ position: "absolute", bottom: -14, left: 24, width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #F59E0B, #EC4899)", transform: "rotate(-6deg)", zIndex: 1 }} />
-
-              <div style={{
-                background: DARK, borderRadius: 24, padding: 28,
-                boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
-                position: "relative", zIndex: 0,
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 24 }}>
-                  {["#FF5F57", "#FFBD2E", "#28C840"].map(c => (
-                    <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
-                  ))}
-                  <span style={{ marginLeft: 8, fontSize: 12, color: "rgba(255,255,255,0.4)", fontWeight: 500 }}>WePrompt Dashboard</span>
-                </div>
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-                  {[["500+", "Soluções de IA"], ["180+", "Criadores"]].map(([n, l]) => (
-                    <div key={l} style={{
-                      background: "rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 16px",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                    }}>
-                      <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", letterSpacing: "-0.5px" }}>{n}</div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>{l}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 10, fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>Categorias em alta</div>
-                  {[["Automação", 78, PURPLE], ["Marketing IA", 62, "#3B82F6"], ["Analytics", 45, "#06B6D4"]].map(([label, pct, color]) => (
-                    <div key={label} style={{ marginBottom: 10 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>{label}</span>
-                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>{pct}%</span>
-                      </div>
-                      <div style={{ height: 4, borderRadius: 99, background: "rgba(255,255,255,0.08)" }}>
-                        <div style={{ height: "100%", width: `${pct}%`, borderRadius: 99, background: color }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {["Agentes IA", "Chatbots", "Análise de dados", "Automação"].map(tag => (
-                    <span key={tag} style={{
-                      fontSize: 11, fontWeight: 500,
-                      background: "rgba(255,255,255,0.08)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "rgba(255,255,255,0.6)",
-                      borderRadius: 999, padding: "4px 10px",
-                    }}>{tag}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
+            <span>✦</span>
+            1º Marketplace de IA da América Latina
           </div>
-        </section>
 
-        {/* ══════════ STATS STRIP ══════════ */}
-        <section style={{ padding: "0 24px 72px", maxWidth: 1200, margin: "0 auto" }}>
+          {/* Headline */}
+          <h1 style={{
+            fontSize: "clamp(42px, 7.5vw, 80px)",
+            fontWeight: 800, color: NEAR_BLACK,
+            letterSpacing: isMobile ? "-1.5px" : "-2.5px",
+            lineHeight: 1.06, marginBottom: 28,
+          }}>
+            Encontre a solução de IA perfeita para o seu negócio
+          </h1>
+
+          {/* Subtitle */}
+          <p style={{
+            fontSize: isMobile ? 17 : 21,
+            color: GRAY_TEXT, lineHeight: 1.65,
+            maxWidth: 600, margin: "0 auto 52px",
+          }}>
+            O primeiro marketplace brasileiro de soluções de inteligência artificial.
+            Curadoria especializada, suporte em português e pagamentos seguros.
+          </p>
+
+          {/* CTAs */}
+          <div style={{
+            display: "flex", gap: 14, justifyContent: "center",
+            flexWrap: "wrap", marginBottom: 72,
+          }}>
+            <a href="/solucoes" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              borderRadius: 999, padding: isMobile ? "15px 28px" : "17px 36px",
+              background: PURPLE, color: "#fff",
+              fontSize: isMobile ? 15 : 17, fontWeight: 700, textDecoration: "none",
+              boxShadow: "0 8px 32px rgba(107,92,231,0.38)",
+              transition: "transform 0.15s, box-shadow 0.15s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 14px 40px rgba(107,92,231,0.48)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(107,92,231,0.38)"; }}
+            >
+              Explorar Soluções <Arrow />
+            </a>
+            <a href="/cadastro?role=criador" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              borderRadius: 999, padding: isMobile ? "14px 28px" : "16px 36px",
+              background: "transparent", color: NEAR_BLACK,
+              fontSize: isMobile ? 15 : 17, fontWeight: 600, textDecoration: "none",
+              border: "1.5px solid rgba(0,0,0,0.18)",
+              transition: "background 0.15s, border-color 0.15s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.28)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.18)"; }}
+            >
+              Quero ser Criador
+            </a>
+          </div>
+
+          {/* Social proof */}
+          <div>
+            <p style={{ fontSize: 13, color: GRAY_TEXT, marginBottom: 14, fontWeight: 500, letterSpacing: "0.01em" }}>
+              Confiado por empresas em todo o Brasil
+            </p>
+            <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+              {["Startups", "Agências Digitais", "E-commerce", "Consultorias", "Indústrias"].map(name => (
+                <div key={name} style={{
+                  padding: "7px 18px",
+                  background: BG_GRAY, borderRadius: 999,
+                  fontSize: 13, fontWeight: 600, color: GRAY_TEXT,
+                  border: "1px solid rgba(0,0,0,0.06)",
+                }}>
+                  {name}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bounce scroll indicator */}
+        <div style={{
+          position: "absolute", bottom: 40, left: "50%", transform: "translateX(-50%)",
+          color: GRAY_TEXT, opacity: 0.4, animation: "bounce 2.2s ease-in-out infinite",
+        }}>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════
+          TICKER — gray
+      ════════════════════════════════════════ */}
+      <div style={{
+        background: BG_GRAY, padding: "18px 0",
+        overflow: "hidden",
+        borderTop: "1px solid rgba(0,0,0,0.06)",
+        borderBottom: "1px solid rgba(0,0,0,0.06)",
+      }}>
+        <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 24s linear infinite" }}>
+          {[0, 1].map(i => (
+            <span key={i} style={{ display: "inline-flex" }}>
+              {["Agentes de IA", "Automações", "Chatbots", "Marketing IA", "WhatsApp IA", "Analytics", "Integrações", "Copywriting IA", "Geração de Leads", "Atendimento IA"].map(label => (
+                <span key={label} style={{
+                  fontSize: 14, fontWeight: 600, color: GRAY_TEXT,
+                  padding: "0 28px",
+                  display: "inline-flex", alignItems: "center", gap: 14,
+                }}>
+                  {label}
+                  <span style={{ color: PURPLE, fontSize: 7, opacity: 0.7 }}>●</span>
+                </span>
+              ))}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════════
+          STATS — white, count-up
+      ════════════════════════════════════════ */}
+      <section ref={statsRef} style={{
+        background: "#fff",
+        padding: isMobile ? "88px 32px" : "128px 32px",
+      }}>
+        <div style={{
+          maxWidth: 960, margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+          gap: isMobile ? 56 : 0,
+        }}>
+          {[
+            { count: counts.solutions, suffix: "+", label: "Soluções de IA" },
+            { count: counts.creators,  suffix: "+", label: "Criadores Ativos" },
+            { count: counts.companies, suffix: "+", label: "Empresas Atendidas" },
+          ].map(({ count, suffix, label }, i) => (
+            <div key={label} className="reveal" style={{
+              textAlign: "center",
+              borderLeft: i > 0 && !isMobile ? "1px solid rgba(0,0,0,0.08)" : "none",
+              padding: isMobile ? "0" : "0 56px",
+            }}>
+              <div style={{
+                width: 40, height: 3, background: PURPLE,
+                margin: "0 auto 28px", borderRadius: 99,
+              }} />
+              <div style={{
+                fontSize: "clamp(52px, 7vw, 88px)",
+                fontWeight: 800, color: NEAR_BLACK,
+                letterSpacing: "-3px", lineHeight: 1,
+                marginBottom: 14,
+                fontVariantNumeric: "tabular-nums",
+              }}>
+                <span style={{ color: PURPLE }}>{count.toLocaleString("pt-BR")}</span>
+                <span style={{ color: PURPLE }}>{suffix}</span>
+              </div>
+              <div style={{ fontSize: 17, fontWeight: 500, color: GRAY_TEXT }}>{label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════
+          FOR CREATORS — gray, split
+      ════════════════════════════════════════ */}
+      <section style={{
+        background: BG_GRAY,
+        padding: isMobile ? "88px 24px" : "128px 48px",
+      }}>
+        <div style={{
+          maxWidth: 1120, margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: isMobile ? 64 : 96,
+          alignItems: "center",
+        }}>
+          {/* Left — text */}
+          <div className="reveal-left">
+            <div style={{
+              fontSize: 12, fontWeight: 700, color: PURPLE,
+              letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 20,
+            }}>
+              Para Criadores
+            </div>
+            <h2 style={{
+              fontSize: isMobile ? "clamp(36px, 7vw, 52px)" : "clamp(40px, 4.5vw, 60px)",
+              fontWeight: 800, color: NEAR_BLACK,
+              letterSpacing: isMobile ? "-1px" : "-1.5px",
+              lineHeight: 1.08, marginBottom: 36,
+            }}>
+              Distribua.<br />Monetize.<br />Escale.
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 40 }}>
+              {[
+                { title: "Publique em minutos", desc: "Cadastre, descreva e envie sua solução. Nossa curadoria aprova em até 48 horas úteis." },
+                { title: "Receba via PIX automaticamente", desc: "Sem burocracia, sem intermediários. Repasse direto na sua conta após cada venda confirmada." },
+                { title: "Alcance de mais de 10.000 empresas", desc: "Todo o mercado empresarial brasileiro que busca IA — pronto para descobrir sua solução." },
+              ].map(({ title, desc }) => (
+                <div key={title} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                  <CheckIcon />
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 5 }}>{title}</div>
+                    <div style={{ fontSize: 14, color: GRAY_TEXT, lineHeight: 1.7 }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <a href="/criadores" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              fontSize: 16, fontWeight: 700, color: PURPLE, textDecoration: "none",
+              transition: "gap 0.2s",
+            }}
+              onMouseEnter={e => e.currentTarget.style.gap = "12px"}
+              onMouseLeave={e => e.currentTarget.style.gap = "8px"}
+            >
+              Começar como criador <Arrow />
+            </a>
+          </div>
+
+          {/* Right — floating card */}
+          <div className="reveal-right" style={{ display: "flex", justifyContent: "center" }}>
+            <CreatorCard />
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════
+          FOR COMPANIES — white, split (flipped)
+      ════════════════════════════════════════ */}
+      <section style={{
+        background: "#fff",
+        padding: isMobile ? "88px 24px" : "128px 48px",
+      }}>
+        <div style={{
+          maxWidth: 1120, margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: isMobile ? 64 : 96,
+          alignItems: "center",
+        }}>
+          {/* Left — floating card (on desktop) */}
+          {!isMobile && (
+            <div className="reveal-left" style={{ display: "flex", justifyContent: "center" }}>
+              <CatalogMockup />
+            </div>
+          )}
+
+          {/* Right — text */}
+          <div className="reveal-right">
+            <div style={{
+              fontSize: 12, fontWeight: 700, color: PURPLE,
+              letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 20,
+            }}>
+              Para Empresas
+            </div>
+            <h2 style={{
+              fontSize: isMobile ? "clamp(32px, 7vw, 48px)" : "clamp(36px, 4vw, 56px)",
+              fontWeight: 800, color: NEAR_BLACK,
+              letterSpacing: isMobile ? "-1px" : "-1.5px",
+              lineHeight: 1.12, marginBottom: 36,
+            }}>
+              IA que funciona. Em português. Com suporte real.
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 40 }}>
+              {[
+                { title: "Soluções testadas e aprovadas", desc: "Cada item do catálogo passou por curadoria rigorosa. Você não perde tempo com soluções quebradas." },
+                { title: "Suporte brasileiro em português", desc: "Time humano disponível para ajudar sua empresa a implementar e tirar o máximo de cada solução." },
+                { title: "Cancele quando quiser", desc: "Sem contratos longos, sem multa por rescisão. Você está sempre no controle." },
+              ].map(({ title, desc }) => (
+                <div key={title} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                  <CheckIcon />
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 5 }}>{title}</div>
+                    <div style={{ fontSize: 14, color: GRAY_TEXT, lineHeight: 1.7 }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <a href="/solucoes" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              fontSize: 16, fontWeight: 700, color: PURPLE, textDecoration: "none",
+              transition: "gap 0.2s",
+            }}
+              onMouseEnter={e => e.currentTarget.style.gap = "12px"}
+              onMouseLeave={e => e.currentTarget.style.gap = "8px"}
+            >
+              Explorar soluções <Arrow />
+            </a>
+          </div>
+
+          {/* Mobile: card after text */}
+          {isMobile && (
+            <div className="reveal" style={{ display: "flex", justifyContent: "center" }}>
+              <CatalogMockup />
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════
+          HOW IT WORKS — gray
+      ════════════════════════════════════════ */}
+      <section id="como-funciona" style={{
+        background: BG_GRAY,
+        padding: isMobile ? "88px 24px" : "128px 48px",
+      }}>
+        <div style={{ maxWidth: 1060, margin: "0 auto" }}>
+          <div className="reveal" style={{ textAlign: "center", marginBottom: 72 }}>
+            <div style={{
+              fontSize: 12, fontWeight: 700, color: PURPLE,
+              letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 18,
+            }}>
+              Como funciona
+            </div>
+            <h2 style={{
+              fontSize: isMobile ? "clamp(32px, 7vw, 48px)" : "clamp(40px, 5vw, 60px)",
+              fontWeight: 800, color: NEAR_BLACK,
+              letterSpacing: "-2px", lineHeight: 1.08,
+            }}>
+              Simples. Rápido. Eficiente.
+            </h2>
+          </div>
+
           <div style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
-            gap: 16,
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+            gap: 20,
           }}>
             {[
-              ["500+", "Soluções de IA"],
-              ["180+", "Criadores"],
-              ["10.000+", "Empresas"],
-              ["98%", "Satisfação"],
-            ].map(([num, label]) => (
-              <div key={label} className="card" style={{ borderRadius: 16, padding: "24px 20px" }}>
-                <div style={{ fontSize: 13, color: GRAY, fontWeight: 500, marginBottom: 6 }}>{label}</div>
-                <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-1px", color: DARK }}>{num}</div>
+              {
+                n: "1", title: "Encontre",
+                desc: "Navegue pelo catálogo curado. Filtre por categoria, leia descrições detalhadas e avaliações verificadas de quem já usou.",
+                delay: 0,
+              },
+              {
+                n: "2", title: "Contrate",
+                desc: "Compra única ou assinatura mensal. Pagamento seguro via cartão, boleto ou PIX. Acesso liberado imediatamente.",
+                delay: 150,
+              },
+              {
+                n: "3", title: "Cresça",
+                desc: "Implante com suporte em português. Receba atualizações automáticas quando o criador lança melhorias.",
+                delay: 300,
+              },
+            ].map(({ n, title, desc, delay }) => (
+              <div key={n} className="reveal" style={{
+                transitionDelay: `${delay}ms`,
+                background: "#fff", borderRadius: 22,
+                padding: isMobile ? "28px 24px" : "40px 32px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.05), 0 12px 32px rgba(0,0,0,0.05)",
+                border: "1px solid rgba(0,0,0,0.05)",
+                position: "relative", overflow: "hidden",
+              }}>
+                <div style={{
+                  position: "absolute", top: -16, right: -4,
+                  fontSize: 96, fontWeight: 900, color: PURPLE, opacity: 0.07,
+                  lineHeight: 1, letterSpacing: "-4px", pointerEvents: "none",
+                  userSelect: "none",
+                }}>
+                  {n}
+                </div>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 12,
+                  background: PURPLE + "14",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 17, fontWeight: 800, color: PURPLE,
+                  marginBottom: 22,
+                }}>
+                  {n}
+                </div>
+                <h3 style={{ fontSize: 22, fontWeight: 800, color: NEAR_BLACK, marginBottom: 14, letterSpacing: "-0.5px" }}>
+                  {title}
+                </h3>
+                <p style={{ fontSize: 15, color: GRAY_TEXT, lineHeight: 1.72, margin: 0 }}>
+                  {desc}
+                </p>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ══════════ FEATURES BENTO ══════════ */}
-        <section style={{ padding: "0 24px 80px", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              border: `1px solid ${PURPLE}55`,
-              color: PURPLE, fontSize: 12, fontWeight: 600,
-              borderRadius: 999, padding: "5px 14px", letterSpacing: "0.05em",
-            }}>
-              <span>●</span> Funcionalidades
-            </span>
-            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.8px", marginTop: 16, marginBottom: 0 }}>
-              Tudo para você adotar IA com confiança
-            </h2>
-          </div>
-
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-            gap: 16, alignItems: "stretch",
-          }}>
+      {/* ════════════════════════════════════════
+          FEATURES GRID — white
+      ════════════════════════════════════════ */}
+      <section style={{
+        background: "#fff",
+        padding: isMobile ? "88px 24px" : "128px 48px",
+      }}>
+        <div style={{ maxWidth: 1060, margin: "0 auto" }}>
+          <div className="reveal" style={{ textAlign: "center", marginBottom: 72 }}>
             <div style={{
-              background: DARK, borderRadius: 20, padding: isMobile ? 28 : 40,
-              display: "flex", flexDirection: "column", justifyContent: "space-between",
-              minHeight: isMobile ? "auto" : 400,
+              fontSize: 12, fontWeight: 700, color: PURPLE,
+              letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 18,
             }}>
-              <div>
-                <div style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  background: "rgba(107,92,231,0.25)", color: "#C4B5FD",
-                  borderRadius: 999, padding: "4px 12px", fontSize: 11, fontWeight: 600,
-                  marginBottom: 28, letterSpacing: "0.04em",
-                }}>
-                  PARA CRIADORES
-                </div>
-                <h3 style={{ fontSize: 28, fontWeight: 800, color: "#fff", letterSpacing: "-0.5px", lineHeight: 1.25, marginBottom: 16 }}>
-                  Para Criadores de IA
-                </h3>
-                <p style={{ fontSize: 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, marginBottom: 32, maxWidth: 340 }}>
-                  Publique suas soluções de IA no maior marketplace da América Latina. Alcance milhares de empresas prontas para comprar.
-                </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 36 }}>
-                  {["Publique em minutos", "Alcance 10.000+ empresas", "Monetize suas soluções", "Dashboard de analytics"].map(f => (
-                    <div key={f} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <Check color="#C4B5FD" />
-                      <span style={{ fontSize: 14, color: "rgba(255,255,255,0.7)" }}>{f}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <a href="/cadastro?role=criador" style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                background: PURPLE, color: "#fff",
-                borderRadius: 999, padding: "12px 24px",
-                fontSize: 14, fontWeight: 600, textDecoration: "none",
-                alignSelf: "flex-start",
-              }}>
-                Começar como Criador <Arrow />
-              </a>
+              Diferenciais
             </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <div className="card" style={{ borderRadius: 20, padding: 32, flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-                  <div style={{ display: "flex" }}>
-                    {["#6B5CE7", "#3B82F6", "#10B981", "#F59E0B"].map((color, i) => (
-                      <div key={i} style={{
-                        width: 34, height: 34, borderRadius: "50%",
-                        background: `linear-gradient(135deg, ${color}, ${color}bb)`,
-                        border: "2px solid #fff",
-                        marginLeft: i > 0 ? -10 : 0,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 13, color: "#fff", fontWeight: 700,
-                      }}>
-                        {["A", "B", "C", "D"][i]}
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: DARK }}>+180 Criadores</div>
-                    <div style={{ fontSize: 11, color: GRAY }}>já publicaram no marketplace</div>
-                  </div>
-                </div>
-                <h3 style={{ fontSize: 20, fontWeight: 800, color: DARK, letterSpacing: "-0.3px", marginBottom: 8 }}>
-                  Curadoria Especializada
-                </h3>
-                <p style={{ fontSize: 14, color: GRAY, lineHeight: 1.65, margin: 0 }}>
-                  Cada solução é revisada e validada pela nossa equipe. Zero ruído, apenas o que realmente funciona para empresas brasileiras.
-                </p>
-              </div>
-
-              <div style={{
-                background: "linear-gradient(135deg, #2D1B69 0%, #4F46E5 100%)",
-                borderRadius: 20, padding: 32, flex: 1,
-              }}>
-                <h3 style={{ fontSize: 20, fontWeight: 800, color: "#fff", letterSpacing: "-0.3px", marginBottom: 8 }}>
-                  Suporte em Português
-                </h3>
-                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.65, marginBottom: 24 }}>
-                  Toda a plataforma e suporte técnico em português. Sem barreiras de idioma para adotar IA.
-                </p>
-                <div style={{ display: "flex", gap: 16 }}>
-                  {[["99%", "uptime"], ["<2h", "resposta"], ["PT-BR", "suporte"]].map(([n, l]) => (
-                    <div key={l}>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>{n}</div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{l}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ══════════ HOW IT WORKS ══════════ */}
-        <section id="como-funciona" style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              border: `1px solid ${PURPLE}55`,
-              color: PURPLE, fontSize: 12, fontWeight: 600,
-              borderRadius: 999, padding: "5px 14px", letterSpacing: "0.05em",
+            <h2 style={{
+              fontSize: isMobile ? "clamp(32px, 7vw, 48px)" : "clamp(40px, 5vw, 60px)",
+              fontWeight: 800, color: NEAR_BLACK,
+              letterSpacing: "-2px", lineHeight: 1.08,
             }}>
-              <span>●</span> Como funciona
-            </span>
-            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.8px", marginTop: 16, marginBottom: 8 }}>
-              Simples passos para usar IA no seu negócio
+              Por que a WePrompt?
             </h2>
-            <p style={{ fontSize: 16, color: GRAY, maxWidth: 480, margin: "0 auto" }}>
-              Do cadastro à primeira solução rodando, em minutos.
-            </p>
           </div>
 
           <div style={{
@@ -492,122 +806,165 @@ export default function Home() {
             gap: 16,
           }}>
             {[
-              { step: "01", title: "Explore o catálogo", sub: "Grátis para começar", features: ["Acesso a 500+ soluções", "Filtros por categoria", "Demos gratuitas", "Reviews verificados"], cta: "Explorar grátis", ctaHref: "/solucoes", highlight: false },
-              { step: "02", title: "Escolha a solução", sub: "Mais popular", features: ["Comparativo detalhado", "Suporte da equipe WePrompt", "Documentação em português", "Trial disponível"], cta: "Falar com especialista", ctaHref: "mailto:contato@weprompt.app.br", highlight: true },
-              { step: "03", title: "Comece a usar", sub: "Em produção hoje", features: ["Integração simplificada", "Onboarding guiado", "Suporte técnico dedicado", "Dashboard de uso"], cta: "Começar agora", ctaHref: "/cadastro", highlight: false },
-            ].map((card) => (
-              <div key={card.step} className={card.highlight ? "" : "card"} style={{
-                borderRadius: 20, padding: "32px 28px",
-                display: "flex", flexDirection: "column",
-                ...(card.highlight ? {
-                  background: DARK,
-                  boxShadow: "0 24px 60px rgba(0,0,0,0.2)",
-                } : {}),
-              }}>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", color: card.highlight ? "rgba(255,255,255,0.4)" : GRAY, marginBottom: 12 }}>
-                  PASSO {card.step}
-                </div>
-                <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.4px", color: card.highlight ? "#fff" : DARK, marginBottom: 6 }}>
-                  {card.title}
-                </div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: card.highlight ? "#C4B5FD" : PURPLE, marginBottom: 28 }}>
-                  {card.sub}
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1, marginBottom: 28 }}>
-                  {card.features.map(f => (
-                    <div key={f} style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                      <Check color={card.highlight ? "#C4B5FD" : PURPLE} />
-                      <span style={{ fontSize: 14, color: card.highlight ? "rgba(255,255,255,0.7)" : "#374151" }}>{f}</span>
-                    </div>
-                  ))}
-                </div>
-                <a href={card.ctaHref} style={{
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                  borderRadius: 999, padding: "12px 20px",
-                  fontSize: 14, fontWeight: 600, textDecoration: "none",
-                  ...(card.highlight ? {
-                    background: PURPLE, color: "#fff",
-                  } : {
-                    border: "1.5px solid rgba(0,0,0,0.15)",
-                    color: DARK, background: "transparent",
-                  }),
-                }}>
-                  {card.cta} <Arrow />
-                </a>
+              { icon: "✦", title: "Curadoria Especializada", desc: "Cada solução é testada e aprovada por nosso time antes de aparecer no catálogo. Qualidade garantida — sem soluções quebradas." },
+              { icon: "🇧🇷", title: "Suporte em Português", desc: "Atendimento humano em PT-BR em todos os planos. Sem chatbot, sem barreiras de idioma, sem esperar uma resposta em inglês." },
+              { icon: "🔒", title: "Pagamentos Seguros", desc: "Infraestrutura certificada. PIX, cartão e boleto processados com segurança. Criadores recebem via PIX automaticamente." },
+              { icon: "✓", title: "Criadores Verificados", desc: 'Badge "Criador Verificado" para quem mantém suas soluções funcionando, responde suporte e recebe boas avaliações.' },
+              { icon: "📊", title: "Analytics Completo", desc: "Empresas e criadores têm acesso a dados claros: visualizações, conversão, receita e desempenho por solução." },
+              { icon: "⚖️", title: "LGPD Compliance", desc: "Plataforma desenvolvida com proteção de dados brasileira desde o início. Seus dados nunca são vendidos ou compartilhados." },
+            ].map(({ icon, title, desc }, i) => (
+              <div key={title} className="reveal" style={{
+                transitionDelay: `${(i % 3) * 80}ms`,
+                background: BG_GRAY, borderRadius: 20,
+                padding: isMobile ? "26px 22px" : "32px 28px",
+                border: "1px solid rgba(0,0,0,0.04)",
+                cursor: "default",
+                transition: "background 0.25s, box-shadow 0.25s, transform 0.25s",
+              }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = "#fff";
+                  e.currentTarget.style.boxShadow = "0 8px 40px rgba(0,0,0,0.1)";
+                  e.currentTarget.style.transform = "translateY(-3px)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = BG_GRAY;
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.transform = "none";
+                }}
+              >
+                <div style={{ fontSize: 30, marginBottom: 18 }}>{icon}</div>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: NEAR_BLACK, marginBottom: 10, letterSpacing: "-0.3px" }}>
+                  {title}
+                </h3>
+                <p style={{ fontSize: 14, color: GRAY_TEXT, lineHeight: 1.72, margin: 0 }}>{desc}</p>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ══════════ CTA BANNER ══════════ */}
-        <section style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{
-            background: DARK, borderRadius: 24,
-            padding: isMobile ? "48px 24px" : "64px 48px",
-            textAlign: "center", position: "relative", overflow: "hidden",
+      {/* ════════════════════════════════════════
+          FINAL CTA — purple gradient
+      ════════════════════════════════════════ */}
+      <section style={{
+        background: `linear-gradient(135deg, #4F46E5 0%, ${PURPLE} 50%, #8B5CF6 100%)`,
+        padding: isMobile ? "88px 24px" : "128px 48px",
+        position: "relative", overflow: "hidden",
+      }}>
+        {/* Floating orbs */}
+        <div style={{
+          position: "absolute", top: -100, left: -100,
+          width: 400, height: 400, borderRadius: "50%",
+          background: "rgba(255,255,255,0.07)",
+          animation: "pulse-orb 5s ease-in-out infinite",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", bottom: -80, right: -80,
+          width: 300, height: 300, borderRadius: "50%",
+          background: "rgba(255,255,255,0.05)",
+          animation: "pulse-orb 6s ease-in-out infinite 1.5s",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", top: "35%", right: "12%",
+          width: 180, height: 180, borderRadius: "50%",
+          background: "rgba(255,255,255,0.04)",
+          animation: "pulse-orb 7s ease-in-out infinite 0.8s",
+          pointerEvents: "none",
+        }} />
+
+        <div style={{
+          maxWidth: 800, margin: "0 auto",
+          textAlign: "center", position: "relative",
+        }}>
+          <h2 className="reveal" style={{
+            fontSize: isMobile ? "clamp(30px, 7vw, 48px)" : "clamp(40px, 5vw, 64px)",
+            fontWeight: 800, color: "#fff",
+            letterSpacing: isMobile ? "-1px" : "-2px",
+            lineHeight: 1.08, marginBottom: 22,
           }}>
-            <div style={{
-              position: "absolute", inset: 0, pointerEvents: "none",
-              background: `radial-gradient(ellipse 60% 70% at 50% 110%, ${PURPLE}33 0%, transparent 65%)`,
-            }} />
-            <div style={{ position: "absolute", top: -32, left: -32, width: 120, height: 120, borderRadius: "50%", background: `${PURPLE}18` }} />
-            <div style={{ position: "absolute", bottom: -20, right: -20, width: 90, height: 90, borderRadius: "50%", background: "#4F46E533" }} />
-            <div style={{ position: "relative" }}>
-              <h2 style={{ fontSize: "clamp(26px, 4vw, 44px)", fontWeight: 800, color: "#fff", letterSpacing: "-1px", marginBottom: 16 }}>
-                Pronto para transformar seu negócio com IA?
-              </h2>
-              <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", maxWidth: 500, margin: "0 auto 36px", lineHeight: 1.7 }}>
-                Junte-se a mais de 10.000 empresas que já adotam soluções de IA com suporte em português.
-              </p>
-              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                <a href="/cadastro" className="btn-primary" style={{
-                  borderRadius: 999, padding: "14px 30px",
-                  fontSize: 15, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  textDecoration: "none",
-                }}>
-                  Começar gratuitamente <Arrow />
-                </a>
-                <a href="mailto:contato@weprompt.app.br" style={{
-                  borderRadius: 999, padding: "14px 30px",
-                  fontSize: 15, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  textDecoration: "none",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  color: "rgba(255,255,255,0.8)",
-                }}>
-                  Falar com a equipe
-                </a>
-              </div>
-            </div>
+            Pronto para transformar seu negócio com IA?
+          </h2>
+          <p className="reveal" style={{
+            fontSize: isMobile ? 16 : 20,
+            color: "rgba(255,255,255,0.68)",
+            maxWidth: 520, margin: "0 auto 52px", lineHeight: 1.65,
+          }}>
+            Junte-se a mais de 10.000 empresas que já adotam soluções de IA com suporte em português.
+          </p>
+          <div className="reveal" style={{
+            display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap",
+          }}>
+            <a href="/solucoes" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              borderRadius: 999, padding: isMobile ? "15px 28px" : "17px 36px",
+              background: "#fff", color: PURPLE,
+              fontSize: isMobile ? 15 : 17, fontWeight: 700, textDecoration: "none",
+              boxShadow: "0 6px 28px rgba(0,0,0,0.18)",
+              transition: "transform 0.15s",
+            }}
+              onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+              onMouseLeave={e => e.currentTarget.style.transform = "none"}
+            >
+              Explorar Soluções <Arrow />
+            </a>
+            <a href="/cadastro?role=criador" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              borderRadius: 999, padding: isMobile ? "14px 28px" : "16px 36px",
+              background: "transparent", color: "#fff",
+              fontSize: isMobile ? 15 : 17, fontWeight: 600, textDecoration: "none",
+              border: "1.5px solid rgba(255,255,255,0.38)",
+              transition: "background 0.15s, border-color 0.15s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.38)"; }}
+            >
+              Quero ser Criador
+            </a>
           </div>
-        </section>
+        </div>
+      </section>
 
-      </main>
-
-      {/* ══════════ FOOTER ══════════ */}
-      <footer style={{ background: "#F3F4F6", borderTop: "1px solid rgba(0,0,0,0.07)", padding: "40px 24px" }}>
+      {/* ════════════════════════════════════════
+          FOOTER
+      ════════════════════════════════════════ */}
+      <footer style={{
+        background: "#fff",
+        borderTop: "1px solid rgba(0,0,0,0.07)",
+        padding: "44px 32px",
+      }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto",
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
+          display: "flex", flexDirection: isMobile ? "column" : "row",
           alignItems: "center", justifyContent: "space-between",
-          gap: 16, textAlign: isMobile ? "center" : "left",
+          gap: 20, textAlign: isMobile ? "center" : "left",
         }}>
           <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="footer" textColor={DARK} />
+            <WePromptLogo id="footer" textColor={NEAR_BLACK} />
           </a>
-          <p style={{ fontSize: 13, color: GRAY, margin: 0 }}>
-            © 2026 WePrompt. O 1º marketplace de IA da América Latina. Todos os direitos reservados.
+          <p style={{ fontSize: 13, color: GRAY_TEXT, margin: 0 }}>
+            © 2026 WePrompt. O 1º marketplace de IA da América Latina.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 20 }}>
-            <a href="/para-criadores/termos" className="footer-link">Termos para Criadores</a>
-            <a href="/para-empresas/termos" className="footer-link">Termos para Empresas</a>
-            <a href="mailto:contato@weprompt.app.br" className="footer-link">Contato</a>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 24 }}>
+            {[
+              ["Termos para Criadores", "/para-criadores/termos"],
+              ["Termos para Empresas", "/para-empresas/termos"],
+              ["Contato", "mailto:contato@weprompt.app.br"],
+            ].map(([label, href]) => (
+              <a key={label} href={href} style={{
+                fontSize: 13, color: GRAY_TEXT, textDecoration: "none",
+                transition: "color 0.15s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.color = NEAR_BLACK}
+                onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}
+              >
+                {label}
+              </a>
+            ))}
           </div>
         </div>
       </footer>
-
     </div>
   );
 }
