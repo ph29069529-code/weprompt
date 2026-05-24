@@ -179,12 +179,12 @@ function GlassStack() {
       zIndex: 3, opacity: 1,
     },
     {
-      transform: "perspective(800px) rotateY(-15deg) translateZ(-60px) translateX(40px) translateY(30px)",
-      zIndex: 2, opacity: 0.85,
+      transform: "perspective(800px) rotateY(-15deg) translateZ(-40px) translateX(25px) translateY(30px)",
+      zIndex: 2, opacity: 0.95,
     },
     {
-      transform: "perspective(800px) rotateY(-20deg) translateZ(-120px) translateX(80px) translateY(60px)",
-      zIndex: 1, opacity: 0.6,
+      transform: "perspective(800px) rotateY(-20deg) translateZ(-80px) translateX(50px) translateY(60px)",
+      zIndex: 1, opacity: 0.82,
     },
   ];
 
@@ -274,9 +274,9 @@ function GlassStack() {
             position: "absolute", top: 0, left: 0,
             width: 500, height: 340,
             background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(219,234,254,0.25) 50%, rgba(186,230,253,0.35) 100%)",
-            border: "1px solid rgba(255,255,255,0.8)",
+            border: "1.5px solid rgba(255,255,255,0.9)",
             borderRadius: 20,
-            boxShadow: "0 8px 32px rgba(14,165,233,0.12), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(14,165,233,0.1)",
+            boxShadow: "0 16px 48px rgba(14,165,233,0.2), inset 0 1px 0 rgba(255,255,255,0.95)",
             backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)",
             overflow: "hidden",
             transform, zIndex, opacity,
@@ -567,26 +567,26 @@ export default function Home() {
             <a href="/solucoes" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               borderRadius: 999, padding: isMobile ? "15px 28px" : "17px 36px",
-              background: PURPLE, color: "#fff",
+              background: "#0369A1", color: "#fff",
               fontSize: isMobile ? 15 : 17, fontWeight: 700, textDecoration: "none",
-              boxShadow: "0 8px 32px rgba(14,165,233,0.38)",
-              transition: "transform 0.15s, box-shadow 0.15s",
+              boxShadow: "0 8px 32px rgba(14,165,233,0.3)",
+              transition: "transform 0.15s, box-shadow 0.15s, background 0.15s",
             }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 14px 40px rgba(14,165,233,0.48)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(14,165,233,0.38)"; }}
+              onMouseEnter={e => { e.currentTarget.style.background = "#0284C7"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "#0369A1"; e.currentTarget.style.transform = "none"; }}
             >
               Explorar Soluções <Arrow />
             </a>
             <a href="/cadastro?role=criador" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               borderRadius: 999, padding: isMobile ? "14px 28px" : "16px 36px",
-              background: "transparent", color: NEAR_BLACK,
+              background: "transparent", color: "#0369A1",
               fontSize: isMobile ? 15 : 17, fontWeight: 600, textDecoration: "none",
-              border: "1.5px solid rgba(0,0,0,0.18)",
-              transition: "background 0.15s, border-color 0.15s",
+              border: "2px solid #0369A1",
+              transition: "background 0.15s, color 0.15s",
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,0,0,0.04)"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.28)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(0,0,0,0.18)"; }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(3,105,161,0.06)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
             >
               Quero ser Criador
             </a>
@@ -644,17 +644,12 @@ export default function Home() {
       }}>
         <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 24s linear infinite" }}>
           {[0, 1].map(i => (
-            <span key={i} style={{ display: "inline-flex" }}>
-              {["Agentes de IA", "Automações", "Chatbots", "Marketing IA", "WhatsApp IA", "Analytics", "Integrações", "Copywriting IA", "Geração de Leads", "Atendimento IA"].map(label => (
-                <span key={label} style={{
-                  fontSize: 14, fontWeight: 600, color: GRAY_TEXT,
-                  padding: "0 28px",
-                  display: "inline-flex", alignItems: "center", gap: 14,
-                }}>
-                  {label}
-                  <span style={{ color: PURPLE, fontSize: 7, opacity: 0.7 }}>●</span>
-                </span>
-              ))}
+            <span key={i} style={{
+              display: "inline-block",
+              fontSize: 14, fontWeight: 600, color: GRAY_TEXT,
+              paddingRight: 0,
+            }}>
+              Agentes de IA • Automações • Chatbots • Marketing IA • WhatsApp IA • Analytics • Integrações • Copywriting IA • Geração de Leads • Atendimento IA •&nbsp;
             </span>
           ))}
         </div>
