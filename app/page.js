@@ -44,7 +44,7 @@ function useWindowSize() {
 
 const NAV_LINKS = [
   ["Explorar", "/solucoes"],
-  ["Preços", "#precos"],
+  ["Preços", "/precos"],
   ["Como funciona", "#como-funciona"],
   ["Para Criadores", "/criadores"],
 ];
@@ -719,9 +719,9 @@ export default function Home() {
           <p style={{ fontSize: 13, color: GRAY, margin: 0 }}>
             © 2026 WePrompt. O 1º marketplace de IA da América Latina. Todos os direitos reservados.
           </p>
-          <div style={{ display: "flex", gap: 20 }}>
-            <a href="#" className="footer-link">Privacidade</a>
-            <a href="#" className="footer-link">Termos</a>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 20 }}>
+            <a href="/para-criadores/termos" className="footer-link">Termos para Criadores</a>
+            <a href="/para-empresas/termos" className="footer-link">Termos para Empresas</a>
             <a href="mailto:contato@weprompt.app.br" className="footer-link">Contato</a>
           </div>
         </div>
