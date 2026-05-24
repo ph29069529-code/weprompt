@@ -165,6 +165,32 @@ function CreatorCard() {
   );
 }
 
+function GlassStack() {
+  const layers = [
+    { tx: 60, ty: 60, bg: "rgba(147,197,253,0.07)" },
+    { tx: 45, ty: 45, bg: "rgba(139,92,246,0.09)" },
+    { tx: 30, ty: 30, bg: "rgba(107,92,231,0.10)" },
+    { tx: 15, ty: 15, bg: "rgba(147,197,253,0.12)" },
+    { tx:  0, ty:  0, bg: "rgba(167,139,250,0.15)" },
+  ];
+  return (
+    <div style={{ position: "relative", width: 480, height: 380, flexShrink: 0, animation: "float 4s ease-in-out infinite" }}>
+      {layers.map(({ tx, ty, bg }, i) => (
+        <div key={i} style={{
+          position: "absolute", top: 0, left: 0,
+          width: 400, height: 300,
+          background: bg,
+          border: "1px solid rgba(107,92,231,0.2)",
+          borderRadius: 16,
+          boxShadow: "0 8px 32px rgba(107,92,231,0.1)",
+          backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+          transform: `perspective(800px) rotateY(-20deg) rotateX(5deg) translateX(${tx}px) translateY(${ty}px)`,
+        }} />
+      ))}
+    </div>
+  );
+}
+
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [session, setSession] = useState(null);
@@ -368,26 +394,26 @@ export default function Home() {
       </header>
 
       {/* ════════════════════════════════════════
-          HERO — 100vh, white
+          HERO — 100vh, white, two-column
       ════════════════════════════════════════ */}
       <section style={{
         minHeight: "100vh",
-        display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center",
-        padding: isMobile ? "120px 24px 80px" : "148px 32px 80px",
-        textAlign: "center",
-        background: "linear-gradient(135deg, #EEF2FF 0%, #F3E8FF 40%, #EDE9FE 70%, #E0F2FE 100%)",
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: isMobile ? "120px 24px 80px" : "148px 72px 80px",
+        background: "#FFFFFF",
         position: "relative", overflow: "hidden",
+        gap: isMobile ? 0 : 64,
       }}>
-        {/* Ambient glow */}
+        {/* Left: text content */}
         <div style={{
-          position: "absolute", top: "20%", left: "50%", transform: "translateX(-50%)",
-          width: 600, height: 400, pointerEvents: "none", zIndex: 0,
-          background: "radial-gradient(ellipse, rgba(107,92,231,0.12) 0%, transparent 70%)",
-          filter: "blur(40px)",
-        }} />
-
-        <div style={{ maxWidth: 820, position: "relative", zIndex: 1 }}>
+          flex: 1,
+          textAlign: isMobile ? "center" : "left",
+          maxWidth: isMobile ? "100%" : 560,
+          position: "relative", zIndex: 1,
+        }}>
           {/* Badge pill */}
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
@@ -405,9 +431,9 @@ export default function Home() {
 
           {/* Headline */}
           <h1 style={{
-            fontSize: "clamp(42px, 7.5vw, 80px)",
+            fontSize: "clamp(36px, 5.5vw, 68px)",
             fontWeight: 800, color: NEAR_BLACK,
-            letterSpacing: isMobile ? "-1.5px" : "-2.5px",
+            letterSpacing: isMobile ? "-1.5px" : "-2px",
             lineHeight: 1.06, marginBottom: 28,
           }}>
             Encontre a solução de IA perfeita para o seu negócio
@@ -415,9 +441,9 @@ export default function Home() {
 
           {/* Subtitle */}
           <p style={{
-            fontSize: isMobile ? 17 : 21,
+            fontSize: isMobile ? 17 : 19,
             color: GRAY_TEXT, lineHeight: 1.65,
-            maxWidth: 600, margin: "0 auto 52px",
+            maxWidth: 500, margin: isMobile ? "0 auto 52px" : "0 0 52px",
           }}>
             O primeiro marketplace brasileiro de soluções de inteligência artificial.
             Curadoria especializada, suporte em português e pagamentos seguros.
@@ -425,8 +451,9 @@ export default function Home() {
 
           {/* CTAs */}
           <div style={{
-            display: "flex", gap: 14, justifyContent: "center",
-            flexWrap: "wrap", marginBottom: 72,
+            display: "flex", gap: 14,
+            justifyContent: isMobile ? "center" : "flex-start",
+            flexWrap: "wrap", marginBottom: 56,
           }}>
             <a href="/solucoes" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
@@ -461,7 +488,7 @@ export default function Home() {
             <p style={{ fontSize: 13, color: GRAY_TEXT, marginBottom: 14, fontWeight: 500, letterSpacing: "0.01em" }}>
               Confiado por empresas em todo o Brasil
             </p>
-            <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 8, justifyContent: isMobile ? "center" : "flex-start", flexWrap: "wrap" }}>
               {["Startups", "Agências Digitais", "E-commerce", "Consultorias", "Indústrias"].map(name => (
                 <div key={name} style={{
                   padding: "7px 18px",
@@ -475,6 +502,16 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Right: glass stack — hidden on mobile */}
+        {!isMobile && (
+          <div style={{
+            flex: 1, display: "flex",
+            alignItems: "center", justifyContent: "center",
+          }}>
+            <GlassStack />
+          </div>
+        )}
 
         {/* Bounce scroll indicator */}
         <div style={{
