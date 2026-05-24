@@ -2,6 +2,16 @@
 
 import { useState, useEffect } from "react";
 import WePromptLogo from "./components/WePromptLogo";
+import { supabase } from "./lib/supabase";
+
+function getDashboardUrl(session) {
+  if (!session) return "/login";
+  const role = session.user.user_metadata?.role;
+  const email = session.user.email;
+  if (email === "ph29069529@gmail.com") return "/dashboard/admin";
+  if (role === "criador") return "/dashboard/criador";
+  return "/dashboard/empresa";
+}
 
 const PURPLE = "#6B5CE7";
 const DARK = "#0A0A1A";
@@ -41,8 +51,17 @@ const NAV_LINKS = [
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [session, setSession] = useState(null);
   const width = useWindowSize();
   const isMobile = width < 768;
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => setSession(session));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const dashboardUrl = getDashboardUrl(session);
 
   return (
     <div style={{ minHeight: "100vh", color: DARK, background: "linear-gradient(135deg, #F0F0FF 0%, #E8E8F8 30%, #EEF0FF 60%, #F5F0FF 100%)" }}>
@@ -76,23 +95,36 @@ export default function Home() {
           {/* Desktop action buttons */}
           {!isMobile && (
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <a href="/login" style={{
-                borderRadius: 999, padding: "8px 18px",
-                fontSize: 14, fontWeight: 500,
-                textDecoration: "none", color: DARK,
-                border: "1.5px solid rgba(0,0,0,0.14)",
-                background: "transparent",
-              }}>
-                Entrar
-              </a>
-              <a href="/cadastro" className="btn-dark" style={{
-                borderRadius: 999, padding: "9px 20px",
-                fontSize: 14, fontWeight: 600,
-                display: "inline-flex", alignItems: "center", gap: 6,
-                textDecoration: "none",
-              }}>
-                Criar conta <Arrow />
-              </a>
+              {session ? (
+                <a href={dashboardUrl} className="btn-dark" style={{
+                  borderRadius: 999, padding: "9px 20px",
+                  fontSize: 14, fontWeight: 600,
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  textDecoration: "none",
+                }}>
+                  Meu Dashboard <Arrow />
+                </a>
+              ) : (
+                <>
+                  <a href="/login" style={{
+                    borderRadius: 999, padding: "8px 18px",
+                    fontSize: 14, fontWeight: 500,
+                    textDecoration: "none", color: DARK,
+                    border: "1.5px solid rgba(0,0,0,0.14)",
+                    background: "transparent",
+                  }}>
+                    Entrar
+                  </a>
+                  <a href="/cadastro" className="btn-dark" style={{
+                    borderRadius: 999, padding: "9px 20px",
+                    fontSize: 14, fontWeight: 600,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    textDecoration: "none",
+                  }}>
+                    Criar conta <Arrow />
+                  </a>
+                </>
+              )}
             </div>
           )}
 
@@ -134,24 +166,38 @@ export default function Home() {
               </a>
             ))}
             <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-              <a href="/login" style={{
-                flex: 1, textAlign: "center",
-                borderRadius: 999, padding: "11px",
-                fontSize: 14, fontWeight: 500,
-                textDecoration: "none", color: DARK,
-                border: "1.5px solid rgba(0,0,0,0.14)",
-              }}>
-                Entrar
-              </a>
-              <a href="/cadastro" className="btn-dark" style={{
-                flex: 1, textAlign: "center",
-                borderRadius: 999, padding: "11px",
-                fontSize: 14, fontWeight: 600,
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                textDecoration: "none",
-              }}>
-                Criar conta <Arrow />
-              </a>
+              {session ? (
+                <a href={dashboardUrl} className="btn-dark" style={{
+                  flex: 1, textAlign: "center",
+                  borderRadius: 999, padding: "11px",
+                  fontSize: 14, fontWeight: 600,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  textDecoration: "none",
+                }}>
+                  Meu Dashboard <Arrow />
+                </a>
+              ) : (
+                <>
+                  <a href="/login" style={{
+                    flex: 1, textAlign: "center",
+                    borderRadius: 999, padding: "11px",
+                    fontSize: 14, fontWeight: 500,
+                    textDecoration: "none", color: DARK,
+                    border: "1.5px solid rgba(0,0,0,0.14)",
+                  }}>
+                    Entrar
+                  </a>
+                  <a href="/cadastro" className="btn-dark" style={{
+                    flex: 1, textAlign: "center",
+                    borderRadius: 999, padding: "11px",
+                    fontSize: 14, fontWeight: 600,
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                    textDecoration: "none",
+                  }}>
+                    Criar conta <Arrow />
+                  </a>
+                </>
+              )}
             </div>
           </div>
         )}
