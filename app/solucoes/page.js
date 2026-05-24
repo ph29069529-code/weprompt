@@ -22,9 +22,9 @@ const CATEGORIES = ["Todos", "Automação", "Agentes de IA", "Chatbots", "Análi
 
 const NAV_LINKS = [
   ["Explorar", "/solucoes"],
-  ["Preços", "#"],
-  ["Como funciona", "#"],
-  ["Para Criadores", "#"],
+  ["Preços", "/#precos"],
+  ["Como funciona", "/#como-funciona"],
+  ["Para Criadores", "/criadores"],
 ];
 
 function useWindowSize() {

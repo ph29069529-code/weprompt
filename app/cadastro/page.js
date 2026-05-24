@@ -39,7 +39,7 @@ function CadastroForm() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [senha, setSenha] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState(searchParams.get("role") || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");

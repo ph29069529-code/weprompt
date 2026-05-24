@@ -44,9 +44,9 @@ function useWindowSize() {
 
 const NAV_LINKS = [
   ["Explorar", "/solucoes"],
-  ["Preços", "#"],
-  ["Como funciona", "#"],
-  ["Para Criadores", "#"],
+  ["Preços", "#precos"],
+  ["Como funciona", "#como-funciona"],
+  ["Para Criadores", "/criadores"],
 ];
 
 export default function Home() {
@@ -258,7 +258,7 @@ export default function Home() {
                 }}>
                   Explorar Soluções <Arrow />
                 </a>
-                <a href="#" className="btn-outline-gray" style={{
+                <a href="/cadastro?role=criador" className="btn-outline-gray" style={{
                   borderRadius: 999, padding: "13px 26px",
                   fontSize: 15, fontWeight: 600,
                   display: "inline-flex", alignItems: "center", gap: 8,
@@ -403,7 +403,7 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-              <a href="#" style={{
+              <a href="/cadastro?role=criador" style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
                 background: PURPLE, color: "#fff",
                 borderRadius: 999, padding: "12px 24px",
@@ -468,7 +468,7 @@ export default function Home() {
         </section>
 
         {/* ══════════ HOW IT WORKS ══════════ */}
-        <section style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
+        <section id="como-funciona" style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <span style={{
               display: "inline-flex", alignItems: "center", gap: 6,
@@ -492,9 +492,9 @@ export default function Home() {
             gap: 16,
           }}>
             {[
-              { step: "01", title: "Explore o catálogo", sub: "Grátis para começar", features: ["Acesso a 500+ soluções", "Filtros por categoria", "Demos gratuitas", "Reviews verificados"], cta: "Explorar grátis", highlight: false },
-              { step: "02", title: "Escolha a solução", sub: "Mais popular", features: ["Comparativo detalhado", "Suporte da equipe WePrompt", "Documentação em português", "Trial disponível"], cta: "Falar com especialista", highlight: true },
-              { step: "03", title: "Comece a usar", sub: "Em produção hoje", features: ["Integração simplificada", "Onboarding guiado", "Suporte técnico dedicado", "Dashboard de uso"], cta: "Começar agora", highlight: false },
+              { step: "01", title: "Explore o catálogo", sub: "Grátis para começar", features: ["Acesso a 500+ soluções", "Filtros por categoria", "Demos gratuitas", "Reviews verificados"], cta: "Explorar grátis", ctaHref: "/solucoes", highlight: false },
+              { step: "02", title: "Escolha a solução", sub: "Mais popular", features: ["Comparativo detalhado", "Suporte da equipe WePrompt", "Documentação em português", "Trial disponível"], cta: "Falar com especialista", ctaHref: "mailto:contato@weprompt.app.br", highlight: true },
+              { step: "03", title: "Comece a usar", sub: "Em produção hoje", features: ["Integração simplificada", "Onboarding guiado", "Suporte técnico dedicado", "Dashboard de uso"], cta: "Começar agora", ctaHref: "/cadastro", highlight: false },
             ].map((card) => (
               <div key={card.step} className={card.highlight ? "" : "card"} style={{
                 borderRadius: 20, padding: "32px 28px",
@@ -521,7 +521,7 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-                <a href="#" style={{
+                <a href={card.ctaHref} style={{
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                   borderRadius: 999, padding: "12px 20px",
                   fontSize: 14, fontWeight: 600, textDecoration: "none",
@@ -536,6 +536,125 @@ export default function Home() {
                 </a>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ══════════ PRICING ══════════ */}
+        <section id="precos" style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              border: `1px solid ${PURPLE}55`,
+              color: PURPLE, fontSize: 12, fontWeight: 600,
+              borderRadius: 999, padding: "5px 14px", letterSpacing: "0.05em",
+            }}>
+              <span>●</span> Preços
+            </span>
+            <h2 style={{ fontSize: "clamp(26px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.8px", marginTop: 16, marginBottom: 8 }}>
+              Simples e transparente
+            </h2>
+            <p style={{ fontSize: 16, color: GRAY, maxWidth: 480, margin: "0 auto" }}>
+              Comece gratuitamente. Escale quando precisar.
+            </p>
+          </div>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+            gap: 16, alignItems: "stretch",
+          }}>
+            <div className="card" style={{ borderRadius: 20, padding: "32px 28px", display: "flex", flexDirection: "column" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: GRAY, marginBottom: 8 }}>Gratuito</div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 6 }}>
+                <span style={{ fontSize: 40, fontWeight: 800, color: DARK, letterSpacing: "-1px" }}>R$ 0</span>
+                <span style={{ fontSize: 14, color: GRAY }}>/mês</span>
+              </div>
+              <p style={{ fontSize: 14, color: GRAY, marginBottom: 28, lineHeight: 1.6 }}>
+                Explore o marketplace e descubra soluções de IA sem compromisso.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, marginBottom: 28 }}>
+                {["Acesso a 500+ soluções", "Filtros por categoria", "Avaliações verificadas", "Suporte via FAQ"].map(f => (
+                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                    <Check color={PURPLE} />
+                    <span style={{ fontSize: 14, color: "#374151" }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <a href="/cadastro" style={{
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                borderRadius: 999, padding: "12px 20px",
+                fontSize: 14, fontWeight: 600, textDecoration: "none",
+                border: "1.5px solid rgba(0,0,0,0.15)",
+                color: DARK, background: "transparent",
+              }}>
+                Começar grátis <Arrow />
+              </a>
+            </div>
+
+            <div style={{
+              background: DARK, borderRadius: 20, padding: "32px 28px",
+              display: "flex", flexDirection: "column",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.2)",
+              position: "relative", overflow: "hidden",
+            }}>
+              <div style={{
+                position: "absolute", top: 16, right: 16,
+                background: PURPLE, color: "#fff",
+                fontSize: 10, fontWeight: 700, padding: "3px 10px",
+                borderRadius: 999, letterSpacing: "0.05em",
+              }}>POPULAR</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>Pro</div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 6 }}>
+                <span style={{ fontSize: 40, fontWeight: 800, color: "#fff", letterSpacing: "-1px" }}>R$ 97</span>
+                <span style={{ fontSize: 14, color: "rgba(255,255,255,0.45)" }}>/mês</span>
+              </div>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", marginBottom: 28, lineHeight: 1.6 }}>
+                Acesso completo com suporte prioritário e onboarding dedicado.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, marginBottom: 28 }}>
+                {["Tudo do Gratuito", "Soluções sem limite", "Suporte prioritário PT-BR", "Onboarding guiado", "Dashboard de uso"].map(f => (
+                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                    <Check color="#C4B5FD" />
+                    <span style={{ fontSize: 14, color: "rgba(255,255,255,0.7)" }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <a href="/cadastro" style={{
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                borderRadius: 999, padding: "12px 20px",
+                fontSize: 14, fontWeight: 600, textDecoration: "none",
+                background: PURPLE, color: "#fff",
+              }}>
+                Começar Pro <Arrow />
+              </a>
+            </div>
+
+            <div className="card" style={{ borderRadius: 20, padding: "32px 28px", display: "flex", flexDirection: "column" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: GRAY, marginBottom: 8 }}>Enterprise</div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 6 }}>
+                <span style={{ fontSize: 40, fontWeight: 800, color: DARK, letterSpacing: "-1px" }}>Custom</span>
+              </div>
+              <p style={{ fontSize: 14, color: GRAY, marginBottom: 28, lineHeight: 1.6 }}>
+                Para grandes equipes com SLAs garantidos e integrações personalizadas.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, marginBottom: 28 }}>
+                {["Tudo do Pro", "SLA garantido", "Gerente de conta dedicado", "Integrações personalizadas", "Treinamento da equipe"].map(f => (
+                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                    <Check color={PURPLE} />
+                    <span style={{ fontSize: 14, color: "#374151" }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              <a href="mailto:contato@weprompt.app.br" style={{
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                borderRadius: 999, padding: "12px 20px",
+                fontSize: 14, fontWeight: 600, textDecoration: "none",
+                border: "1.5px solid rgba(0,0,0,0.15)",
+                color: DARK, background: "transparent",
+              }}>
+                Falar com equipe <Arrow />
+              </a>
+            </div>
           </div>
         </section>
 
@@ -560,7 +679,7 @@ export default function Home() {
                 Junte-se a mais de 10.000 empresas que já adotam soluções de IA com suporte em português.
               </p>
               <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                <a href="#" className="btn-primary" style={{
+                <a href="/cadastro" className="btn-primary" style={{
                   borderRadius: 999, padding: "14px 30px",
                   fontSize: 15, fontWeight: 600,
                   display: "inline-flex", alignItems: "center", gap: 8,
@@ -568,7 +687,7 @@ export default function Home() {
                 }}>
                   Começar gratuitamente <Arrow />
                 </a>
-                <a href="#" style={{
+                <a href="mailto:contato@weprompt.app.br" style={{
                   borderRadius: 999, padding: "14px 30px",
                   fontSize: 15, fontWeight: 600,
                   display: "inline-flex", alignItems: "center", gap: 8,
@@ -603,7 +722,7 @@ export default function Home() {
           <div style={{ display: "flex", gap: 20 }}>
             <a href="#" className="footer-link">Privacidade</a>
             <a href="#" className="footer-link">Termos</a>
-            <a href="#" className="footer-link">Contato</a>
+            <a href="mailto:contato@weprompt.app.br" className="footer-link">Contato</a>
           </div>
         </div>
       </footer>
