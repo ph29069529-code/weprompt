@@ -10,6 +10,25 @@ const TEXT2 = "rgba(255,255,255,0.6)";
 
 const CATEGORIES = ["Todos", "Automação", "Agentes de IA", "Chatbots", "Análise de Dados", "Marketing IA"];
 
+const NAV_LINKS = [
+  ["Explorar", "/solucoes"],
+  ["Preços", "#"],
+  ["Como funciona", "#"],
+  ["Para Criadores", "#"],
+];
+
+function useWindowSize() {
+  const [width, setWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
+  useEffect(() => {
+    function onResize() { setWidth(window.innerWidth); }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return width;
+}
+
 const Arrow = () => (
   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ display: "inline-block", flexShrink: 0 }}>
     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -142,6 +161,9 @@ export default function SolucoesPage() {
   const [solutions, setSolutions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const width = useWindowSize();
+  const isMobile = width < 768;
 
   useEffect(() => {
     async function fetchSolutions() {
@@ -161,7 +183,7 @@ export default function SolucoesPage() {
     <div style={{ minHeight: "100vh", color: "#fff" }}>
 
       <header style={{
-        position: "sticky", top: 0, zIndex: 50,
+        position: "sticky", top: 0, zIndex: 100,
         background: "rgba(10,10,26,0.85)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
@@ -172,40 +194,111 @@ export default function SolucoesPage() {
           padding: "0 24px", height: 60,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          <a href="/" style={{ textDecoration: "none" }}>
+          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
             <WePromptLogo id="solucoes-header" />
           </a>
-          <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {[["Explorar", "/solucoes"], ["Preços", "#"], ["Como funciona", "#"], ["Para Criadores", "#"]].map(([label, href]) => (
-              <a key={label} href={href} className="nav-link"
-                style={label === "Explorar" ? { color: "#a78bfa", fontWeight: 600 } : {}}
+
+          {!isMobile && (
+            <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              {NAV_LINKS.map(([label, href]) => (
+                <a key={label} href={href} style={{
+                  color: label === "Explorar" ? "#a78bfa" : "rgba(255,255,255,0.7)",
+                  fontWeight: label === "Explorar" ? 600 : 500,
+                  fontSize: 14, textDecoration: "none",
+                  padding: "6px 12px", borderRadius: 8,
+                  transition: "color 0.15s",
+                }}>
+                  {label}
+                </a>
+              ))}
+            </nav>
+          )}
+
+          {!isMobile && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <a href="/login" style={{
+                borderRadius: 999, padding: "8px 18px",
+                fontSize: 14, fontWeight: 500,
+                textDecoration: "none", color: "rgba(255,255,255,0.8)",
+                border: "1.5px solid rgba(255,255,255,0.15)",
+                background: "transparent",
+              }}>
+                Entrar
+              </a>
+              <a href="/cadastro" style={{
+                borderRadius: 999, padding: "9px 20px",
+                fontSize: 14, fontWeight: 600,
+                display: "inline-flex", alignItems: "center", gap: 6,
+                textDecoration: "none",
+                background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)",
+                color: "#fff",
+              }}>
+                Criar conta <Arrow />
+              </a>
+            </div>
+          )}
+
+          {isMobile && (
+            <button
+              onClick={() => setMenuOpen(o => !o)}
+              aria-label="Menu"
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: 22, color: "#fff", padding: "4px 8px",
+                display: "flex", alignItems: "center",
+              }}
+            >
+              {menuOpen ? "✕" : "☰"}
+            </button>
+          )}
+        </div>
+
+        {isMobile && menuOpen && (
+          <div style={{
+            position: "fixed", top: 60, left: 0, right: 0, zIndex: 99,
+            background: "rgba(10,10,26,0.97)",
+            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            padding: "12px 24px 20px",
+            display: "flex", flexDirection: "column", gap: 4,
+          }}>
+            {NAV_LINKS.map(([label, href]) => (
+              <a key={label} href={href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  padding: "12px 4px", fontSize: 16, fontWeight: 500,
+                  color: label === "Explorar" ? "#a78bfa" : "rgba(255,255,255,0.85)",
+                  textDecoration: "none",
+                  borderBottom: "1px solid rgba(255,255,255,0.07)",
+                }}
               >
                 {label}
               </a>
             ))}
-          </nav>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <a href="/login" style={{
-              borderRadius: 999, padding: "8px 18px",
-              fontSize: 14, fontWeight: 500,
-              textDecoration: "none", color: "rgba(255,255,255,0.8)",
-              border: "1.5px solid rgba(255,255,255,0.15)",
-              background: "transparent",
-            }}>
-              Entrar
-            </a>
-            <a href="/cadastro" style={{
-              borderRadius: 999, padding: "9px 20px",
-              fontSize: 14, fontWeight: 600,
-              display: "inline-flex", alignItems: "center", gap: 6,
-              textDecoration: "none",
-              background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)",
-              color: "#fff",
-            }}>
-              Criar conta <Arrow />
-            </a>
+            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+              <a href="/login" style={{
+                flex: 1, textAlign: "center",
+                borderRadius: 999, padding: "11px",
+                fontSize: 14, fontWeight: 500,
+                textDecoration: "none", color: "rgba(255,255,255,0.8)",
+                border: "1.5px solid rgba(255,255,255,0.15)",
+              }}>
+                Entrar
+              </a>
+              <a href="/cadastro" style={{
+                flex: 1, textAlign: "center",
+                borderRadius: 999, padding: "11px",
+                fontSize: 14, fontWeight: 600,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                textDecoration: "none",
+                background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)",
+                color: "#fff",
+              }}>
+                Criar conta <Arrow />
+              </a>
+            </div>
           </div>
-        </div>
+        )}
       </header>
 
       <main style={{ maxWidth: 1200, margin: "0 auto", padding: "48px 24px 80px" }}>

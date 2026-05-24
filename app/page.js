@@ -45,7 +45,7 @@ export default function Home() {
   const isMobile = width < 768;
 
   return (
-    <div style={{ minHeight: "100vh", color: DARK }}>
+    <div style={{ minHeight: "100vh", color: DARK, background: "linear-gradient(135deg, #F0F0FF 0%, #E8E8F8 30%, #EEF0FF 60%, #F5F0FF 100%)" }}>
 
       {/* ══════════ NAVBAR ══════════ */}
       <header style={{
