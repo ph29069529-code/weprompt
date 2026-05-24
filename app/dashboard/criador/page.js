@@ -718,6 +718,169 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
   );
 }
 
+/* ── Settings form (Criador) ── */
+function SettingsCriador({ user, profile, isMobile, onProfileUpdate }) {
+  const [nome, setNome] = useState(profile?.nome || "");
+  const [bio, setBio] = useState(profile?.bio || "");
+  const [portfolioLink, setPortfolioLink] = useState(profile?.portfolio_link || "");
+  const [pixKey, setPixKey] = useState(profile?.pix_key || "");
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(profile?.avatar_url || "");
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState("");
+  const [saveError, setSaveError] = useState("");
+  const avatarInputRef = useRef(null);
+
+  const fldStyle = {
+    width: "100%", padding: "10px 14px",
+    borderRadius: 10, border: `1.5px solid ${BORDER}`,
+    fontSize: 14, color: DARK, background: "#fff",
+    outline: "none", boxSizing: "border-box",
+    fontFamily: "inherit", transition: "border-color 0.15s",
+  };
+  const lbl = { fontSize: 13, fontWeight: 600, color: DARK, marginBottom: 6, display: "block" };
+
+  function handleAvatarChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSaving(true);
+    setSaveMsg("");
+    setSaveError("");
+
+    let avatarUrl = profile?.avatar_url || null;
+    if (avatarFile) {
+      const ext = avatarFile.name.split(".").pop();
+      const path = `avatars/${user.id}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars").upload(path, avatarFile, { upsert: true });
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+        avatarUrl = urlData.publicUrl;
+      }
+    }
+
+    const updates = { nome, bio, portfolio_link: portfolioLink, pix_key: pixKey };
+    if (avatarUrl) updates.avatar_url = avatarUrl;
+
+    const { error } = await supabase.from("profiles").update(updates).eq("id", user.id);
+    if (error) {
+      setSaveError("Erro ao salvar. Tente novamente.");
+    } else {
+      setSaveMsg("Alterações salvas!");
+      onProfileUpdate({ ...profile, ...updates });
+      setTimeout(() => setSaveMsg(""), 3000);
+    }
+    setSaving(false);
+  }
+
+  return (
+    <div style={{
+      background: "#fff", border: `1px solid ${BORDER}`,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+      borderRadius: 16, padding: isMobile ? "24px 20px" : "32px",
+    }}>
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 24 }}>Configurações</h2>
+      <form onSubmit={handleSubmit}>
+
+        <div style={{ marginBottom: 24 }}>
+          <label style={lbl}>Foto de perfil</label>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{
+              width: 72, height: 72, borderRadius: "50%", overflow: "hidden", flexShrink: 0,
+              background: "rgba(107,92,231,0.1)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              border: `2px solid ${BORDER}`,
+            }}>
+              {avatarPreview
+                ? <img src={avatarPreview} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : <span style={{ fontSize: 24, fontWeight: 700, color: PURPLE }}>{(nome || "?").charAt(0).toUpperCase()}</span>}
+            </div>
+            <button type="button" onClick={() => avatarInputRef.current?.click()} style={{
+              padding: "8px 16px", borderRadius: 8,
+              border: `1.5px solid ${BORDER}`, background: "transparent",
+              color: DARK, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+            }}>
+              Alterar foto
+            </button>
+            <input ref={avatarInputRef} type="file" accept="image/jpeg,image/png,image/webp"
+              style={{ display: "none" }} onChange={handleAvatarChange} />
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>Nome completo</label>
+          <input type="text" value={nome} onChange={e => setNome(e.target.value)} style={fldStyle}
+            onFocus={e => (e.target.style.borderColor = PURPLE)}
+            onBlur={e => (e.target.style.borderColor = BORDER)} />
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>Email</label>
+          <input type="email" value={user?.email || ""} readOnly
+            style={{ ...fldStyle, background: "#f9fafb", color: GRAY, cursor: "default" }} />
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>Bio / Descrição do perfil</label>
+          <textarea rows={3} value={bio} onChange={e => setBio(e.target.value)}
+            placeholder="Descreva sua experiência e especialidades…"
+            style={{ ...fldStyle, resize: "vertical", lineHeight: 1.6 }}
+            onFocus={e => (e.target.style.borderColor = PURPLE)}
+            onBlur={e => (e.target.style.borderColor = BORDER)} />
+        </div>
+
+        <div style={{ marginBottom: 24 }}>
+          <label style={lbl}>Link do portfólio ou site</label>
+          <input type="url" value={portfolioLink} onChange={e => setPortfolioLink(e.target.value)}
+            placeholder="https://seusite.com" style={fldStyle}
+            onFocus={e => (e.target.style.borderColor = PURPLE)}
+            onBlur={e => (e.target.style.borderColor = BORDER)} />
+        </div>
+
+        <div style={{ height: 1, background: BORDER, margin: "8px 0 24px" }} />
+        <div style={{ fontSize: 11, fontWeight: 700, color: GRAY, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 16 }}>
+          Dados bancários
+        </div>
+
+        <div style={{ marginBottom: 28 }}>
+          <label style={lbl}>Chave PIX</label>
+          <input type="text" value={pixKey} onChange={e => setPixKey(e.target.value)}
+            placeholder="CPF, email, telefone ou chave aleatória" style={fldStyle}
+            onFocus={e => (e.target.style.borderColor = PURPLE)}
+            onBlur={e => (e.target.style.borderColor = BORDER)} />
+        </div>
+
+        {saveError && (
+          <div style={{ background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#B91C1C", marginBottom: 16 }}>
+            {saveError}
+          </div>
+        )}
+        {saveMsg && (
+          <div style={{ background: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#15803D", marginBottom: 16 }}>
+            {saveMsg}
+          </div>
+        )}
+
+        <button type="submit" disabled={saving} style={{
+          padding: "11px 24px", borderRadius: 10,
+          background: saving ? "rgba(107,92,231,0.5)" : "linear-gradient(135deg, #6B5CE7, #8B5CF6)",
+          color: "#fff", border: "none", fontSize: 14, fontWeight: 600,
+          cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit",
+          boxShadow: saving ? "none" : "0 4px 12px rgba(107,92,231,0.25)",
+        }}>
+          {saving ? "Salvando…" : "Salvar alterações"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 /* ── Sidebar nav item ── */
 function NavItem({ icon, label, active, onClick }) {
   return (
@@ -973,7 +1136,16 @@ export default function CriadorDashboard() {
             </>
           )}
 
-          {activeNav !== "solutions" && (
+          {activeNav === "settings" && (
+            <SettingsCriador
+              user={user}
+              profile={profile}
+              isMobile={isMobile}
+              onProfileUpdate={setProfile}
+            />
+          )}
+
+          {(activeNav === "revenue" || activeNav === "subscribers") && (
             <div style={{
               background: "#fff",
               border: `1px solid ${BORDER}`,

@@ -243,6 +243,114 @@ function SubscriptionCard({ sub, onCancel, isMobile }) {
   );
 }
 
+/* ── Settings form (Empresa) ── */
+function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
+  const [nome, setNome] = useState(profile?.nome || "");
+  const [cnpj, setCnpj] = useState(profile?.cnpj || "");
+  const [segmento, setSegmento] = useState(profile?.segmento || "");
+  const [site, setSite] = useState(profile?.site || "");
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState("");
+  const [saveError, setSaveError] = useState("");
+
+  const fldStyle = {
+    width: "100%", padding: "10px 14px",
+    borderRadius: 10, border: `1.5px solid ${BORDER}`,
+    fontSize: 14, color: DARK, background: "#fff",
+    outline: "none", boxSizing: "border-box",
+    fontFamily: "inherit", transition: "border-color 0.15s",
+  };
+  const lbl = { fontSize: 13, fontWeight: 600, color: DARK, marginBottom: 6, display: "block" };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSaving(true);
+    setSaveMsg("");
+    setSaveError("");
+
+    const updates = { nome, cnpj, segmento, site };
+    const { error } = await supabase.from("profiles").update(updates).eq("id", user.id);
+    if (error) {
+      setSaveError("Erro ao salvar. Tente novamente.");
+    } else {
+      setSaveMsg("Alterações salvas!");
+      onProfileUpdate({ ...profile, ...updates });
+      setTimeout(() => setSaveMsg(""), 3000);
+    }
+    setSaving(false);
+  }
+
+  return (
+    <div style={{
+      background: "#fff", border: `1px solid ${BORDER}`,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+      borderRadius: 16, padding: isMobile ? "24px 20px" : "32px",
+    }}>
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 24 }}>Configurações</h2>
+      <form onSubmit={handleSubmit}>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>Nome da empresa</label>
+          <input type="text" value={nome} onChange={e => setNome(e.target.value)} style={fldStyle}
+            onFocus={e => (e.target.style.borderColor = PURPLE)}
+            onBlur={e => (e.target.style.borderColor = BORDER)} />
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>Email</label>
+          <input type="email" value={user?.email || ""} readOnly
+            style={{ ...fldStyle, background: "#f9fafb", color: GRAY, cursor: "default" }} />
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>CNPJ</label>
+          <input type="text" value={cnpj} onChange={e => setCnpj(e.target.value)}
+            placeholder="00.000.000/0000-00" style={fldStyle}
+            onFocus={e => (e.target.style.borderColor = PURPLE)}
+            onBlur={e => (e.target.style.borderColor = BORDER)} />
+        </div>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>Segmento / Setor</label>
+          <input type="text" value={segmento} onChange={e => setSegmento(e.target.value)}
+            placeholder="Ex: Varejo, Saúde, Tecnologia…" style={fldStyle}
+            onFocus={e => (e.target.style.borderColor = PURPLE)}
+            onBlur={e => (e.target.style.borderColor = BORDER)} />
+        </div>
+
+        <div style={{ marginBottom: 28 }}>
+          <label style={lbl}>Site da empresa</label>
+          <input type="url" value={site} onChange={e => setSite(e.target.value)}
+            placeholder="https://suaempresa.com.br" style={fldStyle}
+            onFocus={e => (e.target.style.borderColor = PURPLE)}
+            onBlur={e => (e.target.style.borderColor = BORDER)} />
+        </div>
+
+        {saveError && (
+          <div style={{ background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#B91C1C", marginBottom: 16 }}>
+            {saveError}
+          </div>
+        )}
+        {saveMsg && (
+          <div style={{ background: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#15803D", marginBottom: 16 }}>
+            {saveMsg}
+          </div>
+        )}
+
+        <button type="submit" disabled={saving} style={{
+          padding: "11px 24px", borderRadius: 10,
+          background: saving ? "rgba(107,92,231,0.5)" : "linear-gradient(135deg, #6B5CE7, #8B5CF6)",
+          color: "#fff", border: "none", fontSize: 14, fontWeight: 600,
+          cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit",
+          boxShadow: saving ? "none" : "0 4px 12px rgba(107,92,231,0.25)",
+        }}>
+          {saving ? "Salvando…" : "Salvar alterações"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export default function EmpresaDashboard() {
   const router = useRouter();
   const [user, setUser] = useState(null);
@@ -495,18 +603,12 @@ export default function EmpresaDashboard() {
           )}
 
           {activeNav === "settings" && (
-            <div style={{
-              background: "#fff",
-              border: `1px solid ${BORDER}`,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-              borderRadius: 16, padding: "80px 32px", textAlign: "center",
-            }}>
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: 16, opacity: 0.15, color: DARK }}>
-                <Icon d={icons.settings} size={48} />
-              </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 8 }}>Configurações</h2>
-              <p style={{ fontSize: 14, color: GRAY }}>Esta seção estará disponível em breve.</p>
-            </div>
+            <SettingsEmpresa
+              user={user}
+              profile={profile}
+              isMobile={isMobile}
+              onProfileUpdate={setProfile}
+            />
           )}
 
         </div>

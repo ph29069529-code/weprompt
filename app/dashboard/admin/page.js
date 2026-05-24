@@ -54,6 +54,92 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+/* ── Settings form (Admin) ── */
+function SettingsAdmin({ user, isMobile }) {
+  const [nome, setNome] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState("");
+  const [saveError, setSaveError] = useState("");
+
+  useEffect(() => {
+    async function loadProfile() {
+      const { data } = await supabase.from("profiles").select("nome").eq("id", user.id).single();
+      if (data?.nome) setNome(data.nome);
+    }
+    if (user?.id) loadProfile();
+  }, [user?.id]);
+
+  const fldStyle = {
+    width: "100%", padding: "10px 14px",
+    borderRadius: 10, border: `1.5px solid ${BORDER}`,
+    fontSize: 14, color: DARK, background: "#fff",
+    outline: "none", boxSizing: "border-box",
+    fontFamily: "inherit", transition: "border-color 0.15s",
+  };
+  const lbl = { fontSize: 13, fontWeight: 600, color: DARK, marginBottom: 6, display: "block" };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSaving(true);
+    setSaveMsg("");
+    setSaveError("");
+    const { error } = await supabase.from("profiles").update({ nome }).eq("id", user.id);
+    if (error) {
+      setSaveError("Erro ao salvar. Tente novamente.");
+    } else {
+      setSaveMsg("Alterações salvas!");
+      setTimeout(() => setSaveMsg(""), 3000);
+    }
+    setSaving(false);
+  }
+
+  return (
+    <div style={{
+      background: "#fff", border: `1px solid ${BORDER}`,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+      borderRadius: 16, padding: isMobile ? "24px 20px" : "32px",
+    }}>
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 24 }}>Configurações</h2>
+      <form onSubmit={handleSubmit}>
+
+        <div style={{ marginBottom: 16 }}>
+          <label style={lbl}>Nome</label>
+          <input type="text" value={nome} onChange={e => setNome(e.target.value)} style={fldStyle}
+            onFocus={e => (e.target.style.borderColor = PURPLE)}
+            onBlur={e => (e.target.style.borderColor = BORDER)} />
+        </div>
+
+        <div style={{ marginBottom: 28 }}>
+          <label style={lbl}>Email</label>
+          <input type="email" value={user?.email || ""} readOnly
+            style={{ ...fldStyle, background: "#f9fafb", color: GRAY, cursor: "default" }} />
+        </div>
+
+        {saveError && (
+          <div style={{ background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#B91C1C", marginBottom: 16 }}>
+            {saveError}
+          </div>
+        )}
+        {saveMsg && (
+          <div style={{ background: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#15803D", marginBottom: 16 }}>
+            {saveMsg}
+          </div>
+        )}
+
+        <button type="submit" disabled={saving} style={{
+          padding: "11px 24px", borderRadius: 10,
+          background: saving ? "rgba(107,92,231,0.5)" : "linear-gradient(135deg, #6B5CE7, #8B5CF6)",
+          color: "#fff", border: "none", fontSize: 14, fontWeight: 600,
+          cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit",
+          boxShadow: saving ? "none" : "0 4px 12px rgba(107,92,231,0.25)",
+        }}>
+          {saving ? "Salvando…" : "Salvar alterações"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 /* ── Reject dialog ── */
 function RejectDialog({ solution, onConfirm, onClose }) {
   const [reason, setReason] = useState("");
@@ -581,8 +667,10 @@ function SolutionRow({ solution, onApprove, onReject, onView, actionLoading, isM
 export default function AdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const [solutions, setSolutions] = useState([]);
   const [activeTab, setActiveTab] = useState("pending");
+  const [activeSection, setActiveSection] = useState("curadoria");
   const [rejectTarget, setRejectTarget] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedSolution, setSelectedSolution] = useState(null);
@@ -595,6 +683,7 @@ export default function AdminDashboard() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { router.replace("/login"); return; }
       if (session.user.email !== ADMIN_EMAIL) { router.replace("/"); return; }
+      setUser(session.user);
 
       const { data } = await supabase
         .from("solutions")
@@ -724,7 +813,7 @@ export default function AdminDashboard() {
           </div>
           <div style={{ marginTop: 20, padding: "0 4px" }}>
             {TABS.map(tab => (
-              <button key={tab.key} onClick={() => { setActiveTab(tab.key); if (isMobile) setSidebarOpen(false); }} style={{
+              <button key={tab.key} onClick={() => { setActiveTab(tab.key); setActiveSection("curadoria"); if (isMobile) setSidebarOpen(false); }} style={{
                 width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "9px 12px", borderRadius: 8, border: "none",
                 background: activeTab === tab.key ? "rgba(107,92,231,0.1)" : "transparent",
@@ -751,6 +840,25 @@ export default function AdminDashboard() {
           </div>
         </div>
         <div style={{ flex: 1 }} />
+        <div style={{ padding: "0 16px 12px" }}>
+          <button onClick={() => { setActiveSection("settings"); if (isMobile) setSidebarOpen(false); }} style={{
+            width: "100%", display: "flex", alignItems: "center", gap: 10,
+            padding: "9px 12px", borderRadius: 8, border: "none",
+            background: activeSection === "settings" ? "rgba(107,92,231,0.1)" : "transparent",
+            color: activeSection === "settings" ? PURPLE : GRAY,
+            fontSize: 14, fontWeight: activeSection === "settings" ? 600 : 500,
+            cursor: "pointer", fontFamily: "inherit",
+            transition: "background 0.15s",
+          }}
+            onMouseEnter={e => { if (activeSection !== "settings") e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
+            onMouseLeave={e => { if (activeSection !== "settings") e.currentTarget.style.background = "transparent"; }}
+          >
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </svg>
+            Configurações
+          </button>
+        </div>
         <div style={{ padding: "16px", borderTop: `1px solid ${BORDER}` }}>
           <div style={{ fontSize: 12, color: GRAY, fontWeight: 500, padding: "4px 12px 8px" }}>
             Admin · {ADMIN_EMAIL}
@@ -797,52 +905,61 @@ export default function AdminDashboard() {
           </div>
         )}
         <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "24px 16px 32px" : "40px 32px" }}>
-          <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontSize: 26, fontWeight: 800, color: DARK, margin: 0, letterSpacing: "-0.5px" }}>
-              {TABS.find(t => t.key === activeTab)?.label}
-            </h1>
-            <p style={{ fontSize: 14, color: GRAY, margin: "4px 0 0" }}>
-              {activeTab === "pending"
-                ? "Soluções aguardando sua análise."
-                : activeTab === "approved"
-                ? "Soluções publicadas no marketplace."
-                : "Soluções reprovadas."}
-            </p>
-          </div>
 
-          {filtered.length === 0 ? (
-            <div style={{
-              background: "#fff",
-              border: `1px solid ${BORDER}`,
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-              borderRadius: 16,
-              padding: "60px 32px", textAlign: "center",
-            }}>
-              <div style={{ fontSize: 36, marginBottom: 12, opacity: 0.2, color: DARK }}>
-                {activeTab === "pending" ? "✦" : activeTab === "approved" ? "✓" : "×"}
+          {activeSection === "settings" && user && (
+            <SettingsAdmin user={user} isMobile={isMobile} />
+          )}
+
+          {activeSection === "curadoria" && (
+            <>
+              <div style={{ marginBottom: 32 }}>
+                <h1 style={{ fontSize: 26, fontWeight: 800, color: DARK, margin: 0, letterSpacing: "-0.5px" }}>
+                  {TABS.find(t => t.key === activeTab)?.label}
+                </h1>
+                <p style={{ fontSize: 14, color: GRAY, margin: "4px 0 0" }}>
+                  {activeTab === "pending"
+                    ? "Soluções aguardando sua análise."
+                    : activeTab === "approved"
+                    ? "Soluções publicadas no marketplace."
+                    : "Soluções reprovadas."}
+                </p>
               </div>
-              <p style={{ fontSize: 15, color: GRAY, margin: 0 }}>
-                {activeTab === "pending"
-                  ? "Nenhuma solução pendente no momento."
-                  : activeTab === "approved"
-                  ? "Nenhuma solução aprovada ainda."
-                  : "Nenhuma solução reprovada."}
-              </p>
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {filtered.map(s => (
-                <SolutionRow
-                  key={s.id}
-                  solution={s}
-                  onApprove={handleApprove}
-                  onReject={handleReject}
-                  onView={sol => setSelectedSolution(sol)}
-                  actionLoading={actionLoading}
-                  isMobile={isMobile}
-                />
-              ))}
-            </div>
+
+              {filtered.length === 0 ? (
+                <div style={{
+                  background: "#fff",
+                  border: `1px solid ${BORDER}`,
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                  borderRadius: 16,
+                  padding: "60px 32px", textAlign: "center",
+                }}>
+                  <div style={{ fontSize: 36, marginBottom: 12, opacity: 0.2, color: DARK }}>
+                    {activeTab === "pending" ? "✦" : activeTab === "approved" ? "✓" : "×"}
+                  </div>
+                  <p style={{ fontSize: 15, color: GRAY, margin: 0 }}>
+                    {activeTab === "pending"
+                      ? "Nenhuma solução pendente no momento."
+                      : activeTab === "approved"
+                      ? "Nenhuma solução aprovada ainda."
+                      : "Nenhuma solução reprovada."}
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {filtered.map(s => (
+                    <SolutionRow
+                      key={s.id}
+                      solution={s}
+                      onApprove={handleApprove}
+                      onReject={handleReject}
+                      onView={sol => setSelectedSolution(sol)}
+                      actionLoading={actionLoading}
+                      isMobile={isMobile}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>
