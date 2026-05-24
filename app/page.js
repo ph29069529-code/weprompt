@@ -188,12 +188,6 @@ function GlassStack() {
     },
   ];
 
-  const bgs = [
-    "rgba(14,165,233,0.12)",
-    "rgba(56,189,248,0.09)",
-    "rgba(56,189,248,0.07)",
-  ];
-
   const contents = [
     /* card 0: Dashboard */
     <div key="dash" style={{ padding: "20px 24px" }}>
@@ -263,23 +257,41 @@ function GlassStack() {
   ];
 
   return (
-    <div style={{ position: "relative", width: 520, height: 400, flexShrink: 0, animation: "float 4s ease-in-out infinite" }}>
+    <div style={{ position: "relative", width: 580, height: 460, flexShrink: 0, animation: "float 4s ease-in-out infinite" }}>
+      {/* Soft radial glow behind the stack */}
+      <div style={{
+        position: "absolute", top: -40, right: -40, bottom: -40, left: -40,
+        borderRadius: 40, zIndex: -1,
+        background: "radial-gradient(ellipse at center, rgba(186,230,253,0.4) 0%, rgba(219,234,254,0.2) 50%, transparent 70%)",
+        filter: "blur(30px)",
+      }} />
+
       {[0, 1, 2].map(cardIndex => {
         const pos = (cardIndex - activeIndex + 3) % 3;
         const { transform, zIndex, opacity } = positionStyles[pos];
         return (
           <div key={cardIndex} style={{
             position: "absolute", top: 0, left: 0,
-            width: 400, height: 280,
-            background: bgs[pos],
-            border: "1px solid rgba(56,189,248,0.3)",
-            borderRadius: 16,
-            boxShadow: "0 8px 32px rgba(14,165,233,0.15)",
-            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            width: 500, height: 340,
+            background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(219,234,254,0.25) 50%, rgba(186,230,253,0.35) 100%)",
+            border: "1px solid rgba(255,255,255,0.8)",
+            borderRadius: 20,
+            boxShadow: "0 8px 32px rgba(14,165,233,0.12), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(14,165,233,0.1)",
+            backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)",
             overflow: "hidden",
             transform, zIndex, opacity,
             transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
           }}>
+            {/* Top edge refraction highlight */}
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, height: 1, zIndex: 10,
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)",
+            }} />
+            {/* Left edge refraction highlight */}
+            <div style={{
+              position: "absolute", top: 0, left: 0, bottom: 0, width: 1, zIndex: 10,
+              background: "linear-gradient(180deg, rgba(255,255,255,0.9), transparent, rgba(255,255,255,0.3))",
+            }} />
             {contents[cardIndex]}
           </div>
         );
