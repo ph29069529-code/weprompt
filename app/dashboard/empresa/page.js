@@ -6,8 +6,9 @@ import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
 
 const PURPLE = "#6B5CE7";
-const BORDER = "rgba(255,255,255,0.1)";
-const TEXT2 = "rgba(255,255,255,0.6)";
+const DARK = "#0A0A1A";
+const GRAY = "#6B7280";
+const BORDER = "rgba(0,0,0,0.08)";
 
 const icons = {
   subscriptions: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
@@ -23,23 +24,22 @@ const Icon = ({ d, size = 18 }) => (
   </svg>
 );
 
-function StatCard({ label, value, sub, accent }) {
+function StatCard({ label, value, sub, accentColor }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.05)",
-      backdropFilter: "blur(10px)",
-      WebkitBackdropFilter: "blur(10px)",
+      background: "#fff",
       border: `1px solid ${BORDER}`,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
       borderRadius: 14,
       padding: "20px 24px",
       flex: 1, minWidth: 0,
-      borderTop: `3px solid ${accent || PURPLE}`,
+      borderTop: `3px solid ${accentColor || PURPLE}`,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: TEXT2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+      <div style={{ fontSize: 11, fontWeight: 600, color: GRAY, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
         {label}
       </div>
-      <div style={{ fontSize: 28, fontWeight: 800, color: "#fff", letterSpacing: "-0.5px" }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: TEXT2, marginTop: 4 }}>{sub}</div>}
+      <div style={{ fontSize: 28, fontWeight: 800, color: DARK, letterSpacing: "-0.5px" }}>{value}</div>
+      {sub && <div style={{ fontSize: 12, color: GRAY, marginTop: 4 }}>{sub}</div>}
     </div>
   );
 }
@@ -54,8 +54,8 @@ function NavItem({ icon, label, active, onClick, href }) {
   const baseStyle = {
     width: "100%", display: "flex", alignItems: "center", gap: 12,
     padding: "10px 16px", borderRadius: 10,
-    background: active ? "rgba(107,92,231,0.2)" : "transparent",
-    color: active ? "#a78bfa" : TEXT2,
+    background: active ? "rgba(107,92,231,0.1)" : "transparent",
+    color: active ? PURPLE : GRAY,
     fontSize: 14, fontWeight: active ? 600 : 500,
     cursor: "pointer", fontFamily: "inherit", textAlign: "left",
     transition: "background 0.15s, color 0.15s", textDecoration: "none",
@@ -63,7 +63,7 @@ function NavItem({ icon, label, active, onClick, href }) {
   if (href) {
     return (
       <a href={href} style={{ ...baseStyle, border: "none" }}
-        onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+        onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
         onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}>
         {content}
       </a>
@@ -71,7 +71,7 @@ function NavItem({ icon, label, active, onClick, href }) {
   }
   return (
     <button onClick={onClick} style={{ ...baseStyle, border: "none" }}
-      onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+      onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
       onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}>
       {content}
     </button>
@@ -88,49 +88,49 @@ function CancelDialog({ solution, onConfirm, onClose }) {
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 200,
-      background: "rgba(10,10,26,0.7)", backdropFilter: "blur(8px)",
+      background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
     }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{
-        background: "rgba(13,10,46,0.95)",
-        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        border: `1px solid ${BORDER}`, borderRadius: 20,
-        boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
+        background: "#fff",
+        border: `1px solid ${BORDER}`,
+        borderRadius: 20,
+        boxShadow: "0 16px 60px rgba(0,0,0,0.12)",
         width: "100%", maxWidth: 420, padding: "32px",
         animation: "modalIn 0.2s ease",
       }}>
         <style>{`@keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(8px) } to { opacity:1; transform:scale(1) translateY(0) } }`}</style>
         <div style={{
           width: 48, height: 48, borderRadius: "50%",
-          background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.3)",
+          background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.2)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          marginBottom: 20, color: "#fca5a5",
+          marginBottom: 20, color: "#DC2626",
         }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01" />
           </svg>
         </div>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: "#fff", margin: "0 0 8px" }}>
+        <h2 style={{ fontSize: 18, fontWeight: 800, color: DARK, margin: "0 0 8px" }}>
           Cancelar assinatura?
         </h2>
-        <p style={{ fontSize: 14, color: TEXT2, margin: "0 0 24px", lineHeight: 1.6 }}>
+        <p style={{ fontSize: 14, color: GRAY, margin: "0 0 24px", lineHeight: 1.6 }}>
           Você está prestes a cancelar a assinatura de{" "}
-          <strong style={{ color: "#fff" }}>{solution}</strong>.{" "}
+          <strong style={{ color: DARK }}>{solution}</strong>.{" "}
           Você perderá o acesso ao fim do período atual.
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
           <button onClick={onClose} style={{
             padding: "10px 20px", borderRadius: 10,
             border: `1.5px solid ${BORDER}`,
-            background: "transparent", color: TEXT2,
+            background: "transparent", color: GRAY,
             fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
           }}>
             Manter assinatura
           </button>
           <button onClick={handleConfirm} disabled={loading} style={{
             padding: "10px 20px", borderRadius: 10,
-            background: loading ? "rgba(220,38,38,0.4)" : "rgba(220,38,38,0.75)",
+            background: loading ? "rgba(220,38,38,0.4)" : "#DC2626",
             color: "#fff", border: "none",
             fontSize: 14, fontWeight: 600,
             cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit",
@@ -149,9 +149,10 @@ function SubscriptionCard({ sub, onCancel }) {
   const isOneTime = solution?.payment_type === "one_time";
   return (
     <div style={{
-      background: "rgba(255,255,255,0.04)",
-      backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
-      border: `1px solid ${BORDER}`, borderRadius: 14,
+      background: "#fff",
+      border: `1px solid ${BORDER}`,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+      borderRadius: 14,
       padding: "20px 24px",
       display: "flex", alignItems: "center", gap: 20,
     }}>
@@ -159,56 +160,56 @@ function SubscriptionCard({ sub, onCancel }) {
         width: 4, height: 48, borderRadius: 99, flexShrink: 0,
         background: statusActive
           ? "linear-gradient(180deg, #6B5CE7, #8B5CF6)"
-          : "rgba(255,255,255,0.1)",
+          : "rgba(0,0,0,0.12)",
       }} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: "#fff", marginBottom: 4 }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: DARK, marginBottom: 4 }}>
           {solution?.titulo || "Solução removida"}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {solution?.categoria && (
             <span style={{
               display: "inline-block",
-              background: "rgba(107,92,231,0.2)", color: "#a78bfa",
+              background: "rgba(107,92,231,0.08)", color: PURPLE,
               padding: "2px 8px", borderRadius: 99, fontSize: 11, fontWeight: 600,
             }}>
               {solution.categoria}
             </span>
           )}
-          <span style={{ fontSize: 12, color: TEXT2 }}>
+          <span style={{ fontSize: 12, color: GRAY }}>
             Desde {new Date(sub.created_at).toLocaleDateString("pt-BR", { month: "short", year: "numeric" })}
           </span>
         </div>
       </div>
       <div style={{ textAlign: "right", flexShrink: 0 }}>
-        <div style={{ fontSize: 17, fontWeight: 700, color: "#fff" }}>
+        <div style={{ fontSize: 17, fontWeight: 700, color: DARK }}>
           {solution?.preco != null
             ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
             : "Gratuito"}
         </div>
         {solution?.preco != null && (
-          <div style={{ fontSize: 11, color: TEXT2 }}>{isOneTime ? "único" : "/mês"}</div>
+          <div style={{ fontSize: 11, color: GRAY }}>{isOneTime ? "único" : "/mês"}</div>
         )}
       </div>
       <div style={{
         padding: "4px 12px", borderRadius: 99, flexShrink: 0,
-        background: statusActive ? "rgba(74,222,128,0.15)" : "rgba(220,38,38,0.15)",
-        border: `1px solid ${statusActive ? "rgba(74,222,128,0.3)" : "rgba(220,38,38,0.3)"}`,
+        background: statusActive ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
+        border: `1px solid ${statusActive ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
         fontSize: 12, fontWeight: 600,
-        color: statusActive ? "#4ade80" : "#fca5a5",
+        color: statusActive ? "#15803D" : "#B91C1C",
       }}>
         {statusActive ? "Ativa" : "Cancelada"}
       </div>
       {statusActive && (
         <button onClick={onCancel} style={{
           padding: "8px 16px", borderRadius: 8, flexShrink: 0,
-          border: "1.5px solid rgba(220,38,38,0.3)",
-          background: "transparent", color: "#fca5a5",
+          border: "1.5px solid rgba(220,38,38,0.25)",
+          background: "transparent", color: "#DC2626",
           fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
           transition: "background 0.15s, border-color 0.15s",
         }}
-          onMouseEnter={e => { e.currentTarget.style.background = "rgba(220,38,38,0.15)"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.5)"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.3)"; }}
+          onMouseEnter={e => { e.currentTarget.style.background = "rgba(220,38,38,0.07)"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.4)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.25)"; }}
         >
           Cancelar
         </button>
@@ -269,7 +270,7 @@ export default function EmpresaDashboard() {
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
           <WePromptLogo id="empresa-loading" />
-          <div style={{ fontSize: 13, color: TEXT2, marginTop: 16 }}>Carregando dashboard…</div>
+          <div style={{ fontSize: 13, color: GRAY, marginTop: 16 }}>Carregando dashboard…</div>
         </div>
       </div>
     );
@@ -286,23 +287,23 @@ export default function EmpresaDashboard() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: "#fff" }}>
+    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: DARK }}>
 
       {/* ── SIDEBAR ── */}
       <aside style={{
         width: 240, flexShrink: 0,
-        background: "rgba(5,3,15,0.8)",
+        background: "rgba(255,255,255,0.9)",
         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        borderRight: "1px solid rgba(255,255,255,0.08)",
+        borderRight: `1px solid ${BORDER}`,
         display: "flex", flexDirection: "column",
         position: "fixed", top: 0, bottom: 0, left: 0, overflowY: "auto",
       }}>
         <div style={{ padding: "20px 20px 16px" }}>
           <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="empresa-sidebar" />
+            <WePromptLogo id="empresa-sidebar" textColor={DARK} />
           </a>
         </div>
-        <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "0 16px 16px" }} />
+        <div style={{ height: 1, background: BORDER, margin: "0 16px 16px" }} />
         <nav style={{ flex: 1, padding: "0 12px", display: "flex", flexDirection: "column", gap: 2 }}>
           {navItems.map(item => (
             <NavItem
@@ -315,31 +316,31 @@ export default function EmpresaDashboard() {
             />
           ))}
         </nav>
-        <div style={{ padding: "16px 12px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+        <div style={{ padding: "16px 12px", borderTop: `1px solid ${BORDER}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", marginBottom: 8 }}>
             <div style={{
               width: 32, height: 32, borderRadius: "50%",
-              background: "rgba(74,222,128,0.15)",
+              background: "rgba(22,163,74,0.1)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 14, fontWeight: 700, color: "#4ade80", flexShrink: 0,
+              fontSize: 14, fontWeight: 700, color: "#15803D", flexShrink: 0,
             }}>
               {displayName.charAt(0).toUpperCase()}
             </div>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: DARK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {displayName}
               </div>
-              <div style={{ fontSize: 11, color: TEXT2 }}>Empresa</div>
+              <div style={{ fontSize: 11, color: GRAY }}>Empresa</div>
             </div>
           </div>
           <button onClick={handleSignOut} style={{
             width: "100%", display: "flex", alignItems: "center", gap: 10,
             padding: "10px 16px", borderRadius: 10, border: "none",
-            background: "transparent", color: "#fca5a5",
+            background: "transparent", color: "#DC2626",
             fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left",
             transition: "background 0.15s",
           }}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(220,38,38,0.1)")}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(220,38,38,0.07)")}
             onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
           >
             <Icon d={icons.logout} size={14} /> Sair
@@ -354,10 +355,10 @@ export default function EmpresaDashboard() {
           {activeNav === "subscriptions" && (
             <>
               <div style={{ marginBottom: 28 }}>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-0.5px" }}>
+                <h1 style={{ fontSize: 26, fontWeight: 800, color: DARK, margin: 0, letterSpacing: "-0.5px" }}>
                   Minhas Assinaturas
                 </h1>
-                <p style={{ fontSize: 14, color: TEXT2, margin: "4px 0 0" }}>
+                <p style={{ fontSize: 14, color: GRAY, margin: "4px 0 0" }}>
                   Gerencie todas as soluções de IA que sua empresa utiliza.
                 </p>
               </div>
@@ -369,7 +370,7 @@ export default function EmpresaDashboard() {
                   sub={subscriptions.length > activeSubs.length
                     ? `${subscriptions.length - activeSubs.length} cancelada(s)`
                     : "Todas ativas"}
-                  accent={PURPLE}
+                  accentColor={PURPLE}
                 />
                 <StatCard
                   label="Gasto mensal"
@@ -377,22 +378,22 @@ export default function EmpresaDashboard() {
                     ? `R$ ${monthlySpend.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
                     : "R$ 0"}
                   sub={activeSubs.length > 0 ? `em ${activeSubs.length} solução(ões)` : "Sem assinaturas ativas"}
-                  accent="#4ade80"
+                  accentColor="#15803D"
                 />
               </div>
 
               {subscriptions.length === 0 ? (
                 <div style={{
-                  background: "rgba(255,255,255,0.04)",
-                  backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+                  background: "#fff",
                   border: `1px solid ${BORDER}`,
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
                   borderRadius: 16, padding: "60px 32px", textAlign: "center",
                 }}>
                   <div style={{ fontSize: 40, marginBottom: 16 }}>🏢</div>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 8 }}>
                     Você ainda não assinou nenhuma solução.
                   </h2>
-                  <p style={{ fontSize: 14, color: TEXT2, marginBottom: 24 }}>
+                  <p style={{ fontSize: 14, color: GRAY, marginBottom: 24 }}>
                     Explore o marketplace e encontre ferramentas de IA prontas para o seu negócio.
                   </p>
                   <a href="/solucoes" style={{
@@ -401,7 +402,7 @@ export default function EmpresaDashboard() {
                     color: "#fff", borderRadius: 10,
                     padding: "11px 24px", fontSize: 14, fontWeight: 600,
                     textDecoration: "none",
-                    boxShadow: "0 4px 16px rgba(107,92,231,0.4)",
+                    boxShadow: "0 4px 16px rgba(107,92,231,0.3)",
                   }}>
                     Explorar soluções
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
@@ -430,16 +431,16 @@ export default function EmpresaDashboard() {
 
           {activeNav === "settings" && (
             <div style={{
-              background: "rgba(255,255,255,0.04)",
-              backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+              background: "#fff",
               border: `1px solid ${BORDER}`,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
               borderRadius: 16, padding: "80px 32px", textAlign: "center",
             }}>
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: 16, opacity: 0.2, color: "#fff" }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 16, opacity: 0.15, color: DARK }}>
                 <Icon d={icons.settings} size={48} />
               </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Configurações</h2>
-              <p style={{ fontSize: 14, color: TEXT2 }}>Esta seção estará disponível em breve.</p>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 8 }}>Configurações</h2>
+              <p style={{ fontSize: 14, color: GRAY }}>Esta seção estará disponível em breve.</p>
             </div>
           )}
 

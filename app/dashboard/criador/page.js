@@ -6,8 +6,9 @@ import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
 
 const PURPLE = "#6B5CE7";
-const BORDER = "rgba(255,255,255,0.1)";
-const TEXT2 = "rgba(255,255,255,0.6)";
+const DARK = "#0A0A1A";
+const GRAY = "#6B7280";
+const BORDER = "rgba(0,0,0,0.08)";
 
 const CATEGORIES = ["Automação", "Agentes de IA", "Chatbots", "Análise de Dados", "Marketing IA"];
 
@@ -38,16 +39,17 @@ const icons = {
 function StatCard({ label, value, sub }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.05)",
-      backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
-      border: `1px solid ${BORDER}`, borderRadius: 14,
+      background: "#fff",
+      border: `1px solid ${BORDER}`,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+      borderRadius: 14,
       padding: "20px 24px", flex: 1, minWidth: 0,
     }}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: TEXT2, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: GRAY, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
         {label}
       </div>
-      <div style={{ fontSize: 28, fontWeight: 800, color: "#fff", letterSpacing: "-0.5px" }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: TEXT2, marginTop: 4 }}>{sub}</div>}
+      <div style={{ fontSize: 28, fontWeight: 800, color: DARK, letterSpacing: "-0.5px" }}>{value}</div>
+      {sub && <div style={{ fontSize: 12, color: GRAY, marginTop: 4 }}>{sub}</div>}
     </div>
   );
 }
@@ -57,7 +59,7 @@ function Toggle({ checked, onChange }) {
   return (
     <button type="button" onClick={() => onChange(!checked)} style={{
       width: 40, height: 22, borderRadius: 99,
-      background: checked ? PURPLE : "rgba(255,255,255,0.15)",
+      background: checked ? PURPLE : "rgba(0,0,0,0.15)",
       border: "none", cursor: "pointer", padding: 0,
       position: "relative", flexShrink: 0, transition: "background 0.2s",
     }}>
@@ -66,7 +68,7 @@ function Toggle({ checked, onChange }) {
         left: checked ? 21 : 3,
         width: 16, height: 16, borderRadius: "50%",
         background: "#fff",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
         transition: "left 0.2s",
       }} />
     </button>
@@ -75,9 +77,9 @@ function Toggle({ checked, onChange }) {
 
 /* ── Status badge ── */
 const STATUS_CONFIG = {
-  pending:  { label: "Em análise", bg: "rgba(245,158,11,0.15)", border: "rgba(245,158,11,0.3)",  color: "#fbbf24" },
-  approved: { label: "Aprovado",   bg: "rgba(74,222,128,0.15)", border: "rgba(74,222,128,0.3)",  color: "#4ade80" },
-  rejected: { label: "Reprovado",  bg: "rgba(220,38,38,0.15)",  border: "rgba(220,38,38,0.3)",   color: "#fca5a5" },
+  pending:  { label: "Em análise", bg: "rgba(245,158,11,0.1)",  border: "rgba(245,158,11,0.3)",  color: "#B45309" },
+  approved: { label: "Aprovado",   bg: "rgba(22,163,74,0.1)",   border: "rgba(22,163,74,0.3)",   color: "#15803D" },
+  rejected: { label: "Reprovado",  bg: "rgba(220,38,38,0.1)",   border: "rgba(220,38,38,0.3)",   color: "#B91C1C" },
 };
 function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
@@ -96,34 +98,35 @@ function StatusBadge({ status }) {
 function SolutionCard({ solution, onToggleAtivo, onEdit }) {
   return (
     <div style={{
-      background: "rgba(255,255,255,0.04)",
-      backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
-      border: `1px solid ${BORDER}`, borderRadius: 14,
+      background: "#fff",
+      border: `1px solid ${BORDER}`,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+      borderRadius: 14,
       padding: "20px 24px",
       display: "flex", alignItems: "center", gap: 20,
     }}>
       <div style={{
         width: 10, height: 10, borderRadius: "50%", flexShrink: 0,
-        background: solution.ativo ? PURPLE : "rgba(255,255,255,0.2)",
+        background: solution.ativo ? PURPLE : "rgba(0,0,0,0.15)",
       }} />
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-          <span style={{ fontWeight: 700, fontSize: 15, color: "#fff" }}>{solution.titulo}</span>
+          <span style={{ fontWeight: 700, fontSize: 15, color: DARK }}>{solution.titulo}</span>
           <StatusBadge status={solution.status || "pending"} />
           {(solution.version || 1) > 1 && (
             <span style={{
               fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 99,
-              background: "rgba(107,92,231,0.2)", color: "#a78bfa",
+              background: "rgba(107,92,231,0.1)", color: PURPLE,
             }}>
               v{solution.version}
             </span>
           )}
         </div>
-        <div style={{ fontSize: 12, color: TEXT2 }}>
+        <div style={{ fontSize: 12, color: GRAY }}>
           <span style={{
             display: "inline-block",
-            background: "rgba(107,92,231,0.2)", color: "#a78bfa",
+            background: "rgba(107,92,231,0.08)", color: PURPLE,
             padding: "2px 8px", borderRadius: 99,
             fontWeight: 600, marginRight: 8,
           }}>
@@ -133,8 +136,8 @@ function SolutionCard({ solution, onToggleAtivo, onEdit }) {
         </div>
         {solution.status === "rejected" && solution.rejection_reason && (
           <div style={{
-            marginTop: 6, fontSize: 12, color: "#fca5a5",
-            background: "rgba(220,38,38,0.15)", padding: "4px 10px", borderRadius: 6, display: "inline-block",
+            marginTop: 6, fontSize: 12, color: "#B91C1C",
+            background: "rgba(220,38,38,0.07)", padding: "4px 10px", borderRadius: 6, display: "inline-block",
           }}>
             Motivo: {solution.rejection_reason}
           </div>
@@ -142,13 +145,13 @@ function SolutionCard({ solution, onToggleAtivo, onEdit }) {
       </div>
 
       <div style={{ textAlign: "right", flexShrink: 0 }}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: DARK }}>
           {solution.preco != null
             ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
             : "Gratuito"}
         </div>
         {solution.preco != null && (
-          <div style={{ fontSize: 11, color: TEXT2 }}>
+          <div style={{ fontSize: 11, color: GRAY }}>
             {solution.payment_type === "one_time" ? "único" : "/mês"}
           </div>
         )}
@@ -159,20 +162,20 @@ function SolutionCard({ solution, onToggleAtivo, onEdit }) {
           onClick={() => onEdit(solution)}
           style={{
             padding: "6px 14px", borderRadius: 8,
-            border: "1.5px solid rgba(107,92,231,0.35)",
-            background: "transparent", color: "#a78bfa",
+            border: `1.5px solid rgba(107,92,231,0.25)`,
+            background: "transparent", color: PURPLE,
             fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
             display: "flex", alignItems: "center", gap: 5,
             transition: "background 0.15s",
           }}
-          onMouseEnter={e => (e.currentTarget.style.background = "rgba(107,92,231,0.15)")}
+          onMouseEnter={e => (e.currentTarget.style.background = "rgba(107,92,231,0.07)")}
           onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
         >
           <Icon d={icons.edit} size={12} /> Editar
         </button>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
           <Toggle checked={solution.ativo} onChange={v => onToggleAtivo(solution.id, v)} />
-          <span style={{ fontSize: 10, color: solution.ativo ? "#a78bfa" : TEXT2, fontWeight: 600 }}>
+          <span style={{ fontSize: 10, color: solution.ativo ? PURPLE : GRAY, fontWeight: 600 }}>
             {solution.ativo ? "Ativo" : "Inativo"}
           </span>
         </div>
@@ -327,21 +330,22 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
 
   const inputStyle = {
     width: "100%", padding: "10px 14px",
-    borderRadius: 10, border: "1.5px solid rgba(255,255,255,0.12)",
-    fontSize: 14, color: "#fff", background: "rgba(255,255,255,0.07)",
+    borderRadius: 10, border: `1.5px solid ${BORDER}`,
+    fontSize: 14, color: DARK, background: "#fff",
     outline: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color 0.15s",
   };
-  const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.75)", marginBottom: 6 };
+  const labelStyle = { display: "block", fontSize: 12, fontWeight: 600, color: DARK, marginBottom: 6 };
+
   const backdropStyle = {
     position: "fixed", inset: 0, zIndex: 200,
-    background: "rgba(10,10,26,0.7)", backdropFilter: "blur(8px)",
+    background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)",
     display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
   };
   const panelStyle = {
-    background: "rgba(13,10,46,0.95)",
-    backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-    border: `1px solid ${BORDER}`, borderRadius: 20,
-    boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
+    background: "#fff",
+    border: `1px solid ${BORDER}`,
+    borderRadius: 20,
+    boxShadow: "0 16px 60px rgba(0,0,0,0.12)",
     width: "100%", maxWidth: 560, padding: "32px",
     animation: "modalIn 0.2s ease",
     maxHeight: "90vh", overflowY: "auto",
@@ -354,17 +358,17 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
           <style>{`@keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(8px) } to { opacity:1; transform:scale(1) translateY(0) } }`}</style>
           <div style={{
             width: 64, height: 64, borderRadius: "50%",
-            background: "rgba(74,222,128,0.15)", border: "1px solid rgba(74,222,128,0.3)",
+            background: "rgba(22,163,74,0.1)", border: "1px solid rgba(22,163,74,0.25)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            margin: "0 auto 20px", fontSize: 28,
+            margin: "0 auto 20px", fontSize: 28, color: "#15803D",
           }}>✦</div>
-          <h2 style={{ fontSize: 20, fontWeight: 800, color: "#fff", margin: "0 0 10px" }}>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: DARK, margin: "0 0 10px" }}>
             {isEdit ? "Atualização enviada para análise!" : "Solução enviada para curadoria!"}
           </h2>
-          <p style={{ fontSize: 14, color: TEXT2, margin: "0 0 24px", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, color: GRAY, margin: "0 0 24px", lineHeight: 1.6 }}>
             {isEdit
               ? "Sua atualização foi enviada para nova análise. Em até 48 horas você saberá o resultado."
-              : <>Nossa equipe irá analisar sua solução em até <strong style={{ color: "#fff" }}>48 horas</strong>. Você poderá acompanhar o status aqui no dashboard.</>}
+              : <>Nossa equipe irá analisar sua solução em até <strong style={{ color: DARK }}>48 horas</strong>. Você poderá acompanhar o status aqui no dashboard.</>}
           </p>
           <button onClick={onClose} style={{
             background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)", color: "#fff", border: "none",
@@ -384,12 +388,12 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
         <style>{`@keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(8px) } to { opacity:1; transform:scale(1) translateY(0) } }`}</style>
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 800, color: "#fff", margin: 0 }}>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: DARK, margin: 0 }}>
             {isEdit ? "Editar Solução" : "Nova Solução"}
           </h2>
           <button onClick={onClose} style={{
             background: "none", border: "none", cursor: "pointer",
-            color: TEXT2, padding: 4, borderRadius: 6,
+            color: GRAY, padding: 4, borderRadius: 6,
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
             <Icon d={icons.close} size={20} />
@@ -399,7 +403,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
         <form onSubmit={handleSubmit}>
 
           <div style={{
-            fontSize: 11, fontWeight: 700, color: TEXT2,
+            fontSize: 11, fontWeight: 700, color: GRAY,
             textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 16,
           }}>
             Informações públicas
@@ -413,12 +417,12 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
               style={{
                 position: "relative", paddingTop: "42%",
                 borderRadius: 10, overflow: "hidden",
-                border: coverPreview ? "none" : "2px dashed rgba(255,255,255,0.15)",
-                background: coverPreview ? "transparent" : "rgba(255,255,255,0.04)",
+                border: coverPreview ? `1px solid ${BORDER}` : `2px dashed rgba(0,0,0,0.12)`,
+                background: coverPreview ? "transparent" : "#f9fafb",
                 cursor: "pointer",
               }}
               onMouseEnter={e => { if (!coverPreview) e.currentTarget.style.borderColor = PURPLE; }}
-              onMouseLeave={e => { if (!coverPreview) e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; }}
+              onMouseLeave={e => { if (!coverPreview) e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)"; }}
             >
               {coverPreview ? (
                 <img src={coverPreview} alt="Preview"
@@ -427,7 +431,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
                 <div style={{
                   position: "absolute", inset: 0,
                   display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
-                  color: TEXT2,
+                  color: GRAY,
                 }}>
                   <Icon d={icons.upload} size={22} />
                   <span style={{ fontSize: 12 }}>Clique para enviar · JPG, PNG ou WebP · máx. 2MB</span>
@@ -438,7 +442,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
                   onClick={ev => { ev.stopPropagation(); setCoverFile(null); setCoverPreview(""); }}
                   style={{
                     position: "absolute", top: 8, right: 8,
-                    background: "rgba(0,0,0,0.6)", color: "#fff",
+                    background: "rgba(0,0,0,0.5)", color: "#fff",
                     border: "none", borderRadius: "50%",
                     width: 28, height: 28, cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center",
@@ -449,7 +453,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
             </div>
             <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp"
               style={{ display: "none" }} onChange={handleCoverChange} />
-            {coverError && <div style={{ fontSize: 12, color: "#fca5a5", marginTop: 6 }}>{coverError}</div>}
+            {coverError && <div style={{ fontSize: 12, color: "#B91C1C", marginTop: 6 }}>{coverError}</div>}
           </div>
 
           {/* Título */}
@@ -458,7 +462,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
             <input type="text" required placeholder="Ex: Agente de Atendimento com IA"
               value={titulo} onChange={e => setTitulo(e.target.value)} style={inputStyle}
               onFocus={e => (e.target.style.borderColor = PURPLE)}
-              onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.12)")} />
+              onBlur={e => (e.target.style.borderColor = BORDER)} />
           </div>
 
           {/* Descrição */}
@@ -468,7 +472,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
               value={descricao} onChange={e => setDescricao(e.target.value)}
               style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }}
               onFocus={e => (e.target.style.borderColor = PURPLE)}
-              onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.12)")} />
+              onBlur={e => (e.target.style.borderColor = BORDER)} />
           </div>
 
           {/* Payment type */}
@@ -481,13 +485,13 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
               ].map(opt => (
                 <button key={opt.value} type="button" onClick={() => setPaymentType(opt.value)} style={{
                   padding: "12px", borderRadius: 10, textAlign: "left", fontFamily: "inherit",
-                  border: `2px solid ${paymentType === opt.value ? PURPLE : "rgba(255,255,255,0.12)"}`,
-                  background: paymentType === opt.value ? "rgba(107,92,231,0.15)" : "rgba(255,255,255,0.04)",
+                  border: `2px solid ${paymentType === opt.value ? PURPLE : "rgba(0,0,0,0.1)"}`,
+                  background: paymentType === opt.value ? "rgba(107,92,231,0.07)" : "#f9fafb",
                   cursor: "pointer", transition: "all 0.15s",
                 }}>
                   <div style={{ fontSize: 16, marginBottom: 4 }}>{opt.icon}</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{opt.label}</div>
-                  <div style={{ fontSize: 11, color: TEXT2, marginTop: 2 }}>{opt.sub}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: DARK }}>{opt.label}</div>
+                  <div style={{ fontSize: 11, color: GRAY, marginTop: 2 }}>{opt.sub}</div>
                 </button>
               ))}
             </div>
@@ -500,7 +504,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
               <select value={categoria} onChange={e => setCategoria(e.target.value)}
                 style={{ ...inputStyle, cursor: "pointer" }}
                 onFocus={e => (e.target.style.borderColor = PURPLE)}
-                onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.12)")}>
+                onBlur={e => (e.target.style.borderColor = BORDER)}>
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
@@ -511,21 +515,21 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
               <input type="number" min="0" step="0.01" placeholder="Ex: 97.00"
                 value={preco} onChange={e => setPreco(e.target.value)} style={inputStyle}
                 onFocus={e => (e.target.style.borderColor = PURPLE)}
-                onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.12)")} />
+                onBlur={e => (e.target.style.borderColor = BORDER)} />
             </div>
           </div>
 
           {/* Section divider: Entrega */}
           <div style={{
             margin: "0 -32px 24px", padding: "16px 32px",
-            background: "rgba(255,255,255,0.03)",
-            borderTop: "1px solid rgba(255,255,255,0.08)",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            background: "#f9fafb",
+            borderTop: `1px solid ${BORDER}`,
+            borderBottom: `1px solid ${BORDER}`,
           }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#a78bfa", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 2 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: PURPLE, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 2 }}>
               Entrega para Curadoria
             </div>
-            <div style={{ fontSize: 12, color: TEXT2 }}>
+            <div style={{ fontSize: 12, color: GRAY }}>
               Privado — visível apenas para a equipe de curadoria.
             </div>
           </div>
@@ -540,17 +544,17 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
                   <div key={`ex-${i}`} style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     padding: "8px 12px", borderRadius: 8,
-                    border: `1px solid ${BORDER}`, background: "rgba(255,255,255,0.04)",
+                    border: `1px solid ${BORDER}`, background: "#f9fafb",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                      <span style={{ color: TEXT2 }}><Icon d={icons.file} size={14} /></span>
-                      <span style={{ fontSize: 13, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <span style={{ color: GRAY }}><Icon d={icons.file} size={14} /></span>
+                      <span style={{ fontSize: 13, color: DARK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {f.name}
                       </span>
-                      <span style={{ fontSize: 11, color: TEXT2, flexShrink: 0 }}>{formatBytes(f.size_bytes)}</span>
+                      <span style={{ fontSize: 11, color: GRAY, flexShrink: 0 }}>{formatBytes(f.size_bytes)}</span>
                     </div>
                     <button type="button" onClick={() => setExistingFiles(prev => prev.filter((_, idx) => idx !== i))}
-                      style={{ background: "none", border: "none", cursor: "pointer", color: TEXT2, padding: "2px 4px", display: "flex" }}>
+                      style={{ background: "none", border: "none", cursor: "pointer", color: GRAY, padding: "2px 4px", display: "flex" }}>
                       <Icon d={icons.close} size={14} />
                     </button>
                   </div>
@@ -559,19 +563,19 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
                   <div key={`pend-${i}`} style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     padding: "8px 12px", borderRadius: 8,
-                    border: "1px solid rgba(107,92,231,0.35)", background: "rgba(107,92,231,0.08)",
+                    border: "1px solid rgba(107,92,231,0.25)", background: "rgba(107,92,231,0.05)",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                      <span style={{ color: "#a78bfa" }}><Icon d={icons.file} size={14} /></span>
-                      <span style={{ fontSize: 13, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <span style={{ color: PURPLE }}><Icon d={icons.file} size={14} /></span>
+                      <span style={{ fontSize: 13, color: DARK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {f.name}
                       </span>
-                      <span style={{ fontSize: 11, color: "#a78bfa", flexShrink: 0 }}>
+                      <span style={{ fontSize: 11, color: PURPLE, flexShrink: 0 }}>
                         {formatBytes(f.size)} · novo
                       </span>
                     </div>
                     <button type="button" onClick={() => setPendingFiles(prev => prev.filter((_, idx) => idx !== i))}
-                      style={{ background: "none", border: "none", cursor: "pointer", color: TEXT2, padding: "2px 4px", display: "flex" }}>
+                      style={{ background: "none", border: "none", cursor: "pointer", color: GRAY, padding: "2px 4px", display: "flex" }}>
                       <Icon d={icons.close} size={14} />
                     </button>
                   </div>
@@ -583,13 +587,13 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
               onClick={() => deliveryFileInputRef.current?.click()}
               style={{
                 padding: "14px", borderRadius: 10,
-                border: "2px dashed rgba(255,255,255,0.12)",
-                background: "rgba(255,255,255,0.04)", cursor: "pointer",
+                border: "2px dashed rgba(0,0,0,0.12)",
+                background: "#f9fafb", cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                color: TEXT2, transition: "border-color 0.15s",
+                color: GRAY, transition: "border-color 0.15s",
               }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = PURPLE)}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)")}
             >
               <Icon d={icons.upload} size={16} />
               <span style={{ fontSize: 13 }}>
@@ -599,7 +603,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
             <input ref={deliveryFileInputRef} type="file" multiple
               accept=".pdf,.zip,.txt,.docx,.mp4,application/pdf,application/zip,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,video/mp4"
               style={{ display: "none" }} onChange={handleDeliveryFileChange} />
-            {fileError && <div style={{ fontSize: 12, color: "#fca5a5", marginTop: 6 }}>{fileError}</div>}
+            {fileError && <div style={{ fontSize: 12, color: "#B91C1C", marginTop: 6 }}>{fileError}</div>}
           </div>
 
           {/* Links */}
@@ -612,15 +616,15 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
                     value={link.label} onChange={e => updateLink(i, "label", e.target.value)}
                     style={{ ...inputStyle, width: "35%" }}
                     onFocus={e => (e.target.style.borderColor = PURPLE)}
-                    onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.12)")} />
+                    onBlur={e => (e.target.style.borderColor = BORDER)} />
                   <input type="url" placeholder="https://…"
                     value={link.url} onChange={e => updateLink(i, "url", e.target.value)}
                     style={{ ...inputStyle, flex: 1 }}
                     onFocus={e => (e.target.style.borderColor = PURPLE)}
-                    onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.12)")} />
+                    onBlur={e => (e.target.style.borderColor = BORDER)} />
                   {deliveryLinks.length > 1 && (
                     <button type="button" onClick={() => removeLink(i)}
-                      style={{ background: "none", border: "none", cursor: "pointer", color: TEXT2, padding: "0 4px", flexShrink: 0, display: "flex" }}>
+                      style={{ background: "none", border: "none", cursor: "pointer", color: GRAY, padding: "0 4px", flexShrink: 0, display: "flex" }}>
                       <Icon d={icons.close} size={16} />
                     </button>
                   )}
@@ -630,7 +634,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
             <button type="button" onClick={addLink} style={{
               marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6,
               background: "none", border: "none", cursor: "pointer",
-              color: "#a78bfa", fontSize: 13, fontWeight: 600, padding: "4px 0", fontFamily: "inherit",
+              color: PURPLE, fontSize: 13, fontWeight: 600, padding: "4px 0", fontFamily: "inherit",
             }}>
               <Icon d={icons.plus} size={14} /> Adicionar link
             </button>
@@ -639,21 +643,21 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
           {/* Instruções */}
           <div style={{ marginBottom: 24 }}>
             <label style={labelStyle}>
-              Instruções para o curador <span style={{ fontWeight: 400, color: TEXT2 }}>(opcional)</span>
+              Instruções para o curador <span style={{ fontWeight: 400, color: GRAY }}>(opcional)</span>
             </label>
             <textarea rows={3}
               placeholder="Explique como testar a solução, credenciais de acesso, contexto adicional…"
               value={deliveryInstructions} onChange={e => setDeliveryInstructions(e.target.value)}
               style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }}
               onFocus={e => (e.target.style.borderColor = PURPLE)}
-              onBlur={e => (e.target.style.borderColor = "rgba(255,255,255,0.12)")} />
+              onBlur={e => (e.target.style.borderColor = BORDER)} />
           </div>
 
           {error && (
             <div style={{
-              background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.35)",
+              background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)",
               borderRadius: 8, padding: "10px 14px",
-              fontSize: 13, color: "#fca5a5", marginBottom: 16,
+              fontSize: 13, color: "#B91C1C", marginBottom: 16,
             }}>
               {error}
             </div>
@@ -663,7 +667,7 @@ function NovasolucaoModal({ onClose, onCreated, onUpdated, userId, solution = nu
             <button type="button" onClick={onClose} style={{
               padding: "10px 20px", borderRadius: 10,
               border: `1.5px solid ${BORDER}`,
-              background: "transparent", color: TEXT2,
+              background: "transparent", color: GRAY,
               fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
             }}>
               Cancelar
@@ -693,13 +697,13 @@ function NavItem({ icon, label, active, onClick }) {
     <button onClick={onClick} style={{
       width: "100%", display: "flex", alignItems: "center", gap: 12,
       padding: "10px 16px", borderRadius: 10, border: "none",
-      background: active ? "rgba(107,92,231,0.2)" : "transparent",
-      color: active ? "#a78bfa" : TEXT2,
+      background: active ? "rgba(107,92,231,0.1)" : "transparent",
+      color: active ? PURPLE : GRAY,
       fontSize: 14, fontWeight: active ? 600 : 500,
       cursor: "pointer", fontFamily: "inherit", textAlign: "left",
       transition: "background 0.15s, color 0.15s",
     }}
-      onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+      onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
       onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}
     >
       <span style={{ opacity: active ? 1 : 0.6 }}><Icon d={icon} size={16} /></span>
@@ -757,7 +761,7 @@ export default function CriadorDashboard() {
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
           <WePromptLogo id="dash-loading" />
-          <div style={{ fontSize: 13, color: TEXT2, marginTop: 16 }}>Carregando dashboard…</div>
+          <div style={{ fontSize: 13, color: GRAY, marginTop: 16 }}>Carregando dashboard…</div>
         </div>
       </div>
     );
@@ -772,54 +776,54 @@ export default function CriadorDashboard() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: "#fff" }}>
+    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: DARK }}>
 
       {/* ── SIDEBAR ── */}
       <aside style={{
         width: 240, flexShrink: 0,
-        background: "rgba(5,3,15,0.8)",
+        background: "rgba(255,255,255,0.9)",
         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        borderRight: "1px solid rgba(255,255,255,0.08)",
+        borderRight: `1px solid ${BORDER}`,
         display: "flex", flexDirection: "column",
         position: "fixed", top: 0, bottom: 0, left: 0, overflowY: "auto",
       }}>
         <div style={{ padding: "20px 20px 16px" }}>
           <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="dash-sidebar" />
+            <WePromptLogo id="dash-sidebar" textColor={DARK} />
           </a>
         </div>
-        <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "0 16px 16px" }} />
+        <div style={{ height: 1, background: BORDER, margin: "0 16px 16px" }} />
         <nav style={{ flex: 1, padding: "0 12px", display: "flex", flexDirection: "column", gap: 2 }}>
           {navItems.map(item => (
             <NavItem key={item.key} icon={item.icon} label={item.label}
               active={activeNav === item.key} onClick={() => setActiveNav(item.key)} />
           ))}
         </nav>
-        <div style={{ padding: "16px 12px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+        <div style={{ padding: "16px 12px", borderTop: `1px solid ${BORDER}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", marginBottom: 8 }}>
             <div style={{
               width: 32, height: 32, borderRadius: "50%",
-              background: "rgba(107,92,231,0.2)",
+              background: "rgba(107,92,231,0.1)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 14, fontWeight: 700, color: "#a78bfa", flexShrink: 0,
+              fontSize: 14, fontWeight: 700, color: PURPLE, flexShrink: 0,
             }}>
               {displayName.charAt(0).toUpperCase()}
             </div>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: DARK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {displayName}
               </div>
-              <div style={{ fontSize: 11, color: TEXT2 }}>Criador</div>
+              <div style={{ fontSize: 11, color: GRAY }}>Criador</div>
             </div>
           </div>
           <button onClick={handleSignOut} style={{
             width: "100%", display: "flex", alignItems: "center", gap: 10,
             padding: "10px 16px", borderRadius: 10, border: "none",
-            background: "transparent", color: "#fca5a5",
+            background: "transparent", color: "#DC2626",
             fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left",
             transition: "background 0.15s",
           }}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(220,38,38,0.1)")}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(220,38,38,0.07)")}
             onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
           >
             <Icon d={icons.logout} size={14} /> Sair
@@ -835,10 +839,10 @@ export default function CriadorDashboard() {
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
                 <div>
-                  <h1 style={{ fontSize: 26, fontWeight: 800, color: "#fff", margin: 0, letterSpacing: "-0.5px" }}>
+                  <h1 style={{ fontSize: 26, fontWeight: 800, color: DARK, margin: 0, letterSpacing: "-0.5px" }}>
                     Minhas Soluções
                   </h1>
-                  <p style={{ fontSize: 14, color: TEXT2, margin: "4px 0 0" }}>
+                  <p style={{ fontSize: 14, color: GRAY, margin: "4px 0 0" }}>
                     Gerencie as soluções que você publicou no marketplace.
                   </p>
                 </div>
@@ -848,7 +852,7 @@ export default function CriadorDashboard() {
                   border: "none", borderRadius: 10,
                   padding: "11px 20px", fontSize: 14, fontWeight: 600,
                   cursor: "pointer", fontFamily: "inherit",
-                  boxShadow: "0 4px 16px rgba(107,92,231,0.4)",
+                  boxShadow: "0 4px 16px rgba(107,92,231,0.3)",
                   transition: "opacity 0.15s", flexShrink: 0,
                 }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
@@ -866,16 +870,16 @@ export default function CriadorDashboard() {
 
               {solutions.length === 0 ? (
                 <div style={{
-                  background: "rgba(255,255,255,0.04)",
-                  backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+                  background: "#fff",
                   border: `1px solid ${BORDER}`,
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
                   borderRadius: 16, padding: "60px 32px", textAlign: "center",
                 }}>
-                  <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>✦</div>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
+                  <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.2, color: PURPLE }}>✦</div>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 8 }}>
                     Você ainda não publicou nenhuma solução.
                   </h2>
-                  <p style={{ fontSize: 14, color: TEXT2, marginBottom: 24 }}>
+                  <p style={{ fontSize: 14, color: GRAY, marginBottom: 24 }}>
                     Comece agora e coloque sua solução de IA no maior marketplace da América Latina.
                   </p>
                   <button onClick={openCreate} style={{
@@ -884,7 +888,7 @@ export default function CriadorDashboard() {
                     border: "none", borderRadius: 10,
                     padding: "11px 24px", fontSize: 14, fontWeight: 600,
                     cursor: "pointer", fontFamily: "inherit",
-                    boxShadow: "0 4px 16px rgba(107,92,231,0.4)",
+                    boxShadow: "0 4px 16px rgba(107,92,231,0.3)",
                   }}>
                     <Icon d={icons.plus} size={16} /> Criar minha primeira solução
                   </button>
@@ -903,18 +907,18 @@ export default function CriadorDashboard() {
 
           {activeNav !== "solutions" && (
             <div style={{
-              background: "rgba(255,255,255,0.04)",
-              backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+              background: "#fff",
               border: `1px solid ${BORDER}`,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
               borderRadius: 16, padding: "80px 32px", textAlign: "center",
             }}>
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: 16, opacity: 0.2, color: "#fff" }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 16, opacity: 0.15, color: DARK }}>
                 <Icon d={navItems.find(n => n.key === activeNav)?.icon || icons.solutions} size={48} />
               </div>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 8 }}>
                 {navItems.find(n => n.key === activeNav)?.label}
               </h2>
-              <p style={{ fontSize: 14, color: TEXT2 }}>Esta seção estará disponível em breve.</p>
+              <p style={{ fontSize: 14, color: GRAY }}>Esta seção estará disponível em breve.</p>
             </div>
           )}
 

@@ -6,8 +6,9 @@ import { signUp, supabase } from "../lib/supabase";
 import WePromptLogo from "../components/WePromptLogo";
 
 const PURPLE = "#6B5CE7";
-const BORDER = "rgba(255,255,255,0.12)";
-const TEXT2 = "rgba(255,255,255,0.55)";
+const DARK = "#0A0A1A";
+const GRAY = "#6B7280";
+const BORDER = "rgba(0,0,0,0.1)";
 
 const inputStyle = {
   width: "100%",
@@ -15,8 +16,8 @@ const inputStyle = {
   borderRadius: 10,
   border: `1.5px solid ${BORDER}`,
   fontSize: 15,
-  color: "#fff",
-  background: "rgba(255,255,255,0.07)",
+  color: DARK,
+  background: "#fff",
   outline: "none",
   boxSizing: "border-box",
   fontFamily: "inherit",
@@ -26,7 +27,7 @@ const inputStyle = {
 const labelStyle = {
   fontSize: 13,
   fontWeight: 600,
-  color: "rgba(255,255,255,0.75)",
+  color: DARK,
   marginBottom: 6,
   display: "block",
 };
@@ -101,7 +102,7 @@ function CadastroForm() {
     }
   }
 
-  const strengthColor = senha.length >= 8 ? "#4ade80" : PURPLE;
+  const strengthColor = senha.length >= 8 ? "#15803D" : PURPLE;
 
   return (
     <div style={{
@@ -115,18 +116,16 @@ function CadastroForm() {
 
       <div style={{
         width: "100%", maxWidth: 460,
-        background: "rgba(255,255,255,0.05)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.12)",
+        background: "#fff",
+        border: "1px solid rgba(0,0,0,0.06)",
         borderRadius: 20,
-        boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
         padding: "36px 32px",
       }}>
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: "#fff", marginBottom: 4, letterSpacing: "-0.5px" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: DARK, marginBottom: 4, letterSpacing: "-0.5px" }}>
           {existingUser ? "Complete seu perfil" : "Crie sua conta"}
         </h1>
-        <p style={{ fontSize: 14, color: TEXT2, marginBottom: 28 }}>
+        <p style={{ fontSize: 14, color: GRAY, marginBottom: 28 }}>
           {existingUser
             ? "Falta pouco! Preencha seu nome e escolha seu perfil."
             : "Junte-se ao 1º marketplace de IA da América Latina."}
@@ -153,7 +152,7 @@ function CadastroForm() {
               readOnly={!!existingUser}
               style={{
                 ...inputStyle,
-                ...(existingUser ? { background: "rgba(255,255,255,0.03)", color: TEXT2, cursor: "default" } : {}),
+                ...(existingUser ? { background: "#f9fafb", color: GRAY, cursor: "default" } : {}),
               }}
               onFocus={e => { if (!existingUser) e.target.style.borderColor = PURPLE; }}
               onBlur={e => (e.target.style.borderColor = BORDER)}
@@ -175,7 +174,7 @@ function CadastroForm() {
                   {[1, 2, 3, 4].map(n => (
                     <div key={n} style={{
                       flex: 1, height: 3, borderRadius: 99,
-                      background: senha.length >= n * 2 ? strengthColor : "rgba(255,255,255,0.1)",
+                      background: senha.length >= n * 2 ? strengthColor : "rgba(0,0,0,0.1)",
                       transition: "background 0.2s",
                     }} />
                   ))}
@@ -196,14 +195,14 @@ function CadastroForm() {
                   onClick={() => setRole(opt.value)}
                   style={{
                     padding: "16px 12px", borderRadius: 12, textAlign: "left",
-                    border: `2px solid ${role === opt.value ? PURPLE : "rgba(255,255,255,0.1)"}`,
-                    background: role === opt.value ? "rgba(107,92,231,0.2)" : "rgba(255,255,255,0.04)",
+                    border: `2px solid ${role === opt.value ? PURPLE : "rgba(0,0,0,0.1)"}`,
+                    background: role === opt.value ? "rgba(107,92,231,0.07)" : "#fff",
                     cursor: "pointer", transition: "all 0.15s", fontFamily: "inherit",
                   }}
                 >
                   <div style={{ fontSize: 20, marginBottom: 6 }}>{opt.icon}</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 3 }}>{opt.title}</div>
-                  <div style={{ fontSize: 12, color: TEXT2, lineHeight: 1.4 }}>{opt.sub}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: DARK, marginBottom: 3 }}>{opt.title}</div>
+                  <div style={{ fontSize: 12, color: GRAY, lineHeight: 1.4 }}>{opt.sub}</div>
                 </button>
               ))}
             </div>
@@ -211,9 +210,9 @@ function CadastroForm() {
 
           {error && (
             <div style={{
-              background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.35)",
+              background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)",
               borderRadius: 8, padding: "10px 14px",
-              fontSize: 13, color: "#fca5a5", marginBottom: 16,
+              fontSize: 13, color: "#B91C1C", marginBottom: 16,
             }}>
               {error}
             </div>
@@ -221,9 +220,9 @@ function CadastroForm() {
 
           {success && (
             <div style={{
-              background: "rgba(22,163,74,0.15)", border: "1px solid rgba(22,163,74,0.35)",
+              background: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.2)",
               borderRadius: 8, padding: "10px 14px",
-              fontSize: 13, color: "#86efac", marginBottom: 16,
+              fontSize: 13, color: "#15803D", marginBottom: 16,
             }}>
               {success}
             </div>
@@ -238,14 +237,14 @@ function CadastroForm() {
               borderRadius: 10, fontSize: 15, fontWeight: 600,
               cursor: loading ? "not-allowed" : "pointer",
               fontFamily: "inherit",
-              boxShadow: loading ? "none" : "0 4px 20px rgba(107,92,231,0.4)",
+              boxShadow: loading ? "none" : "0 4px 20px rgba(107,92,231,0.3)",
             }}
           >
             {loading ? "Criando conta…" : "Criar conta"}
           </button>
         </form>
 
-        <p style={{ fontSize: 13, color: TEXT2, textAlign: "center", marginTop: 20 }}>
+        <p style={{ fontSize: 13, color: GRAY, textAlign: "center", marginTop: 20 }}>
           Já tem conta?{" "}
           <a href="/login" style={{ color: PURPLE, fontWeight: 600, textDecoration: "none" }}>
             Entrar
@@ -253,7 +252,7 @@ function CadastroForm() {
         </p>
       </div>
 
-      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 24, textAlign: "center" }}>
+      <p style={{ fontSize: 12, color: GRAY, marginTop: 24, textAlign: "center" }}>
         Ao criar conta, você concorda com os{" "}
         <a href="#" style={{ color: PURPLE, textDecoration: "none" }}>Termos de Uso</a>{" "}
         e a{" "}

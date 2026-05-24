@@ -6,8 +6,9 @@ import { supabase } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
 
 const PURPLE = "#6B5CE7";
-const BORDER = "rgba(255,255,255,0.1)";
-const TEXT2 = "rgba(255,255,255,0.6)";
+const DARK = "#0A0A1A";
+const GRAY = "#6B7280";
+const BORDER = "rgba(0,0,0,0.08)";
 
 const NAV_LINKS = [
   ["Explorar", "/solucoes"],
@@ -102,15 +103,15 @@ function SolutionDetail() {
   if (loading) {
     return (
       <div style={{ maxWidth: 760, margin: "0 auto", padding: "48px 24px" }}>
-        <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
+        <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
         <div style={{ animation: "pulse 1.5s ease-in-out infinite" }}>
-          <div style={{ width: 120, height: 14, borderRadius: 4, background: "rgba(255,255,255,0.1)", marginBottom: 32 }} />
-          <div style={{ width: 80, height: 22, borderRadius: 6, background: "rgba(255,255,255,0.1)", marginBottom: 16 }} />
-          <div style={{ width: "60%", height: 36, borderRadius: 8, background: "rgba(255,255,255,0.08)", marginBottom: 16 }} />
-          <div style={{ width: "100%", height: 14, borderRadius: 4, background: "rgba(255,255,255,0.06)", marginBottom: 8 }} />
-          <div style={{ width: "90%", height: 14, borderRadius: 4, background: "rgba(255,255,255,0.06)", marginBottom: 8 }} />
-          <div style={{ width: "75%", height: 14, borderRadius: 4, background: "rgba(255,255,255,0.06)", marginBottom: 40 }} />
-          <div style={{ width: 200, height: 48, borderRadius: 10, background: "rgba(255,255,255,0.08)" }} />
+          <div style={{ width: 120, height: 14, borderRadius: 4, background: "rgba(0,0,0,0.08)", marginBottom: 32 }} />
+          <div style={{ width: 80, height: 22, borderRadius: 6, background: "rgba(0,0,0,0.08)", marginBottom: 16 }} />
+          <div style={{ width: "60%", height: 36, borderRadius: 8, background: "rgba(0,0,0,0.06)", marginBottom: 16 }} />
+          <div style={{ width: "100%", height: 14, borderRadius: 4, background: "rgba(0,0,0,0.05)", marginBottom: 8 }} />
+          <div style={{ width: "90%", height: 14, borderRadius: 4, background: "rgba(0,0,0,0.05)", marginBottom: 8 }} />
+          <div style={{ width: "75%", height: 14, borderRadius: 4, background: "rgba(0,0,0,0.05)", marginBottom: 40 }} />
+          <div style={{ width: 200, height: 48, borderRadius: 10, background: "rgba(0,0,0,0.06)" }} />
         </div>
       </div>
     );
@@ -119,9 +120,9 @@ function SolutionDetail() {
   if (notFound) {
     return (
       <div style={{ maxWidth: 760, margin: "0 auto", padding: "80px 24px", textAlign: "center" }}>
-        <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>✦</div>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Solução não encontrada</h1>
-        <p style={{ fontSize: 15, color: TEXT2, marginBottom: 24 }}>
+        <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.2, color: PURPLE }}>✦</div>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: DARK, marginBottom: 8 }}>Solução não encontrada</h1>
+        <p style={{ fontSize: 15, color: GRAY, marginBottom: 24 }}>
           Esta solução pode ter sido removida ou ainda não está disponível.
         </p>
         <a href="/solucoes" style={{
@@ -140,23 +141,21 @@ function SolutionDetail() {
     <div style={{ maxWidth: 760, margin: "0 auto", padding: "48px 24px 80px" }}>
       <a href="/solucoes" style={{
         display: "inline-flex", alignItems: "center", gap: 6,
-        color: TEXT2, fontSize: 14, fontWeight: 500,
+        color: GRAY, fontSize: 14, fontWeight: 500,
         textDecoration: "none", marginBottom: 32,
         transition: "color 0.15s",
       }}
-        onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-        onMouseLeave={e => (e.currentTarget.style.color = TEXT2)}
+        onMouseEnter={e => (e.currentTarget.style.color = DARK)}
+        onMouseLeave={e => (e.currentTarget.style.color = GRAY)}
       >
         <BackArrow /> Voltar para soluções
       </a>
 
       <div style={{
-        background: "rgba(255,255,255,0.04)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
+        background: "#fff",
         border: `1px solid ${BORDER}`,
         borderRadius: 20,
-        boxShadow: "0 8px 40px rgba(0,0,0,0.3)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
         overflow: "hidden",
       }}>
         {solution.cover_url && (
@@ -170,7 +169,7 @@ function SolutionDetail() {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
             <span style={{
               display: "inline-block",
-              background: "rgba(107,92,231,0.2)", color: "#a78bfa",
+              background: "rgba(107,92,231,0.08)", color: PURPLE,
               fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 99,
             }}>
               {solution.categoria}
@@ -178,8 +177,8 @@ function SolutionDetail() {
             {solution.preco != null && (
               <span style={{
                 display: "inline-block",
-                background: solution.payment_type === "one_time" ? "rgba(74,222,128,0.15)" : "rgba(107,92,231,0.15)",
-                color: solution.payment_type === "one_time" ? "#4ade80" : "#a78bfa",
+                background: solution.payment_type === "one_time" ? "rgba(22,163,74,0.08)" : "rgba(107,92,231,0.08)",
+                color: solution.payment_type === "one_time" ? "#15803D" : PURPLE,
                 fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 99,
               }}>
                 {solution.payment_type === "one_time" ? "Venda Única" : "Assinatura Mensal"}
@@ -188,13 +187,13 @@ function SolutionDetail() {
           </div>
 
           <h1 style={{
-            fontSize: 30, fontWeight: 800, color: "#fff",
+            fontSize: 30, fontWeight: 800, color: DARK,
             margin: "0 0 16px", letterSpacing: "-0.5px", lineHeight: 1.25,
           }}>
             {solution.titulo}
           </h1>
 
-          <p style={{ fontSize: 16, color: TEXT2, lineHeight: 1.75, margin: "0 0 32px", whiteSpace: "pre-line" }}>
+          <p style={{ fontSize: 16, color: GRAY, lineHeight: 1.75, margin: "0 0 32px", whiteSpace: "pre-line" }}>
             {solution.descricao}
           </p>
 
@@ -204,15 +203,15 @@ function SolutionDetail() {
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
               <div style={{
                 width: 40, height: 40, borderRadius: "50%",
-                background: "rgba(107,92,231,0.2)",
+                background: "rgba(107,92,231,0.08)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 16, fontWeight: 700, color: "#a78bfa",
+                fontSize: 16, fontWeight: 700, color: PURPLE,
               }}>
                 {solution.criador_nome.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div style={{ fontSize: 13, color: TEXT2, marginBottom: 2 }}>Criador</div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#fff" }}>{solution.criador_nome}</div>
+                <div style={{ fontSize: 13, color: GRAY, marginBottom: 2 }}>Criador</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: DARK }}>{solution.criador_nome}</div>
               </div>
             </div>
           )}
@@ -222,9 +221,9 @@ function SolutionDetail() {
             flexWrap: "wrap", gap: 16,
           }}>
             <div>
-              <div style={{ fontSize: 12, color: TEXT2, marginBottom: 6 }}>Preço</div>
+              <div style={{ fontSize: 12, color: GRAY, marginBottom: 6 }}>Preço</div>
               <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                <div style={{ fontSize: 28, fontWeight: 800, color: "#fff", letterSpacing: "-0.5px" }}>
+                <div style={{ fontSize: 28, fontWeight: 800, color: DARK, letterSpacing: "-0.5px" }}>
                   {solution.preco != null
                     ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
                     : "Gratuito"}
@@ -232,8 +231,8 @@ function SolutionDetail() {
                 {solution.preco != null && (
                   <span style={{
                     fontSize: 12, fontWeight: 600, padding: "3px 9px", borderRadius: 99,
-                    background: solution.payment_type === "one_time" ? "rgba(74,222,128,0.15)" : "rgba(107,92,231,0.2)",
-                    color: solution.payment_type === "one_time" ? "#4ade80" : "#a78bfa",
+                    background: solution.payment_type === "one_time" ? "rgba(22,163,74,0.08)" : "rgba(107,92,231,0.08)",
+                    color: solution.payment_type === "one_time" ? "#15803D" : PURPLE,
                   }}>
                     {solution.payment_type === "one_time" ? "Pagamento único" : "por mês"}
                   </span>
@@ -251,7 +250,7 @@ function SolutionDetail() {
                   fontSize: 16, fontWeight: 700, border: "none",
                   cursor: checkoutLoading ? "not-allowed" : "pointer",
                   fontFamily: "inherit", transition: "opacity 0.15s",
-                  boxShadow: checkoutLoading ? "none" : "0 4px 24px rgba(107,92,231,0.45)",
+                  boxShadow: checkoutLoading ? "none" : "0 4px 20px rgba(107,92,231,0.3)",
                 }}
                 onMouseEnter={e => { if (!checkoutLoading) e.currentTarget.style.opacity = "0.88"; }}
                 onMouseLeave={e => { if (!checkoutLoading) e.currentTarget.style.opacity = "1"; }}
@@ -268,7 +267,7 @@ function SolutionDetail() {
                 display: "inline-flex", alignItems: "center", gap: 8,
                 background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)", color: "#fff",
                 padding: "14px 28px", borderRadius: 12, fontSize: 16, fontWeight: 700,
-                textDecoration: "none", boxShadow: "0 4px 24px rgba(107,92,231,0.45)",
+                textDecoration: "none", boxShadow: "0 4px 20px rgba(107,92,231,0.3)",
               }}>
                 Começar gratuitamente <Arrow />
               </a>
@@ -278,9 +277,9 @@ function SolutionDetail() {
           {checkoutError && (
             <div style={{
               marginTop: 16,
-              background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.35)",
+              background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)",
               borderRadius: 8, padding: "10px 14px",
-              fontSize: 13, color: "#fca5a5",
+              fontSize: 13, color: "#B91C1C",
             }}>
               {checkoutError}
             </div>
@@ -297,34 +296,27 @@ export default function SolutionPage() {
   const isMobile = width < 768;
 
   return (
-    <div style={{ minHeight: "100vh", color: "#fff" }}>
+    <div style={{ minHeight: "100vh", color: DARK }}>
       <header style={{
         position: "sticky", top: 0, zIndex: 100,
-        background: "rgba(10,10,26,0.85)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        background: "rgba(255,255,255,0.92)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(0,0,0,0.07)",
       }}>
         <div style={{
-          maxWidth: 1200, margin: "0 auto",
+          maxWidth: 1200, margin: "0 auto", width: "100%",
           padding: "0 24px", height: 60,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <WePromptLogo id="solution-detail-header" />
+            <WePromptLogo id="solution-detail-header" textColor={DARK} />
           </a>
 
           {!isMobile && (
             <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
               {NAV_LINKS.map(([label, href]) => (
-                <a key={label} href={href} style={{
-                  color: "rgba(255,255,255,0.7)",
-                  fontWeight: 500, fontSize: 14, textDecoration: "none",
-                  padding: "6px 12px", borderRadius: 8,
-                  transition: "color 0.15s",
-                }}>
-                  {label}
-                </a>
+                <a key={label} href={href} className="nav-link">{label}</a>
               ))}
             </nav>
           )}
@@ -333,15 +325,14 @@ export default function SolutionPage() {
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <a href="/login" style={{
                 borderRadius: 999, padding: "8px 18px", fontSize: 14, fontWeight: 500,
-                textDecoration: "none", color: "rgba(255,255,255,0.8)",
-                border: "1.5px solid rgba(255,255,255,0.15)", background: "transparent",
+                textDecoration: "none", color: DARK,
+                border: "1.5px solid rgba(0,0,0,0.14)", background: "transparent",
               }}>
                 Entrar
               </a>
-              <a href="/cadastro" style={{
+              <a href="/cadastro" className="btn-dark" style={{
                 borderRadius: 999, padding: "9px 20px", fontSize: 14, fontWeight: 600,
                 display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none",
-                background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)", color: "#fff",
               }}>
                 Criar conta <Arrow />
               </a>
@@ -354,7 +345,7 @@ export default function SolutionPage() {
               aria-label="Menu"
               style={{
                 background: "none", border: "none", cursor: "pointer",
-                fontSize: 22, color: "#fff", padding: "4px 8px",
+                fontSize: 22, color: DARK, padding: "4px 8px",
                 display: "flex", alignItems: "center",
               }}
             >
@@ -366,9 +357,9 @@ export default function SolutionPage() {
         {isMobile && menuOpen && (
           <div style={{
             position: "fixed", top: 60, left: 0, right: 0, zIndex: 99,
-            background: "rgba(10,10,26,0.97)",
-            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(255,255,255,0.97)",
+            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            borderBottom: "1px solid rgba(0,0,0,0.07)",
             padding: "12px 24px 20px",
             display: "flex", flexDirection: "column", gap: 4,
           }}>
@@ -377,8 +368,8 @@ export default function SolutionPage() {
                 onClick={() => setMenuOpen(false)}
                 style={{
                   padding: "12px 4px", fontSize: 16, fontWeight: 500,
-                  color: "rgba(255,255,255,0.85)", textDecoration: "none",
-                  borderBottom: "1px solid rgba(255,255,255,0.07)",
+                  color: DARK, textDecoration: "none",
+                  borderBottom: "1px solid rgba(0,0,0,0.05)",
                 }}
               >
                 {label}
@@ -389,19 +380,17 @@ export default function SolutionPage() {
                 flex: 1, textAlign: "center",
                 borderRadius: 999, padding: "11px",
                 fontSize: 14, fontWeight: 500,
-                textDecoration: "none", color: "rgba(255,255,255,0.8)",
-                border: "1.5px solid rgba(255,255,255,0.15)",
+                textDecoration: "none", color: DARK,
+                border: "1.5px solid rgba(0,0,0,0.14)",
               }}>
                 Entrar
               </a>
-              <a href="/cadastro" style={{
+              <a href="/cadastro" className="btn-dark" style={{
                 flex: 1, textAlign: "center",
                 borderRadius: 999, padding: "11px",
                 fontSize: 14, fontWeight: 600,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                 textDecoration: "none",
-                background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)",
-                color: "#fff",
               }}>
                 Criar conta <Arrow />
               </a>

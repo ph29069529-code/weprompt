@@ -6,8 +6,9 @@ import { supabase } from "../lib/supabase";
 import WePromptLogo from "../components/WePromptLogo";
 
 const PURPLE = "#6B5CE7";
-const BORDER = "rgba(255,255,255,0.12)";
-const TEXT2 = "rgba(255,255,255,0.55)";
+const DARK = "#0A0A1A";
+const GRAY = "#6B7280";
+const BORDER = "rgba(0,0,0,0.1)";
 
 const inputStyle = {
   width: "100%",
@@ -15,8 +16,8 @@ const inputStyle = {
   borderRadius: 10,
   border: `1.5px solid ${BORDER}`,
   fontSize: 15,
-  color: "#fff",
-  background: "rgba(255,255,255,0.07)",
+  color: DARK,
+  background: "#fff",
   outline: "none",
   boxSizing: "border-box",
   fontFamily: "inherit",
@@ -26,7 +27,7 @@ const inputStyle = {
 const labelStyle = {
   fontSize: 13,
   fontWeight: 600,
-  color: "rgba(255,255,255,0.75)",
+  color: DARK,
   marginBottom: 6,
   display: "block",
 };
@@ -81,18 +82,16 @@ export default function CompletarPerfilPage() {
 
       <div style={{
         width: "100%", maxWidth: 460,
-        background: "rgba(255,255,255,0.05)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.12)",
+        background: "#fff",
+        border: "1px solid rgba(0,0,0,0.06)",
         borderRadius: 20,
-        boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
         padding: "36px 32px",
       }}>
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: "#fff", marginBottom: 4, letterSpacing: "-0.5px" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: DARK, marginBottom: 4, letterSpacing: "-0.5px" }}>
           Complete seu perfil
         </h1>
-        <p style={{ fontSize: 14, color: TEXT2, marginBottom: 28 }}>
+        <p style={{ fontSize: 14, color: GRAY, marginBottom: 28 }}>
           Falta pouco! Preencha seu nome e escolha seu perfil.
         </p>
 
@@ -120,14 +119,14 @@ export default function CompletarPerfilPage() {
                   onClick={() => setRole(opt.value)}
                   style={{
                     padding: "16px 12px", borderRadius: 12, textAlign: "left",
-                    border: `2px solid ${role === opt.value ? PURPLE : "rgba(255,255,255,0.1)"}`,
-                    background: role === opt.value ? "rgba(107,92,231,0.2)" : "rgba(255,255,255,0.04)",
+                    border: `2px solid ${role === opt.value ? PURPLE : "rgba(0,0,0,0.1)"}`,
+                    background: role === opt.value ? "rgba(107,92,231,0.07)" : "#fff",
                     cursor: "pointer", transition: "all 0.15s", fontFamily: "inherit",
                   }}
                 >
                   <div style={{ fontSize: 20, marginBottom: 6 }}>{opt.icon}</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 3 }}>{opt.title}</div>
-                  <div style={{ fontSize: 12, color: TEXT2, lineHeight: 1.4 }}>{opt.sub}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: DARK, marginBottom: 3 }}>{opt.title}</div>
+                  <div style={{ fontSize: 12, color: GRAY, lineHeight: 1.4 }}>{opt.sub}</div>
                 </button>
               ))}
             </div>
@@ -135,9 +134,9 @@ export default function CompletarPerfilPage() {
 
           {error && (
             <div style={{
-              background: "rgba(220,38,38,0.15)", border: "1px solid rgba(220,38,38,0.35)",
+              background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)",
               borderRadius: 8, padding: "10px 14px",
-              fontSize: 13, color: "#fca5a5", marginBottom: 16,
+              fontSize: 13, color: "#B91C1C", marginBottom: 16,
             }}>
               {error}
             </div>
@@ -152,7 +151,7 @@ export default function CompletarPerfilPage() {
               borderRadius: 10, fontSize: 15, fontWeight: 600,
               cursor: loading ? "not-allowed" : "pointer",
               fontFamily: "inherit",
-              boxShadow: loading ? "none" : "0 4px 20px rgba(107,92,231,0.4)",
+              boxShadow: loading ? "none" : "0 4px 20px rgba(107,92,231,0.3)",
             }}
           >
             {loading ? "Salvando…" : "Salvar perfil"}
@@ -160,7 +159,7 @@ export default function CompletarPerfilPage() {
         </form>
       </div>
 
-      <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 24, textAlign: "center" }}>
+      <p style={{ fontSize: 12, color: GRAY, marginTop: 24, textAlign: "center" }}>
         Ao continuar, você concorda com os{" "}
         <a href="#" style={{ color: PURPLE, textDecoration: "none" }}>Termos de Uso</a>{" "}
         e a{" "}
