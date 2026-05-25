@@ -555,7 +555,7 @@ function SettingsCriador({ user, profile, isMobile, onProfileUpdate }) {
         avatarUrl = urlData.publicUrl;
       }
     }
-    const updates = { id: user.id, nome };
+    const updates = { id: user.id, nome, role: profile?.role || "criador" };
     const { error } = await supabase.from("profiles").upsert(updates);
     if (error) {
       console.error("Save error:", error);
