@@ -251,7 +251,7 @@ function CreatorProfile({ isMobile }) {
     if (!id) return;
     async function init() {
       const [profileRes, solutionsRes] = await Promise.all([
-        supabase.from("profiles").select("id, nome, bio, portfolio_link, avatar_url, role, email").eq("id", id).single(),
+        supabase.from("profiles").select("*").eq("id", id).single(),
         supabase.from("solutions").select("id, titulo, preco, categoria, cover_url, payment_type, descricao, ativo, status").eq("creator_id", id).eq("status", "approved").eq("ativo", true),
       ]);
 
