@@ -1,19 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
 
-const PURPLE = "#6B5CE7";
-const DARK = "#0A0A1A";
-const GRAY = "#6B7280";
-const BORDER = "rgba(0,0,0,0.08)";
+const NEAR_BLACK = "#1D1D1F";
+const GRAY_TEXT  = "#6E6E73";
+const BG_GRAY    = "#F5F5F7";
+const BLUE       = "#0369A1";
+const BORDER     = "#e5e7eb";
 
 function useWindowSize() {
-  const [width, setWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
-  );
+  const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
   useEffect(() => {
     function onResize() { setWidth(window.innerWidth); }
     window.addEventListener("resize", onResize);
@@ -22,13 +21,6 @@ function useWindowSize() {
   return width;
 }
 
-const icons = {
-  subscriptions: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
-  explore: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
-  settings: "M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z",
-  logout: "M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9",
-};
-
 const Icon = ({ d, size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
     strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -36,67 +28,102 @@ const Icon = ({ d, size = 18 }) => (
   </svg>
 );
 
-function StatCard({ label, value, sub, accentColor }) {
+const icons = {
+  home:    "M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2zM9 22V12h6v10",
+  grid:    "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
+  explore: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
+  history: "M12 8v4l3 3M12 3a9 9 0 100 18A9 9 0 0012 3z",
+  settings:"M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z",
+  logout:  "M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9",
+  check:   "M20 6L9 17l-5-5",
+  users:   "M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",
+  chevron: "M6 9l6 6 6-6",
+  search:  "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
+  plus:    "M12 5v14M5 12h14",
+};
+
+/* ── KPI card ── */
+function KpiCard({ iconD, label, value, sub }) {
   return (
     <div style={{
-      background: "#fff",
-      border: `1px solid ${BORDER}`,
-      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-      borderRadius: 14,
-      padding: "20px 24px",
-      flex: 1, minWidth: 0,
-      borderTop: `3px solid ${accentColor || PURPLE}`,
+      background: "#fff", borderRadius: 20,
+      boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+      padding: "24px", flex: 1, minWidth: 0,
     }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: GRAY, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.5px" }}>
-        {label}
+      <div style={{
+        width: 40, height: 40, borderRadius: 12,
+        background: "#e0f2fe", color: BLUE,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        marginBottom: 16,
+      }}>
+        <Icon d={iconD} size={18} />
       </div>
-      <div style={{ fontSize: 28, fontWeight: 800, color: DARK, letterSpacing: "-0.5px" }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: GRAY, marginTop: 4 }}>{sub}</div>}
+      <div style={{ fontSize: 32, fontWeight: 800, color: BLUE, letterSpacing: "-1px", lineHeight: 1 }}>{value}</div>
+      <div style={{ fontSize: 13, color: GRAY_TEXT, marginTop: 6 }}>{label}</div>
+      {sub && <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 2, opacity: 0.7 }}>{sub}</div>}
     </div>
   );
 }
 
-function NavItem({ icon, label, active, onClick, href }) {
-  const content = (
-    <>
-      <span style={{ opacity: active ? 1 : 0.6 }}><Icon d={icon} size={16} /></span>
-      {label}
-    </>
-  );
-  const baseStyle = {
-    width: "100%", display: "flex", alignItems: "center", gap: 12,
-    padding: "10px 16px", borderRadius: 10,
-    background: active ? "rgba(107,92,231,0.1)" : "transparent",
-    color: active ? PURPLE : GRAY,
-    fontSize: 14, fontWeight: active ? 600 : 500,
-    cursor: "pointer", fontFamily: "inherit", textAlign: "left",
-    transition: "background 0.15s, color 0.15s", textDecoration: "none",
-  };
-  if (href) {
-    return (
-      <a href={href} style={{ ...baseStyle, border: "none" }}
-        onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
-        onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}>
-        {content}
-      </a>
-    );
-  }
+/* ── Toggle ── */
+function Toggle({ checked, onChange }) {
   return (
-    <button onClick={onClick} style={{ ...baseStyle, border: "none" }}
-      onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
-      onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}>
-      {content}
+    <button type="button" onClick={() => onChange(!checked)} style={{
+      width: 40, height: 22, borderRadius: 99,
+      background: checked ? BLUE : "rgba(0,0,0,0.15)",
+      border: "none", cursor: "pointer", padding: 0,
+      position: "relative", flexShrink: 0, transition: "background 0.2s",
+    }}>
+      <span style={{
+        position: "absolute", top: 3,
+        left: checked ? 21 : 3,
+        width: 16, height: 16, borderRadius: "50%",
+        background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+        transition: "left 0.2s",
+      }} />
     </button>
   );
 }
 
+/* ── Sidebar nav item ── */
+function NavItem({ iconD, label, active, onClick, href }) {
+  const style = {
+    width: "100%", display: "flex", alignItems: "center", gap: 12,
+    padding: "10px 16px", borderRadius: 12, border: "none",
+    background: active ? "#e0f2fe" : "transparent",
+    color: active ? BLUE : GRAY_TEXT,
+    fontSize: 14, fontWeight: active ? 600 : 500,
+    cursor: "pointer", fontFamily: "inherit", textAlign: "left",
+    transition: "background 0.15s, color 0.15s", textDecoration: "none",
+  };
+  const inner = (
+    <>
+      <span style={{ opacity: active ? 1 : 0.55, flexShrink: 0 }}><Icon d={iconD} size={16} /></span>
+      {label}
+    </>
+  );
+  if (href) {
+    return (
+      <a href={href} style={style}
+        onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
+        onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <button onClick={onClick} style={style}
+      onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
+      onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}>
+      {inner}
+    </button>
+  );
+}
+
+/* ── Cancel dialog ── */
 function CancelDialog({ solution, onConfirm, onClose }) {
   const [loading, setLoading] = useState(false);
-  async function handleConfirm() {
-    setLoading(true);
-    await onConfirm();
-    setLoading(false);
-  }
+  async function handleConfirm() { setLoading(true); await onConfirm(); setLoading(false); }
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 200,
@@ -104,9 +131,7 @@ function CancelDialog({ solution, onConfirm, onClose }) {
       display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
     }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{
-        background: "#fff",
-        border: `1px solid ${BORDER}`,
-        borderRadius: 20,
+        background: "#fff", borderRadius: 20,
         boxShadow: "0 16px 60px rgba(0,0,0,0.12)",
         width: "100%", maxWidth: 420, padding: "32px",
         animation: "modalIn 0.2s ease",
@@ -118,34 +143,27 @@ function CancelDialog({ solution, onConfirm, onClose }) {
           display: "flex", alignItems: "center", justifyContent: "center",
           marginBottom: 20, color: "#DC2626",
         }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01" />
           </svg>
         </div>
-        <h2 style={{ fontSize: 18, fontWeight: 800, color: DARK, margin: "0 0 8px" }}>
-          Cancelar assinatura?
-        </h2>
-        <p style={{ fontSize: 14, color: GRAY, margin: "0 0 24px", lineHeight: 1.6 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 800, color: NEAR_BLACK, margin: "0 0 8px" }}>Cancelar assinatura?</h2>
+        <p style={{ fontSize: 14, color: GRAY_TEXT, margin: "0 0 24px", lineHeight: 1.6 }}>
           Você está prestes a cancelar a assinatura de{" "}
-          <strong style={{ color: DARK }}>{solution}</strong>.{" "}
+          <strong style={{ color: NEAR_BLACK }}>{solution}</strong>.{" "}
           Você perderá o acesso ao fim do período atual.
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
           <button onClick={onClose} style={{
-            padding: "10px 20px", borderRadius: 10,
-            border: `1.5px solid ${BORDER}`,
-            background: "transparent", color: GRAY,
+            padding: "10px 20px", borderRadius: 10, border: `1px solid ${BORDER}`,
+            background: "transparent", color: GRAY_TEXT,
             fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-          }}>
-            Manter assinatura
-          </button>
+          }}>Manter assinatura</button>
           <button onClick={handleConfirm} disabled={loading} style={{
             padding: "10px 20px", borderRadius: 10,
             background: loading ? "rgba(220,38,38,0.4)" : "#DC2626",
             color: "#fff", border: "none",
-            fontSize: 14, fontWeight: 600,
-            cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit",
+            fontSize: 14, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit",
           }}>
             {loading ? "Cancelando…" : "Confirmar cancelamento"}
           </button>
@@ -155,213 +173,422 @@ function CancelDialog({ solution, onConfirm, onClose }) {
   );
 }
 
-function SubscriptionCard({ sub, onCancel, isMobile }) {
+/* ── Acquired solution card ── */
+function AcquiredCard({ sub, onCancel, isMobile }) {
   const solution = sub.solutions;
-  const statusActive = sub.status === "active";
-  const isOneTime = solution?.payment_type === "one_time";
+  const isActive = sub.status === "active";
   return (
     <div style={{
-      background: "#fff",
-      border: `1px solid ${BORDER}`,
-      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-      borderRadius: 14,
-      padding: isMobile ? "14px 16px" : "20px 24px",
-      display: "flex", alignItems: isMobile ? "flex-start" : "center",
-      gap: isMobile ? 10 : 20, flexWrap: isMobile ? "wrap" : "nowrap",
-      overflow: "hidden",
-    }}>
-      <div style={{
-        width: 4, height: 48, borderRadius: 99, flexShrink: 0,
-        background: statusActive
-          ? "linear-gradient(180deg, #6B5CE7, #8B5CF6)"
-          : "rgba(0,0,0,0.12)",
-      }} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: DARK, marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {solution?.titulo || "Solução removida"}
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          {solution?.categoria && (
-            <span style={{
-              display: "inline-block",
-              background: "rgba(107,92,231,0.08)", color: PURPLE,
-              padding: "2px 8px", borderRadius: 99, fontSize: 11, fontWeight: 600,
-            }}>
-              {solution.categoria}
-            </span>
-          )}
-          <span style={{ fontSize: 12, color: GRAY }}>
-            Desde {new Date(sub.created_at).toLocaleDateString("pt-BR", { month: "short", year: "numeric" })}
-          </span>
+      background: "#fff", borderRadius: 20,
+      boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+      overflow: "hidden", display: "flex", flexDirection: "column",
+      transition: "transform 0.2s, box-shadow 0.2s",
+    }}
+      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 28px rgba(3,105,161,0.1)"; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)"; }}
+    >
+      {/* Thumbnail */}
+      <div style={{ height: 120, position: "relative", flexShrink: 0 }}>
+        {solution?.cover_url ? (
+          <img src={solution.cover_url} alt={solution.titulo}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ) : (
+          <div style={{
+            width: "100%", height: "100%",
+            background: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 32, color: BLUE, opacity: 0.6,
+          }}>✦</div>
+        )}
+        {/* Status badge */}
+        <div style={{
+          position: "absolute", top: 10, right: 10,
+          background: isActive ? "rgba(22,163,74,0.9)" : "rgba(220,38,38,0.9)",
+          color: "#fff", fontSize: 10, fontWeight: 700,
+          padding: "3px 10px", borderRadius: 99,
+        }}>
+          {isActive ? "Ativa" : "Cancelada"}
         </div>
       </div>
-      <div style={{
-        display: "flex", alignItems: "center",
-        justifyContent: isMobile ? "space-between" : "flex-end",
-        gap: 10, flex: isMobile ? "1 1 100%" : "0 0 auto",
-        marginTop: isMobile ? 4 : 0,
-      }}>
-        <div style={{ textAlign: isMobile ? "left" : "right" }}>
-          <div style={{ fontSize: 17, fontWeight: 700, color: DARK }}>
-            {solution?.preco != null
-              ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-              : "Gratuito"}
-          </div>
+
+      {/* Content */}
+      <div style={{ padding: "18px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
+        {solution?.categoria && (
+          <span style={{
+            display: "inline-block", alignSelf: "flex-start",
+            background: "#e0f2fe", color: BLUE,
+            fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
+            marginBottom: 10,
+          }}>{solution.categoria}</span>
+        )}
+        <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6, lineHeight: 1.3 }}>
+          {solution?.titulo || "Solução removida"}
+        </div>
+        <div style={{ fontSize: 13, color: GRAY_TEXT, marginBottom: 16 }}>
+          Desde {new Date(sub.created_at).toLocaleDateString("pt-BR", { month: "short", year: "numeric" })}
           {solution?.preco != null && (
-            <div style={{ fontSize: 11, color: GRAY }}>{isOneTime ? "único" : "/mês"}</div>
+            <span style={{ marginLeft: 8, color: NEAR_BLACK, fontWeight: 600 }}>
+              · R$ {Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+              <span style={{ fontWeight: 400, color: GRAY_TEXT }}>{solution.payment_type === "one_time" ? " único" : "/mês"}</span>
+            </span>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-          <div style={{
-            padding: "4px 12px", borderRadius: 99,
-            background: statusActive ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
-            border: `1px solid ${statusActive ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
-            fontSize: 12, fontWeight: 600,
-            color: statusActive ? "#15803D" : "#B91C1C",
-            whiteSpace: "nowrap",
-          }}>
-            {statusActive ? "Ativa" : "Cancelada"}
-          </div>
-          {statusActive && (
-            <button onClick={onCancel} style={{
-              padding: "8px 16px", borderRadius: 8,
-              border: "1.5px solid rgba(220,38,38,0.25)",
-              background: "transparent", color: "#DC2626",
-              fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-              transition: "background 0.15s, border-color 0.15s",
-              whiteSpace: "nowrap",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(220,38,38,0.07)"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.4)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(220,38,38,0.25)"; }}
-            >
-              Cancelar
-            </button>
-          )}
+        <div style={{ marginTop: "auto", display: "flex", gap: 8 }}>
+          <a href="/solucoes" style={{
+            flex: 1, textAlign: "center",
+            background: BLUE, color: "#fff",
+            borderRadius: 10, padding: "10px",
+            fontSize: 13, fontWeight: 600, textDecoration: "none",
+            transition: "background 0.15s",
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+            onMouseLeave={e => e.currentTarget.style.background = BLUE}
+          >
+            Acessar →
+          </a>
+          <a href="mailto:contato@weprompt.app.br" style={{
+            padding: "10px 14px", borderRadius: 10,
+            border: `1px solid ${BORDER}`, color: GRAY_TEXT,
+            fontSize: 13, fontWeight: 500, textDecoration: "none",
+            transition: "background 0.15s",
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = BG_GRAY}
+            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+          >
+            Suporte
+          </a>
         </div>
       </div>
     </div>
   );
 }
 
-/* ── Settings form (Empresa) ── */
+/* ══════════════════════════
+   CONFIGURAÇÕES — Empresa
+══════════════════════════ */
 function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
   const [nome, setNome] = useState(profile?.nome || "");
   const [cnpj, setCnpj] = useState(profile?.cnpj || "");
   const [segmento, setSegmento] = useState(profile?.segmento || "");
   const [site, setSite] = useState(profile?.site || "");
+  const [descricao, setDescricao] = useState(profile?.descricao || "");
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [notifNovaSolucao, setNotifNovaSolucao] = useState(true);
+  const [notifAtualizacoes, setNotifAtualizacoes] = useState(true);
+  const [notifComunicados, setNotifComunicados] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
   const [saveError, setSaveError] = useState("");
+  const logoInputRef = useRef(null);
+  const [logoPreview, setLogoPreview] = useState(profile?.avatar_url || "");
 
-  const fldStyle = {
-    width: "100%", padding: "10px 14px",
-    borderRadius: 10, border: `1.5px solid ${BORDER}`,
-    fontSize: 14, color: DARK, background: "#fff",
-    outline: "none", boxSizing: "border-box",
-    fontFamily: "inherit", transition: "border-color 0.15s",
+  const inp = {
+    width: "100%", padding: "12px 14px", borderRadius: 12,
+    border: `1px solid ${BORDER}`, fontSize: 14, color: NEAR_BLACK,
+    background: "#fff", outline: "none", boxSizing: "border-box",
+    fontFamily: "inherit", transition: "border-color 0.15s, box-shadow 0.15s",
   };
-  const lbl = { fontSize: 13, fontWeight: 600, color: DARK, marginBottom: 6, display: "block" };
+  const lbl = { fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginBottom: 8, display: "block" };
+  const fi = e => { e.target.style.borderColor = BLUE; e.target.style.boxShadow = "0 0 0 3px rgba(3,105,161,0.1)"; };
+  const fb = e => { e.target.style.borderColor = BORDER; e.target.style.boxShadow = "none"; };
+
+  function handleLogoChange(e) {
+    const file = e.target.files?.[0];
+    if (file) setLogoPreview(URL.createObjectURL(file));
+  }
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    setSaving(true);
-    setSaveMsg("");
-    setSaveError("");
-
-    const updates = { nome, cnpj, segmento, site };
-    const { error } = await supabase.from("profiles").update(updates).eq("id", user.id);
+    e.preventDefault(); setSaving(true); setSaveMsg(""); setSaveError("");
+    const updates = { id: user.id, nome, role: profile?.role || "empresa" };
+    const { error } = await supabase.from("profiles").upsert(updates);
     if (error) {
-      setSaveError("Erro ao salvar. Tente novamente.");
+      console.error("Save error:", error);
+      setSaveError("Erro ao salvar: " + error.message);
     } else {
-      setSaveMsg("Alterações salvas!");
-      onProfileUpdate({ ...profile, ...updates });
+      setSaveMsg("Alterações salvas com sucesso!");
+      onProfileUpdate({ ...profile, nome });
       setTimeout(() => setSaveMsg(""), 3000);
     }
     setSaving(false);
   }
 
+  const cardStyle = {
+    background: "#fff", borderRadius: 20,
+    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+    padding: isMobile ? "24px 20px" : "32px",
+    marginBottom: 20,
+  };
+
+  const planName = profile?.plan === "business" ? "Business" : profile?.plan === "enterprise" ? "Enterprise" : "Free";
+
+  const FAQ_ITEMS = [
+    { q: "Como funciona o modelo de assinatura?", a: "Você paga mensalmente e tem acesso contínuo à solução enquanto a assinatura estiver ativa. O cancelamento pode ser feito a qualquer momento." },
+    { q: "Como cancelo uma assinatura?", a: "Acesse 'Soluções Adquiridas', localize a solução desejada e clique em 'Cancelar'. Você mantém o acesso até o fim do período pago." },
+    { q: "Posso usar soluções em múltiplos projetos?", a: "Cada assinatura é válida para a sua conta empresa. Consulte os termos de uso de cada solução para saber as restrições de uso." },
+    { q: "O que acontece após cancelar uma assinatura?", a: "Você mantém o acesso até o fim do período já pago. Após isso, o acesso é encerrado automaticamente." },
+    { q: "Como entro em contato com o criador da solução?", a: "Use o botão 'Suporte' na solução adquirida. Isso abrirá um contato direto com a equipe WePrompt, que facilita o contato com o criador." },
+  ];
+
   return (
-    <div style={{
-      background: "#fff", border: `1px solid ${BORDER}`,
-      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-      borderRadius: 16, padding: isMobile ? "24px 20px" : "32px",
-    }}>
-      <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 24 }}>Configurações</h2>
-      <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
 
-        <div style={{ marginBottom: 16 }}>
-          <label style={lbl}>Nome da empresa</label>
-          <input type="text" value={nome} onChange={e => setNome(e.target.value)} style={fldStyle}
-            onFocus={e => (e.target.style.borderColor = PURPLE)}
-            onBlur={e => (e.target.style.borderColor = BORDER)} />
-        </div>
+      {/* Perfil da Empresa */}
+      <div style={cardStyle}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Perfil da empresa</h3>
 
-        <div style={{ marginBottom: 16 }}>
-          <label style={lbl}>Email</label>
-          <input type="email" value={user?.email || ""} readOnly
-            style={{ ...fldStyle, background: "#f9fafb", color: GRAY, cursor: "default" }} />
-        </div>
-
-        <div style={{ marginBottom: 16 }}>
-          <label style={lbl}>CNPJ</label>
-          <input type="text" value={cnpj} onChange={e => setCnpj(e.target.value)}
-            placeholder="00.000.000/0000-00" style={fldStyle}
-            onFocus={e => (e.target.style.borderColor = PURPLE)}
-            onBlur={e => (e.target.style.borderColor = BORDER)} />
-        </div>
-
-        <div style={{ marginBottom: 16 }}>
-          <label style={lbl}>Segmento / Setor</label>
-          <input type="text" value={segmento} onChange={e => setSegmento(e.target.value)}
-            placeholder="Ex: Varejo, Saúde, Tecnologia…" style={fldStyle}
-            onFocus={e => (e.target.style.borderColor = PURPLE)}
-            onBlur={e => (e.target.style.borderColor = BORDER)} />
-        </div>
-
-        <div style={{ marginBottom: 28 }}>
-          <label style={lbl}>Site da empresa</label>
-          <input type="url" value={site} onChange={e => setSite(e.target.value)}
-            placeholder="https://suaempresa.com.br" style={fldStyle}
-            onFocus={e => (e.target.style.borderColor = PURPLE)}
-            onBlur={e => (e.target.style.borderColor = BORDER)} />
-        </div>
-
-        {saveError && (
-          <div style={{ background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#B91C1C", marginBottom: 16 }}>
-            {saveError}
+        {/* Logo */}
+        <div style={{ marginBottom: 24 }}>
+          <label style={lbl}>Logo da empresa</label>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{
+              width: 72, height: 72, borderRadius: 16, overflow: "hidden", flexShrink: 0,
+              background: "#e0f2fe", border: `1px solid ${BORDER}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              {logoPreview
+                ? <img src={logoPreview} alt="logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : <span style={{ fontSize: 24, fontWeight: 700, color: BLUE }}>{(nome || "E").charAt(0).toUpperCase()}</span>}
+            </div>
+            <button type="button" onClick={() => logoInputRef.current?.click()} style={{
+              padding: "8px 18px", borderRadius: 10, border: `1px solid ${BORDER}`,
+              background: "transparent", color: NEAR_BLACK, fontSize: 13, fontWeight: 600,
+              cursor: "pointer", fontFamily: "inherit",
+            }}>Alterar logo</button>
+            <input ref={logoInputRef} type="file" accept="image/jpeg,image/png,image/webp" style={{ display: "none" }} onChange={handleLogoChange} />
           </div>
-        )}
-        {saveMsg && (
-          <div style={{ background: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#15803D", marginBottom: 16 }}>
-            {saveMsg}
-          </div>
-        )}
+        </div>
 
-        <button type="submit" disabled={saving} style={{
-          padding: "11px 24px", borderRadius: 10,
-          background: saving ? "rgba(107,92,231,0.5)" : "linear-gradient(135deg, #6B5CE7, #8B5CF6)",
-          color: "#fff", border: "none", fontSize: 14, fontWeight: 600,
-          cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit",
-          boxShadow: saving ? "none" : "0 4px 12px rgba(107,92,231,0.25)",
-        }}>
-          {saving ? "Salvando…" : "Salvar alterações"}
-        </button>
-      </form>
-    </div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 0 }}>
+          <div>
+            <label style={lbl}>Nome da empresa</label>
+            <input type="text" value={nome} onChange={e => setNome(e.target.value)} style={inp} onFocus={fi} onBlur={fb} />
+          </div>
+          <div>
+            <label style={lbl}>CNPJ</label>
+            <input type="text" value={cnpj} onChange={e => setCnpj(e.target.value)} placeholder="00.000.000/0000-00" style={inp} onFocus={fi} onBlur={fb} />
+          </div>
+          <div>
+            <label style={lbl}>Segmento</label>
+            <select value={segmento} onChange={e => setSegmento(e.target.value)} style={{ ...inp, cursor: "pointer" }} onFocus={fi} onBlur={fb}>
+              <option value="">Selecione…</option>
+              {["Tecnologia", "Varejo", "Saúde", "Educação", "Finanças", "Marketing", "RH", "Jurídico", "Logística", "Outros"].map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label style={lbl}>Email</label>
+            <input type="email" value={user?.email || ""} readOnly style={{ ...inp, background: BG_GRAY, color: GRAY_TEXT, cursor: "default" }} />
+          </div>
+          <div style={{ gridColumn: isMobile ? "1" : "1 / -1" }}>
+            <label style={lbl}>Site da empresa</label>
+            <input type="url" value={site} onChange={e => setSite(e.target.value)} placeholder="https://suaempresa.com.br" style={inp} onFocus={fi} onBlur={fb} />
+          </div>
+          <div style={{ gridColumn: isMobile ? "1" : "1 / -1" }}>
+            <label style={lbl}>Descrição</label>
+            <textarea rows={3} value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Conte um pouco sobre sua empresa…" style={{ ...inp, resize: "vertical", lineHeight: 1.6 }} onFocus={fi} onBlur={fb} />
+          </div>
+        </div>
+      </div>
+
+      {/* Usuários da conta */}
+      <div style={cardStyle}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, margin: 0 }}>Usuários da conta</h3>
+          <button type="button" style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            padding: "8px 16px", borderRadius: 10,
+            border: `1px solid ${BORDER}`, background: "transparent",
+            color: NEAR_BLACK, fontSize: 13, fontWeight: 600,
+            cursor: "pointer", fontFamily: "inherit", transition: "background 0.15s",
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = BG_GRAY}
+            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+          >
+            <Icon d={icons.plus} size={14} /> Convidar usuário
+          </button>
+        </div>
+        {/* Current user row */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 0", borderBottom: `1px solid ${BORDER}` }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
+            background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 16, fontWeight: 700, color: BLUE,
+          }}>
+            {(nome || "E").charAt(0).toUpperCase()}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: NEAR_BLACK }}>{nome || "Administrador"}</div>
+            <div style={{ fontSize: 12, color: GRAY_TEXT }}>{user?.email}</div>
+          </div>
+          <span style={{ background: "#e0f2fe", color: BLUE, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 99 }}>Admin</span>
+        </div>
+        <p style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 12, margin: "12px 0 0" }}>
+          Convidar usuários adicionais está disponível nos planos Business e Enterprise.{" "}
+          <a href="/precos" style={{ color: BLUE, textDecoration: "none" }}>Ver planos →</a>
+        </p>
+      </div>
+
+      {/* Plano Atual */}
+      <div style={cardStyle}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Plano atual</h3>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+          <div>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+              <span style={{
+                background: planName === "Free" ? BG_GRAY : BLUE,
+                color: planName === "Free" ? NEAR_BLACK : "#fff",
+                fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 999,
+              }}>{planName}</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {(planName === "Free"
+                ? ["Acesso ao catálogo completo", "Compra avulsa de soluções", "Suporte via e-mail"]
+                : ["10% de desconto em todas as soluções", "Suporte prioritário em PT-BR", "Curadoria personalizada mensal"]
+              ).map(f => (
+                <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: GRAY_TEXT }}>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="7" fill="rgba(3,105,161,0.1)" />
+                    <path d="M5 8l2 2 4-4" stroke={BLUE} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {f}
+                </div>
+              ))}
+            </div>
+          </div>
+          <a href="/precos" style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            background: BLUE, color: "#fff", borderRadius: 12, padding: "10px 20px",
+            fontSize: 14, fontWeight: 600, textDecoration: "none", transition: "background 0.15s",
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+            onMouseLeave={e => e.currentTarget.style.background = BLUE}
+          >
+            Fazer upgrade →
+          </a>
+        </div>
+      </div>
+
+      {/* Segurança */}
+      <div style={cardStyle}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Segurança</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div>
+            <label style={lbl}>Senha atual</label>
+            <input type="password" value={currentPwd} onChange={e => setCurrentPwd(e.target.value)} placeholder="••••••••" style={inp} onFocus={fi} onBlur={fb} />
+          </div>
+          <div>
+            <label style={lbl}>Nova senha</label>
+            <input type="password" value={newPwd} onChange={e => setNewPwd(e.target.value)} placeholder="Mínimo 8 caracteres" style={inp} onFocus={fi} onBlur={fb} />
+          </div>
+          <div>
+            <label style={lbl}>Confirmar nova senha</label>
+            <input type="password" value={confirmPwd} onChange={e => setConfirmPwd(e.target.value)} placeholder="Repita a nova senha" style={inp} onFocus={fi} onBlur={fb} />
+          </div>
+        </div>
+      </div>
+
+      {/* Notificações */}
+      <div style={cardStyle}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Notificações</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          {[
+            { label: "Nova solução no catálogo", sub: "Seja notificado quando novas soluções relevantes forem publicadas", checked: notifNovaSolucao, set: setNotifNovaSolucao },
+            { label: "Atualizações de soluções adquiridas", sub: "Receba avisos quando uma solução que você usa for atualizada", checked: notifAtualizacoes, set: setNotifAtualizacoes },
+            { label: "Comunicados da WePrompt", sub: "Novidades, promoções e melhorias da plataforma", checked: notifComunicados, set: setNotifComunicados },
+          ].map(item => (
+            <div key={item.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: NEAR_BLACK }}>{item.label}</div>
+                <div style={{ fontSize: 13, color: GRAY_TEXT, marginTop: 2 }}>{item.sub}</div>
+              </div>
+              <Toggle checked={item.checked} onChange={item.set} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Ajuda */}
+      <div style={cardStyle}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Ajuda</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {FAQ_ITEMS.map((item, i) => (
+            <div key={i} style={{ borderRadius: 12, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
+              <button type="button" onClick={() => setFaqOpen(prev => prev === i ? null : i)} style={{
+                width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "16px 20px", background: "#fff", border: "none", cursor: "pointer",
+                fontFamily: "inherit", gap: 12,
+              }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: NEAR_BLACK, textAlign: "left" }}>{item.q}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  style={{ flexShrink: 0, transition: "transform 0.25s", transform: faqOpen === i ? "rotate(180deg)" : "rotate(0deg)" }}>
+                  <path d="M6 9l6 6 6-6" stroke={GRAY_TEXT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              {faqOpen === i && (
+                <div style={{ padding: "0 20px 16px", fontSize: 14, color: GRAY_TEXT, lineHeight: 1.65 }}>{item.a}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Termos */}
+      <div style={cardStyle}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 16 }}>Termos e Políticas</h3>
+        <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+          {[
+            ["Termos de Uso para Empresas", "/para-empresas/termos"],
+            ["Política de Privacidade", "/para-criadores/termos"],
+          ].map(([label, href]) => (
+            <a key={label} href={href} style={{ fontSize: 14, color: BLUE, textDecoration: "none", fontWeight: 500 }}
+              onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+              onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
+            >{label} →</a>
+          ))}
+        </div>
+      </div>
+
+      {/* Feedback + Save */}
+      {saveError && <div style={{ background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.18)", borderRadius: 10, padding: "12px 16px", fontSize: 13, color: "#B91C1C", marginBottom: 16 }}>{saveError}</div>}
+      {saveMsg && <div style={{ background: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.18)", borderRadius: 10, padding: "12px 16px", fontSize: 13, color: "#15803D", marginBottom: 16 }}>{saveMsg}</div>}
+
+      <button type="submit" disabled={saving} style={{
+        padding: "14px 32px", borderRadius: 12,
+        background: saving ? "rgba(3,105,161,0.5)" : BLUE,
+        color: "#fff", border: "none", fontSize: 15, fontWeight: 700,
+        cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit",
+        transition: "background 0.15s",
+      }}
+        onMouseEnter={e => { if (!saving) e.currentTarget.style.background = "#0284C7"; }}
+        onMouseLeave={e => { if (!saving) e.currentTarget.style.background = BLUE; }}
+      >
+        {saving ? "Salvando…" : "Salvar alterações"}
+      </button>
+    </form>
   );
 }
 
+/* ══════════════════════════════════════════
+   MAIN PAGE
+══════════════════════════════════════════ */
 export default function EmpresaDashboard() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeNav, setActiveNav] = useState("subscriptions");
+  const [activeNav, setActiveNav] = useState("inicio");
   const [cancelTarget, setCancelTarget] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCategoria, setFilterCategoria] = useState("all");
   const width = useWindowSize();
   const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
 
   useEffect(() => {
     async function init() {
@@ -390,10 +617,7 @@ export default function EmpresaDashboard() {
     init();
   }, [router]);
 
-  async function handleSignOut() {
-    await signOut();
-    router.replace("/login");
-  }
+  async function handleSignOut() { await signOut(); router.replace("/login"); }
 
   async function handleCancel(subId) {
     await supabase.from("subscriptions").update({ status: "cancelled" }).eq("id", subId);
@@ -403,10 +627,10 @@ export default function EmpresaDashboard() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: BG_GRAY }}>
         <div style={{ textAlign: "center" }}>
-          <WePromptLogo id="empresa-loading" />
-          <div style={{ fontSize: 13, color: GRAY, marginTop: 16 }}>Carregando dashboard…</div>
+          <WePromptLogo id="empresa-loading" textColor={NEAR_BLACK} />
+          <div style={{ fontSize: 13, color: GRAY_TEXT, marginTop: 16 }}>Carregando dashboard…</div>
         </div>
       </div>
     );
@@ -416,88 +640,135 @@ export default function EmpresaDashboard() {
   const activeSubs = subscriptions.filter(s => s.status === "active");
   const monthlySpend = activeSubs.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
 
+  const planName = profile?.plan === "business" ? "Business" : profile?.plan === "enterprise" ? "Enterprise" : "Free";
+  const planDiscount = planName === "Enterprise" ? 0.2 : planName === "Business" ? 0.1 : 0;
+  const savings = monthlySpend * planDiscount;
+
+  const allCategories = [...new Set(subscriptions.map(s => s.solutions?.categoria).filter(Boolean))];
+
+  const filteredSubs = subscriptions.filter(s => {
+    const matchSearch = !searchQuery ||
+      s.solutions?.titulo?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.solutions?.categoria?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchCat = filterCategoria === "all" || s.solutions?.categoria === filterCategoria;
+    return matchSearch && matchCat;
+  });
+
   const navItems = [
-    { key: "subscriptions", icon: icons.subscriptions, label: "Minhas Assinaturas" },
-    { key: "explore", icon: icons.explore, label: "Explorar Soluções", href: "/solucoes" },
-    { key: "settings", icon: icons.settings, label: "Configurações" },
+    { key: "inicio",        iconD: icons.home,     label: "Início" },
+    { key: "solucoes",      iconD: icons.grid,     label: "Soluções Adquiridas" },
+    { key: "explorar",      iconD: icons.explore,  label: "Explorar Catálogo", href: "/solucoes" },
+    { key: "historico",     iconD: icons.history,  label: "Histórico de Compras" },
+    { key: "configuracoes", iconD: icons.settings, label: "Configurações" },
   ];
 
+  /* Reusable acquired solutions grid */
+  function SolucoesGrid({ subs, showEmpty = true }) {
+    const sorted = [...subs].sort((a, b) => a.status === b.status ? 0 : a.status === "active" ? -1 : 1);
+    if (sorted.length === 0 && showEmpty) {
+      return (
+        <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "60px 32px", textAlign: "center" }}>
+          <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.2 }}>🏢</div>
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: NEAR_BLACK, marginBottom: 8 }}>Você ainda não adquiriu nenhuma solução.</h2>
+          <p style={{ fontSize: 14, color: GRAY_TEXT, marginBottom: 24 }}>Explore o marketplace e encontre ferramentas de IA para seu negócio.</p>
+          <a href="/solucoes" style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: BLUE, color: "#fff", borderRadius: 12,
+            padding: "11px 24px", fontSize: 14, fontWeight: 600, textDecoration: "none",
+            transition: "background 0.15s",
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+            onMouseLeave={e => e.currentTarget.style.background = BLUE}
+          >
+            Explorar catálogo →
+          </a>
+        </div>
+      );
+    }
+    return (
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(2, 1fr)",
+        gap: 20,
+      }}>
+        {sorted.map(sub => (
+          <AcquiredCard key={sub.id} sub={sub}
+            onCancel={() => setCancelTarget({ id: sub.id, titulo: sub.solutions?.titulo || "esta solução" })}
+            isMobile={isMobile} />
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: DARK }}>
+    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: NEAR_BLACK, background: BG_GRAY }}>
 
       {/* Mobile backdrop */}
       {isMobile && sidebarOpen && (
-        <div
-          onClick={() => setSidebarOpen(false)}
-          style={{ position: "fixed", inset: 0, zIndex: 49, background: "rgba(0,0,0,0.4)" }}
-        />
+        <div onClick={() => setSidebarOpen(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 49, background: "rgba(0,0,0,0.4)" }} />
       )}
 
       {/* ── SIDEBAR ── */}
       <aside style={{
         width: 240, flexShrink: 0,
-        background: "rgba(255,255,255,0.9)",
-        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+        background: "#fff",
         borderRight: `1px solid ${BORDER}`,
         display: "flex", flexDirection: "column",
         position: "fixed", top: 0, bottom: 0,
         left: isMobile && !sidebarOpen ? -240 : 0,
-        zIndex: 50,
-        transition: "left 0.25s ease",
+        zIndex: 50, transition: "left 0.25s ease",
         overflowY: "auto",
       }}>
-        <div style={{ padding: "20px 20px 16px" }}>
+        <div style={{ padding: "22px 20px 18px" }}>
           <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="empresa-sidebar" textColor={DARK} />
+            <WePromptLogo id="empresa-sidebar" textColor={NEAR_BLACK} />
           </a>
         </div>
         <div style={{ height: 1, background: BORDER, margin: "0 16px 16px" }} />
         <nav style={{ flex: 1, padding: "0 12px", display: "flex", flexDirection: "column", gap: 2 }}>
           {navItems.map(item => (
-            <NavItem
-              key={item.key}
-              icon={item.icon}
-              label={item.label}
+            <NavItem key={item.key} iconD={item.iconD} label={item.label}
               active={activeNav === item.key}
               onClick={item.href ? undefined : () => { setActiveNav(item.key); if (isMobile) setSidebarOpen(false); }}
-              href={item.href}
-            />
+              href={item.href} />
           ))}
         </nav>
         <div style={{ padding: "16px 12px", borderTop: `1px solid ${BORDER}` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", marginBottom: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", marginBottom: 6 }}>
             <div style={{
-              width: 32, height: 32, borderRadius: "50%",
-              background: "rgba(22,163,74,0.1)",
+              width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+              background: "#e0f2fe",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 14, fontWeight: 700, color: "#15803D", flexShrink: 0,
+              fontSize: 15, fontWeight: 700, color: BLUE,
             }}>
               {displayName.charAt(0).toUpperCase()}
             </div>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: DARK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {displayName}
               </div>
-              <div style={{ fontSize: 11, color: GRAY }}>Empresa</div>
+              <div style={{ fontSize: 11, color: GRAY_TEXT }}>Empresa</div>
             </div>
           </div>
           <button onClick={handleSignOut} style={{
             width: "100%", display: "flex", alignItems: "center", gap: 10,
-            padding: "10px 16px", borderRadius: 10, border: "none",
+            padding: "10px 16px", borderRadius: 12, border: "none",
             background: "transparent", color: "#DC2626",
             fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left",
             transition: "background 0.15s",
           }}
-            onMouseEnter={e => (e.currentTarget.style.background = "rgba(220,38,38,0.07)")}
-            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(220,38,38,0.07)"}
+            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
           >
             <Icon d={icons.logout} size={14} /> Sair
           </button>
         </div>
       </aside>
 
-      {/* ── MAIN CONTENT ── */}
+      {/* ── MAIN ── */}
       <main style={{ flex: 1, marginLeft: isMobile ? 0 : 240, minWidth: 0 }}>
+
         {isMobile && (
           <div style={{
             position: "sticky", top: 0, zIndex: 40,
@@ -508,107 +779,307 @@ export default function EmpresaDashboard() {
             display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
             <a href="/" style={{ textDecoration: "none" }}>
-              <WePromptLogo id="empresa-mobile" textColor={DARK} />
+              <WePromptLogo id="empresa-mobile" textColor={NEAR_BLACK} />
             </a>
-            <button
-              onClick={() => setSidebarOpen(o => !o)}
-              style={{
-                background: "none", border: "none", cursor: "pointer",
-                fontSize: 22, color: DARK, padding: "4px 8px",
-                display: "flex", alignItems: "center",
-              }}
-            >
+            <button onClick={() => setSidebarOpen(o => !o)} style={{
+              background: "none", border: "none", cursor: "pointer",
+              fontSize: 22, color: NEAR_BLACK, padding: "4px 8px", display: "flex", alignItems: "center",
+            }}>
               {sidebarOpen ? "✕" : "☰"}
             </button>
           </div>
         )}
-        <div style={{ maxWidth: 960, margin: "0 auto", padding: isMobile ? "24px 16px 32px" : "40px 32px" }}>
 
-          {activeNav === "subscriptions" && (
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: isMobile ? "24px 16px 48px" : "40px 32px 48px" }}>
+
+          {/* ── TAB: INÍCIO ── */}
+          {activeNav === "inicio" && (
             <>
-              <div style={{ marginBottom: 28 }}>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: DARK, margin: 0, letterSpacing: "-0.5px" }}>
-                  Minhas Assinaturas
+              <div style={{ marginBottom: 32 }}>
+                <h1 style={{ fontSize: 28, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.8px", marginBottom: 6 }}>
+                  Olá, {displayName} 👋
                 </h1>
-                <p style={{ fontSize: 14, color: GRAY, margin: "4px 0 0" }}>
-                  Gerencie todas as soluções de IA que sua empresa utiliza.
-                </p>
+                <p style={{ fontSize: 15, color: GRAY_TEXT }}>Aqui está o resumo das suas soluções de IA.</p>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 16, marginBottom: 32 }}>
-                <StatCard
-                  label="Assinaturas ativas"
-                  value={activeSubs.length}
-                  sub={subscriptions.length > activeSubs.length
-                    ? `${subscriptions.length - activeSubs.length} cancelada(s)`
-                    : "Todas ativas"}
-                  accentColor={PURPLE}
-                />
-                <StatCard
-                  label="Gasto mensal"
-                  value={monthlySpend > 0
-                    ? `R$ ${monthlySpend.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-                    : "R$ 0"}
-                  sub={activeSubs.length > 0 ? `em ${activeSubs.length} solução(ões)` : "Sem assinaturas ativas"}
-                  accentColor="#15803D"
-                />
+              {/* KPIs */}
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16, marginBottom: 28 }}>
+                <KpiCard iconD={icons.grid}    label="Soluções Adquiridas" value={subscriptions.length} sub={`${activeSubs.length} ativas`} />
+                <KpiCard iconD={icons.history} label="Créditos Restantes"  value={planName === "Free" ? "Free" : "—"} sub={`Plano ${planName}`} />
+                <KpiCard iconD={icons.explore} label="Economia Estimada"   value={savings > 0 ? `R$ ${savings.toFixed(0)}` : "—"} sub={planDiscount > 0 ? `${planDiscount * 100}% de desconto` : "Upgrade para economizar"} />
+                <KpiCard iconD={icons.check}   label="Soluções Ativas"     value={activeSubs.length} sub={monthlySpend > 0 ? `R$ ${monthlySpend.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês` : "Sem gasto recorrente"} />
               </div>
 
-              {subscriptions.length === 0 ? (
-                <div style={{
-                  background: "#fff",
-                  border: `1px solid ${BORDER}`,
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-                  borderRadius: 16, padding: "60px 32px", textAlign: "center",
-                }}>
-                  <div style={{ fontSize: 40, marginBottom: 16 }}>🏢</div>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, color: DARK, marginBottom: 8 }}>
-                    Você ainda não assinou nenhuma solução.
-                  </h2>
-                  <p style={{ fontSize: 14, color: GRAY, marginBottom: 24 }}>
-                    Explore o marketplace e encontre ferramentas de IA prontas para o seu negócio.
-                  </p>
-                  <a href="/solucoes" style={{
-                    display: "inline-flex", alignItems: "center", gap: 8,
-                    background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)",
-                    color: "#fff", borderRadius: 10,
-                    padding: "11px 24px", fontSize: 14, fontWeight: 600,
-                    textDecoration: "none",
-                    boxShadow: "0 4px 16px rgba(107,92,231,0.3)",
-                  }}>
-                    Explorar soluções
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </a>
+              {/* Acquired solutions */}
+              <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "24px", marginBottom: 28 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK }}>Soluções Adquiridas</div>
+                  <button onClick={() => setActiveNav("solucoes")} style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    fontSize: 13, color: BLUE, fontWeight: 600, fontFamily: "inherit",
+                  }}>Ver todas →</button>
                 </div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {[...subscriptions]
-                    .sort((a, b) => {
-                      if (a.status === b.status) return 0;
-                      return a.status === "active" ? -1 : 1;
-                    })
-                    .map(sub => (
-                      <SubscriptionCard
-                        key={sub.id}
-                        sub={sub}
-                        onCancel={() => setCancelTarget({ id: sub.id, titulo: sub.solutions?.titulo || "esta solução" })}
-                        isMobile={isMobile}
-                      />
-                    ))}
+                <SolucoesGrid subs={subscriptions.slice(0, 4)} />
+              </div>
+
+              {/* Current plan */}
+              <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "24px", marginBottom: 28 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 12 }}>Plano atual</div>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <span style={{
+                        background: planName === "Free" ? BG_GRAY : BLUE,
+                        color: planName === "Free" ? NEAR_BLACK : "#fff",
+                        fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 999,
+                      }}>{planName}</span>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      {(planName === "Free"
+                        ? ["Acesso ao catálogo completo", "Compra avulsa de soluções", "Suporte via e-mail"]
+                        : ["10% de desconto em todas as soluções", "Suporte prioritário em PT-BR", "Curadoria personalizada mensal"]
+                      ).map(f => (
+                        <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: GRAY_TEXT }}>
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="7" fill="rgba(3,105,161,0.1)" />
+                            <path d="M5 8l2 2 4-4" stroke={BLUE} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          {f}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {planName === "Free" && (
+                    <a href="/precos" style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      background: BLUE, color: "#fff", borderRadius: 12, padding: "10px 20px",
+                      fontSize: 14, fontWeight: 600, textDecoration: "none", transition: "background 0.15s",
+                      flexShrink: 0,
+                    }}
+                      onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                      onMouseLeave={e => e.currentTarget.style.background = BLUE}
+                    >
+                      Fazer upgrade →
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Recent purchases table */}
+              <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK }}>Compras recentes</div>
+                  <button onClick={() => setActiveNav("historico")} style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    fontSize: 13, color: BLUE, fontWeight: 600, fontFamily: "inherit",
+                  }}>Ver histórico →</button>
+                </div>
+                {subscriptions.length === 0 ? (
+                  <div style={{ padding: "40px 24px", textAlign: "center", color: GRAY_TEXT, fontSize: 14 }}>
+                    Nenhuma compra registrada ainda.
+                  </div>
+                ) : (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ background: BG_GRAY }}>
+                          {["Data", "Solução", "Valor", "Status"].map(h => (
+                            <th key={h} style={{ padding: "12px 16px", fontSize: 12, fontWeight: 600, color: GRAY_TEXT, textAlign: "left", whiteSpace: "nowrap" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {subscriptions.slice(0, 5).map((sub, i) => (
+                          <tr key={sub.id} style={{ borderTop: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                            <td style={{ padding: "14px 16px", fontSize: 13, color: GRAY_TEXT, whiteSpace: "nowrap" }}>
+                              {new Date(sub.created_at).toLocaleDateString("pt-BR")}
+                            </td>
+                            <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: NEAR_BLACK }}>
+                              {sub.solutions?.titulo || "—"}
+                            </td>
+                            <td style={{ padding: "14px 16px", fontSize: 14, color: NEAR_BLACK, whiteSpace: "nowrap" }}>
+                              {sub.solutions?.preco != null
+                                ? `R$ ${Number(sub.solutions.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                                : "Grátis"}
+                            </td>
+                            <td style={{ padding: "14px 16px" }}>
+                              <span style={{
+                                display: "inline-block",
+                                background: sub.status === "active" ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
+                                border: `1px solid ${sub.status === "active" ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
+                                color: sub.status === "active" ? "#15803D" : "#B91C1C",
+                                fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
+                              }}>
+                                {sub.status === "active" ? "Pago" : "Cancelado"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* ── TAB: SOLUÇÕES ADQUIRIDAS ── */}
+          {activeNav === "solucoes" && (
+            <>
+              <div style={{ marginBottom: 24 }}>
+                <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Soluções Adquiridas</h1>
+                <p style={{ fontSize: 14, color: GRAY_TEXT }}>Todas as soluções de IA que sua empresa utiliza.</p>
+              </div>
+
+              {/* Search + filter */}
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
+                <div style={{ position: "relative", flex: 1, minWidth: 200 }}>
+                  <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: GRAY_TEXT, pointerEvents: "none" }}>
+                    <Icon d={icons.search} size={16} />
+                  </div>
+                  <input
+                    type="text" placeholder="Buscar soluções…"
+                    value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                    style={{
+                      width: "100%", padding: "11px 14px 11px 40px", borderRadius: 12,
+                      border: `1px solid ${BORDER}`, fontSize: 14, color: NEAR_BLACK,
+                      background: "#fff", outline: "none", boxSizing: "border-box",
+                      fontFamily: "inherit", transition: "border-color 0.15s",
+                    }}
+                    onFocus={e => { e.target.style.borderColor = BLUE; e.target.style.boxShadow = "0 0 0 3px rgba(3,105,161,0.1)"; }}
+                    onBlur={e => { e.target.style.borderColor = BORDER; e.target.style.boxShadow = "none"; }}
+                  />
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {["all", ...allCategories].map(cat => (
+                    <button key={cat} onClick={() => setFilterCategoria(cat)} style={{
+                      padding: "10px 18px", borderRadius: 999, border: "none",
+                      background: filterCategoria === cat ? BLUE : "#fff",
+                      color: filterCategoria === cat ? "#fff" : GRAY_TEXT,
+                      fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                      boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                      transition: "background 0.15s, color 0.15s",
+                    }}>
+                      {cat === "all" ? "Todas" : cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <SolucoesGrid subs={filteredSubs} />
+            </>
+          )}
+
+          {/* ── TAB: EXPLORAR CATÁLOGO ── */}
+          {activeNav === "explorar" && (
+            <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "64px 32px", textAlign: "center" }}>
+              <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.2 }}>🔍</div>
+              <h2 style={{ fontSize: 22, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 12 }}>Explorar Catálogo</h2>
+              <p style={{ fontSize: 15, color: GRAY_TEXT, maxWidth: 440, margin: "0 auto 28px", lineHeight: 1.65 }}>
+                Descubra centenas de soluções de IA prontas para transformar os processos da sua empresa.
+              </p>
+              <a href="/solucoes" style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: BLUE, color: "#fff", borderRadius: 12,
+                padding: "14px 32px", fontSize: 15, fontWeight: 700, textDecoration: "none",
+                transition: "background 0.15s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                onMouseLeave={e => e.currentTarget.style.background = BLUE}
+              >
+                Ir para o catálogo →
+              </a>
+            </div>
+          )}
+
+          {/* ── TAB: HISTÓRICO DE COMPRAS ── */}
+          {activeNav === "historico" && (
+            <>
+              <div style={{ marginBottom: 24 }}>
+                <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Histórico de Compras</h1>
+                <p style={{ fontSize: 14, color: GRAY_TEXT }}>Todas as transações da sua conta empresa.</p>
+              </div>
+
+              <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden", marginBottom: 20 }}>
+                {subscriptions.length === 0 ? (
+                  <div style={{ padding: "60px 32px", textAlign: "center" }}>
+                    <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.2 }}>📋</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6 }}>Nenhuma compra ainda</div>
+                    <div style={{ fontSize: 14, color: GRAY_TEXT }}>Suas compras aparecerão aqui após adquirir soluções.</div>
+                  </div>
+                ) : (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ background: BG_GRAY }}>
+                          {["Data", "Solução", "Criador", "Valor", "Status"].map(h => (
+                            <th key={h} style={{ padding: "14px 16px", fontSize: 12, fontWeight: 600, color: GRAY_TEXT, textAlign: "left", whiteSpace: "nowrap" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {subscriptions.map((sub, i) => (
+                          <tr key={sub.id} style={{ borderTop: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                            <td style={{ padding: "14px 16px", fontSize: 13, color: GRAY_TEXT, whiteSpace: "nowrap" }}>
+                              {new Date(sub.created_at).toLocaleDateString("pt-BR")}
+                            </td>
+                            <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: NEAR_BLACK, maxWidth: 200 }}>
+                              <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {sub.solutions?.titulo || "—"}
+                              </div>
+                            </td>
+                            <td style={{ padding: "14px 16px", fontSize: 13, color: GRAY_TEXT }}>
+                              {sub.solutions?.creator_id ? "Criador" : "—"}
+                            </td>
+                            <td style={{ padding: "14px 16px", fontSize: 14, color: NEAR_BLACK, whiteSpace: "nowrap" }}>
+                              {sub.solutions?.preco != null
+                                ? `R$ ${Number(sub.solutions.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                                : "Grátis"}
+                            </td>
+                            <td style={{ padding: "14px 16px" }}>
+                              <span style={{
+                                display: "inline-block",
+                                background: sub.status === "active" ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
+                                border: `1px solid ${sub.status === "active" ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
+                                color: sub.status === "active" ? "#15803D" : "#B91C1C",
+                                fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
+                              }}>
+                                {sub.status === "active" ? "Pago" : "Cancelado"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* Summary */}
+              {subscriptions.length > 0 && (
+                <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "20px 24px" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_TEXT }}>Total investido (assinaturas ativas)</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: BLUE }}>
+                      {monthlySpend > 0
+                        ? `R$ ${monthlySpend.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês`
+                        : "R$ 0,00"}
+                    </div>
+                  </div>
                 </div>
               )}
             </>
           )}
 
-          {activeNav === "settings" && (
-            <SettingsEmpresa
-              user={user}
-              profile={profile}
-              isMobile={isMobile}
-              onProfileUpdate={setProfile}
-            />
+          {/* ── TAB: CONFIGURAÇÕES ── */}
+          {activeNav === "configuracoes" && (
+            <>
+              <div style={{ marginBottom: 28 }}>
+                <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Configurações</h1>
+                <p style={{ fontSize: 14, color: GRAY_TEXT }}>Gerencie o perfil, plano e preferências da sua empresa.</p>
+              </div>
+              <SettingsEmpresa user={user} profile={profile} isMobile={isMobile} onProfileUpdate={setProfile} />
+            </>
           )}
 
         </div>
