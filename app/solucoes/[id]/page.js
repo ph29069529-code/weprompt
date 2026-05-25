@@ -394,8 +394,6 @@ function SolutionDetail({ isMobile }) {
   const [loading, setLoading]       = useState(true);
   const [notFound, setNotFound]     = useState(false);
   const [user, setUser]             = useState(null);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [checkoutError, setCheckoutError]     = useState("");
   const [activeTab, setActiveTab]   = useState("descricao");
 
   useEffect(() => {
@@ -443,33 +441,9 @@ function SolutionDetail({ isMobile }) {
     init();
   }, [id]);
 
-  async function handleCheckout() {
-    if (!user) { window.location.href = `/login?redirect=/solucoes/${id}`; return; }
-    setCheckoutLoading(true);
-    setCheckoutError("");
-    try {
-      const res = await fetch("/api/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          solution_id: solution.id,
-          solution_titulo: solution.titulo,
-          solution_preco: solution.preco,
-          user_id: user.id,
-          payment_type: solution.payment_type || "subscription",
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok || !json.url) {
-        setCheckoutError(json.error || "Erro ao iniciar pagamento. Tente novamente.");
-        setCheckoutLoading(false);
-        return;
-      }
-      window.location.href = json.url;
-    } catch {
-      setCheckoutError("Erro ao iniciar pagamento. Tente novamente.");
-      setCheckoutLoading(false);
-    }
+  function handleCheckout() {
+    if (!user) { window.location.href = `/login?redirect=/checkout/${id}`; return; }
+    window.location.href = `/checkout/${id}`;
   }
 
   if (loading) return <Skeleton isMobile={isMobile} />;
@@ -507,8 +481,8 @@ function SolutionDetail({ isMobile }) {
       user={user}
       alreadyOwned={alreadyOwned}
       onCheckout={handleCheckout}
-      checkoutLoading={checkoutLoading}
-      checkoutError={checkoutError}
+      checkoutLoading={false}
+      checkoutError=""
       creator={creator}
       isMobile={isMobile}
     />
