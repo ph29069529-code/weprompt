@@ -35,6 +35,8 @@ export default function NotificationBell() {
   const [unreadCount, setUnreadCount]     = useState(0);
   const [open, setOpen]                   = useState(false);
   const [token, setToken]                 = useState(null);
+  const [dropdownPos, setDropdownPos]     = useState({ top: 0, right: 0 });
+  const bellRef                           = useRef(null);
   const panelRef                          = useRef(null);
   const intervalRef                       = useRef(null);
 
@@ -65,7 +67,10 @@ export default function NotificationBell() {
   useEffect(() => {
     if (!open) return;
     function handle(e) {
-      if (panelRef.current && !panelRef.current.contains(e.target)) setOpen(false);
+      if (
+        panelRef.current && !panelRef.current.contains(e.target) &&
+        bellRef.current && !bellRef.current.contains(e.target)
+      ) setOpen(false);
     }
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
@@ -99,11 +104,23 @@ export default function NotificationBell() {
     setOpen(false);
   }
 
+  function handleToggle() {
+    if (!open && bellRef.current) {
+      const rect = bellRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setOpen(o => !o);
+  }
+
   return (
-    <div style={{ position: "relative", display: "inline-flex" }} ref={panelRef}>
+    <div style={{ display: "inline-flex" }}>
       {/* Bell button */}
       <button
-        onClick={() => setOpen(o => !o)}
+        ref={bellRef}
+        onClick={handleToggle}
         style={{
           background: open ? "#F5F5F7" : "transparent",
           border: "none",
@@ -148,18 +165,22 @@ export default function NotificationBell() {
 
       {/* Dropdown */}
       {open && (
-        <div style={{
-          position: "absolute",
-          top: "calc(100% + 8px)",
-          right: 0,
-          width: 360,
-          background: "#fff",
-          borderRadius: 16,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
-          border: `1px solid ${BORDER}`,
-          zIndex: 1000,
-          overflow: "hidden",
-        }}>
+        <div
+          ref={panelRef}
+          style={{
+            position: "fixed",
+            top: dropdownPos.top,
+            right: dropdownPos.right,
+            width: 360,
+            maxWidth: "calc(100vw - 32px)",
+            background: "#fff",
+            borderRadius: 16,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
+            border: `1px solid ${BORDER}`,
+            zIndex: 9999,
+            overflow: "hidden",
+          }}
+        >
           {/* Header */}
           <div style={{
             display: "flex",
@@ -258,3 +279,4 @@ export default function NotificationBell() {
     </div>
   );
 }
+
