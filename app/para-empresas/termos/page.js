@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import WePromptLogo from "../../components/WePromptLogo";
 import { supabase } from "../../lib/supabase";
+import WePromptLogo from "../../components/WePromptLogo";
 
-const PURPLE = "#6B5CE7";
-const DARK = "#0A0A1A";
-const GRAY = "#6B7280";
-const BORDER = "rgba(0,0,0,0.08)";
-const TEXT = "#374151";
+const NEAR_BLACK = "#1D1D1F";
+const GRAY_TEXT  = "#6E6E73";
+const BLUE       = "#0369A1";
+const BORDER     = "#e5e7eb";
+const BG_GRAY    = "#F5F5F7";
 
 function getDashboardUrl(session) {
   if (!session) return "/login";
-  const role = session.user.user_metadata?.role;
+  const role  = session.user.user_metadata?.role;
   const email = session.user.email;
   if (email === "ph29069529@gmail.com") return "/dashboard/admin";
   if (role === "criador") return "/dashboard/criador";
@@ -20,9 +20,7 @@ function getDashboardUrl(session) {
 }
 
 function useWindowSize() {
-  const [width, setWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
-  );
+  const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
   useEffect(() => {
     function onResize() { setWidth(window.innerWidth); }
     window.addEventListener("resize", onResize);
@@ -31,702 +29,440 @@ function useWindowSize() {
   return width;
 }
 
+const NAV_LINKS = [
+  ["Explorar",       "/solucoes"],
+  ["Preços",         "/precos"],
+  ["Como funciona",  "#como-funciona"],
+  ["Para Criadores", "/criadores"],
+];
+
 const Arrow = () => (
   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ display: "inline-block", flexShrink: 0 }}>
     <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-const NAV_LINKS = [
-  ["Explorar", "/solucoes"],
-  ["Preços", "/precos"],
-  ["Como funciona", "/#como-funciona"],
-  ["Para Criadores", "/criadores"],
-];
+const Check = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+    <circle cx="12" cy="12" r="11" fill="rgba(3,105,161,0.1)" />
+    <path d="M7 12l3 3 7-7" stroke={BLUE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const XMark = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+    <circle cx="12" cy="12" r="11" fill="rgba(220,38,38,0.09)" />
+    <path d="M8 8l8 8M16 8l-8 8" stroke="#DC2626" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
 
 function Section({ number, title, children }) {
   return (
-    <div style={{ marginBottom: 48 }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, marginBottom: 16 }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-          background: "rgba(107,92,231,0.08)", border: "1px solid rgba(107,92,231,0.14)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 13, fontWeight: 800, color: PURPLE,
-        }}>
+    <div style={{ background: "#fff", borderRadius: 20, padding: "32px", marginBottom: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 20 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 10, background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color: BLUE, flexShrink: 0 }}>
           {number}
         </div>
-        <h2 style={{
-          fontSize: 20, fontWeight: 800, color: DARK,
-          margin: 0, paddingTop: 6, letterSpacing: "-0.3px",
-        }}>
-          {title}
-        </h2>
+        <h2 style={{ fontSize: 18, fontWeight: 800, color: NEAR_BLACK, margin: 0, letterSpacing: "-0.3px", paddingTop: 5 }}>{title}</h2>
       </div>
-      <div style={{ paddingLeft: 52 }}>
-        {children}
-      </div>
+      {children}
     </div>
   );
 }
 
 function P({ children, style }) {
+  return <p style={{ fontSize: 15, color: GRAY_TEXT, lineHeight: 1.75, margin: "0 0 12px", ...style }}>{children}</p>;
+}
+
+function Li({ children }) {
   return (
-    <p style={{ fontSize: 15, color: TEXT, lineHeight: 1.8, marginBottom: 14, ...style }}>
-      {children}
-    </p>
+    <li style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
+      <Check />
+      <span style={{ fontSize: 15, color: GRAY_TEXT, lineHeight: 1.7 }}>{children}</span>
+    </li>
   );
 }
 
-function Ul({ items }) {
+function XLi({ children }) {
   return (
-    <ul style={{ margin: "8px 0 14px", paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
-      {items.map((item, i) => (
-        <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <span style={{
-            width: 6, height: 6, borderRadius: "50%",
-            background: PURPLE, flexShrink: 0, marginTop: 8,
-          }} />
-          <span style={{ fontSize: 15, color: TEXT, lineHeight: 1.7 }}>{item}</span>
-        </li>
-      ))}
-    </ul>
+    <li style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
+      <XMark />
+      <span style={{ fontSize: 15, color: GRAY_TEXT, lineHeight: 1.7 }}>{children}</span>
+    </li>
   );
 }
 
-function InfoBox({ color, bg, border, title, children }) {
+function Navbar({ session, isMobile }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const dashboardUrl = getDashboardUrl(session);
+
   return (
-    <div style={{
-      background: bg, border: `1px solid ${border}`,
-      borderRadius: 12, padding: "16px 20px", marginBottom: 16,
-    }}>
-      {title && <div style={{ fontWeight: 700, color, fontSize: 13, marginBottom: 6 }}>{title}</div>}
-      <div style={{ fontSize: 14, color, lineHeight: 1.7 }}>{children}</div>
-    </div>
+    <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(255,255,255,0.88)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
+          <WePromptLogo id="te-header" textColor={NEAR_BLACK} />
+        </a>
+
+        {!isMobile && (
+          <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
+            {NAV_LINKS.map(([label, href]) => (
+              <a key={label} href={href} style={{ fontSize: 14, fontWeight: 500, color: GRAY_TEXT, textDecoration: "none", padding: "6px 14px", borderRadius: 8, transition: "color 0.15s, background 0.15s" }}
+                onMouseEnter={e => { e.currentTarget.style.color = NEAR_BLACK; e.currentTarget.style.background = "rgba(0,0,0,0.05)"; }}
+                onMouseLeave={e => { e.currentTarget.style.color = GRAY_TEXT; e.currentTarget.style.background = "transparent"; }}>
+                {label}
+              </a>
+            ))}
+          </nav>
+        )}
+
+        {!isMobile && (
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {session ? (
+              <a href={dashboardUrl} style={{ borderRadius: 999, padding: "9px 22px", background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none", transition: "background 0.15s" }}
+                onMouseEnter={e => e.currentTarget.style.background = "#0284C7"} onMouseLeave={e => e.currentTarget.style.background = BLUE}>
+                Meu Dashboard <Arrow />
+              </a>
+            ) : (
+              <>
+                <a href="/login" style={{ borderRadius: 999, padding: "8px 20px", fontSize: 14, fontWeight: 500, textDecoration: "none", color: BLUE, border: `2px solid ${BLUE}`, background: "transparent", transition: "background 0.15s" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  Entrar
+                </a>
+                <a href="/cadastro" style={{ borderRadius: 999, padding: "9px 22px", background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none", transition: "background 0.15s" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"} onMouseLeave={e => e.currentTarget.style.background = BLUE}>
+                  Criar conta <Arrow />
+                </a>
+              </>
+            )}
+          </div>
+        )}
+
+        {isMobile && (
+          <button onClick={() => setMenuOpen(o => !o)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: NEAR_BLACK, padding: "4px 8px", display: "flex", alignItems: "center" }}>
+            {menuOpen ? "✕" : "☰"}
+          </button>
+        )}
+      </div>
+
+      {isMobile && menuOpen && (
+        <div style={{ position: "fixed", top: 64, left: 0, right: 0, zIndex: 99, background: "rgba(255,255,255,0.97)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,0,0,0.07)", padding: "12px 24px 24px", display: "flex", flexDirection: "column", gap: 4 }}>
+          {NAV_LINKS.map(([label, href]) => (
+            <a key={label} href={href} onClick={() => setMenuOpen(false)} style={{ padding: "13px 4px", fontSize: 17, fontWeight: 500, color: NEAR_BLACK, textDecoration: "none", borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
+              {label}
+            </a>
+          ))}
+          <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+            {session ? (
+              <a href={dashboardUrl} style={{ flex: 1, textAlign: "center", borderRadius: 999, padding: "13px", background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none" }}>
+                Meu Dashboard <Arrow />
+              </a>
+            ) : (
+              <>
+                <a href="/login" style={{ flex: 1, textAlign: "center", borderRadius: 999, padding: "13px", fontSize: 14, fontWeight: 500, textDecoration: "none", color: BLUE, border: `2px solid ${BLUE}` }}>Entrar</a>
+                <a href="/cadastro" style={{ flex: 1, textAlign: "center", borderRadius: 999, padding: "13px", background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none" }}>Criar conta <Arrow /></a>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}
+
+function Footer({ isMobile }) {
+  return (
+    <footer style={{ background: "#fff", borderTop: `1px solid ${BORDER}`, padding: "44px 32px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: "center", justifyContent: "space-between", gap: 20, textAlign: isMobile ? "center" : "left" }}>
+        <a href="/" style={{ textDecoration: "none" }}>
+          <WePromptLogo id="te-footer" textColor={NEAR_BLACK} />
+        </a>
+        <p style={{ fontSize: 13, color: GRAY_TEXT, margin: 0 }}>© 2026 WePrompt. O 1º marketplace de IA da América Latina.</p>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 24 }}>
+          {[["Termos para Criadores", "/para-criadores/termos"], ["Termos para Empresas", "/para-empresas/termos"], ["Contato", "mailto:contato@weprompt.app.br"]].map(([label, href]) => (
+            <a key={label} href={href} style={{ fontSize: 13, color: GRAY_TEXT, textDecoration: "none", transition: "color 0.15s" }}
+              onMouseEnter={e => e.currentTarget.style.color = NEAR_BLACK} onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}>
+              {label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </footer>
   );
 }
 
 export default function TermosEmpresas() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [session, setSession] = useState(null);
-  const width = useWindowSize();
+  const width    = useWindowSize();
   const isMobile = width < 768;
-  const dashboardUrl = getDashboardUrl(session);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+    supabase.auth.getSession().then(({ data: { session: s } }) => setSession(s));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, s) => setSession(s));
     return () => subscription.unsubscribe();
   }, []);
 
   return (
-    <div style={{
-      minHeight: "100vh", color: DARK,
-      background: "linear-gradient(135deg, #F0F0FF 0%, #E8E8F8 30%, #EEF0FF 60%, #F5F0FF 100%)",
-    }}>
+    <div style={{ minHeight: "100vh", background: BG_GRAY, fontFamily: "'DM Sans', sans-serif", color: NEAR_BLACK }}>
+      <style>{`@media print { header, footer { display:none; } }`}</style>
 
-      {/* ── NAVBAR ── */}
-      <header style={{
-        position: "sticky", top: 0, zIndex: 100,
-        background: "rgba(255,255,255,0.92)",
-        backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "1px solid rgba(0,0,0,0.07)",
-      }}>
-        <div style={{
-          maxWidth: 1200, margin: "0 auto",
-          padding: "0 24px", height: 60,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-        }}>
-          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <WePromptLogo id="termos-e-nav" textColor={DARK} />
-          </a>
+      <Navbar session={session} isMobile={isMobile} />
 
-          {!isMobile && (
-            <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
-              {NAV_LINKS.map(([label, href]) => (
-                <a key={label} href={href} className="nav-link">{label}</a>
-              ))}
-            </nav>
-          )}
+      <main style={{ paddingTop: 64 }}>
 
-          {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {session ? (
-                <a href={dashboardUrl} className="btn-dark" style={{
-                  borderRadius: 999, padding: "9px 20px", fontSize: 14, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none",
-                }}>
-                  Meu Dashboard <Arrow />
-                </a>
-              ) : (
-                <>
-                  <a href="/login" style={{
-                    borderRadius: 999, padding: "8px 18px", fontSize: 14, fontWeight: 500,
-                    textDecoration: "none", color: DARK, border: "1.5px solid rgba(0,0,0,0.14)",
-                    background: "transparent",
-                  }}>Entrar</a>
-                  <a href="/cadastro" className="btn-dark" style={{
-                    borderRadius: 999, padding: "9px 20px", fontSize: 14, fontWeight: 600,
-                    display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none",
-                  }}>
-                    Criar conta <Arrow />
-                  </a>
-                </>
-              )}
+        {/* ── HERO ── */}
+        <div style={{ background: "#fff", borderBottom: `1px solid ${BORDER}` }}>
+          <div style={{ maxWidth: 780, margin: "0 auto", padding: isMobile ? "56px 24px 48px" : "72px 32px 56px" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#e0f2fe", borderRadius: 99, padding: "6px 16px", marginBottom: 24 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: BLUE, letterSpacing: "0.5px", textTransform: "uppercase" }}>Termos para Empresas</span>
             </div>
-          )}
-
-          {isMobile && (
-            <button onClick={() => setMenuOpen(o => !o)} aria-label="Menu" style={{
-              background: "none", border: "none", cursor: "pointer",
-              fontSize: 22, color: DARK, padding: "4px 8px", display: "flex", alignItems: "center",
-            }}>
-              {menuOpen ? "✕" : "☰"}
-            </button>
-          )}
-        </div>
-
-        {isMobile && menuOpen && (
-          <div style={{
-            position: "fixed", top: 60, left: 0, right: 0, zIndex: 99,
-            background: "rgba(255,255,255,0.97)",
-            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-            borderBottom: "1px solid rgba(0,0,0,0.07)",
-            padding: "12px 24px 20px",
-            display: "flex", flexDirection: "column", gap: 4,
-          }}>
-            {NAV_LINKS.map(([label, href]) => (
-              <a key={label} href={href} onClick={() => setMenuOpen(false)} style={{
-                padding: "12px 4px", fontSize: 16, fontWeight: 500,
-                color: DARK, textDecoration: "none", borderBottom: "1px solid rgba(0,0,0,0.05)",
-              }}>{label}</a>
-            ))}
-            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-              {session ? (
-                <a href={dashboardUrl} className="btn-dark" style={{
-                  flex: 1, textAlign: "center", borderRadius: 999, padding: "11px",
-                  fontSize: 14, fontWeight: 600,
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                  textDecoration: "none",
-                }}>
-                  Meu Dashboard <Arrow />
-                </a>
-              ) : (
-                <>
-                  <a href="/login" style={{
-                    flex: 1, textAlign: "center", borderRadius: 999, padding: "11px",
-                    fontSize: 14, fontWeight: 500, textDecoration: "none", color: DARK,
-                    border: "1.5px solid rgba(0,0,0,0.14)",
-                  }}>Entrar</a>
-                  <a href="/cadastro" className="btn-dark" style={{
-                    flex: 1, textAlign: "center", borderRadius: 999, padding: "11px",
-                    fontSize: 14, fontWeight: 600,
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                    textDecoration: "none",
-                  }}>
-                    Criar conta <Arrow />
-                  </a>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </header>
-
-      <main style={{ padding: isMobile ? "40px 16px 80px" : "64px 24px 96px" }}>
-        <div style={{ maxWidth: 780, margin: "0 auto" }}>
-
-          {/* Page header */}
-          <div style={{ marginBottom: 48 }}>
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              background: "rgba(107,92,231,0.08)", border: "1px solid rgba(107,92,231,0.14)",
-              color: PURPLE, fontSize: 12, fontWeight: 700,
-              padding: "5px 14px", borderRadius: 999, marginBottom: 20, letterSpacing: "0.05em",
-            }}>
-              🏢 Para Empresas
-            </div>
-            <h1 style={{
-              fontSize: isMobile ? 28 : 40, fontWeight: 800, color: DARK,
-              letterSpacing: "-1px", marginBottom: 12, lineHeight: 1.15,
-            }}>
-              Termos e Condições para Empresas
+            <h1 style={{ fontSize: isMobile ? 32 : 44, fontWeight: 900, color: NEAR_BLACK, letterSpacing: "-1px", margin: "0 0 14px", lineHeight: 1.1 }}>
+              Termos de Uso —{" "}
+              <span style={{ color: BLUE }}>Empresas</span>
             </h1>
-            <p style={{ fontSize: 15, color: GRAY, lineHeight: 1.7, marginBottom: 20 }}>
-              Estes termos regem a relação entre a WePrompt e as empresas que utilizam o marketplace
-              para descobrir, comprar e assinar soluções de IA. Leia com atenção antes de criar sua conta.
+            <p style={{ fontSize: 16, color: GRAY_TEXT, margin: "0 0 28px", lineHeight: 1.6 }}>
+              Última atualização: <strong style={{ color: NEAR_BLACK }}>maio de 2026</strong>
             </p>
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              background: "#fff", border: `1px solid ${BORDER}`,
-              borderRadius: 8, padding: "8px 14px", fontSize: 12, color: GRAY,
-            }}>
-              <span>Última atualização: maio de 2026</span>
-              <span style={{ color: BORDER }}>·</span>
-              <a href="/para-criadores/termos" style={{ color: PURPLE, fontWeight: 600, textDecoration: "none" }}>
-                Ver termos para Criadores →
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <button onClick={() => window.print()} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 22px", borderRadius: 10, border: `2px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "border-color 0.15s, color 0.15s" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = BLUE; e.currentTarget.style.color = BLUE; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = GRAY_TEXT; }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" /><rect x="6" y="14" width="12" height="8" />
+                </svg>
+                Imprimir / Baixar PDF
+              </button>
+              <a href="/para-criadores/termos" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 22px", borderRadius: 10, border: `2px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, textDecoration: "none", transition: "border-color 0.15s, color 0.15s" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = BLUE; e.currentTarget.style.color = BLUE; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = GRAY_TEXT; }}>
+                Ver termos para Criadores <Arrow />
               </a>
             </div>
           </div>
+        </div>
 
-          {/* Content card */}
-          <div style={{
-            background: "#fff", border: `1px solid ${BORDER}`,
-            borderRadius: 20, padding: isMobile ? "32px 24px" : "56px 52px",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.04)",
-          }}>
+        {/* ── SECTIONS ── */}
+        <div style={{ maxWidth: 780, margin: "0 auto", padding: isMobile ? "32px 16px 64px" : "40px 32px 80px" }}>
 
-            <Section number="1" title="O que é a WePrompt">
-              <P>
-                A <strong>WePrompt</strong> é o primeiro marketplace de soluções de inteligência artificial da América Latina,
-                projetado para o mercado brasileiro. Conectamos empresas que precisam adotar IA em seus processos com
-                criadores especializados que desenvolvem agentes, automações, chatbots, prompts e integrações prontos para uso.
-              </P>
-              <P>
-                A WePrompt atua como intermediária: hospedamos as soluções dos criadores, facilitamos a descoberta por
-                parte das empresas, processamos os pagamentos com segurança e garantimos a qualidade do catálogo por
-                meio de curadoria editorial e suporte em português.
-              </P>
-              <P>
-                Ao criar uma conta como empresa na WePrompt, você concorda em seguir estes termos integralmente.
-              </P>
-            </Section>
+          <Section number="1" title="O que é a WePrompt">
+            <P>A <strong style={{ color: NEAR_BLACK }}>WePrompt</strong> é o primeiro marketplace de soluções de Inteligência Artificial da América Latina. Nossa plataforma conecta empresas que buscam soluções de IA prontas para implementar com criadores especializados em agentes, automações, prompts, chatbots e muito mais.</P>
+            <P style={{ margin: 0 }}>Todo o suporte é em português, os pagamentos são em reais e as soluções são desenvolvidas por criadores brasileiros focados na realidade do mercado nacional.</P>
+          </Section>
 
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="2" title="Como funciona para Empresas">
-              <P>A experiência da sua empresa na WePrompt segue estas etapas:</P>
-              <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 16 }}>
-                {[
-                  { step: "1", title: "Cadastro", desc: "Crie sua conta gratuita selecionando o perfil \"Empresa\". Acesso imediato ao catálogo completo após o cadastro." },
-                  { step: "2", title: "Exploração do catálogo", desc: "Navegue pelas categorias, use os filtros de busca, leia as descrições detalhadas e avaliações verificadas de cada solução." },
-                  { step: "3", title: "Compra ou assinatura", desc: "Escolha entre compra única ou assinatura mensal, conforme o modelo da solução. O pagamento é processado de forma segura." },
-                  { step: "4", title: "Acesso à solução", desc: "Após a confirmação do pagamento, você recebe o material de entrega (arquivos, links de acesso ou instruções) diretamente na plataforma." },
-                  { step: "5", title: "Suporte e uso", desc: "Utilize a solução com suporte do criador e da WePrompt conforme as condições do seu plano. Em caso de problemas, abra um chamado no suporte." },
-                ].map(({ step, title, desc }) => (
-                  <div key={step} style={{
-                    display: "flex", gap: 14, alignItems: "flex-start",
-                    background: "rgba(107,92,231,0.03)", border: "1px solid rgba(107,92,231,0.08)",
-                    borderRadius: 12, padding: "16px 18px",
-                  }}>
-                    <div style={{
-                      width: 28, height: 28, borderRadius: "50%",
-                      background: PURPLE, color: "#fff",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 12, fontWeight: 800, flexShrink: 0,
-                    }}>{step}</div>
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: DARK, marginBottom: 4 }}>{title}</div>
-                      <div style={{ fontSize: 14, color: TEXT, lineHeight: 1.65 }}>{desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="3" title="Planos disponíveis para Empresas">
-              <P>A WePrompt oferece três planos para empresas compradoras:</P>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
-                {[
-                  {
-                    name: "Free — Gratuito",
-                    color: GRAY,
-                    bg: "#fafafa",
-                    border: BORDER,
-                    items: [
-                      "Acesso ao catálogo completo de soluções",
-                      "Compra e assinatura de soluções pelo preço cheio",
-                      "Suporte via e-mail padrão",
-                      "Filtros e busca avançada",
-                      "Avaliações verificadas de compradores anteriores",
-                    ],
-                  },
-                  {
-                    name: "Business — R$ 197/mês (ou R$ 157/mês no anual = R$ 1.884/ano)",
-                    color: PURPLE,
-                    bg: "rgba(107,92,231,0.04)",
-                    border: "rgba(107,92,231,0.15)",
-                    items: [
-                      "10% de desconto em todas as soluções do marketplace",
-                      "Suporte prioritário em português (resposta em até 24h úteis)",
-                      "Curadoria personalizada mensal: receba recomendações de soluções alinhadas ao seu setor",
-                      "Até 3 usuários com acesso à conta da empresa",
-                      "Onboarding guiado pela equipe WePrompt",
-                      "Acesso antecipado a soluções em pré-lançamento",
-                    ],
-                  },
-                  {
-                    name: "Enterprise — R$ 497/mês (ou R$ 397/mês no anual = R$ 4.764/ano)",
-                    color: DARK,
-                    bg: "rgba(10,10,26,0.03)",
-                    border: "rgba(0,0,0,0.1)",
-                    items: [
-                      "20% de desconto em todas as soluções do marketplace",
-                      "Suporte dedicado via WhatsApp com gerente de conta WePrompt",
-                      "Curadoria personalizada semanal",
-                      "Usuários ilimitados na conta da empresa",
-                      "Onboarding completo da equipe (sessões ao vivo)",
-                      "Relatório mensal de ROI com análise das soluções contratadas",
-                    ],
-                  },
-                ].map(({ name, color, bg, border, items }) => (
-                  <div key={name} style={{
-                    background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: "18px 20px",
-                  }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color, marginBottom: 10 }}>{name}</div>
-                    <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
-                      {items.map((item, i) => (
-                        <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: color, flexShrink: 0, marginTop: 9 }} />
-                          <span style={{ fontSize: 13, color: TEXT, lineHeight: 1.6 }}>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-              <P style={{ fontSize: 13 }}>
-                Para mais detalhes e para comparar planos lado a lado, acesse nossa{" "}
-                <a href="/precos" style={{ color: PURPLE, fontWeight: 600, textDecoration: "none" }}>página de preços</a>.
-              </P>
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="4" title="Como funciona a curadoria da WePrompt">
-              <P>
-                Toda solução disponível no marketplace WePrompt passa por um processo de curadoria antes de ser publicada.
-                Isso significa que você, como empresa compradora, tem a garantia de que o que está vendo no catálogo foi
-                avaliado pela nossa equipe.
-              </P>
-              <P>O processo de curadoria inclui:</P>
-              <Ul items={[
-                "Verificação de funcionamento: testamos ou verificamos que a solução opera conforme descrita.",
-                "Validação da descrição: confirmamos que as informações são precisas, claras e não enganosas.",
-                "Checagem dos materiais de entrega: garantimos que arquivos, links e instruções estejam completos e funcionais.",
-                "Avaliação de adequação ao marketplace: verificamos se a solução atende às categorias e padrões da plataforma.",
-                "Revisão periódica: soluções aprovadas podem ser revisadas novamente em caso de reclamações ou atualizações significativas.",
-              ]} />
-              <InfoBox
-                color="#B45309"
-                bg="rgba(245,158,11,0.06)"
-                border="rgba(245,158,11,0.2)"
-                title="Importante"
-              >
-                A curadoria da WePrompt reduz significativamente os riscos de adquirir soluções que não funcionam,
-                mas não elimina completamente a possibilidade de problemas. Por isso, temos uma política de reembolso
-                clara para casos em que a solução não funcione conforme descrito.
-              </InfoBox>
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="5" title="Política de reembolso">
-              <P>
-                A WePrompt oferece uma política de reembolso justa para proteger as empresas compradoras.
-                O reembolso pode ser solicitado nas seguintes condições:
-              </P>
-              <div style={{
-                background: "rgba(22,163,74,0.04)", border: "1px solid rgba(22,163,74,0.15)",
-                borderRadius: 12, padding: "20px 20px", marginBottom: 16,
-              }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#15803D", marginBottom: 10 }}>
-                  Condições para reembolso
+          <Section number="2" title="Como funciona para empresas">
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
+              {[
+                { step: "01", title: "Navegar no catálogo",     desc: "Explore centenas de soluções de IA filtradas por categoria, preço e avaliação." },
+                { step: "02", title: "Adquirir a solução",      desc: "Assine ou compre a solução escolhida. Pagamento seguro em reais via cartão ou PIX." },
+                { step: "03", title: "Acessar e usar",          desc: "Receba o material de entrega pelo dashboard e implemente a solução no seu negócio." },
+                { step: "04", title: "Suporte em português",    desc: "Tire dúvidas com o criador ou com a equipe WePrompt, sempre em português." },
+              ].map(({ step, title, desc }) => (
+                <div key={step} style={{ background: BG_GRAY, borderRadius: 14, padding: "20px" }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: BLUE, marginBottom: 6, letterSpacing: "0.5px" }}>ETAPA {step}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6 }}>{title}</div>
+                  <div style={{ fontSize: 13, color: GRAY_TEXT, lineHeight: 1.6 }}>{desc}</div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {[
-                    "A solicitação é feita em até 7 dias corridos após a compra ou primeiro pagamento da assinatura.",
-                    "A solução não funciona conforme descrito na listagem do marketplace.",
-                    "O material de entrega está incompleto, com links quebrados ou inacessível.",
-                    "O criador não responde às tentativas de contato da WePrompt em até 5 dias úteis após a abertura de disputa.",
-                  ].map((item, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#15803D", flexShrink: 0, marginTop: 8 }} />
-                      <span style={{ fontSize: 14, color: TEXT, lineHeight: 1.65 }}>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div style={{
-                background: "rgba(220,38,38,0.04)", border: "1px solid rgba(220,38,38,0.12)",
-                borderRadius: 12, padding: "20px 20px", marginBottom: 16,
-              }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#B91C1C", marginBottom: 10 }}>
-                  Situações que não geram reembolso
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {[
-                    "Desistência ou mudança de plano após uso da solução.",
-                    "A solução funciona conforme descrito, mas não atendeu às expectativas subjetivas do comprador.",
-                    "Solicitação feita após o prazo de 7 dias.",
-                    "Problemas causados por configuração incorreta por parte da empresa compradora.",
-                  ].map((item, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#B91C1C", flexShrink: 0, marginTop: 8 }} />
-                      <span style={{ fontSize: 14, color: TEXT, lineHeight: 1.65 }}>{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <P>
-                Para solicitar reembolso, abra um chamado em{" "}
-                <a href="mailto:contato@weprompt.app.br" style={{ color: PURPLE, fontWeight: 600, textDecoration: "none" }}>
-                  contato@weprompt.app.br
-                </a>{" "}
-                descrevendo o problema e incluindo evidências. O reembolso é processado em até 10 dias úteis após aprovação.
-              </P>
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="6" title="Suporte em português">
-              <P>
-                Um dos diferenciais da WePrompt é o suporte inteiramente em português do Brasil.
-                Veja o que está incluído em cada plano:
-              </P>
-              <div style={{
-                background: "#fafafa", border: `1px solid ${BORDER}`, borderRadius: 12, overflow: "hidden", marginBottom: 16,
-              }}>
-                {[
-                  { plano: "Free", tipo: "E-mail", prazo: "Até 3 dias úteis", canal: "contato@weprompt.app.br" },
-                  { plano: "Business", tipo: "E-mail prioritário", prazo: "Até 24 horas úteis", canal: "Fila prioritária" },
-                  { plano: "Enterprise", tipo: "WhatsApp dedicado", prazo: "Até 4 horas úteis", canal: "Gerente de conta" },
-                ].map((row, i) => (
-                  <div key={row.plano} style={{
-                    padding: "16px 20px", borderTop: i > 0 ? `1px solid ${BORDER}` : "none",
-                    display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center",
-                  }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: DARK, width: 90, flexShrink: 0 }}>{row.plano}</div>
-                    <div style={{ fontSize: 13, color: TEXT, flex: "1 1 120px" }}>{row.tipo}</div>
-                    <div style={{ fontSize: 13, color: PURPLE, fontWeight: 600, flex: "1 1 120px" }}>{row.prazo}</div>
-                    <div style={{ fontSize: 12, color: GRAY, flex: "1 1 120px" }}>{row.canal}</div>
-                  </div>
-                ))}
-              </div>
-              <P>
-                O suporte cobre dúvidas sobre o uso da plataforma, problemas com soluções adquiridas,
-                processos de reembolso e gerenciamento da conta. Questões específicas sobre o funcionamento
-                interno de uma solução devem ser direcionadas ao criador da solução.
-              </P>
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="7" title="Responsabilidades da WePrompt">
-              <P>A WePrompt se compromete a:</P>
-              <Ul items={[
-                "Manter o marketplace disponível e funcional, com meta de uptime de 99% ao mês.",
-                "Garantir que todas as soluções no catálogo passaram pelo processo de curadoria.",
-                "Processar pagamentos com segurança e emitir comprovantes de transação.",
-                "Aplicar a política de reembolso de forma justa e dentro dos prazos estabelecidos.",
-                "Mediar disputas entre empresas e criadores de forma neutra.",
-                "Proteger os dados das empresas conforme a LGPD e nossa Política de Privacidade.",
-                "Comunicar antecipadamente qualquer alteração significativa nos termos ou nos preços dos planos.",
-              ]} />
-              <P>
-                A WePrompt não se responsabiliza por perdas de negócios, perda de dados ou danos indiretos
-                decorrentes do uso ou da incapacidade de uso das soluções adquiridas no marketplace.
-                Nossa responsabilidade máxima em qualquer caso fica limitada ao valor total pago pelo
-                comprador nos últimos 12 meses.
-              </P>
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="8" title="Responsabilidades da Empresa compradora">
-              <P>Como empresa compradora na WePrompt, você é responsável por:</P>
-              <Ul items={[
-                "Fornecer informações verdadeiras e atualizadas no cadastro da sua empresa.",
-                "Manter os dados de pagamento válidos e atualizados para evitar interrupções no serviço.",
-                "Usar as soluções adquiridas conforme os termos de uso do criador e da WePrompt.",
-                "Não compartilhar credenciais de acesso às soluções com pessoas não autorizadas ou fora da sua organização.",
-                "Reportar imediatamente à WePrompt qualquer suspeita de fraude, uso indevido ou problema técnico.",
-                "Respeitar os direitos de propriedade intelectual dos criadores cujas soluções você adquiriu.",
-              ]} />
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="9" title="Uso aceitável das soluções compradas">
-              <P>
-                As soluções adquiridas na WePrompt são licenciadas para uso pela empresa compradora.
-                Salvo autorização expressa do criador, é proibido:
-              </P>
-              <Ul items={[
-                "Revender ou redistribuir a solução para terceiros fora da sua organização.",
-                "Criar produtos derivados para comercialização com base nas soluções adquiridas, sem autorização do criador.",
-                "Fazer engenharia reversa, descompilar ou tentar extrair o código-fonte de soluções fechadas.",
-                "Usar as soluções para fins ilegais, discriminatórios ou que violem a LGPD e outras leis aplicáveis.",
-                "Usar as soluções para treinar modelos de IA próprios sem autorização explícita do criador.",
-              ]} />
-              <P>
-                O descumprimento destas regras pode resultar no cancelamento do acesso à solução e da conta
-                da empresa na WePrompt, sem direito a reembolso.
-              </P>
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="10" title="Disputas com Criadores">
-              <P>
-                Se você tiver um problema com uma solução adquirida, siga este processo:
-              </P>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
-                {[
-                  { n: "1", t: "Contate o criador diretamente", d: "Muitos problemas são resolvidos diretamente com o criador. Use o canal de suporte da solução ou o perfil do criador na plataforma." },
-                  { n: "2", t: "Abra uma disputa formal", d: "Se não obtiver resposta em 3 dias úteis, abra uma disputa pelo e-mail contato@weprompt.app.br. Inclua evidências do problema (prints, descrição detalhada, data da compra)." },
-                  { n: "3", t: "Mediação pela WePrompt", d: "Nossa equipe notifica o criador e concede 5 dias úteis para solução. Acompanhamos o processo de perto." },
-                  { n: "4", t: "Resolução", d: "Se o problema for resolvido, a disputa é encerrada. Se não, a WePrompt avalia o reembolso e pode aplicar sanções ao criador." },
-                ].map(({ n, t, d }) => (
-                  <div key={n} style={{
-                    display: "flex", gap: 14, alignItems: "flex-start",
-                    background: "#fafafa", border: `1px solid ${BORDER}`,
-                    borderRadius: 10, padding: "14px 16px",
-                  }}>
-                    <div style={{
-                      width: 26, height: 26, borderRadius: "50%",
-                      background: "rgba(107,92,231,0.1)", color: PURPLE,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 12, fontWeight: 800, flexShrink: 0,
-                    }}>{n}</div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: DARK, marginBottom: 4 }}>{t}</div>
-                      <div style={{ fontSize: 13, color: TEXT, lineHeight: 1.65 }}>{d}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <P>
-                Decisões da WePrompt em disputas são finais dentro da plataforma, mas não excluem o direito
-                de buscar resolução por vias legais externas.
-              </P>
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="11" title="Privacidade e LGPD">
-              <P>
-                A WePrompt está comprometida com a proteção dos seus dados pessoais e da sua empresa,
-                em conformidade com a <strong>Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018)</strong>.
-              </P>
-              <P>Dados coletados e suas finalidades:</P>
-              <Ul items={[
-                "Dados de cadastro (nome, e-mail, CNPJ): identificação, autenticação e emissão de documentos fiscais.",
-                "Dados de pagamento: processados por gateway de pagamento certificado PCI-DSS. A WePrompt não armazena dados de cartão.",
-                "Dados de uso da plataforma (soluções vistas, compradas, tempo de sessão): melhoria da experiência e personalização de recomendações.",
-                "Comunicações por e-mail: confirmações de compra, suporte e comunicados importantes sobre a plataforma.",
-              ]} />
-              <P>
-                Você tem o direito de acessar, corrigir, exportar ou solicitar a exclusão dos seus dados
-                a qualquer momento. Para exercer esses direitos, entre em contato em{" "}
-                <a href="mailto:contato@weprompt.app.br" style={{ color: PURPLE, fontWeight: 600, textDecoration: "none" }}>
-                  contato@weprompt.app.br
-                </a>.
-              </P>
-              <P>
-                A WePrompt não vende dados de empresas ou usuários a terceiros. Dados podem ser
-                compartilhados apenas com criadores (para fins de entrega da solução) e com
-                fornecedores de serviços essenciais (pagamento, hospedagem) sob contrato de
-                confidencialidade e proteção de dados.
-              </P>
-              <InfoBox
-                color={PURPLE}
-                bg="rgba(107,92,231,0.05)"
-                border="rgba(107,92,231,0.12)"
-                title="Retenção de dados"
-              >
-                Dados de conta são mantidos enquanto a conta estiver ativa. Após o encerramento da conta,
-                dados são removidos em até 90 dias, exceto quando obrigações legais ou fiscais exigirem
-                retenção por período maior.
-              </InfoBox>
-            </Section>
-
-            <div style={{ height: 1, background: BORDER, marginBottom: 48 }} />
-
-            <Section number="12" title="Alterações nestes Termos">
-              <P>
-                A WePrompt pode atualizar estes Termos a qualquer momento. Em caso de alterações significativas
-                que afetem seus direitos ou obrigações como empresa compradora, você será notificado por e-mail
-                com pelo menos <strong>30 dias de antecedência</strong>.
-              </P>
-              <P>
-                Ajustes menores (esclarecimentos, correções gramaticais) podem ser feitos sem notificação prévia.
-                A data de "Última atualização" no topo desta página sempre refletirá a versão em vigor.
-              </P>
-              <P>
-                O uso continuado da plataforma após a data de vigência das novas condições constitui
-                aceitação das mesmas. Se você discordar das alterações, pode encerrar sua conta antes
-                da data de vigência.
-              </P>
-              <P>
-                Em caso de dúvidas sobre qualquer alteração, entre em contato antes da data de vigência
-                pelo e-mail{" "}
-                <a href="mailto:contato@weprompt.app.br" style={{ color: PURPLE, fontWeight: 600, textDecoration: "none" }}>
-                  contato@weprompt.app.br
-                </a>.
-              </P>
-            </Section>
-
-            {/* Contact box */}
-            <div style={{
-              background: "rgba(107,92,231,0.05)", border: "1px solid rgba(107,92,231,0.12)",
-              borderRadius: 16, padding: "28px 28px", textAlign: "center",
-            }}>
-              <div style={{ fontSize: 16, fontWeight: 700, color: DARK, marginBottom: 8 }}>
-                Dúvidas sobre estes termos?
-              </div>
-              <p style={{ fontSize: 14, color: GRAY, lineHeight: 1.7, marginBottom: 20 }}>
-                Nossa equipe está pronta para esclarecer qualquer questão sobre planos,
-                reembolsos, privacidade ou uso das soluções.
-              </p>
-              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                <a href="mailto:contato@weprompt.app.br" style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  borderRadius: 999, padding: "11px 24px",
-                  background: PURPLE, color: "#fff",
-                  fontSize: 14, fontWeight: 600, textDecoration: "none",
-                }}>
-                  Falar com a equipe <Arrow />
-                </a>
-                <a href="/para-criadores/termos" style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  borderRadius: 999, padding: "11px 24px",
-                  border: `1.5px solid ${BORDER}`, color: DARK,
-                  fontSize: 14, fontWeight: 600, textDecoration: "none",
-                  background: "transparent",
-                }}>
-                  Ver termos para Criadores
-                </a>
-              </div>
+              ))}
             </div>
+          </Section>
 
+          <Section number="3" title="Planos disponíveis">
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 8 }}>
+              {[
+                {
+                  plan: "Free",
+                  price: "R$ 0",
+                  color: GRAY_TEXT,
+                  bg: BG_GRAY,
+                  items: ["Acesso ao catálogo completo", "Compra de soluções a preço cheio", "Suporte por email em até 48h"],
+                },
+                {
+                  plan: "Business",
+                  price: "R$ 197/mês",
+                  sub: "ou R$ 157/mês no plano anual",
+                  color: BLUE,
+                  bg: "#f0f9ff",
+                  items: ["10% de desconto em todas as soluções", "Suporte prioritário em até 4h úteis", "Curadoria mensal de novidades", "Até 3 usuários na conta"],
+                },
+                {
+                  plan: "Enterprise",
+                  price: "R$ 497/mês",
+                  sub: "ou R$ 397/mês no plano anual",
+                  color: "#7C3AED",
+                  bg: "rgba(139,92,246,0.04)",
+                  items: ["20% de desconto em todas as soluções", "WhatsApp dedicado — resposta em até 1h útil", "Curadoria semanal personalizada", "Usuários ilimitados", "Onboarding dedicado", "Relatório de ROI mensal"],
+                },
+              ].map(r => (
+                <div key={r.plan} style={{ border: `1.5px solid ${BORDER}`, borderRadius: 16, padding: "24px", background: r.bg }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
+                    <div>
+                      <div style={{ fontSize: 18, fontWeight: 800, color: r.color }}>{r.plan}</div>
+                      {r.sub && <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 2 }}>{r.sub}</div>}
+                    </div>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: r.color }}>{r.price}</div>
+                  </div>
+                  <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                    {r.items.map(item => (
+                      <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+                          <circle cx="12" cy="12" r="11" fill={r.color + "18"} />
+                          <path d="M7 12l3 3 7-7" stroke={r.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <span style={{ fontSize: 14, color: GRAY_TEXT, lineHeight: 1.6 }}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Section>
+
+          <Section number="4" title="Curadoria e qualidade">
+            <P>Toda solução publicada no marketplace passa por um processo rigoroso de aprovação antes de ficar disponível para as empresas:</P>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              <Li>Verificação de funcionalidade — testamos que a solução faz o que promete.</Li>
+              <Li>Análise de descrição — confirmamos que o conteúdo é claro, preciso e honesto.</Li>
+              <Li>Avaliação de qualidade — garantimos que o material de entrega está completo.</Li>
+              <Li>Monitoramento contínuo — soluções com avaliações ruins são revisadas ou removidas.</Li>
+            </ul>
+            <div style={{ background: "#e0f2fe", borderRadius: 10, padding: "14px 18px", marginTop: 12, fontSize: 13, color: BLUE, fontWeight: 600 }}>
+              Nenhuma solução vai ao ar sem passar pela curadoria da equipe WePrompt.
+            </div>
+          </Section>
+
+          <Section number="5" title="Política de reembolso">
+            <P>Se uma solução adquirida não funcionar conforme descrito, a empresa pode solicitar reembolso:</P>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              <Li><strong style={{ color: NEAR_BLACK }}>Prazo:</strong> 7 dias corridos após a compra.</Li>
+              <Li><strong style={{ color: NEAR_BLACK }}>Como solicitar:</strong> Abra um chamado pelo dashboard, na seção Histórico de Compras.</Li>
+              <Li><strong style={{ color: NEAR_BLACK }}>Análise:</strong> A WePrompt analisa o caso em até 5 dias úteis.</Li>
+              <Li><strong style={{ color: NEAR_BLACK }}>Resultado:</strong> Se aprovado, o reembolso é processado via estorno ou crédito na plataforma.</Li>
+            </ul>
+            <div style={{ background: "rgba(217,119,6,0.07)", border: "1px solid rgba(217,119,6,0.2)", borderRadius: 10, padding: "12px 16px", marginTop: 12 }}>
+              <span style={{ fontSize: 13, color: "#B45309", fontWeight: 600 }}>
+                Não cobre casos de "não gostei" sem justificativa técnica demonstrável.
+              </span>
+            </div>
+          </Section>
+
+          <Section number="6" title="Suporte em português">
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {[
+                { plan: "Free",       sla: "Suporte por email — resposta em até 48 horas",     color: GRAY_TEXT },
+                { plan: "Business",   sla: "Suporte prioritário — resposta em até 4 horas úteis", color: BLUE },
+                { plan: "Enterprise", sla: "WhatsApp dedicado — resposta em até 1 hora útil",   color: "#7C3AED" },
+              ].map(r => (
+                <div key={r.plan} style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", background: BG_GRAY, borderRadius: 12, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: r.color, minWidth: 80 }}>{r.plan}</span>
+                  <span style={{ fontSize: 14, color: GRAY_TEXT, flex: 1 }}>{r.sla}</span>
+                </div>
+              ))}
+            </div>
+            <P style={{ margin: "12px 0 0", fontSize: 13 }}>
+              Suporte disponível em dias úteis, das 9h às 18h (horário de Brasília).
+            </P>
+          </Section>
+
+          <Section number="7" title="Uso aceitável">
+            <P>As soluções adquiridas na WePrompt são para uso interno da empresa compradora.</P>
+            <P><strong style={{ color: NEAR_BLACK }}>É permitido:</strong></P>
+            <ul style={{ listStyle: "none", margin: "0 0 16px", padding: 0 }}>
+              <Li>Usar a solução nos processos internos da empresa.</Li>
+              <Li>Compartilhar o acesso com colaboradores dentro do limite do plano.</Li>
+              <Li>Integrar a solução aos sistemas internos da empresa.</Li>
+            </ul>
+            <P><strong style={{ color: NEAR_BLACK }}>Não é permitido:</strong></P>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              <XLi>Revender, redistribuir ou sublicenciar a solução a terceiros.</XLi>
+              <XLi>Compartilhar acessos além do número de usuários do plano contratado.</XLi>
+              <XLi>Fazer engenharia reversa ou copiar a solução para uso fora da plataforma.</XLi>
+            </ul>
+          </Section>
+
+          <Section number="8" title="Responsabilidades da WePrompt">
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              <Li>Garantir a disponibilidade da plataforma com alta confiabilidade.</Li>
+              <Li>Realizar curadoria rigorosa de qualidade em todas as soluções.</Li>
+              <Li>Processar pagamentos com segurança via gateways homologados.</Li>
+              <Li>Mediar disputas entre empresas e criadores de forma imparcial.</Li>
+              <Li>Oferecer suporte em português dentro dos SLAs do plano contratado.</Li>
+            </ul>
+          </Section>
+
+          <Section number="9" title="Responsabilidades da empresa">
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              <Li>Usar as soluções conforme os termos de uso do criador e da WePrompt.</Li>
+              <Li>Não compartilhar acessos além do limite de usuários do plano.</Li>
+              <Li>Fornecer informações precisas e verdadeiras no cadastro.</Li>
+              <Li>Notificar a WePrompt caso identifique problemas ou violações nas soluções adquiridas.</Li>
+            </ul>
+          </Section>
+
+          <Section number="10" title="Disputas com criadores">
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 8 }}>
+              {[
+                { num: "1", text: "Empresa abre reclamação pelo dashboard, na seção Histórico de Compras." },
+                { num: "2", text: "A WePrompt notifica o criador sobre a reclamação aberta." },
+                { num: "3", text: "O criador tem prazo de 72 horas para responder e apresentar sua versão." },
+                { num: "4", text: "A WePrompt analisa os dois lados e decide sobre reembolso ou crédito." },
+              ].map(({ num, text }) => (
+                <div key={num} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                  <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: BLUE, flexShrink: 0 }}>{num}</div>
+                  <span style={{ fontSize: 15, color: GRAY_TEXT, lineHeight: 1.7, paddingTop: 3 }}>{text}</span>
+                </div>
+              ))}
+            </div>
+          </Section>
+
+          <Section number="11" title="Privacidade e LGPD">
+            <P>A WePrompt está em plena conformidade com a <strong style={{ color: NEAR_BLACK }}>Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018)</strong>.</P>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              <Li>Os dados da empresa são utilizados exclusivamente para operar a plataforma.</Li>
+              <Li>Não vendemos, alugamos ou compartilhamos dados com terceiros para fins de marketing.</Li>
+              <Li>Você pode solicitar a exclusão dos seus dados a qualquer momento pelo suporte.</Li>
+              <Li>Dados são armazenados em servidores seguros com criptografia em repouso e em trânsito.</Li>
+            </ul>
+            <P style={{ margin: "12px 0 0" }}>
+              Para detalhes completos, consulte nossa{" "}
+              <a href="/privacidade" style={{ color: BLUE, textDecoration: "underline" }}>Política de Privacidade</a>.
+            </P>
+          </Section>
+
+          <Section number="12" title="Cancelamento">
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              <Li>O plano pode ser cancelado a qualquer momento, sem multa ou fidelidade.</Li>
+              <Li>O acesso é mantido até o fim do período pago (mensal ou anual).</Li>
+              <Li>Após o cancelamento, os dados da conta são mantidos por <strong style={{ color: NEAR_BLACK }}>90 dias</strong>.</Li>
+              <Li>Após os 90 dias, os dados são excluídos permanentemente, salvo obrigação legal.</Li>
+            </ul>
+          </Section>
+
+          <Section number="13" title="Alterações nos termos">
+            <P>A WePrompt pode atualizar estes Termos de Uso a qualquer momento. Quando houver alterações relevantes, enviaremos um aviso prévio de <strong style={{ color: NEAR_BLACK }}>15 dias por email</strong> para todas as empresas cadastradas.</P>
+            <P style={{ margin: 0 }}>O uso continuado da plataforma após o prazo de aviso implica aceitação dos novos termos. Caso não concorde, a empresa pode cancelar sua conta sem penalidades.</P>
+          </Section>
+
+          {/* CTA */}
+          <div style={{ background: `linear-gradient(135deg, ${BLUE} 0%, #0284C7 100%)`, borderRadius: 20, padding: isMobile ? "32px 24px" : "40px 48px", textAlign: "center", marginTop: 8 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: "#fff", marginBottom: 8, letterSpacing: "-0.3px" }}>
+              Dúvidas sobre os termos?
+            </div>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.8)", margin: "0 0 24px" }}>
+              Nossa equipe responde em português em até 48 horas.
+            </p>
+            <a href="mailto:contato@weprompt.app.br" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#fff", color: BLUE, padding: "13px 28px", borderRadius: 12, fontSize: 15, fontWeight: 700, textDecoration: "none", transition: "background 0.15s" }}
+              onMouseEnter={e => e.currentTarget.style.background = "#f0f9ff"} onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              contato@weprompt.app.br
+            </a>
           </div>
+
         </div>
       </main>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ background: "#F3F4F6", borderTop: "1px solid rgba(0,0,0,0.07)", padding: "40px 24px" }}>
-        <div style={{
-          maxWidth: 1200, margin: "0 auto",
-          display: "flex", flexDirection: isMobile ? "column" : "row",
-          alignItems: "center", justifyContent: "space-between",
-          gap: 16, textAlign: isMobile ? "center" : "left",
-        }}>
-          <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="termos-e-footer" textColor={DARK} />
-          </a>
-          <p style={{ fontSize: 13, color: GRAY, margin: 0 }}>
-            © 2026 WePrompt. O 1º marketplace de IA da América Latina.
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 20 }}>
-            <a href="/para-criadores/termos" className="footer-link">Termos para Criadores</a>
-            <a href="/para-empresas/termos" className="footer-link" style={{ color: PURPLE, fontWeight: 600 }}>Termos para Empresas</a>
-            <a href="mailto:contato@weprompt.app.br" className="footer-link">Contato</a>
-          </div>
-        </div>
-      </footer>
+      <Footer isMobile={isMobile} />
     </div>
   );
 }
