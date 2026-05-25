@@ -182,6 +182,7 @@ export default function SolucoesPage() {
   const [categories, setCategories]       = useState([]);
   const [loading, setLoading]             = useState(true);
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const [searchQuery, setSearchQuery]     = useState("");
   const [menuOpen, setMenuOpen]           = useState(false);
   const [session, setSession]             = useState(null);
   const width      = useWindowSize();
@@ -212,9 +213,14 @@ export default function SolucoesPage() {
     fetchSolutions();
   }, []);
 
-  const filtered = activeCategory === "Todos"
-    ? solutions
-    : solutions.filter(s => s.categoria === activeCategory);
+  const filtered = solutions.filter(s => {
+    const matchCat = activeCategory === "Todos" || s.categoria === activeCategory;
+    const q = searchQuery.trim().toLowerCase();
+    const matchSearch = !q
+      || s.titulo?.toLowerCase().includes(q)
+      || s.descricao?.toLowerCase().includes(q);
+    return matchCat && matchSearch;
+  });
 
   const cols = isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)";
 
@@ -419,10 +425,51 @@ export default function SolucoesPage() {
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
 
+          {/* Search bar */}
+          <div style={{ paddingTop: isMobile ? 32 : 48, paddingBottom: 20 }}>
+            <div style={{ position: "relative", maxWidth: 560 }}>
+              <svg
+                width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}
+              >
+                <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+              </svg>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Buscar soluções de IA..."
+                style={{
+                  width: "100%", boxSizing: "border-box",
+                  padding: "14px 44px 14px 44px",
+                  background: "#fff", border: "1px solid #e5e7eb",
+                  borderRadius: 12, fontSize: 15, color: NEAR_BLACK,
+                  outline: "none", fontFamily: "inherit",
+                  transition: "border-color 0.15s, box-shadow 0.15s",
+                }}
+                onFocus={e => { e.target.style.borderColor = BLUE; e.target.style.boxShadow = "0 0 0 3px rgba(3,105,161,0.1)"; }}
+                onBlur={e => { e.target.style.borderColor = "#e5e7eb"; e.target.style.boxShadow = "none"; }}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  style={{
+                    position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+                    background: "#e5e7eb", border: "none", borderRadius: "50%",
+                    width: 22, height: 22, cursor: "pointer", fontSize: 13, fontWeight: 700,
+                    color: GRAY_TEXT, display: "flex", alignItems: "center", justifyContent: "center",
+                    lineHeight: 1,
+                  }}
+                  aria-label="Limpar busca"
+                >×</button>
+              )}
+            </div>
+          </div>
+
           {/* Filter bar */}
           <div style={{
             display: "flex", flexWrap: "wrap", gap: 8,
-            paddingTop: isMobile ? 32 : 48,
             paddingBottom: isMobile ? 32 : 48,
           }}>
             {[{ nome: "Todos", icone: null }, ...categories].map(cat => (
@@ -459,6 +506,15 @@ export default function SolucoesPage() {
             ))}
           </div>
 
+          {/* Result count */}
+          {searchQuery.trim() && !loading && (
+            <div style={{ fontSize: 14, color: GRAY_TEXT, marginBottom: 20 }}>
+              <strong style={{ color: NEAR_BLACK }}>{filtered.length}</strong>{" "}
+              resultado{filtered.length !== 1 ? "s" : ""} para{" "}
+              <strong style={{ color: NEAR_BLACK }}>"{searchQuery.trim()}"</strong>
+            </div>
+          )}
+
           {/* Grid */}
           {loading ? (
             <div style={{ display: "grid", gridTemplateColumns: cols, gap: 24 }}>
@@ -472,18 +528,22 @@ export default function SolucoesPage() {
             }}>
               <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.18, color: BLUE }}>✦</div>
               <h2 style={{ fontSize: 22, fontWeight: 700, color: NEAR_BLACK, marginBottom: 10 }}>
-                {activeCategory === "Todos"
-                  ? "Nenhuma solução disponível ainda"
-                  : `Nenhuma solução em "${activeCategory}"`}
+                {searchQuery.trim()
+                  ? `Nenhum resultado para "${searchQuery.trim()}"`
+                  : activeCategory === "Todos"
+                    ? "Nenhuma solução disponível ainda"
+                    : `Nenhuma solução em "${activeCategory}"`}
               </h2>
               <p style={{ fontSize: 15, color: GRAY_TEXT, marginBottom: 28, lineHeight: 1.6 }}>
-                {activeCategory === "Todos"
-                  ? "Em breve teremos soluções incríveis de IA para você explorar."
-                  : "Tente outra categoria ou explore todas as soluções disponíveis."}
+                {searchQuery.trim()
+                  ? "Tente outras palavras-chave ou explore por categoria."
+                  : activeCategory === "Todos"
+                    ? "Em breve teremos soluções incríveis de IA para você explorar."
+                    : "Tente outra categoria ou explore todas as soluções disponíveis."}
               </p>
-              {activeCategory !== "Todos" && (
+              {(activeCategory !== "Todos" || searchQuery.trim()) && (
                 <button
-                  onClick={() => setActiveCategory("Todos")}
+                  onClick={() => { setActiveCategory("Todos"); setSearchQuery(""); }}
                   style={{
                     background: BLUE, color: "#fff",
                     border: "none", borderRadius: 12, padding: "12px 28px",

@@ -891,6 +891,15 @@ export default function CriadorDashboard() {
   function handleUpdated(s) { setSolutions(prev => prev.map(x => x.id === s.id ? s : x)); }
   async function handleSignOut() { await signOut(); router.replace("/login"); }
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("nova") === "1") {
+      setModalOpen(true);
+      window.history.replaceState({}, "", "/dashboard/criador");
+    }
+  }, []);
+
   if (loading) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: BG_GRAY }}>
@@ -1353,7 +1362,7 @@ export default function CriadorDashboard() {
         <NovasolucaoModal
           solution={editingSolution}
           onClose={closeModal}
-          onCreated={s => { handleCreated(s); closeModal(); }}
+          onCreated={s => { handleCreated(s); router.push("/dashboard/criador/solucao-publicada"); }}
           onUpdated={s => { handleUpdated(s); closeModal(); }}
           userId={user.id}
         />
