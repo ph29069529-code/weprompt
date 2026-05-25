@@ -58,6 +58,7 @@ const icons = {
   link:        "M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71",
   search:      "M11 17a6 6 0 100-12 6 6 0 000 12z M21 21l-4.35-4.35",
   wrench:      "M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z",
+  trash:       "M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6",
 };
 
 function formatBytes(bytes) {
@@ -998,6 +999,274 @@ function DashboardTab({ solutions, profiles, onApprove, onConfirmReject, onView,
   );
 }
 
+/*
+ * SQL Migration — categories:
+ *
+ * CREATE TABLE IF NOT EXISTS categories (
+ *   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+ *   nome text NOT NULL UNIQUE,
+ *   slug text NOT NULL UNIQUE,
+ *   icone text DEFAULT '🤖',
+ *   cor text DEFAULT '#0369A1',
+ *   descricao text,
+ *   created_at timestamptz DEFAULT now()
+ * );
+ *
+ * INSERT INTO categories (nome, slug, icone, cor) VALUES
+ *   ('Agentes de IA',   'agentes-de-ia',   '🤖', '#0369A1'),
+ *   ('Automação',       'automacao',        '⚡', '#7C3AED'),
+ *   ('Chatbots',        'chatbots',         '💬', '#059669'),
+ *   ('Marketing IA',    'marketing-ia',     '📣', '#D97706'),
+ *   ('Análise de Dados','analise-de-dados', '📊', '#DC2626'),
+ *   ('WhatsApp IA',     'whatsapp-ia',      '📱', '#059669'),
+ *   ('Integrações',     'integracoes',      '🔗', '#0891B2'),
+ *   ('Copywriting IA',  'copywriting-ia',   '✍️', '#7C3AED')
+ * ON CONFLICT (nome) DO NOTHING;
+ */
+
+/* ── CATEGORIAS TAB ── */
+function CategoriasTab({ isMobile }) {
+  const PRESET_COLORS = ["#0369A1", "#7C3AED", "#059669", "#D97706", "#DC2626", "#0891B2"];
+
+  const [categories, setCategories]   = useState([]);
+  const [counts, setCounts]           = useState({});
+  const [loading, setLoading]         = useState(true);
+  const [formOpen, setFormOpen]       = useState(false);
+  const [editTarget, setEditTarget]   = useState(null);
+  const [form, setForm]               = useState({ nome: "", slug: "", icone: "🤖", cor: "#0369A1", descricao: "" });
+  const [slugEdited, setSlugEdited]   = useState(false);
+  const [saving, setSaving]           = useState(false);
+  const [deleting, setDeleting]       = useState(null);
+  const [catToast, setCatToast]       = useState({ message: "", type: "success" });
+
+  function generateSlug(str) {
+    return str.toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  async function loadData() {
+    setLoading(true);
+    const { data: cats } = await supabase.from("categories").select("*").order("nome");
+    if (cats) {
+      setCategories(cats);
+      const map = {};
+      await Promise.all(cats.map(async cat => {
+        const { count } = await supabase
+          .from("solutions").select("id", { count: "exact", head: true })
+          .eq("categoria", cat.nome);
+        map[cat.id] = count ?? 0;
+      }));
+      setCounts(map);
+    }
+    setLoading(false);
+  }
+
+  useEffect(() => { loadData(); }, []);
+
+  function openNew() {
+    setEditTarget(null);
+    setForm({ nome: "", slug: "", icone: "🤖", cor: "#0369A1", descricao: "" });
+    setSlugEdited(false);
+    setFormOpen(true);
+  }
+
+  function openEdit(cat) {
+    setEditTarget(cat);
+    setForm({ nome: cat.nome, slug: cat.slug, icone: cat.icone || "🤖", cor: cat.cor || "#0369A1", descricao: cat.descricao || "" });
+    setSlugEdited(true);
+    setFormOpen(true);
+  }
+
+  function handleNomeChange(value) {
+    setForm(f => ({ ...f, nome: value, slug: slugEdited ? f.slug : generateSlug(value) }));
+  }
+
+  async function handleSave() {
+    if (!form.nome.trim()) return;
+    setSaving(true);
+    const payload = {
+      nome: form.nome.trim(),
+      slug: form.slug || generateSlug(form.nome.trim()),
+      icone: form.icone || "🤖",
+      cor: form.cor || "#0369A1",
+      descricao: form.descricao.trim() || null,
+    };
+    if (editTarget) {
+      const { error } = await supabase.from("categories").update(payload).eq("id", editTarget.id);
+      if (error) { setCatToast({ message: error.message, type: "error" }); setSaving(false); return; }
+    } else {
+      const { error } = await supabase.from("categories").insert(payload);
+      if (error) { setCatToast({ message: error.message, type: "error" }); setSaving(false); return; }
+    }
+    await loadData();
+    setFormOpen(false);
+    setSaving(false);
+    setCatToast({ message: editTarget ? "Categoria atualizada!" : "Categoria criada com sucesso!", type: "success" });
+  }
+
+  async function handleDelete(cat) {
+    if ((counts[cat.id] ?? 0) > 0) return;
+    setDeleting(cat.id);
+    await supabase.from("categories").delete().eq("id", cat.id);
+    setCategories(prev => prev.filter(c => c.id !== cat.id));
+    setCounts(prev => { const n = { ...prev }; delete n[cat.id]; return n; });
+    setDeleting(null);
+    setCatToast({ message: "Categoria removida.", type: "error" });
+  }
+
+  const inp = {
+    width: "100%", padding: "10px 14px", borderRadius: 10,
+    border: `1.5px solid ${BORDER}`, fontSize: 14, color: NEAR_BLACK,
+    background: "#fff", outline: "none", boxSizing: "border-box", fontFamily: "inherit",
+    transition: "border-color 0.15s",
+  };
+
+  return (
+    <div>
+      <style>{`@keyframes catPulse{0%,100%{opacity:1}50%{opacity:0.45}}`}</style>
+
+      {/* Sub-header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+        <p style={{ fontSize: 14, color: GRAY_TEXT, margin: 0 }}>
+          {categories.length} categoria{categories.length !== 1 ? "s" : ""} cadastrada{categories.length !== 1 ? "s" : ""}
+        </p>
+        <button
+          onClick={formOpen ? () => setFormOpen(false) : openNew}
+          style={{
+            padding: "9px 18px", borderRadius: 10, fontSize: 13, fontWeight: 600,
+            cursor: "pointer", fontFamily: "inherit",
+            background: formOpen ? "transparent" : BLUE,
+            color: formOpen ? GRAY_TEXT : "#fff",
+            border: formOpen ? `1.5px solid ${BORDER}` : "none",
+          }}
+        >
+          {formOpen ? "Cancelar" : "+ Nova Categoria"}
+        </button>
+      </div>
+
+      {/* Inline form */}
+      {formOpen && (
+        <div style={{ background: "#fff", borderRadius: 16, padding: 24, marginBottom: 24, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", border: `1px solid ${BORDER}` }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>
+            {editTarget ? "Editar categoria" : "Nova categoria"}
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 16 }}>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6, display: "block" }}>Nome *</label>
+              <input value={form.nome} onChange={e => handleNomeChange(e.target.value)} placeholder="Ex: Agentes de IA" style={inp}
+                onFocus={e => (e.target.style.borderColor = BLUE)} onBlur={e => (e.target.style.borderColor = BORDER)} />
+            </div>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6, display: "block" }}>Slug</label>
+              <input value={form.slug} onChange={e => { setSlugEdited(true); setForm(f => ({ ...f, slug: e.target.value })); }}
+                placeholder="agentes-de-ia" style={{ ...inp, color: GRAY_TEXT }}
+                onFocus={e => (e.target.style.borderColor = BLUE)} onBlur={e => (e.target.style.borderColor = BORDER)} />
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 16 }}>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6, display: "block" }}>Ícone (emoji)</label>
+              <input value={form.icone} onChange={e => setForm(f => ({ ...f, icone: e.target.value }))}
+                placeholder="🤖" maxLength={4} style={{ ...inp, fontSize: 20, letterSpacing: 4 }}
+                onFocus={e => (e.target.style.borderColor = BLUE)} onBlur={e => (e.target.style.borderColor = BORDER)} />
+            </div>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6, display: "block" }}>Cor</label>
+              <div style={{ display: "flex", gap: 10, alignItems: "center", height: 44 }}>
+                {PRESET_COLORS.map(c => (
+                  <button key={c} onClick={() => setForm(f => ({ ...f, cor: c }))} style={{
+                    width: 32, height: 32, borderRadius: "50%", background: c, cursor: "pointer", flexShrink: 0,
+                    border: form.cor === c ? `3px solid ${NEAR_BLACK}` : "3px solid transparent",
+                    outline: form.cor === c ? "2px solid #fff" : "none",
+                    outlineOffset: "-5px",
+                    transition: "border-color 0.15s",
+                  }} />
+                ))}
+              </div>
+            </div>
+          </div>
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6, display: "block" }}>Descrição (opcional)</label>
+            <textarea value={form.descricao} onChange={e => setForm(f => ({ ...f, descricao: e.target.value }))}
+              placeholder="Breve descrição desta categoria…" rows={3} style={{ ...inp, resize: "vertical", lineHeight: 1.6 }}
+              onFocus={e => (e.target.style.borderColor = BLUE)} onBlur={e => (e.target.style.borderColor = BORDER)} />
+          </div>
+          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+            <button onClick={() => setFormOpen(false)} style={{ padding: "10px 20px", borderRadius: 10, border: `1.5px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
+            <button onClick={handleSave} disabled={!form.nome.trim() || saving} style={{ padding: "10px 24px", borderRadius: 10, background: !form.nome.trim() || saving ? "rgba(3,105,161,0.5)" : BLUE, color: "#fff", border: "none", fontSize: 14, fontWeight: 600, cursor: !form.nome.trim() || saving ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+              {saving ? "Salvando…" : "Salvar"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Category grid */}
+      {loading ? (
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16 }}>
+          {[1,2,3,4,5,6].map(i => (
+            <div key={i} style={{ background: "#fff", borderRadius: 16, padding: 20, height: 130, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", animation: "catPulse 1.5s ease-in-out infinite" }} />
+          ))}
+        </div>
+      ) : categories.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "64px 24px", background: "#fff", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>📂</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6 }}>Nenhuma categoria ainda</div>
+          <div style={{ fontSize: 14, color: GRAY_TEXT }}>Crie a primeira categoria para organizar as soluções.</div>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16 }}>
+          {categories.map(cat => {
+            const count = counts[cat.id] ?? 0;
+            const canDelete = count === 0 && deleting !== cat.id;
+            return (
+              <div key={cat.id} style={{ background: "#fff", borderRadius: 16, padding: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", border: `1px solid ${BORDER}` }}>
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: "50%",
+                    background: `${cat.cor || "#0369A1"}22`,
+                    border: `2px solid ${cat.cor || "#0369A1"}55`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 22, flexShrink: 0,
+                  }}>
+                    {cat.icone || "🤖"}
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button onClick={() => openEdit(cat)} title="Editar"
+                      style={{ width: 30, height: 30, borderRadius: 8, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      onMouseEnter={e => (e.currentTarget.style.background = "#f9fafb")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                      <Icon d={icons.pencil} size={13} />
+                    </button>
+                    <button onClick={() => handleDelete(cat)} disabled={!canDelete}
+                      title={count > 0 ? `${count} solução(ões) usam esta categoria` : "Excluir"}
+                      style={{ width: 30, height: 30, borderRadius: 8, border: `1px solid ${canDelete ? "rgba(220,38,38,0.25)" : BORDER}`, background: "transparent", color: canDelete ? DANGER : "#d1d5db", cursor: canDelete ? "pointer" : "not-allowed", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      onMouseEnter={e => { if (canDelete) e.currentTarget.style.background = "rgba(220,38,38,0.06)"; }}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                      <Icon d={icons.trash} size={13} />
+                    </button>
+                  </div>
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 8 }}>{cat.nome}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  <span style={{ background: "#e0f2fe", color: BLUE, fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 99, flexShrink: 0 }}>
+                    {count} solução{count !== 1 ? "ões" : ""}
+                  </span>
+                  {cat.descricao && (
+                    <span style={{ fontSize: 12, color: GRAY_TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{cat.descricao}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <Toast message={catToast.message} type={catToast.type} onClose={() => setCatToast({ message: "", type: "success" })} />
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════ */
@@ -1020,7 +1289,7 @@ const TAB_LABELS = {
   logs: "Logs de Acesso", banidos: "Usuários Banidos",
 };
 
-const REAL_TABS = new Set(["dashboard", "solucoes", "usuarios", "transacoes", "config"]);
+const REAL_TABS = new Set(["dashboard", "solucoes", "categorias", "usuarios", "transacoes", "config"]);
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -1243,6 +1512,7 @@ export default function AdminDashboard() {
           {activeNav === "solucoes" && (
             <SolucoesTab solutions={solutions} onApprove={handleApprove} onConfirmReject={handleConfirmReject} onPause={handlePause} onReactivate={handleReactivate} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
           )}
+          {activeNav === "categorias" && <CategoriasTab isMobile={isMobile} />}
           {activeNav === "usuarios"   && <UsuariosTab isMobile={isMobile} />}
           {activeNav === "transacoes" && <TransacoesTab isMobile={isMobile} />}
           {activeNav === "config"     && <ConfigGeraisTab isMobile={isMobile} />}

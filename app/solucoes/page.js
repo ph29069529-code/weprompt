@@ -18,7 +18,6 @@ function getDashboardUrl(session) {
   return "/dashboard/empresa";
 }
 
-const CATEGORIES = ["Todos", "Automação", "Agentes de IA", "Chatbots", "Análise de Dados", "Marketing IA"];
 
 const NAV_LINKS = [
   ["Explorar", "/solucoes"],
@@ -180,6 +179,7 @@ function SolutionCard({ solution }) {
 
 export default function SolucoesPage() {
   const [solutions, setSolutions]         = useState([]);
+  const [categories, setCategories]       = useState([]);
   const [loading, setLoading]             = useState(true);
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [menuOpen, setMenuOpen]           = useState(false);
@@ -193,6 +193,11 @@ export default function SolucoesPage() {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, s) => setSession(s));
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    supabase.from("categories").select("nome, icone, cor").order("nome")
+      .then(({ data }) => { if (data) setCategories(data); });
   }, []);
 
   useEffect(() => {
@@ -420,34 +425,36 @@ export default function SolucoesPage() {
             paddingTop: isMobile ? 32 : 48,
             paddingBottom: isMobile ? 32 : 48,
           }}>
-            {CATEGORIES.map(cat => (
+            {[{ nome: "Todos", icone: null }, ...categories].map(cat => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
+                key={cat.nome}
+                onClick={() => setActiveCategory(cat.nome)}
                 style={{
                   padding: "9px 20px", borderRadius: 999,
                   fontFamily: "inherit",
                   fontSize: 13, fontWeight: 600, cursor: "pointer",
                   border: "1px solid",
-                  borderColor: activeCategory === cat ? BLUE : "#e5e7eb",
-                  background: activeCategory === cat ? BLUE : BG_GRAY,
-                  color: activeCategory === cat ? "#fff" : GRAY_TEXT,
+                  borderColor: activeCategory === cat.nome ? BLUE : "#e5e7eb",
+                  background: activeCategory === cat.nome ? BLUE : BG_GRAY,
+                  color: activeCategory === cat.nome ? "#fff" : GRAY_TEXT,
                   transition: "all 0.15s",
+                  display: "inline-flex", alignItems: "center", gap: 6,
                 }}
                 onMouseEnter={e => {
-                  if (activeCategory !== cat) {
+                  if (activeCategory !== cat.nome) {
                     e.currentTarget.style.background = "#e0f2fe";
                     e.currentTarget.style.borderColor = "#bae6fd";
                   }
                 }}
                 onMouseLeave={e => {
-                  if (activeCategory !== cat) {
+                  if (activeCategory !== cat.nome) {
                     e.currentTarget.style.background = BG_GRAY;
                     e.currentTarget.style.borderColor = "#e5e7eb";
                   }
                 }}
               >
-                {cat}
+                {cat.icone && <span style={{ fontSize: 14, lineHeight: 1 }}>{cat.icone}</span>}
+                {cat.nome}
               </button>
             ))}
           </div>
