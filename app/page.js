@@ -97,7 +97,7 @@ function CatalogMockup() {
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 14, padding: "11px 16px", background: PURPLE, borderRadius: 12, textAlign: "center" }}>
+      <div style={{ marginTop: 14, padding: "11px 16px", background: "#0369A1", borderRadius: 12, textAlign: "center" }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>Ver todas as soluções →</span>
       </div>
     </div>
@@ -407,30 +407,41 @@ export default function Home() {
               {session ? (
                 <a href={dashboardUrl} style={{
                   borderRadius: 999, padding: "9px 22px",
-                  background: NEAR_BLACK, color: "#fff",
+                  background: "#0369A1", color: "#fff",
                   fontSize: 14, fontWeight: 600,
                   display: "inline-flex", alignItems: "center", gap: 6,
                   textDecoration: "none",
-                }}>
+                  transition: "background 0.15s",
+                }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                  onMouseLeave={e => e.currentTarget.style.background = "#0369A1"}
+                >
                   Meu Dashboard <Arrow />
                 </a>
               ) : (
                 <>
                   <a href="/login" style={{
                     borderRadius: 999, padding: "8px 20px", fontSize: 14, fontWeight: 500,
-                    textDecoration: "none", color: NEAR_BLACK,
-                    border: "1.5px solid rgba(0,0,0,0.15)", background: "transparent",
-                  }}>
+                    textDecoration: "none", color: "#0369A1",
+                    border: "2px solid #0369A1", background: "transparent",
+                    transition: "background 0.15s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
                     Entrar
                   </a>
                   <a href="/cadastro" style={{
                     borderRadius: 999, padding: "9px 22px",
-                    background: PURPLE, color: "#fff",
+                    background: "#0369A1", color: "#fff",
                     fontSize: 14, fontWeight: 600,
                     display: "inline-flex", alignItems: "center", gap: 6,
                     textDecoration: "none",
-                    boxShadow: "0 4px 14px rgba(14,165,233,0.35)",
-                  }}>
+                    transition: "background 0.15s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                    onMouseLeave={e => e.currentTarget.style.background = "#0369A1"}
+                  >
                     Criar conta <Arrow />
                   </a>
                 </>
@@ -470,29 +481,38 @@ export default function Home() {
               {session ? (
                 <a href={dashboardUrl} style={{
                   flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
-                  background: NEAR_BLACK, color: "#fff",
+                  background: "#0369A1", color: "#fff",
                   fontSize: 14, fontWeight: 600,
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                  textDecoration: "none",
-                }}>
+                  textDecoration: "none", transition: "background 0.15s",
+                }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                  onMouseLeave={e => e.currentTarget.style.background = "#0369A1"}
+                >
                   Meu Dashboard <Arrow />
                 </a>
               ) : (
                 <>
                   <a href="/login" style={{
                     flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
-                    fontSize: 14, fontWeight: 500, textDecoration: "none", color: NEAR_BLACK,
-                    border: "1.5px solid rgba(0,0,0,0.14)",
-                  }}>
+                    fontSize: 14, fontWeight: 500, textDecoration: "none", color: "#0369A1",
+                    border: "2px solid #0369A1", transition: "background 0.15s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
                     Entrar
                   </a>
                   <a href="/cadastro" style={{
                     flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
-                    background: PURPLE, color: "#fff",
+                    background: "#0369A1", color: "#fff",
                     fontSize: 14, fontWeight: 600,
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                    textDecoration: "none",
-                  }}>
+                    textDecoration: "none", transition: "background 0.15s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                    onMouseLeave={e => e.currentTarget.style.background = "#0369A1"}
+                  >
                     Criar conta <Arrow />
                   </a>
                 </>
@@ -745,7 +765,7 @@ export default function Home() {
             </div>
             <a href="/criadores" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
-              fontSize: 16, fontWeight: 700, color: PURPLE, textDecoration: "none",
+              fontSize: 16, fontWeight: 700, color: "#0369A1", textDecoration: "none",
               transition: "gap 0.2s",
             }}
               onMouseEnter={e => e.currentTarget.style.gap = "12px"}
@@ -816,7 +836,7 @@ export default function Home() {
             </div>
             <a href="/solucoes" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
-              fontSize: 16, fontWeight: 700, color: PURPLE, textDecoration: "none",
+              fontSize: 16, fontWeight: 700, color: "#0369A1", textDecoration: "none",
               transition: "gap 0.2s",
             }}
               onMouseEnter={e => e.currentTarget.style.gap = "12px"}
@@ -1041,26 +1061,26 @@ export default function Home() {
             <a href="/solucoes" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               borderRadius: 999, padding: isMobile ? "15px 28px" : "17px 36px",
-              background: "#fff", color: PURPLE,
+              background: "#0369A1", color: "#fff",
               fontSize: isMobile ? 15 : 17, fontWeight: 700, textDecoration: "none",
               boxShadow: "0 6px 28px rgba(0,0,0,0.18)",
-              transition: "transform 0.15s",
+              transition: "transform 0.15s, background 0.15s",
             }}
-              onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
-              onMouseLeave={e => e.currentTarget.style.transform = "none"}
+              onMouseEnter={e => { e.currentTarget.style.background = "#0284C7"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "#0369A1"; e.currentTarget.style.transform = "none"; }}
             >
               Explorar Soluções <Arrow />
             </a>
             <a href="/cadastro?role=criador" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               borderRadius: 999, padding: isMobile ? "14px 28px" : "16px 36px",
-              background: "transparent", color: "#fff",
+              background: "transparent", color: "#0369A1",
               fontSize: isMobile ? 15 : 17, fontWeight: 600, textDecoration: "none",
-              border: "1.5px solid rgba(255,255,255,0.38)",
-              transition: "background 0.15s, border-color 0.15s",
+              border: "2px solid #0369A1",
+              transition: "background 0.15s",
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.38)"; }}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
+              onMouseLeave={e => e.currentTarget.style.background = "transparent"}
             >
               Quero ser Criador
             </a>
