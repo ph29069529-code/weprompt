@@ -1,3 +1,6 @@
+// DMARC DNS record to add in registro.br:
+// Type: TXT  |  Name: _dmarc  |  Value: v=DMARC1; p=none; rua=mailto:contato@weprompt.app.br
+
 import { NextResponse } from "next/server";
 import { sendBoasVindas } from "../../../lib/email";
 

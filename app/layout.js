@@ -7,12 +7,31 @@ const dmSans = DM_Sans({
 });
 
 export const metadata = {
-  title: "WePrompt — O 1º Marketplace de IA da América Latina",
-  description: "Curadoria especializada de soluções de IA, suporte em português, pronto para usar.",
+  metadataBase: new URL("https://weprompt.app.br"),
+  title: "WePrompt — O 1º Marketplace de Soluções de IA da América Latina",
+  description: "Encontre soluções de IA prontas para usar no seu negócio. Agentes, automações, chatbots e muito mais. Suporte em português.",
+  keywords: ["marketplace IA", "soluções inteligência artificial", "agentes IA", "automação IA", "chatbots", "marketplace inteligência artificial brasil"],
+  authors: [{ name: "WePrompt" }],
+  robots: { index: true, follow: true },
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
     apple: "/favicon.png",
+  },
+  openGraph: {
+    title: "WePrompt — O 1º Marketplace de Soluções de IA da América Latina",
+    description: "Encontre soluções de IA prontas para usar no seu negócio. Agentes, automações, chatbots e muito mais. Suporte em português.",
+    url: "https://weprompt.app.br",
+    siteName: "WePrompt",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "WePrompt" }],
+    locale: "pt_BR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WePrompt — O 1º Marketplace de Soluções de IA da América Latina",
+    description: "Encontre soluções de IA prontas para usar no seu negócio. Agentes, automações, chatbots e muito mais. Suporte em português.",
+    images: ["/og-image.png"],
   },
 };
 
