@@ -1,5 +1,6 @@
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -13,6 +14,13 @@ export const metadata = {
   keywords: ["marketplace IA", "soluções inteligência artificial", "agentes IA", "automação IA", "chatbots", "marketplace inteligência artificial brasil"],
   authors: [{ name: "WePrompt" }],
   robots: { index: true, follow: true },
+  manifest: "/manifest.json",
+  themeColor: "#0369A1",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "WePrompt",
+  },
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
@@ -38,7 +46,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
-      <body className={`${dmSans.className} min-h-full flex flex-col`}>{children}</body>
+      <body className={`${dmSans.className} min-h-full flex flex-col`}>
+        {children}
+        <PWAInstallPrompt />
+      </body>
     </html>
   );
 }
