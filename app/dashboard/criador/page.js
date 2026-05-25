@@ -555,11 +555,16 @@ function SettingsCriador({ user, profile, isMobile, onProfileUpdate }) {
         avatarUrl = urlData.publicUrl;
       }
     }
-    const updates = { nome, bio, portfolio_link: portfolioLink, pix_key: pixKey };
-    if (avatarUrl) updates.avatar_url = avatarUrl;
-    const { error } = await supabase.from("profiles").update(updates).eq("id", user.id);
-    if (error) { setSaveError("Erro ao salvar. Tente novamente."); }
-    else { setSaveMsg("Alterações salvas com sucesso!"); onProfileUpdate({ ...profile, ...updates }); setTimeout(() => setSaveMsg(""), 3000); }
+    const updates = { id: user.id, nome };
+    const { error } = await supabase.from("profiles").upsert(updates);
+    if (error) {
+      console.error("Save error:", error);
+      setSaveError("Erro ao salvar: " + error.message);
+    } else {
+      setSaveMsg("Alterações salvas com sucesso!");
+      onProfileUpdate({ ...profile, nome });
+      setTimeout(() => setSaveMsg(""), 3000);
+    }
     setSaving(false);
   }
 
