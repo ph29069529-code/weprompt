@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
@@ -155,6 +155,31 @@ function StatusBadge({ status }) {
       background: s.bg, color: s.color,
       fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 99, display: "inline-block",
     }}>{s.label}</span>
+  );
+}
+
+/* ── Toast ── */
+function Toast({ message, type, onClose }) {
+  useEffect(() => {
+    if (!message) return;
+    const t = setTimeout(onClose, 3000);
+    return () => clearTimeout(t);
+  }, [message, onClose]);
+  if (!message) return null;
+  return (
+    <div style={{ position: "fixed", bottom: 28, left: 0, right: 0, display: "flex", justifyContent: "center", zIndex: 9999, pointerEvents: "none" }}>
+      <div style={{
+        background: NEAR_BLACK, color: "#fff", borderRadius: 12, padding: "12px 24px",
+        fontSize: 14, fontWeight: 500, boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+        borderLeft: `4px solid ${type === "error" ? DANGER : GREEN}`,
+        display: "flex", alignItems: "center", gap: 10,
+        animation: "toastIn 0.2s ease",
+      }}>
+        <style>{`@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
+        <span>{type === "error" ? "✗" : "✓"}</span>
+        {message}
+      </div>
+    </div>
   );
 }
 
@@ -654,10 +679,17 @@ function UsuariosTab({ isMobile }) {
   );
 }
 
+/*
+ * ALTER TABLE solutions ADD COLUMN IF NOT EXISTS rejection_reason text;
+ */
+
 /* ── SOLUÇÕES TAB ── */
-function SolucoesTab({ solutions, onApprove, onReject, onView, actionLoading, isMobile }) {
-  const [filterStatus, setFilterStatus] = useState("todas");
-  const [search, setSearch]             = useState("");
+function SolucoesTab({ solutions, onApprove, onConfirmReject, onPause, onReactivate, onView, actionLoading, isMobile }) {
+  const [filterStatus, setFilterStatus]   = useState("todas");
+  const [search, setSearch]               = useState("");
+  const [rejectingId, setRejectingId]     = useState(null);
+  const [rejectReason, setRejectReason]   = useState("");
+  const [rejectLoading, setRejectLoading] = useState(false);
 
   const statusMap = { todas: null, pendentes: "pending", ativas: "approved", pausadas: "paused", reprovadas: "rejected" };
 
@@ -666,6 +698,15 @@ function SolucoesTab({ solutions, onApprove, onReject, onView, actionLoading, is
     const matchSearch = !search || s.titulo?.toLowerCase().includes(search.toLowerCase());
     return matchStatus && matchSearch;
   });
+
+  async function submitReject(s) {
+    if (!rejectReason.trim()) return;
+    setRejectLoading(true);
+    await onConfirmReject(s, rejectReason.trim());
+    setRejectingId(null);
+    setRejectReason("");
+    setRejectLoading(false);
+  }
 
   return (
     <div>
@@ -700,37 +741,66 @@ function SolucoesTab({ solutions, onApprove, onReject, onView, actionLoading, is
               </thead>
               <tbody>
                 {filtered.map(s => {
-                  const isLoading = actionLoading === s.id;
+                  const isLoading   = actionLoading === s.id;
+                  const isRejecting = rejectingId === s.id;
                   return (
-                    <tr key={s.id} style={{ borderTop: `1px solid ${BORDER}` }}>
-                      <td style={{ padding: "12px 16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {s.cover_url
-                              ? <img src={s.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                              : <span style={{ color: BLUE, opacity: 0.5 }}>✦</span>}
+                    <Fragment key={s.id}>
+                      <tr style={{ borderTop: `1px solid ${BORDER}` }}>
+                        <td style={{ padding: "12px 16px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              {s.cover_url
+                                ? <img src={s.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                : <span style={{ color: BLUE, opacity: 0.5 }}>✦</span>}
+                            </div>
+                            <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.titulo}</span>
                           </div>
-                          <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.titulo}</span>
-                        </div>
-                      </td>
-                      <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.profiles?.nome || "—"}</td>
-                      <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.categoria || "—"}</td>
-                      <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>
-                        {s.preco != null ? `R$ ${Number(s.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Grátis"}
-                      </td>
-                      <td style={{ padding: "12px 16px" }}><StatusBadge status={s.status} /></td>
-                      <td style={{ padding: "12px 16px" }}>
-                        <div style={{ display: "flex", gap: 6 }}>
-                          <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver</button>
-                          {s.status === "pending" && (
-                            <>
-                              <button onClick={() => onApprove(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Aprovar</button>
-                              <button onClick={() => onReject(s)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Reprovar</button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
+                        </td>
+                        <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.profiles?.nome || "—"}</td>
+                        <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.categoria || "—"}</td>
+                        <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>
+                          {s.preco != null ? `R$ ${Number(s.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Grátis"}
+                        </td>
+                        <td style={{ padding: "12px 16px" }}><StatusBadge status={s.status} /></td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver</button>
+                            {s.status === "pending" && (
+                              <>
+                                <button onClick={() => onApprove(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Aprovar</button>
+                                <button onClick={() => { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); }} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Reprovar</button>
+                              </>
+                            )}
+                            {s.status === "approved" && (
+                              <button onClick={() => onPause(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(107,114,128,0.1)", color: "#4B5563", fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Pausar</button>
+                            )}
+                            {s.status === "paused" && (
+                              <button onClick={() => onReactivate(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Reativar</button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                      {isRejecting && (
+                        <tr>
+                          <td colSpan={6} style={{ padding: "0 16px 12px", background: "rgba(220,38,38,0.02)", borderTop: "none" }}>
+                            <div style={{ display: "flex", gap: 8, alignItems: "center", paddingTop: 8 }}>
+                              <input
+                                autoFocus
+                                placeholder="Motivo da reprovação…"
+                                value={rejectReason}
+                                onChange={e => setRejectReason(e.target.value)}
+                                onKeyDown={e => { if (e.key === "Enter") submitReject(s); if (e.key === "Escape") { setRejectingId(null); setRejectReason(""); } }}
+                                style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: `1.5px solid rgba(220,38,38,0.35)`, fontSize: 13, color: NEAR_BLACK, outline: "none", fontFamily: "inherit", background: "#fff" }}
+                              />
+                              <button onClick={() => submitReject(s)} disabled={!rejectReason.trim() || rejectLoading} style={{ padding: "8px 14px", borderRadius: 8, background: !rejectReason.trim() || rejectLoading ? "rgba(220,38,38,0.3)" : DANGER, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: !rejectReason.trim() || rejectLoading ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                                {rejectLoading ? "…" : "Confirmar"}
+                              </button>
+                              <button onClick={() => { setRejectingId(null); setRejectReason(""); }} style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: GRAY_TEXT, border: `1px solid ${BORDER}`, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   );
                 })}
               </tbody>
@@ -743,8 +813,21 @@ function SolucoesTab({ solutions, onApprove, onReject, onView, actionLoading, is
 }
 
 /* ── DASHBOARD TAB ── */
-function DashboardTab({ solutions, profiles, onApprove, onReject, onView, actionLoading, isMobile }) {
+function DashboardTab({ solutions, profiles, onApprove, onConfirmReject, onView, actionLoading, isMobile }) {
+  const [rejectingId, setRejectingId]     = useState(null);
+  const [rejectReason, setRejectReason]   = useState("");
+  const [rejectLoading, setRejectLoading] = useState(false);
+
   const pending      = solutions.filter(s => s.status === "pending");
+
+  async function submitRejectDash(s) {
+    if (!rejectReason.trim()) return;
+    setRejectLoading(true);
+    await onConfirmReject(s, rejectReason.trim());
+    setRejectingId(null);
+    setRejectReason("");
+    setRejectLoading(false);
+  }
   const criadores    = profiles.filter(p => p.role === "criador" || p.role === "creator");
   const empresas     = profiles.filter(p => p.role === "empresa"  || p.role === "business");
   const recentSignups = [...profiles].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
@@ -823,28 +906,51 @@ function DashboardTab({ solutions, profiles, onApprove, onReject, onView, action
               </thead>
               <tbody>
                 {pending.map(s => {
-                  const isLoading = actionLoading === s.id;
+                  const isLoading   = actionLoading === s.id;
+                  const isRejecting = rejectingId === s.id;
                   return (
-                    <tr key={s.id} style={{ borderTop: `1px solid ${BORDER}` }}>
-                      <td style={{ padding: "12px 16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {s.cover_url ? <img src={s.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: BLUE, opacity: 0.5 }}>✦</span>}
+                    <Fragment key={s.id}>
+                      <tr style={{ borderTop: `1px solid ${BORDER}` }}>
+                        <td style={{ padding: "12px 16px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              {s.cover_url ? <img src={s.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: BLUE, opacity: 0.5 }}>✦</span>}
+                            </div>
+                            <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.titulo}</span>
                           </div>
-                          <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.titulo}</span>
-                        </div>
-                      </td>
-                      <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.profiles?.nome || "—"}</td>
-                      <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.categoria || "—"}</td>
-                      <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{formatDate(s.created_at)}</td>
-                      <td style={{ padding: "12px 16px" }}>
-                        <div style={{ display: "flex", gap: 6 }}>
-                          <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver</button>
-                          <button onClick={() => onApprove(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Aprovar</button>
-                          <button onClick={() => onReject(s)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Reprovar</button>
-                        </div>
-                      </td>
-                    </tr>
+                        </td>
+                        <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.profiles?.nome || "—"}</td>
+                        <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.categoria || "—"}</td>
+                        <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{formatDate(s.created_at)}</td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <div style={{ display: "flex", gap: 6 }}>
+                            <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver</button>
+                            <button onClick={() => onApprove(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Aprovar</button>
+                            <button onClick={() => { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); }} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Reprovar</button>
+                          </div>
+                        </td>
+                      </tr>
+                      {isRejecting && (
+                        <tr>
+                          <td colSpan={5} style={{ padding: "0 16px 12px", background: "rgba(220,38,38,0.02)", borderTop: "none" }}>
+                            <div style={{ display: "flex", gap: 8, alignItems: "center", paddingTop: 8 }}>
+                              <input
+                                autoFocus
+                                placeholder="Motivo da reprovação…"
+                                value={rejectReason}
+                                onChange={e => setRejectReason(e.target.value)}
+                                onKeyDown={e => { if (e.key === "Enter") submitRejectDash(s); if (e.key === "Escape") { setRejectingId(null); setRejectReason(""); } }}
+                                style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: `1.5px solid rgba(220,38,38,0.35)`, fontSize: 13, color: NEAR_BLACK, outline: "none", fontFamily: "inherit", background: "#fff" }}
+                              />
+                              <button onClick={() => submitRejectDash(s)} disabled={!rejectReason.trim() || rejectLoading} style={{ padding: "8px 14px", borderRadius: 8, background: !rejectReason.trim() || rejectLoading ? "rgba(220,38,38,0.3)" : DANGER, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: !rejectReason.trim() || rejectLoading ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                                {rejectLoading ? "…" : "Confirmar"}
+                              </button>
+                              <button onClick={() => { setRejectingId(null); setRejectReason(""); }} style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: GRAY_TEXT, border: `1px solid ${BORDER}`, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
                   );
                 })}
               </tbody>
@@ -928,7 +1034,12 @@ export default function AdminDashboard() {
   const [actionLoading, setActionLoading] = useState(null);
   const [selectedSolution, setSelectedSolution] = useState(null);
   const [sidebarOpen, setSidebarOpen]   = useState(false);
+  const [toast, setToast]               = useState({ message: "", type: "success" });
   const width   = useWindowSize();
+
+  function showToast(message, type = "success") {
+    setToast({ message, type });
+  }
   const isMobile = width < 768;
 
   useEffect(() => {
@@ -958,34 +1069,64 @@ export default function AdminDashboard() {
     const sol = solutions.find(s => s.id === id);
     const version = sol?.version || 1;
     await supabase.from("solutions").update({ status: "approved", last_approved_version: version }).eq("id", id);
-    setSolutions(prev => prev.map(s => s.id === id ? { ...s, status: "approved", last_approved_version: version } : s));
-    setActionLoading(null);
-    setSelectedSolution(prev => prev?.id === id ? null : prev);
     if (sol?.creator_id) {
+      supabase.from("notifications").insert({
+        user_id: sol.creator_id,
+        type: "aprovacao",
+        title: "Sua solução foi aprovada! 🎉",
+        message: `${sol.titulo} já está disponível no catálogo.`,
+        link: "/dashboard/criador",
+      }).catch(console.error);
       fetch("/api/send-email", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "solution_approved", user_id: sol.creator_id, solution_titulo: sol.titulo }),
       }).catch(console.error);
     }
+    setSolutions(prev => prev.map(s => s.id === id ? { ...s, status: "approved", last_approved_version: version } : s));
+    setActionLoading(null);
+    setSelectedSolution(prev => prev?.id === id ? null : prev);
+    showToast("Solução aprovada com sucesso!");
   }
 
   function handleReject(solution) { setRejectTarget(solution); }
 
-  async function confirmReject(reason) {
-    if (!rejectTarget) return;
-    const targetId = rejectTarget.id;
-    setActionLoading(targetId);
-    await supabase.from("solutions").update({ status: "rejected", rejection_reason: reason }).eq("id", targetId);
-    setSolutions(prev => prev.map(s => s.id === targetId ? { ...s, status: "rejected", rejection_reason: reason } : s));
-    setActionLoading(null);
-    setRejectTarget(null);
-    setSelectedSolution(prev => prev?.id === targetId ? null : prev);
-    if (rejectTarget?.creator_id) {
+  async function handleConfirmReject(solution, reason) {
+    setActionLoading(solution.id);
+    await supabase.from("solutions").update({ status: "rejected", rejection_reason: reason }).eq("id", solution.id);
+    if (solution.creator_id) {
+      supabase.from("notifications").insert({
+        user_id: solution.creator_id,
+        type: "sistema",
+        title: "Solução não aprovada",
+        message: `Motivo: ${reason}. Você pode editar e reenviar para análise.`,
+        link: "/dashboard/criador",
+      }).catch(console.error);
       fetch("/api/send-email", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "solution_rejected", user_id: rejectTarget.creator_id, solution_titulo: rejectTarget.titulo, rejection_reason: reason }),
+        body: JSON.stringify({ type: "solution_rejected", user_id: solution.creator_id, solution_titulo: solution.titulo, rejection_reason: reason }),
       }).catch(console.error);
     }
+    setSolutions(prev => prev.map(s => s.id === solution.id ? { ...s, status: "rejected", rejection_reason: reason } : s));
+    setActionLoading(null);
+    setRejectTarget(null);
+    setSelectedSolution(prev => prev?.id === solution.id ? null : prev);
+    showToast("Solução reprovada.", "error");
+  }
+
+  async function handlePause(id) {
+    setActionLoading(id);
+    await supabase.from("solutions").update({ status: "paused" }).eq("id", id);
+    setSolutions(prev => prev.map(s => s.id === id ? { ...s, status: "paused" } : s));
+    setActionLoading(null);
+    showToast("Solução pausada.");
+  }
+
+  async function handleReactivate(id) {
+    setActionLoading(id);
+    await supabase.from("solutions").update({ status: "approved" }).eq("id", id);
+    setSolutions(prev => prev.map(s => s.id === id ? { ...s, status: "approved" } : s));
+    setActionLoading(null);
+    showToast("Solução reativada.");
   }
 
   async function handleSignOut() { await signOut(); router.replace("/login"); }
@@ -1097,10 +1238,10 @@ export default function AdminDashboard() {
 
           {/* Tab content */}
           {activeNav === "dashboard" && (
-            <DashboardTab solutions={solutions} profiles={profiles} onApprove={handleApprove} onReject={handleReject} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
+            <DashboardTab solutions={solutions} profiles={profiles} onApprove={handleApprove} onConfirmReject={handleConfirmReject} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
           )}
           {activeNav === "solucoes" && (
-            <SolucoesTab solutions={solutions} onApprove={handleApprove} onReject={handleReject} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
+            <SolucoesTab solutions={solutions} onApprove={handleApprove} onConfirmReject={handleConfirmReject} onPause={handlePause} onReactivate={handleReactivate} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
           )}
           {activeNav === "usuarios"   && <UsuariosTab isMobile={isMobile} />}
           {activeNav === "transacoes" && <TransacoesTab isMobile={isMobile} />}
@@ -1116,8 +1257,10 @@ export default function AdminDashboard() {
 
       {/* Reject dialog */}
       {rejectTarget && (
-        <RejectDialog solution={rejectTarget} onConfirm={confirmReject} onClose={() => setRejectTarget(null)} />
+        <RejectDialog solution={rejectTarget} onConfirm={r => handleConfirmReject(rejectTarget, r)} onClose={() => setRejectTarget(null)} />
       )}
+
+      <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: "", type: "success" })} />
     </div>
   );
 }
