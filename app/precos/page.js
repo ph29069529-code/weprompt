@@ -4,14 +4,14 @@ import { useState, useEffect } from "react";
 import WePromptLogo from "../components/WePromptLogo";
 import { supabase } from "../lib/supabase";
 
-const PURPLE = "#6B5CE7";
-const DARK = "#0A0A1A";
-const GRAY = "#6B7280";
-const BORDER = "rgba(0,0,0,0.08)";
+const NEAR_BLACK = "#1D1D1F";
+const GRAY_TEXT  = "#6E6E73";
+const BG_GRAY    = "#F5F5F7";
+const BLUE       = "#0369A1";
 
 function getDashboardUrl(session) {
   if (!session) return "/login";
-  const role = session.user.user_metadata?.role;
+  const role  = session.user.user_metadata?.role;
   const email = session.user.email;
   if (email === "ph29069529@gmail.com") return "/dashboard/admin";
   if (role === "criador") return "/dashboard/criador";
@@ -36,114 +36,98 @@ const Arrow = () => (
   </svg>
 );
 
+const ChevronDown = ({ open }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+    style={{ flexShrink: 0, transition: "transform 0.25s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>
+    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const Check = ({ dark }) => (
-  <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-    <circle cx="8" cy="8" r="7" fill={dark ? "rgba(196,181,253,0.25)" : "rgba(107,92,231,0.12)"} />
-    <path d="M5 8l2 2 4-4" stroke={dark ? "#C4B5FD" : PURPLE} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+    <circle cx="8" cy="8" r="7"
+      fill={dark ? "rgba(255,255,255,0.18)" : "rgba(3,105,161,0.12)"} />
+    <path d="M5 8l2 2 4-4"
+      stroke={dark ? "#fff" : BLUE}
+      strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const NAV_LINKS = [
   ["Explorar", "/solucoes"],
-  ["Preços", "/precos"],
+  ["Preços",   "/precos"],
   ["Como funciona", "/#como-funciona"],
   ["Para Criadores", "/criadores"],
 ];
 
 const CRIADOR_PLANS = [
   {
-    key: "free",
-    name: "Free",
-    monthly: 0,
-    annualMonthly: 0,
-    annualTotal: 0,
+    key: "free", name: "Free",
+    monthly: 0, annualMonthly: 0, annualTotal: 0,
+    commission: "20%",
     tagline: "Para começar a publicar soluções sem custo algum.",
     features: [
       "Até 3 soluções publicadas",
-      "20% de comissão por venda",
       "Analytics básico",
       "Curadoria e aprovação WePrompt",
       "Badge de perfil de criador",
       "Suporte via e-mail",
     ],
-    cta: "Começar grátis",
-    ctaHref: "/cadastro?role=criador",
-    dark: false,
-    popular: false,
-    founder: false,
+    cta: "Começar grátis", ctaHref: "/cadastro?role=criador",
+    dark: false, popular: false, founder: false, premium: false,
   },
   {
-    key: "pro",
-    name: "Pro",
-    monthly: 97,
-    annualMonthly: 77,
-    annualTotal: 924,
+    key: "pro", name: "Pro",
+    monthly: 97, annualMonthly: 77, annualTotal: 924,
+    commission: "15%",
     tagline: "Para criadores que querem crescer e profissionalizar sua presença.",
     features: [
       "Soluções ilimitadas",
-      "15% de comissão por venda",
       "Destaque na categoria",
       "Analytics completo com métricas",
       'Badge "Criador Verificado" ✦',
       "Suporte prioritário",
     ],
-    cta: "Começar Pro",
-    ctaHref: "/cadastro?role=criador",
-    dark: true,
-    popular: true,
-    founder: true,
+    cta: "Começar Pro", ctaHref: "/cadastro?role=criador",
+    dark: true, popular: true, founder: true, premium: false,
   },
   {
-    key: "premium",
-    name: "Premium",
-    monthly: 297,
-    annualMonthly: 237,
-    annualTotal: 2844,
+    key: "premium", name: "Premium",
+    monthly: 297, annualMonthly: 237, annualTotal: 2844,
+    commission: "10%",
     tagline: "Para criadores que querem o máximo de visibilidade e receita.",
     features: [
       "Tudo do plano Pro",
-      "10% de comissão por venda",
       "Topo da categoria (destaque máximo)",
       "Destaque na homepage da WePrompt",
       "Suporte prioritário dedicado",
       "Gestão de afiliados",
     ],
-    cta: "Começar Premium",
-    ctaHref: "/cadastro?role=criador",
-    dark: false,
-    popular: false,
-    founder: true,
+    cta: "Começar Premium", ctaHref: "/cadastro?role=criador",
+    dark: false, popular: false, founder: true, premium: true,
   },
 ];
 
 const EMPRESA_PLANS = [
   {
-    key: "free",
-    name: "Free",
-    monthly: 0,
-    annualMonthly: 0,
-    annualTotal: 0,
+    key: "free", name: "Free",
+    monthly: 0, annualMonthly: 0, annualTotal: 0,
+    commission: null,
     tagline: "Explore o marketplace e descubra soluções de IA sem compromisso.",
     features: [
       "Acesso ao catálogo completo",
       "Compra e assinatura de soluções",
-      "Preço cheio nas soluções",
-      "Suporte via e-mail",
       "Filtros e busca avançada",
       "Avaliações verificadas",
+      "Suporte via e-mail",
     ],
-    cta: "Começar grátis",
-    ctaHref: "/cadastro",
-    dark: false,
-    popular: false,
-    founder: false,
+    cta: "Começar grátis", ctaHref: "/cadastro",
+    dark: false, popular: false, founder: false, premium: false,
   },
   {
-    key: "business",
-    name: "Business",
-    monthly: 197,
-    annualMonthly: 157,
-    annualTotal: 1884,
+    key: "business", name: "Business",
+    monthly: 197, annualMonthly: 157, annualTotal: 1884,
+    commission: null,
     tagline: "Para equipes que querem as melhores soluções de IA com economia.",
     features: [
       "10% de desconto em todas as soluções",
@@ -153,18 +137,13 @@ const EMPRESA_PLANS = [
       "Onboarding guiado",
       "Acesso a soluções em pré-lançamento",
     ],
-    cta: "Começar Business",
-    ctaHref: "/cadastro",
-    dark: true,
-    popular: true,
-    founder: false,
+    cta: "Começar Business", ctaHref: "/cadastro",
+    dark: true, popular: true, founder: false, premium: false,
   },
   {
-    key: "enterprise",
-    name: "Enterprise",
-    monthly: 497,
-    annualMonthly: 397,
-    annualTotal: 4764,
+    key: "enterprise", name: "Enterprise",
+    monthly: 497, annualMonthly: 397, annualTotal: 4764,
+    commission: null,
     tagline: "Para grandes empresas com alto volume e necessidades dedicadas.",
     features: [
       "20% de desconto em todas as soluções",
@@ -174,47 +153,77 @@ const EMPRESA_PLANS = [
       "Onboarding completo da equipe",
       "Relatório de ROI mensal",
     ],
-    cta: "Falar com a equipe",
-    ctaHref: "mailto:contato@weprompt.app.br",
-    dark: false,
-    popular: false,
-    founder: false,
+    cta: "Falar com a equipe", ctaHref: "mailto:contato@weprompt.app.br",
+    dark: false, popular: false, founder: false, premium: true,
   },
 ];
 
 const EMPRESA_COMPARE = [
-  { feature: "Acesso ao catálogo", free: "✓", business: "✓", enterprise: "✓" },
-  { feature: "Desconto nas soluções", free: "–", business: "10%", enterprise: "20%" },
-  { feature: "Suporte", free: "E-mail", business: "Prioritário PT-BR", enterprise: "WhatsApp dedicado" },
-  { feature: "Curadoria personalizada", free: "–", business: "Mensal", enterprise: "Semanal" },
-  { feature: "Usuários na conta", free: "1", business: "Até 3", enterprise: "Ilimitados" },
-  { feature: "Onboarding", free: "–", business: "Guiado", enterprise: "Completo" },
-  { feature: "Relatório de ROI", free: "–", business: "–", enterprise: "Mensal" },
+  { feature: "Acesso ao catálogo",      free: "✓",     business: "✓",              enterprise: "✓" },
+  { feature: "Desconto nas soluções",   free: "–",     business: "10%",            enterprise: "20%" },
+  { feature: "Suporte",                 free: "E-mail", business: "Prioritário PT-BR", enterprise: "WhatsApp dedicado" },
+  { feature: "Curadoria personalizada", free: "–",     business: "Mensal",         enterprise: "Semanal" },
+  { feature: "Usuários na conta",       free: "1",     business: "Até 3",          enterprise: "Ilimitados" },
+  { feature: "Onboarding",              free: "–",     business: "Guiado",         enterprise: "Completo" },
+  { feature: "Relatório de ROI",        free: "–",     business: "–",              enterprise: "Mensal" },
+];
+
+const FAQ_ITEMS = [
+  {
+    q: "Posso mudar de plano a qualquer momento?",
+    a: "Sim. Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. A cobrança é ajustada proporcionalmente ao tempo restante do período.",
+  },
+  {
+    q: "O que acontece se eu cancelar?",
+    a: "Ao cancelar, você retorna ao plano Free automaticamente. Suas soluções publicadas permanecem ativas, mas sujeitas às regras do plano Free (até 3 soluções para criadores).",
+  },
+  {
+    q: "Há cobrança de taxa de setup ou taxas escondidas?",
+    a: "Não. Nenhum plano possui taxa de setup ou cobranças adicionais surpresa. Você paga apenas a mensalidade do plano escolhido.",
+  },
+  {
+    q: "Quais formas de pagamento são aceitas?",
+    a: "Aceitamos cartão de crédito, boleto bancário e PIX para os planos mensais e anuais. O repasse para criadores é feito exclusivamente via PIX.",
+  },
+  {
+    q: "Quando os criadores recebem o repasse das vendas?",
+    a: "O repasse é realizado via PIX em até 30 dias após a confirmação da venda. O valor mínimo para saque é R$ 50. Abaixo disso, o saldo fica acumulado para o próximo ciclo.",
+  },
 ];
 
 function PricingCard({ plan, billing, isMobile }) {
-  const isFree = plan.monthly === 0;
-  const price = billing === "annual" ? plan.annualMonthly : plan.monthly;
+  const isFree  = plan.monthly === 0;
+  const price   = billing === "annual" ? plan.annualMonthly : plan.monthly;
+
+  const cardBg      = plan.dark ? BLUE : "#fff";
+  const cardBorder  = plan.premium ? `2px solid ${BLUE}` : plan.dark ? "none" : "1px solid rgba(0,0,0,0.07)";
+  const cardShadow  = plan.dark
+    ? "0 24px 60px rgba(3,105,161,0.3)"
+    : plan.premium
+    ? "0 4px 24px rgba(3,105,161,0.1)"
+    : "0 2px 12px rgba(0,0,0,0.06)";
+
+  const textPrimary   = plan.dark ? "#fff"                         : NEAR_BLACK;
+  const textSecondary = plan.dark ? "rgba(255,255,255,0.6)"        : GRAY_TEXT;
+  const textMuted     = plan.dark ? "rgba(255,255,255,0.4)"        : "rgba(0,0,0,0.35)";
 
   return (
     <div style={{
-      background: plan.dark ? DARK : "#fff",
-      borderRadius: 20,
-      padding: isMobile ? "28px 22px" : "36px 28px",
-      border: plan.dark ? "none" : `1px solid ${BORDER}`,
-      boxShadow: plan.dark
-        ? "0 24px 60px rgba(0,0,0,0.22)"
-        : "0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04)",
+      background: cardBg, borderRadius: 20,
+      padding: isMobile ? "28px 24px" : "36px 28px",
+      border: cardBorder,
+      boxShadow: cardShadow,
       display: "flex", flexDirection: "column",
       position: "relative", overflow: "hidden",
     }}>
 
       {plan.popular && (
         <div style={{
-          position: "absolute", top: 18, right: 18,
-          background: PURPLE, color: "#fff",
-          fontSize: 10, fontWeight: 800, padding: "3px 11px",
-          borderRadius: 999, letterSpacing: "0.06em",
+          position: "absolute", top: 20, right: 20,
+          background: plan.dark ? "rgba(255,255,255,0.2)" : BLUE,
+          color: "#fff",
+          fontSize: 10, fontWeight: 800, padding: "4px 12px",
+          borderRadius: 999, letterSpacing: "0.08em",
         }}>
           POPULAR
         </div>
@@ -223,9 +232,9 @@ function PricingCard({ plan, billing, isMobile }) {
       {plan.founder && (
         <div style={{
           display: "inline-flex", alignItems: "center", gap: 5,
-          background: plan.dark ? "rgba(196,181,253,0.15)" : "rgba(107,92,231,0.08)",
-          color: plan.dark ? "#C4B5FD" : PURPLE,
-          border: `1px solid ${plan.dark ? "rgba(196,181,253,0.2)" : "rgba(107,92,231,0.15)"}`,
+          background: plan.dark ? "rgba(255,255,255,0.15)" : "rgba(3,105,161,0.08)",
+          color: plan.dark ? "#fff" : BLUE,
+          border: `1px solid ${plan.dark ? "rgba(255,255,255,0.2)" : "rgba(3,105,161,0.2)"}`,
           fontSize: 11, fontWeight: 700, padding: "4px 12px",
           borderRadius: 999, marginBottom: 16, alignSelf: "flex-start",
         }}>
@@ -233,99 +242,118 @@ function PricingCard({ plan, billing, isMobile }) {
         </div>
       )}
 
+      {/* Plan name */}
       <div style={{
-        fontSize: 13, fontWeight: 700, letterSpacing: "0.04em",
-        color: plan.dark ? "rgba(255,255,255,0.45)" : GRAY,
-        marginBottom: 10, textTransform: "uppercase",
+        fontSize: 12, fontWeight: 700, letterSpacing: "0.1em",
+        textTransform: "uppercase", color: textSecondary, marginBottom: 8,
       }}>
         {plan.name}
       </div>
 
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginBottom: 8 }}>
-        {isFree ? (
+      {/* Commission badge (creators only) */}
+      {plan.commission && (
+        <div style={{
+          display: "inline-flex", alignItems: "center", gap: 6,
+          marginBottom: 16, alignSelf: "flex-start",
+        }}>
           <span style={{
-            fontSize: 42, fontWeight: 800, letterSpacing: "-1.5px",
-            color: plan.dark ? "#fff" : DARK, lineHeight: 1,
+            fontSize: 22, fontWeight: 800,
+            color: plan.dark ? "#fff" : BLUE,
           }}>
+            {plan.commission}
+          </span>
+          <span style={{ fontSize: 12, color: textSecondary }}>de comissão</span>
+        </div>
+      )}
+
+      {/* Price */}
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginBottom: 6 }}>
+        {isFree ? (
+          <span style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-1.5px", color: textPrimary, lineHeight: 1 }}>
             Grátis
           </span>
         ) : (
           <>
-            <span style={{
-              fontSize: 18, fontWeight: 700,
-              color: plan.dark ? "rgba(255,255,255,0.7)" : DARK,
-              paddingBottom: 6,
-            }}>
-              R$
-            </span>
-            <span style={{
-              fontSize: 42, fontWeight: 800, letterSpacing: "-1.5px",
-              color: plan.dark ? "#fff" : DARK, lineHeight: 1,
-            }}>
+            <span style={{ fontSize: 18, fontWeight: 700, color: textSecondary, paddingBottom: 7 }}>R$</span>
+            <span style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-2px", color: textPrimary, lineHeight: 1 }}>
               {price.toLocaleString("pt-BR")}
             </span>
-            <span style={{
-              fontSize: 13, paddingBottom: 8,
-              color: plan.dark ? "rgba(255,255,255,0.35)" : GRAY,
-            }}>
-              /mês
-            </span>
+            <span style={{ fontSize: 13, color: textMuted, paddingBottom: 9 }}>/mês</span>
           </>
         )}
       </div>
 
+      {/* Annual note / savings prompt */}
       {!isFree && (
         <div style={{ marginBottom: 4, minHeight: 20 }}>
           {billing === "annual" ? (
-            <span style={{ fontSize: 12, color: plan.dark ? "rgba(255,255,255,0.35)" : GRAY }}>
+            <span style={{ fontSize: 12, color: textSecondary }}>
               Cobrado anualmente · R$ {plan.annualTotal.toLocaleString("pt-BR")}/ano
             </span>
           ) : (
             <span style={{
-              fontSize: 12, fontWeight: 600,
-              color: plan.dark ? "#A78BFA" : PURPLE,
+              display: "inline-flex", alignItems: "center", gap: 5,
+              background: plan.dark ? "rgba(255,255,255,0.12)" : "rgba(22,163,74,0.1)",
+              color: plan.dark ? "#fff" : "#15803D",
+              fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999,
             }}>
-              Economize 20% no plano anual →
+              Economize 20% no anual
             </span>
           )}
         </div>
       )}
 
+      {/* Tagline */}
       <p style={{
-        fontSize: 13, lineHeight: 1.65,
-        color: plan.dark ? "rgba(255,255,255,0.45)" : GRAY,
-        margin: "16px 0 24px",
+        fontSize: 13, lineHeight: 1.65, color: textSecondary,
+        margin: "16px 0 22px",
       }}>
         {plan.tagline}
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 11, flex: 1, marginBottom: 28 }}>
+      {/* Divider */}
+      <div style={{
+        height: 1,
+        background: plan.dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.07)",
+        marginBottom: 22,
+      }} />
+
+      {/* Features */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1, marginBottom: 28 }}>
         {plan.features.map(f => (
-          <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
+          <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
             <Check dark={plan.dark} />
-            <span style={{
-              fontSize: 13, lineHeight: 1.5,
-              color: plan.dark ? "rgba(255,255,255,0.7)" : "#374151",
-            }}>
+            <span style={{ fontSize: 13, lineHeight: 1.5, color: plan.dark ? "rgba(255,255,255,0.85)" : "#374151" }}>
               {f}
             </span>
           </div>
         ))}
       </div>
 
+      {/* CTA */}
       <a
         href={plan.ctaHref}
         style={{
           display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-          borderRadius: 999, padding: "13px 20px",
+          borderRadius: 12, padding: "14px 20px",
           fontSize: 14, fontWeight: 700, textDecoration: "none",
-          transition: "opacity 0.15s",
+          transition: "background 0.15s, opacity 0.15s",
           ...(plan.dark
-            ? { background: PURPLE, color: "#fff", boxShadow: "0 4px 20px rgba(107,92,231,0.4)" }
+            ? { background: "rgba(255,255,255,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)" }
             : isFree
-            ? { border: "1.5px solid rgba(0,0,0,0.14)", color: DARK, background: "transparent" }
-            : { background: "linear-gradient(135deg, #6B5CE7, #8B5CF6)", color: "#fff", boxShadow: "0 4px 16px rgba(107,92,231,0.3)" }
+            ? { border: `2px solid ${BLUE}`, color: BLUE, background: "transparent" }
+            : { background: BLUE, color: "#fff" }
           ),
+        }}
+        onMouseEnter={e => {
+          if (plan.dark) e.currentTarget.style.background = "rgba(255,255,255,0.26)";
+          else if (isFree) e.currentTarget.style.background = "rgba(3,105,161,0.06)";
+          else e.currentTarget.style.background = "#0284C7";
+        }}
+        onMouseLeave={e => {
+          if (plan.dark) e.currentTarget.style.background = "rgba(255,255,255,0.18)";
+          else if (isFree) e.currentTarget.style.background = "transparent";
+          else e.currentTarget.style.background = BLUE;
         }}
       >
         {plan.cta} <Arrow />
@@ -335,12 +363,13 @@ function PricingCard({ plan, billing, isMobile }) {
 }
 
 export default function PrecosPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [session, setSession] = useState(null);
-  const [audience, setAudience] = useState("criadores");
-  const [billing, setBilling] = useState("monthly");
-  const width = useWindowSize();
-  const isMobile = width < 768;
+  const [menuOpen,  setMenuOpen]  = useState(false);
+  const [session,   setSession]   = useState(null);
+  const [audience,  setAudience]  = useState("criadores");
+  const [billing,   setBilling]   = useState("monthly");
+  const [faqOpen,   setFaqOpen]   = useState(null);
+  const width      = useWindowSize();
+  const isMobile   = width < 768;
   const dashboardUrl = getDashboardUrl(session);
 
   useEffect(() => {
@@ -352,32 +381,35 @@ export default function PrecosPage() {
   const plans = audience === "criadores" ? CRIADOR_PLANS : EMPRESA_PLANS;
 
   return (
-    <div style={{
-      minHeight: "100vh", color: DARK,
-      background: "linear-gradient(135deg, #F0F0FF 0%, #E8E8F8 30%, #EEF0FF 60%, #F5F0FF 100%)",
-    }}>
+    <div style={{ minHeight: "100vh", color: NEAR_BLACK, background: "#fff", fontFamily: "'DM Sans', sans-serif" }}>
 
       {/* ── NAVBAR ── */}
       <header style={{
-        position: "sticky", top: 0, zIndex: 100,
-        background: "rgba(255,255,255,0.92)",
-        backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        background: "rgba(255,255,255,0.86)",
+        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
         borderBottom: "1px solid rgba(0,0,0,0.07)",
       }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto",
-          padding: "0 24px", height: 60,
+          padding: "0 32px", height: 64,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <WePromptLogo id="precos-nav" textColor={DARK} />
+            <WePromptLogo id="precos-nav" textColor={NEAR_BLACK} />
           </a>
 
           {!isMobile && (
             <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
               {NAV_LINKS.map(([label, href]) => (
-                <a key={label} href={href} className="nav-link"
-                  style={label === "Preços" ? { color: PURPLE, fontWeight: 600 } : {}}
+                <a key={label} href={href} style={{
+                  fontSize: 14, fontWeight: label === "Preços" ? 600 : 500,
+                  color: label === "Preços" ? BLUE : GRAY_TEXT,
+                  textDecoration: "none", padding: "6px 14px", borderRadius: 8,
+                  transition: "color 0.15s, background 0.15s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.color = NEAR_BLACK; e.currentTarget.style.background = "rgba(0,0,0,0.05)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = label === "Preços" ? BLUE : GRAY_TEXT; e.currentTarget.style.background = "transparent"; }}
                 >
                   {label}
                 </a>
@@ -386,25 +418,43 @@ export default function PrecosPage() {
           )}
 
           {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               {session ? (
-                <a href={dashboardUrl} className="btn-dark" style={{
-                  borderRadius: 999, padding: "9px 20px", fontSize: 14, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none",
-                }}>
+                <a href={dashboardUrl} style={{
+                  borderRadius: 999, padding: "9px 22px",
+                  background: BLUE, color: "#fff",
+                  fontSize: 14, fontWeight: 600,
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  textDecoration: "none", transition: "background 0.15s",
+                }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                  onMouseLeave={e => e.currentTarget.style.background = BLUE}
+                >
                   Meu Dashboard <Arrow />
                 </a>
               ) : (
                 <>
                   <a href="/login" style={{
-                    borderRadius: 999, padding: "8px 18px", fontSize: 14, fontWeight: 500,
-                    textDecoration: "none", color: DARK, border: "1.5px solid rgba(0,0,0,0.14)",
-                    background: "transparent",
-                  }}>Entrar</a>
-                  <a href="/cadastro" className="btn-dark" style={{
-                    borderRadius: 999, padding: "9px 20px", fontSize: 14, fontWeight: 600,
-                    display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none",
-                  }}>
+                    borderRadius: 999, padding: "8px 20px", fontSize: 14, fontWeight: 500,
+                    textDecoration: "none", color: BLUE,
+                    border: "2px solid " + BLUE, background: "transparent",
+                    transition: "background 0.15s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
+                    Entrar
+                  </a>
+                  <a href="/cadastro" style={{
+                    borderRadius: 999, padding: "9px 22px",
+                    background: BLUE, color: "#fff",
+                    fontSize: 14, fontWeight: 600,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    textDecoration: "none", transition: "background 0.15s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                    onMouseLeave={e => e.currentTarget.style.background = BLUE}
+                  >
                     Criar conta <Arrow />
                   </a>
                 </>
@@ -415,7 +465,7 @@ export default function PrecosPage() {
           {isMobile && (
             <button onClick={() => setMenuOpen(o => !o)} aria-label="Menu" style={{
               background: "none", border: "none", cursor: "pointer",
-              fontSize: 22, color: DARK, padding: "4px 8px", display: "flex", alignItems: "center",
+              fontSize: 22, color: NEAR_BLACK, padding: "4px 8px", display: "flex", alignItems: "center",
             }}>
               {menuOpen ? "✕" : "☰"}
             </button>
@@ -424,42 +474,56 @@ export default function PrecosPage() {
 
         {isMobile && menuOpen && (
           <div style={{
-            position: "fixed", top: 60, left: 0, right: 0, zIndex: 99,
+            position: "fixed", top: 64, left: 0, right: 0, zIndex: 99,
             background: "rgba(255,255,255,0.97)",
-            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             borderBottom: "1px solid rgba(0,0,0,0.07)",
-            padding: "12px 24px 20px",
+            padding: "12px 24px 24px",
             display: "flex", flexDirection: "column", gap: 4,
           }}>
             {NAV_LINKS.map(([label, href]) => (
               <a key={label} href={href} onClick={() => setMenuOpen(false)} style={{
-                padding: "12px 4px", fontSize: 16, fontWeight: 500,
-                color: DARK, textDecoration: "none", borderBottom: "1px solid rgba(0,0,0,0.05)",
-              }}>{label}</a>
+                padding: "13px 4px", fontSize: 17, fontWeight: 500,
+                color: label === "Preços" ? BLUE : NEAR_BLACK, textDecoration: "none",
+                borderBottom: "1px solid rgba(0,0,0,0.05)",
+              }}>
+                {label}
+              </a>
             ))}
-            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
               {session ? (
-                <a href={dashboardUrl} className="btn-dark" style={{
-                  flex: 1, textAlign: "center", borderRadius: 999, padding: "11px",
-                  fontSize: 14, fontWeight: 600,
+                <a href={dashboardUrl} style={{
+                  flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
+                  background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600,
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                  textDecoration: "none",
-                }}>
+                  textDecoration: "none", transition: "background 0.15s",
+                }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                  onMouseLeave={e => e.currentTarget.style.background = BLUE}
+                >
                   Meu Dashboard <Arrow />
                 </a>
               ) : (
                 <>
                   <a href="/login" style={{
-                    flex: 1, textAlign: "center", borderRadius: 999, padding: "11px",
-                    fontSize: 14, fontWeight: 500, textDecoration: "none", color: DARK,
-                    border: "1.5px solid rgba(0,0,0,0.14)",
-                  }}>Entrar</a>
-                  <a href="/cadastro" className="btn-dark" style={{
-                    flex: 1, textAlign: "center", borderRadius: 999, padding: "11px",
-                    fontSize: 14, fontWeight: 600,
+                    flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
+                    fontSize: 14, fontWeight: 500, textDecoration: "none", color: BLUE,
+                    border: "2px solid " + BLUE, transition: "background 0.15s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
+                    Entrar
+                  </a>
+                  <a href="/cadastro" style={{
+                    flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
+                    background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600,
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                    textDecoration: "none",
-                  }}>
+                    textDecoration: "none", transition: "background 0.15s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                    onMouseLeave={e => e.currentTarget.style.background = BLUE}
+                  >
                     Criar conta <Arrow />
                   </a>
                 </>
@@ -471,348 +535,453 @@ export default function PrecosPage() {
 
       <main>
 
-        {/* ── PAGE HEADER ── */}
-        <section style={{ padding: isMobile ? "56px 24px 40px" : "88px 24px 56px", textAlign: "center" }}>
-          <div style={{ maxWidth: 620, margin: "0 auto" }}>
+        {/* ── HEADER + TOGGLES ── */}
+        <section style={{
+          background: "#fff",
+          paddingTop: isMobile ? 104 : 128,
+          paddingBottom: isMobile ? 56 : 72,
+          paddingLeft: 24, paddingRight: 24,
+          textAlign: "center",
+        }}>
+          <div style={{ maxWidth: 680, margin: "0 auto" }}>
             <div style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              background: "rgba(107,92,231,0.08)", border: "1px solid rgba(107,92,231,0.14)",
-              color: PURPLE, fontSize: 12, fontWeight: 700,
-              padding: "5px 14px", borderRadius: 999, marginBottom: 24, letterSpacing: "0.05em",
+              fontSize: 12, fontWeight: 700, color: BLUE,
+              letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 20,
             }}>
-              ✦ Planos e Preços
+              Planos e Preços
             </div>
             <h1 style={{
-              fontSize: isMobile ? 34 : 54,
-              fontWeight: 800, color: DARK, letterSpacing: "-1.5px",
-              lineHeight: 1.1, marginBottom: 18,
+              fontSize: isMobile ? "clamp(34px, 8vw, 48px)" : "clamp(48px, 6vw, 68px)",
+              fontWeight: 800, color: NEAR_BLACK,
+              letterSpacing: isMobile ? "-1px" : "-2px",
+              lineHeight: 1.06, marginBottom: 18,
             }}>
-              O plano certo para cada momento
+              Simples e transparente
             </h1>
-            <p style={{ fontSize: 17, color: GRAY, lineHeight: 1.7, margin: 0 }}>
-              Comece grátis e escale conforme cresce. Sem taxas escondidas, sem surpresas.
+            <p style={{ fontSize: isMobile ? 16 : 19, color: GRAY_TEXT, lineHeight: 1.65, margin: "0 0 48px" }}>
+              Comece gratuitamente. Escale quando precisar.
             </p>
-          </div>
-        </section>
 
-        {/* ── TOGGLES ── */}
-        <section style={{ padding: "0 24px 52px", display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
-
-          {/* Audience toggle */}
-          <div style={{
-            display: "inline-flex", background: "#fff",
-            border: `1px solid ${BORDER}`, borderRadius: 12, padding: 4,
-            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-          }}>
-            {[["criadores", "Para Criadores"], ["empresas", "Para Empresas"]].map(([key, label]) => (
-              <button key={key} onClick={() => setAudience(key)} style={{
-                padding: "10px 22px", borderRadius: 9,
-                background: audience === key ? DARK : "transparent",
-                color: audience === key ? "#fff" : GRAY,
-                border: "none", fontSize: 14, fontWeight: 600,
-                cursor: "pointer", fontFamily: "inherit", transition: "all 0.18s",
+            {/* Toggles */}
+            <div style={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              alignItems: "center", justifyContent: "center",
+              gap: 16,
+            }}>
+              {/* Audience toggle */}
+              <div style={{
+                display: "inline-flex",
+                background: BG_GRAY, borderRadius: 12, padding: 4,
+                border: "1px solid rgba(0,0,0,0.07)",
               }}>
-                {label}
-              </button>
-            ))}
-          </div>
+                {[["criadores", "Criadores"], ["empresas", "Empresas"]].map(([key, label]) => (
+                  <button key={key} onClick={() => setAudience(key)} style={{
+                    padding: "9px 22px", borderRadius: 9, border: "none",
+                    background: audience === key ? BLUE : "transparent",
+                    color: audience === key ? "#fff" : GRAY_TEXT,
+                    fontSize: 14, fontWeight: 600,
+                    cursor: "pointer", fontFamily: "inherit", transition: "all 0.18s",
+                  }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
 
-          {/* Billing toggle */}
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 14,
-            background: "#fff", border: `1px solid ${BORDER}`,
-            borderRadius: 999, padding: "8px 20px",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-          }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: billing === "monthly" ? DARK : GRAY }}>
-              Mensal
-            </span>
-            <button
-              onClick={() => setBilling(b => b === "monthly" ? "annual" : "monthly")}
-              style={{
-                width: 46, height: 26, borderRadius: 99,
-                background: billing === "annual" ? PURPLE : "rgba(0,0,0,0.12)",
-                border: "none", cursor: "pointer", padding: 0,
-                position: "relative", transition: "background 0.2s", flexShrink: 0,
-              }}
-            >
-              <span style={{
-                position: "absolute", top: 5,
-                left: billing === "annual" ? 24 : 5,
-                width: 16, height: 16, borderRadius: "50%",
-                background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-                transition: "left 0.2s",
-              }} />
-            </button>
-            <span style={{ fontSize: 13, fontWeight: 600, color: billing === "annual" ? DARK : GRAY }}>
-              Anual
-            </span>
-            {billing === "annual" && (
-              <span style={{
-                background: "rgba(22,163,74,0.09)", color: "#15803D",
-                border: "1px solid rgba(22,163,74,0.18)",
-                fontSize: 11, fontWeight: 800, padding: "3px 10px", borderRadius: 999,
+              {/* Billing toggle */}
+              <div style={{
+                display: "inline-flex",
+                background: BG_GRAY, borderRadius: 12, padding: 4,
+                border: "1px solid rgba(0,0,0,0.07)",
+                alignItems: "center",
               }}>
-                −20%
-              </span>
-            )}
+                {[["monthly", "Mensal"], ["annual", "Anual"]].map(([key, label]) => (
+                  <button key={key} onClick={() => setBilling(key)} style={{
+                    padding: "9px 22px", borderRadius: 9, border: "none",
+                    background: billing === key ? BLUE : "transparent",
+                    color: billing === key ? "#fff" : GRAY_TEXT,
+                    fontSize: 14, fontWeight: 600,
+                    cursor: "pointer", fontFamily: "inherit", transition: "all 0.18s",
+                    display: "flex", alignItems: "center", gap: 6,
+                  }}>
+                    {label}
+                    {key === "annual" && (
+                      <span style={{
+                        fontSize: 10, fontWeight: 800, letterSpacing: "0.04em",
+                        background: billing === "annual" ? "rgba(255,255,255,0.2)" : "rgba(22,163,74,0.12)",
+                        color: billing === "annual" ? "#fff" : "#15803D",
+                        padding: "2px 7px", borderRadius: 99,
+                      }}>
+                        −20%
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
         {/* ── PRICING CARDS ── */}
-        <section style={{ padding: "0 24px 72px", maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-            gap: isMobile ? 16 : 20,
-            alignItems: "start",
-          }}>
-            {plans.map(plan => (
-              <PricingCard key={plan.key} plan={plan} billing={billing} isMobile={isMobile} />
-            ))}
-          </div>
-
-          {audience === "criadores" && (
+        <section style={{
+          background: BG_GRAY,
+          padding: isMobile ? "48px 24px 72px" : "64px 48px 96px",
+        }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div style={{
-              marginTop: 32, padding: "16px 24px",
-              background: "rgba(107,92,231,0.05)",
-              border: "1px solid rgba(107,92,231,0.12)",
-              borderRadius: 12, textAlign: "center",
-              fontSize: 13, color: GRAY, lineHeight: 1.8,
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+              gap: isMobile ? 20 : 24,
+              alignItems: "start",
             }}>
-              <strong style={{ color: PURPLE }}>* Oferta de Criadores Fundadores:</strong>{" "}
-              Os primeiros 500 criadores a se cadastrar ganham 3 meses gratuitos nos planos Pro e Premium.
-              A oferta é aplicada automaticamente no cadastro. Sem necessidade de cartão de crédito para os 3 primeiros meses.
+              {plans.map(plan => (
+                <PricingCard key={plan.key} plan={plan} billing={billing} isMobile={isMobile} />
+              ))}
             </div>
-          )}
+
+            {audience === "criadores" && (
+              <div style={{
+                marginTop: 32, padding: "16px 24px",
+                background: "rgba(3,105,161,0.05)",
+                border: "1px solid rgba(3,105,161,0.15)",
+                borderRadius: 14, textAlign: "center",
+                fontSize: 13, color: GRAY_TEXT, lineHeight: 1.8,
+              }}>
+                <strong style={{ color: BLUE }}>✦ Oferta de Criadores Fundadores:</strong>{" "}
+                Os primeiros 500 criadores ganham 3 meses gratuitos nos planos Pro e Premium.
+                Aplicado automaticamente no cadastro. Sem cartão de crédito nos primeiros 3 meses.
+              </div>
+            )}
+          </div>
         </section>
 
         {/* ── COMMISSION TABLE (Criadores) ── */}
         {audience === "criadores" && (
-          <section style={{ padding: "0 24px 80px", maxWidth: 840, margin: "0 auto" }}>
-            <h2 style={{
-              fontSize: isMobile ? 22 : 28, fontWeight: 800, color: DARK,
-              textAlign: "center", marginBottom: 10, letterSpacing: "-0.5px",
-            }}>
-              Como funciona a comissão?
-            </h2>
-            <p style={{ textAlign: "center", fontSize: 14, color: GRAY, marginBottom: 32, lineHeight: 1.7 }}>
-              A WePrompt retém uma comissão sobre cada venda. O valor varia conforme o seu plano.
-            </p>
-            <div style={{
-              background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04)",
-            }}>
-              {[
-                { plan: "Free", comissao: "20%", sobre: "R$ 97 vendido", voce: "R$ 77,60", plat: "R$ 19,40" },
-                { plan: "Pro",  comissao: "15%", sobre: "R$ 97 vendido", voce: "R$ 82,45", plat: "R$ 14,55" },
-                { plan: "Premium", comissao: "10%", sobre: "R$ 97 vendido", voce: "R$ 87,30", plat: "R$ 9,70" },
-              ].map((row, i) => (
-                <div key={row.plan} style={{
-                  display: "grid",
-                  gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 80px 1fr 1fr 1fr",
-                  gap: isMobile ? 8 : 0,
-                  alignItems: "center",
-                  padding: isMobile ? "18px 20px" : "18px 28px",
-                  borderTop: i > 0 ? `1px solid ${BORDER}` : "none",
+          <section style={{
+            background: "#fff",
+            padding: isMobile ? "64px 24px" : "96px 48px",
+          }}>
+            <div style={{ maxWidth: 860, margin: "0 auto" }}>
+              <div style={{ textAlign: "center", marginBottom: 48 }}>
+                <div style={{
+                  fontSize: 12, fontWeight: 700, color: BLUE,
+                  letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16,
                 }}>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: DARK }}>Plano {row.plan}</div>
-                  <div style={{
-                    fontSize: isMobile ? 22 : 28, fontWeight: 800, color: PURPLE,
-                    textAlign: isMobile ? "right" : "center",
-                  }}>
-                    {row.comissao}
-                  </div>
-                  {!isMobile && (
-                    <>
-                      <div style={{ fontSize: 13, color: GRAY, paddingLeft: 16 }}>Exemplo: {row.sobre}</div>
-                      <div>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: GRAY, textTransform: "uppercase", letterSpacing: "0.04em" }}>Você recebe</div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: "#15803D" }}>{row.voce}</div>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: GRAY, textTransform: "uppercase", letterSpacing: "0.04em" }}>Plataforma</div>
-                        <div style={{ fontSize: 16, fontWeight: 600, color: DARK }}>{row.plat}</div>
-                      </div>
-                    </>
-                  )}
-                  {isMobile && (
-                    <div style={{ gridColumn: "1 / -1", fontSize: 13, color: GRAY, marginTop: 4 }}>
-                      Para uma venda de {row.sobre} → você recebe <strong style={{ color: "#15803D" }}>{row.voce}</strong>
-                    </div>
-                  )}
+                  Comissões
                 </div>
-              ))}
+                <h2 style={{
+                  fontSize: isMobile ? "clamp(28px, 6vw, 40px)" : "clamp(32px, 4vw, 48px)",
+                  fontWeight: 800, color: NEAR_BLACK,
+                  letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 14,
+                }}>
+                  Como funciona a comissão?
+                </h2>
+                <p style={{ fontSize: 16, color: GRAY_TEXT, lineHeight: 1.65, maxWidth: 520, margin: "0 auto" }}>
+                  A WePrompt retém uma comissão sobre cada venda. O valor varia conforme o seu plano.
+                </p>
+              </div>
+
+              {/* Table */}
+              <div style={{
+                background: "#fff", borderRadius: 20,
+                border: "1px solid rgba(0,0,0,0.07)",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+                overflow: "hidden",
+              }}>
+                {/* Header */}
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr 1fr" : "1.2fr 100px 1fr 1fr",
+                  padding: "14px 28px",
+                  background: BG_GRAY,
+                  borderBottom: "1px solid rgba(0,0,0,0.07)",
+                }}>
+                  {["Plano", "Comissão", ...(isMobile ? [] : ["Exemplo (R$ 100)", "Você recebe"])].map(h => (
+                    <div key={h} style={{
+                      fontSize: 11, fontWeight: 700, color: GRAY_TEXT,
+                      textTransform: "uppercase", letterSpacing: "0.08em",
+                      textAlign: h === "Comissão" ? "center" : "left",
+                    }}>
+                      {h}
+                    </div>
+                  ))}
+                </div>
+
+                {[
+                  { plan: "Free",    commission: "20%", example: "R$ 100,00", youGet: "R$ 80,00" },
+                  { plan: "Pro",     commission: "15%", example: "R$ 100,00", youGet: "R$ 85,00" },
+                  { plan: "Premium", commission: "10%", example: "R$ 100,00", youGet: "R$ 90,00" },
+                ].map((row, i) => (
+                  <div key={row.plan} style={{
+                    display: "grid",
+                    gridTemplateColumns: isMobile ? "1fr 1fr" : "1.2fr 100px 1fr 1fr",
+                    alignItems: "center",
+                    padding: isMobile ? "18px 24px" : "20px 28px",
+                    background: i % 2 === 1 ? BG_GRAY : "#fff",
+                    borderTop: i > 0 ? "1px solid rgba(0,0,0,0.06)" : "none",
+                  }}>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: NEAR_BLACK }}>
+                      Plano {row.plan}
+                    </div>
+                    <div style={{
+                      fontSize: isMobile ? 24 : 28, fontWeight: 800, color: BLUE,
+                      textAlign: "center",
+                    }}>
+                      {row.commission}
+                    </div>
+                    {!isMobile && (
+                      <>
+                        <div style={{ fontSize: 14, color: GRAY_TEXT }}>{row.example}</div>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: "#15803D" }}>{row.youGet}</div>
+                      </>
+                    )}
+                    {isMobile && (
+                      <div style={{
+                        gridColumn: "1 / -1", marginTop: 6,
+                        fontSize: 13, color: GRAY_TEXT,
+                      }}>
+                        Em {row.example} → você recebe{" "}
+                        <strong style={{ color: "#15803D" }}>{row.youGet}</strong>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <p style={{
+                textAlign: "center", fontSize: 13, color: GRAY_TEXT,
+                marginTop: 16, lineHeight: 1.7,
+              }}>
+                Repasse via PIX em até 30 dias após venda confirmada. Saque mínimo de R$ 50.
+              </p>
             </div>
-            <p style={{ textAlign: "center", fontSize: 12, color: GRAY, marginTop: 14, lineHeight: 1.7 }}>
-              Repasse via PIX em até 30 dias após a venda confirmada. Saque mínimo de R$ 50.
-            </p>
           </section>
         )}
 
         {/* ── COMPARISON TABLE (Empresas) ── */}
         {audience === "empresas" && (
-          <section style={{ padding: "0 24px 80px", maxWidth: 840, margin: "0 auto" }}>
-            <h2 style={{
-              fontSize: isMobile ? 22 : 28, fontWeight: 800, color: DARK,
-              textAlign: "center", marginBottom: 10, letterSpacing: "-0.5px",
-            }}>
-              Compare os planos
-            </h2>
-            <p style={{ textAlign: "center", fontSize: 14, color: GRAY, marginBottom: 32, lineHeight: 1.7 }}>
-              Escolha o plano ideal para o tamanho e necessidades da sua empresa.
-            </p>
-            <div style={{
-              background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 16, overflow: "hidden",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04)",
-            }}>
-              {/* Header */}
-              <div style={{
-                display: "grid", gridTemplateColumns: "2fr 1fr 1.4fr 1.4fr",
-                padding: "14px 24px",
-                borderBottom: `2px solid ${BORDER}`,
-                background: "#fafafa",
-              }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: GRAY, textTransform: "uppercase", letterSpacing: "0.04em" }}>Funcionalidade</div>
-                {["Free", "Business", "Enterprise"].map(label => (
-                  <div key={label} style={{ fontSize: 12, fontWeight: 700, color: label === "Business" ? PURPLE : GRAY, textAlign: "center", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                    {label}
-                  </div>
-                ))}
-              </div>
-              {EMPRESA_COMPARE.map((row, i) => (
-                <div key={row.feature} style={{
-                  display: "grid", gridTemplateColumns: "2fr 1fr 1.4fr 1.4fr",
-                  alignItems: "center",
-                  padding: isMobile ? "12px 16px" : "14px 24px",
-                  borderTop: i > 0 ? `1px solid ${BORDER}` : "none",
+          <section style={{
+            background: "#fff",
+            padding: isMobile ? "64px 24px" : "96px 48px",
+          }}>
+            <div style={{ maxWidth: 860, margin: "0 auto" }}>
+              <div style={{ textAlign: "center", marginBottom: 48 }}>
+                <div style={{
+                  fontSize: 12, fontWeight: 700, color: BLUE,
+                  letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16,
                 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: DARK }}>{row.feature}</div>
-                  {[row.free, row.business, row.enterprise].map((val, idx) => (
-                    <div key={idx} style={{
-                      fontSize: 13, textAlign: "center", fontWeight: val !== "–" && val !== "✓" ? 600 : 400,
-                      color: val === "–" ? "rgba(0,0,0,0.18)" : val === "✓" ? "#15803D" : DARK,
+                  Comparação
+                </div>
+                <h2 style={{
+                  fontSize: isMobile ? "clamp(28px, 6vw, 40px)" : "clamp(32px, 4vw, 48px)",
+                  fontWeight: 800, color: NEAR_BLACK,
+                  letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 14,
+                }}>
+                  Compare os planos
+                </h2>
+                <p style={{ fontSize: 16, color: GRAY_TEXT, lineHeight: 1.65, maxWidth: 480, margin: "0 auto" }}>
+                  Escolha o plano ideal para o tamanho e necessidades da sua empresa.
+                </p>
+              </div>
+
+              <div style={{
+                background: "#fff", borderRadius: 20,
+                border: "1px solid rgba(0,0,0,0.07)",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+                overflow: "hidden",
+              }}>
+                {/* Header */}
+                <div style={{
+                  display: "grid", gridTemplateColumns: "2fr 1fr 1.5fr 1.5fr",
+                  padding: "14px 24px",
+                  background: BG_GRAY,
+                  borderBottom: "1px solid rgba(0,0,0,0.07)",
+                }}>
+                  {["Funcionalidade", "Free", "Business", "Enterprise"].map((h, i) => (
+                    <div key={h} style={{
+                      fontSize: 11, fontWeight: 700,
+                      color: h === "Business" ? BLUE : GRAY_TEXT,
+                      textTransform: "uppercase", letterSpacing: "0.08em",
+                      textAlign: i === 0 ? "left" : "center",
                     }}>
-                      {val}
+                      {h}
                     </div>
                   ))}
                 </div>
-              ))}
+
+                {EMPRESA_COMPARE.map((row, i) => (
+                  <div key={row.feature} style={{
+                    display: "grid", gridTemplateColumns: "2fr 1fr 1.5fr 1.5fr",
+                    alignItems: "center",
+                    padding: isMobile ? "12px 16px" : "16px 24px",
+                    background: i % 2 === 1 ? BG_GRAY : "#fff",
+                    borderTop: i > 0 ? "1px solid rgba(0,0,0,0.06)" : "none",
+                  }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: NEAR_BLACK }}>{row.feature}</div>
+                    {[row.free, row.business, row.enterprise].map((val, idx) => (
+                      <div key={idx} style={{
+                        fontSize: 13, textAlign: "center",
+                        fontWeight: val !== "–" && val !== "✓" ? 600 : 400,
+                        color: val === "–" ? "rgba(0,0,0,0.2)" : val === "✓" ? "#15803D" : NEAR_BLACK,
+                      }}>
+                        {val}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         )}
 
         {/* ── FAQ ── */}
-        <section style={{ padding: "0 24px 80px", maxWidth: 720, margin: "0 auto" }}>
-          <h2 style={{
-            fontSize: isMobile ? 22 : 28, fontWeight: 800, color: DARK,
-            textAlign: "center", marginBottom: 36, letterSpacing: "-0.5px",
-          }}>
-            Perguntas frequentes
-          </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {[
-              {
-                q: "Posso mudar de plano a qualquer momento?",
-                a: "Sim. Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. A cobrança é ajustada proporcionalmente.",
-              },
-              {
-                q: "O que acontece se eu cancelar?",
-                a: "Ao cancelar, você retorna ao plano Free. Suas soluções publicadas permanecem ativas, mas sujeitas às regras do plano Free (até 3 soluções).",
-              },
-              {
-                q: "Há cobrança de taxa de setup?",
-                a: "Não. Nenhum plano tem taxa de setup ou taxas escondidas. Você paga apenas a mensalidade do plano escolhido.",
-              },
-              {
-                q: "Aceita cartão de crédito ou apenas PIX?",
-                a: "Aceitamos cartão de crédito, boleto e PIX para pagamento dos planos mensais e anuais.",
-              },
-            ].map(({ q, a }, i) => (
-              <div key={i} style={{
-                background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 14,
-                padding: "20px 24px",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+        <section style={{
+          background: BG_GRAY,
+          padding: isMobile ? "64px 24px" : "96px 48px",
+        }}>
+          <div style={{ maxWidth: 720, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: 48 }}>
+              <div style={{
+                fontSize: 12, fontWeight: 700, color: BLUE,
+                letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16,
               }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: DARK, marginBottom: 8 }}>{q}</div>
-                <div style={{ fontSize: 14, color: GRAY, lineHeight: 1.7 }}>{a}</div>
+                FAQ
               </div>
-            ))}
+              <h2 style={{
+                fontSize: isMobile ? "clamp(28px, 6vw, 40px)" : "clamp(32px, 4vw, 48px)",
+                fontWeight: 800, color: NEAR_BLACK,
+                letterSpacing: "-1px", lineHeight: 1.1,
+              }}>
+                Perguntas frequentes
+              </h2>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {FAQ_ITEMS.map(({ q, a }, i) => (
+                <div key={i} style={{
+                  background: "#fff", borderRadius: 16,
+                  border: `1px solid ${faqOpen === i ? "rgba(3,105,161,0.2)" : "rgba(0,0,0,0.07)"}`,
+                  boxShadow: faqOpen === i ? "0 4px 20px rgba(3,105,161,0.08)" : "0 1px 4px rgba(0,0,0,0.04)",
+                  overflow: "hidden",
+                  transition: "box-shadow 0.2s, border-color 0.2s",
+                }}>
+                  <button
+                    onClick={() => setFaqOpen(prev => prev === i ? null : i)}
+                    style={{
+                      width: "100%", padding: "20px 24px",
+                      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+                      background: "none", border: "none", cursor: "pointer",
+                      fontFamily: "inherit", textAlign: "left",
+                    }}
+                  >
+                    <span style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, lineHeight: 1.4 }}>
+                      {q}
+                    </span>
+                    <span style={{ color: faqOpen === i ? BLUE : GRAY_TEXT, flexShrink: 0 }}>
+                      <ChevronDown open={faqOpen === i} />
+                    </span>
+                  </button>
+                  {faqOpen === i && (
+                    <div style={{
+                      padding: "0 24px 20px",
+                      fontSize: 14, color: GRAY_TEXT, lineHeight: 1.75,
+                      borderTop: "1px solid rgba(0,0,0,0.06)",
+                      paddingTop: 16,
+                    }}>
+                      {a}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* ── CTA ── */}
-        <section style={{ padding: "0 24px 96px", maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{
-            background: DARK, borderRadius: 24,
-            padding: isMobile ? "48px 24px" : "72px 48px",
-            textAlign: "center", position: "relative", overflow: "hidden",
-          }}>
-            <div style={{
-              position: "absolute", inset: 0, pointerEvents: "none",
-              background: `radial-gradient(ellipse 60% 70% at 50% 110%, ${PURPLE}33 0%, transparent 65%)`,
-            }} />
-            <div style={{ position: "absolute", top: -32, left: -32, width: 120, height: 120, borderRadius: "50%", background: `${PURPLE}18` }} />
-            <div style={{ position: "absolute", bottom: -20, right: -20, width: 90, height: 90, borderRadius: "50%", background: "#4F46E533" }} />
-            <div style={{ position: "relative" }}>
-              <h2 style={{
-                fontSize: isMobile ? 28 : 44, fontWeight: 800, color: "#fff",
-                letterSpacing: "-1px", marginBottom: 16,
-              }}>
-                {audience === "criadores"
-                  ? "Comece a monetizar sua IA hoje"
-                  : "Encontre a solução de IA ideal para sua empresa"}
-              </h2>
-              <p style={{
-                fontSize: 16, color: "rgba(255,255,255,0.5)",
-                maxWidth: 500, margin: "0 auto 36px", lineHeight: 1.7,
-              }}>
-                {audience === "criadores"
-                  ? "Cadastro gratuito. Curadoria em até 48h. Sem taxa de setup."
-                  : "Acesse centenas de soluções de IA curadas. Suporte em português."}
-              </p>
-              <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-                <a
-                  href={audience === "criadores" ? "/cadastro?role=criador" : "/cadastro"}
-                  className="btn-primary"
-                  style={{
-                    borderRadius: 999, padding: "14px 32px", fontSize: 15, fontWeight: 700,
-                    display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
-                  }}
-                >
-                  {audience === "criadores" ? "Criar conta de Criador" : "Criar conta grátis"} <Arrow />
-                </a>
-                <a href="mailto:contato@weprompt.app.br" style={{
-                  borderRadius: 999, padding: "14px 32px", fontSize: 15, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
-                  border: "1px solid rgba(255,255,255,0.18)", color: "rgba(255,255,255,0.75)",
-                }}>
-                  Falar com a equipe
-                </a>
-              </div>
+        {/* ── FOOTER CTA ── */}
+        <section style={{
+          background: "#fff",
+          padding: isMobile ? "64px 24px" : "96px 48px",
+          textAlign: "center",
+        }}>
+          <div style={{ maxWidth: 560, margin: "0 auto" }}>
+            <h2 style={{
+              fontSize: isMobile ? 26 : 36, fontWeight: 800, color: NEAR_BLACK,
+              letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: 14,
+            }}>
+              Ainda tem dúvidas?
+            </h2>
+            <p style={{ fontSize: 16, color: GRAY_TEXT, lineHeight: 1.65, marginBottom: 32 }}>
+              Nossa equipe está pronta para ajudar você a escolher o melhor plano.
+            </p>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              <a
+                href={audience === "criadores" ? "/cadastro?role=criador" : "/cadastro"}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  borderRadius: 12, padding: "14px 28px",
+                  background: BLUE, color: "#fff",
+                  fontSize: 15, fontWeight: 700, textDecoration: "none",
+                  transition: "background 0.15s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                onMouseLeave={e => e.currentTarget.style.background = BLUE}
+              >
+                Começar grátis <Arrow />
+              </a>
+              <a
+                href="mailto:contato@weprompt.app.br"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  borderRadius: 12, padding: "14px 28px",
+                  border: "2px solid " + BLUE, color: BLUE,
+                  background: "transparent",
+                  fontSize: 15, fontWeight: 600, textDecoration: "none",
+                  transition: "background 0.15s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
+                onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+              >
+                Falar com a equipe
+              </a>
             </div>
           </div>
         </section>
       </main>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: "#F3F4F6", borderTop: "1px solid rgba(0,0,0,0.07)", padding: "40px 24px" }}>
+      <footer style={{
+        background: "#fff",
+        borderTop: "1px solid rgba(0,0,0,0.07)",
+        padding: "44px 32px",
+      }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto",
           display: "flex", flexDirection: isMobile ? "column" : "row",
           alignItems: "center", justifyContent: "space-between",
-          gap: 16, textAlign: isMobile ? "center" : "left",
+          gap: 20, textAlign: isMobile ? "center" : "left",
         }}>
           <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="precos-footer" textColor={DARK} />
+            <WePromptLogo id="precos-footer" textColor={NEAR_BLACK} />
           </a>
-          <p style={{ fontSize: 13, color: GRAY, margin: 0 }}>
+          <p style={{ fontSize: 13, color: GRAY_TEXT, margin: 0 }}>
             © 2026 WePrompt. O 1º marketplace de IA da América Latina.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 20 }}>
-            <a href="/para-criadores/termos" className="footer-link">Termos para Criadores</a>
-            <a href="/para-empresas/termos" className="footer-link">Termos para Empresas</a>
-            <a href="mailto:contato@weprompt.app.br" className="footer-link">Contato</a>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 24 }}>
+            {[
+              ["Termos para Criadores", "/para-criadores/termos"],
+              ["Termos para Empresas",  "/para-empresas/termos"],
+              ["Contato", "mailto:contato@weprompt.app.br"],
+            ].map(([label, href]) => (
+              <a key={label} href={href} style={{
+                fontSize: 13, color: GRAY_TEXT, textDecoration: "none",
+                transition: "color 0.15s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.color = NEAR_BLACK}
+                onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}
+              >
+                {label}
+              </a>
+            ))}
           </div>
         </div>
       </footer>
