@@ -1250,7 +1250,7 @@ function CategoriasTab({ isMobile }) {
                 <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 8 }}>{cat.nome}</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <span style={{ background: "#e0f2fe", color: BLUE, fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 99, flexShrink: 0 }}>
-                    {count} solução{count !== 1 ? "ões" : ""}
+                    {count === 0 ? "0 soluções" : count === 1 ? "1 solução" : `${count} soluções`}
                   </span>
                   {cat.descricao && (
                     <span style={{ fontSize: 12, color: GRAY_TEXT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{cat.descricao}</span>
