@@ -129,13 +129,29 @@ export async function POST(request) {
     .select("rating")
     .eq("solution_id", solution_id);
 
+  let creatorId = null;
   if (allReviews) {
     const count = allReviews.length;
     const avg   = allReviews.reduce((a, r) => a + r.rating, 0) / count;
-    await supabaseAdmin
+    const { data: updatedSol } = await supabaseAdmin
       .from("solutions")
       .update({ avg_rating: Math.round(avg * 100) / 100, review_count: count })
-      .eq("id", solution_id);
+      .eq("id", solution_id)
+      .select("creator_id, titulo")
+      .single();
+    creatorId = updatedSol?.creator_id;
+
+    // Notify creator
+    if (creatorId && creatorId !== user.id) {
+      supabaseAdmin.from("notifications").insert({
+        user_id: creatorId,
+        type: "nova_avaliacao",
+        title: "Nova avaliação recebida!",
+        message: `Sua solução "${updatedSol?.titulo || ""}" recebeu uma avaliação de ${rating} estrela${rating === 1 ? "" : "s"}.`,
+        link: "/dashboard/criador",
+      }).then(({ error }) => { if (error) console.error("Notification insert error:", error); })
+        .catch(err => console.error("Notification error:", err));
+    }
   }
 
   // Return review with reviewer name

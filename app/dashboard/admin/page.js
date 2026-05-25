@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
+import NotificationBell from "../../components/NotificationBell";
 
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT  = "#6E6E73";
@@ -1082,13 +1083,16 @@ export default function AdminDashboard() {
 
         <div style={{ padding: isMobile ? "24px 16px 40px" : "36px 40px" }}>
           {/* Page heading */}
-          <div style={{ marginBottom: 28 }}>
-            <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, margin: 0, letterSpacing: "-0.5px" }}>
-              {TAB_LABELS[activeNav]}
-            </h1>
-            {activeNav === "dashboard" && (
-              <p style={{ fontSize: 13, color: GRAY_TEXT, margin: "4px 0 0", textTransform: "capitalize" }}>{todayPtBR()}</p>
-            )}
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 28 }}>
+            <div>
+              <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, margin: 0, letterSpacing: "-0.5px" }}>
+                {TAB_LABELS[activeNav]}
+              </h1>
+              {activeNav === "dashboard" && (
+                <p style={{ fontSize: 13, color: GRAY_TEXT, margin: "4px 0 0", textTransform: "capitalize" }}>{todayPtBR()}</p>
+              )}
+            </div>
+            <NotificationBell />
           </div>
 
           {/* Tab content */}

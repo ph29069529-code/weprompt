@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
+import NotificationBell from "../../components/NotificationBell";
 
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT  = "#6E6E73";
@@ -795,11 +796,14 @@ export default function EmpresaDashboard() {
           {/* ── TAB: INÍCIO ── */}
           {activeNav === "inicio" && (
             <>
-              <div style={{ marginBottom: 32 }}>
-                <h1 style={{ fontSize: 28, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.8px", marginBottom: 6 }}>
-                  Olá, {displayName} 👋
-                </h1>
-                <p style={{ fontSize: 15, color: GRAY_TEXT }}>Aqui está o resumo das suas soluções de IA.</p>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 32 }}>
+                <div>
+                  <h1 style={{ fontSize: 28, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.8px", marginBottom: 6 }}>
+                    Olá, {displayName} 👋
+                  </h1>
+                  <p style={{ fontSize: 15, color: GRAY_TEXT }}>Aqui está o resumo das suas soluções de IA.</p>
+                </div>
+                <NotificationBell />
               </div>
 
               {/* KPIs */}

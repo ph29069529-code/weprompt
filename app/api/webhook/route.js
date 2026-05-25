@@ -45,7 +45,7 @@ export async function POST(request) {
           } else {
             const buyerEmail = session.customer_details?.email;
             const [{ data: sol }, { data: prof }] = await Promise.all([
-              supabaseAdmin.from("solutions").select("titulo, categoria, preco").eq("id", solution_id).single(),
+              supabaseAdmin.from("solutions").select("titulo, categoria, preco, creator_id").eq("id", solution_id).single(),
               supabaseAdmin.from("profiles").select("nome").eq("id", user_id).single(),
             ]);
             if (buyerEmail && sol) {
@@ -57,6 +57,28 @@ export async function POST(request) {
                 price: sol.preco,
               }).catch(err => console.error("Email send error:", err));
             }
+            // Notifications
+            const notificationsToInsert = [
+              {
+                user_id,
+                type: "nova_compra",
+                title: "Compra confirmada!",
+                message: `Você adquiriu "${sol?.titulo || "a solução"}". Acesse seu dashboard para começar.`,
+                link: "/dashboard/empresa",
+              },
+            ];
+            if (sol?.creator_id && sol.creator_id !== user_id) {
+              notificationsToInsert.push({
+                user_id: sol.creator_id,
+                type: "nova_venda",
+                title: "Nova venda!",
+                message: `${prof?.nome || "Um usuário"} adquiriu "${sol.titulo}".`,
+                link: "/dashboard/criador",
+              });
+            }
+            supabaseAdmin.from("notifications").insert(notificationsToInsert)
+              .then(({ error }) => { if (error) console.error("Notification insert error:", error); })
+              .catch(err => console.error("Notification error:", err));
           }
         }
         break;
