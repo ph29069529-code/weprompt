@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "../../lib/stripe";
 import { createClient } from "@supabase/supabase-js";
-import { sendPurchaseConfirmation } from "../../lib/email";
+import { sendConfirmacaoCompra } from "../../lib/email";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -44,14 +44,18 @@ export async function POST(request) {
             console.error("Supabase insert error:", error);
           } else {
             const buyerEmail = session.customer_details?.email;
-            const { data: sol } = await supabaseAdmin
-              .from("solutions")
-              .select("titulo")
-              .eq("id", solution_id)
-              .single();
-            if (buyerEmail && sol?.titulo) {
-              sendPurchaseConfirmation({ to: buyerEmail, solutionTitulo: sol.titulo })
-                .catch(err => console.error("Email send error:", err));
+            const [{ data: sol }, { data: prof }] = await Promise.all([
+              supabaseAdmin.from("solutions").select("titulo, categoria, preco").eq("id", solution_id).single(),
+              supabaseAdmin.from("profiles").select("nome").eq("id", user_id).single(),
+            ]);
+            if (buyerEmail && sol) {
+              sendConfirmacaoCompra({
+                to: buyerEmail,
+                nome: prof?.nome || "",
+                solutionName: sol.titulo,
+                solutionCategory: sol.categoria || "",
+                price: sol.preco,
+              }).catch(err => console.error("Email send error:", err));
             }
           }
         }

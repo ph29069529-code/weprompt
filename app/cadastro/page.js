@@ -200,6 +200,13 @@ function CadastroForm() {
       return;
     }
 
+    // Fire-and-forget welcome email
+    fetch("/api/emails/boas-vindas", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, nome, role }),
+    }).catch(() => {});
+
     if (data.session) {
       const { error: profileError } = await supabase
         .from("profiles")
