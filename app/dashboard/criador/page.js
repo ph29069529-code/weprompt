@@ -828,6 +828,7 @@ export default function CriadorDashboard() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [solutions, setSolutions] = useState([]);
+  const [recentReviews, setRecentReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeNav, setActiveNav] = useState("inicio");
   const [modalOpen, setModalOpen] = useState(false);
@@ -849,6 +850,28 @@ export default function CriadorDashboard() {
       ]);
       if (profileRes.data) setProfile(profileRes.data);
       if (solutionsRes.data) setSolutions(solutionsRes.data);
+
+      const solutionIds = solutionsRes.data?.map(s => s.id) || [];
+      if (solutionIds.length > 0) {
+        const { data: reviewsData } = await supabase
+          .from("reviews")
+          .select("id, rating, comment, created_at, user_id, solution_id")
+          .in("solution_id", solutionIds)
+          .order("created_at", { ascending: false })
+          .limit(5);
+        if (reviewsData?.length > 0) {
+          const uids = [...new Set(reviewsData.map(r => r.user_id))];
+          const { data: profs } = await supabase.from("profiles").select("id, nome").in("id", uids);
+          const profMap = Object.fromEntries((profs || []).map(p => [p.id, p]));
+          const solMap  = Object.fromEntries((solutionsRes.data || []).map(s => [s.id, s]));
+          setRecentReviews(reviewsData.map(r => ({
+            ...r,
+            reviewer_name:   profMap[r.user_id]?.nome || "Usuário",
+            solution_titulo: solMap[r.solution_id]?.titulo || "—",
+          })));
+        }
+      }
+
       setLoading(false);
     }
     init();
@@ -902,13 +925,6 @@ export default function CriadorDashboard() {
   const CHART_DATA   = [1200, 1800, 1400, 2200, 1900, 2600];
   const CHART_LABELS = ["Dez", "Jan", "Fev", "Mar", "Abr", "Mai"];
 
-  const ACTIVITY = [
-    { icon: "💰", text: "Nova assinatura em 'Agente de Atendimento'", time: "2h atrás" },
-    { icon: "✅", text: "Solução aprovada pela curadoria WePrompt", time: "1 dia atrás" },
-    { icon: "💸", text: "Pagamento processado R$ 97,00", time: "3 dias atrás" },
-    { icon: "⭐", text: "Nova avaliação 5★ recebida", time: "5 dias atrás" },
-    { icon: "🚀", text: "Solução publicada no marketplace", time: "7 dias atrás" },
-  ];
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: NEAR_BLACK, background: BG_GRAY }}>
@@ -1087,25 +1103,45 @@ export default function CriadorDashboard() {
                 )}
               </div>
 
-              {/* Activity */}
+              {/* Recent reviews */}
               <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "24px" }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Atividade recente</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                  {ACTIVITY.map((item, i) => (
-                    <div key={i} style={{
-                      display: "flex", alignItems: "center", gap: 14, padding: "14px 0",
-                      borderBottom: i < ACTIVITY.length - 1 ? `1px solid ${BORDER}` : "none",
-                    }}>
-                      <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16 }}>
-                        {item.icon}
+                <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Avaliações recebidas</div>
+                {recentReviews.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "24px 0", color: GRAY_TEXT, fontSize: 14 }}>
+                    Nenhuma avaliação recebida ainda.
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {recentReviews.map((r, i) => (
+                      <div key={r.id} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "14px 0", borderBottom: i < recentReviews.length - 1 ? `1px solid ${BORDER}` : "none" }}>
+                        <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 13, fontWeight: 700, color: BLUE }}>
+                          {(r.reviewer_name || "U").charAt(0).toUpperCase()}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2, flexWrap: "wrap" }}>
+                            <span style={{ fontSize: 13, fontWeight: 700, color: NEAR_BLACK }}>{r.reviewer_name}</span>
+                            <span style={{ display: "inline-flex", gap: 1 }}>
+                              {[1,2,3,4,5].map(n => (
+                                <svg key={n} width="11" height="11" viewBox="0 0 24 24" fill={n <= r.rating ? "#FBBF24" : "#e5e7eb"}>
+                                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                              ))}
+                            </span>
+                            <span style={{ fontSize: 11, background: "#e0f2fe", color: BLUE, fontWeight: 600, padding: "2px 8px", borderRadius: 99 }}>{r.solution_titulo}</span>
+                          </div>
+                          {r.comment && (
+                            <div style={{ fontSize: 13, color: GRAY_TEXT, lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {r.comment}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ fontSize: 11, color: GRAY_TEXT, flexShrink: 0, whiteSpace: "nowrap" }}>
+                          {new Date(r.created_at).toLocaleDateString("pt-BR", { day: "numeric", month: "short" })}
+                        </div>
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, color: NEAR_BLACK, fontWeight: 500 }}>{item.text}</div>
-                      </div>
-                      <div style={{ fontSize: 12, color: GRAY_TEXT, flexShrink: 0 }}>{item.time}</div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </>
           )}

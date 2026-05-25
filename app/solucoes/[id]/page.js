@@ -382,6 +382,196 @@ function Skeleton({ isMobile }) {
   );
 }
 
+/* ── Reviews Tab ── */
+function ReviewsTab({ solutionId, user, alreadyOwned, isMobile }) {
+  const [reviews,    setReviews]    = useState([]);
+  const [loaded,     setLoaded]     = useState(false);
+  const [hoverStar,  setHoverStar]  = useState(0);
+  const [selStar,    setSelStar]    = useState(0);
+  const [comment,    setComment]    = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [success,    setSuccess]    = useState(false);
+  const [formError,  setFormError]  = useState("");
+
+  useEffect(() => {
+    if (!solutionId) return;
+    fetch(`/api/reviews?solution_id=${solutionId}`)
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setReviews(data); setLoaded(true); })
+      .catch(() => setLoaded(true));
+  }, [solutionId]);
+
+  const hasReviewed = user ? reviews.some(r => r.user_id === user.id) : false;
+
+  const avg = reviews.length > 0
+    ? reviews.reduce((a, r) => a + (r.rating || 5), 0) / reviews.length
+    : 0;
+
+  const ratingCounts = [5, 4, 3, 2, 1].map(n => ({
+    n, count: reviews.filter(r => Math.round(r.rating) === n).length,
+  }));
+
+  async function handleSubmit() {
+    if (!selStar) { setFormError("Selecione uma nota de 1 a 5 estrelas."); return; }
+    setSubmitting(true);
+    setFormError("");
+    const { data: { session } } = await supabase.auth.getSession();
+    const res = await fetch("/api/reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({ solution_id: solutionId, rating: selStar, comment }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      setFormError(json.error || "Erro ao publicar avaliação.");
+      setSubmitting(false);
+      return;
+    }
+    setSuccess(true);
+    if (json.review) setReviews(prev => [json.review, ...prev]);
+    setSubmitting(false);
+  }
+
+  if (!loaded) {
+    return (
+      <div style={{ textAlign: "center", padding: "40px 0", color: GRAY_TEXT, fontSize: 14 }}>
+        Carregando avaliações…
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* Rating summary */}
+      {reviews.length > 0 && (
+        <div style={{ display: "flex", gap: 28, marginBottom: 28, padding: "20px 24px", background: BG_GRAY, borderRadius: 16, flexWrap: "wrap" }}>
+          <div style={{ textAlign: "center", minWidth: 80 }}>
+            <div style={{ fontSize: 64, fontWeight: 800, color: BLUE, lineHeight: 1, letterSpacing: "-2px" }}>
+              {avg.toFixed(1)}
+            </div>
+            <div style={{ marginTop: 8 }}><Stars rating={avg} size={16} /></div>
+            <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 4 }}>{reviews.length} avaliações</div>
+          </div>
+          <div style={{ flex: 1, minWidth: 160, display: "flex", flexDirection: "column", justifyContent: "center", gap: 7 }}>
+            {ratingCounts.map(({ n, count }) => (
+              <div key={n} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, color: GRAY_TEXT, fontWeight: 600, width: 10, flexShrink: 0 }}>{n}</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="#FBBF24" style={{ flexShrink: 0 }}>
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+                <div style={{ flex: 1, height: 6, background: "#e5e7eb", borderRadius: 999, overflow: "hidden" }}>
+                  <div style={{ width: `${reviews.length > 0 ? (count / reviews.length) * 100 : 0}%`, height: "100%", background: BLUE, borderRadius: 999 }} />
+                </div>
+                <span style={{ fontSize: 12, color: GRAY_TEXT, width: 18, textAlign: "right", flexShrink: 0 }}>{count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Review cards */}
+      {reviews.length > 0 ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
+          {reviews.map((r, i) => (
+            <div key={r.id || i} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 16, padding: 20 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: r.comment ? 10 : 0 }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
+                  {initials(r.reviewer_name || "U")}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4, marginBottom: 4 }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: NEAR_BLACK }}>{r.reviewer_name || "Usuário verificado"}</span>
+                    <span style={{ fontSize: 12, color: GRAY_TEXT }}>
+                      {new Date(r.created_at).toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" })}
+                    </span>
+                  </div>
+                  <Stars rating={r.rating || 5} size={13} />
+                </div>
+              </div>
+              {r.comment && (
+                <p style={{ fontSize: 14, color: NEAR_BLACK, lineHeight: 1.6, margin: 0 }}>{r.comment}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ textAlign: "center", padding: "48px 0 32px" }}>
+          <div style={{ fontSize: 36, opacity: 0.18, marginBottom: 14 }}>⭐</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6 }}>
+            Seja o primeiro a avaliar esta solução
+          </div>
+          <div style={{ fontSize: 13, color: GRAY_TEXT }}>Avaliações aparecem após a aquisição.</div>
+        </div>
+      )}
+
+      {/* Write review */}
+      <div style={{ borderTop: reviews.length > 0 ? `1px solid ${BORDER}` : "none", paddingTop: reviews.length > 0 ? 24 : 0 }}>
+        {!user ? (
+          <div style={{ textAlign: "center", padding: "16px 0" }}>
+            <div style={{ fontSize: 14, color: GRAY_TEXT, marginBottom: 10 }}>Faça login para avaliar esta solução.</div>
+            <a href={`/login?redirect=/solucoes/${solutionId}`} style={{ color: BLUE, fontWeight: 600, fontSize: 14, textDecoration: "none" }}
+              onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+              onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}>
+              Entrar →
+            </a>
+          </div>
+        ) : !alreadyOwned ? (
+          <div style={{ textAlign: "center", padding: "16px 0", fontSize: 14, color: GRAY_TEXT }}>
+            Adquira esta solução para deixar uma avaliação.
+          </div>
+        ) : hasReviewed || success ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "14px 16px", background: "rgba(5,150,105,0.07)", border: "1px solid rgba(5,150,105,0.2)", borderRadius: 12 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="11" fill="rgba(5,150,105,0.2)" />
+              <path d="M7 12l3 3 7-7" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#059669" }}>Você já avaliou esta solução ✓</span>
+          </div>
+        ) : (
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 14 }}>Deixe sua avaliação</div>
+            <div style={{ display: "flex", gap: 2, marginBottom: 14 }}>
+              {[1, 2, 3, 4, 5].map(n => (
+                <button key={n}
+                  onClick={() => setSelStar(n)}
+                  onMouseEnter={() => setHoverStar(n)}
+                  onMouseLeave={() => setHoverStar(0)}
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 3px", fontSize: 32, lineHeight: 1, color: n <= (hoverStar || selStar) ? "#FBBF24" : "#e5e7eb", transition: "color 0.1s" }}>
+                  ★
+                </button>
+              ))}
+            </div>
+            <textarea
+              rows={4}
+              value={comment}
+              onChange={e => setComment(e.target.value)}
+              placeholder="Conte sua experiência com esta solução..."
+              style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${BORDER}`, fontSize: 14, color: NEAR_BLACK, background: "#fff", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, outline: "none", transition: "border-color 0.15s" }}
+              onFocus={e => e.target.style.borderColor = BLUE}
+              onBlur={e => e.target.style.borderColor = BORDER}
+            />
+            {formError && (
+              <div style={{ fontSize: 13, color: "#dc2626", marginTop: 8 }}>{formError}</div>
+            )}
+            <button
+              onClick={handleSubmit}
+              disabled={submitting}
+              style={{ marginTop: 12, height: 44, padding: "0 24px", borderRadius: 12, border: "none", background: submitting ? "rgba(3,105,161,0.5)" : BLUE, color: "#fff", fontSize: 14, fontWeight: 700, cursor: submitting ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
+              onMouseEnter={e => { if (!submitting) e.currentTarget.style.background = "#0284C7"; }}
+              onMouseLeave={e => { if (!submitting) e.currentTarget.style.background = BLUE; }}
+            >
+              {submitting ? "Publicando…" : "Publicar avaliação"}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════
    SOLUTION DETAIL
 ══════════════════════════════════════════ */
@@ -389,7 +579,6 @@ function SolutionDetail({ isMobile }) {
   const { id } = useParams();
   const [solution, setSolution]     = useState(null);
   const [creator, setCreator]       = useState(null);
-  const [reviews, setReviews]       = useState([]);
   const [alreadyOwned, setAlreadyOwned] = useState(false);
   const [loading, setLoading]       = useState(true);
   const [notFound, setNotFound]     = useState(false);
@@ -412,11 +601,10 @@ function SolutionDetail({ isMobile }) {
       const sess = sessionRes.data?.session;
       if (sess?.user) setUser(sess.user);
 
-      const [creatorRes, reviewsRes, ownedRes] = await Promise.all([
+      const [creatorRes, ownedRes] = await Promise.all([
         sol.creator_id
           ? supabase.from("profiles").select("id, nome").eq("id", sol.creator_id).single()
           : Promise.resolve({ data: null }),
-        supabase.from("reviews").select("*").eq("solution_id", id).order("created_at", { ascending: false }).limit(10),
         sess?.user
           ? supabase.from("subscriptions").select("id").eq("solution_id", id).eq("business_id", sess.user.id).limit(1)
           : Promise.resolve({ data: [] }),
@@ -433,7 +621,6 @@ function SolutionDetail({ isMobile }) {
         setCreator({ nome: sol.criador_nome, solution_count: 1 });
       }
 
-      if (reviewsRes.data) setReviews(reviewsRes.data);
       if (ownedRes.data?.length > 0) setAlreadyOwned(true);
 
       setLoading(false);
@@ -464,15 +651,11 @@ function SolutionDetail({ isMobile }) {
 
   if (!solution) return null;
 
-  const avgRating = reviews.length > 0
-    ? reviews.reduce((acc, r) => acc + (r.rating || 5), 0) / reviews.length
-    : 5;
-
   const tabs = [
     { key: "descricao",  label: "Descrição" },
     { key: "como-usar",  label: "Como usar" },
     { key: "incluso",    label: "O que está incluso" },
-    { key: "avaliacoes", label: `Avaliações${reviews.length > 0 ? ` (${reviews.length})` : ""}` },
+    { key: "avaliacoes", label: `Avaliações${(solution.review_count || 0) > 0 ? ` (${solution.review_count})` : ""}` },
   ];
 
   const purchaseCard = (
@@ -536,10 +719,12 @@ function SolutionDetail({ isMobile }) {
               <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "rgba(5,150,105,0.1)", color: "#059669", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 99 }}>
                 ✓ Criador Verificado
               </span>
-              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                <Stars rating={avgRating} size={13} />
-                <span style={{ fontSize: 12, color: GRAY_TEXT }}>({reviews.length})</span>
-              </div>
+              {(solution.review_count || 0) > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <Stars rating={solution.avg_rating || 5} size={13} />
+                  <span style={{ fontSize: 12, color: GRAY_TEXT }}>({solution.review_count})</span>
+                </div>
+              )}
             </div>
 
             {/* Hero image */}
@@ -648,52 +833,12 @@ function SolutionDetail({ isMobile }) {
 
                 {/* AVALIAÇÕES */}
                 {activeTab === "avaliacoes" && (
-                  reviews.length > 0 ? (
-                    <div>
-                      {/* Summary */}
-                      <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 28, padding: "20px 24px", background: BG_GRAY, borderRadius: 16 }}>
-                        <div style={{ textAlign: "center" }}>
-                          <div style={{ fontSize: 52, fontWeight: 900, color: NEAR_BLACK, lineHeight: 1 }}>
-                            {avgRating.toFixed(1)}
-                          </div>
-                          <div style={{ marginTop: 6 }}><Stars rating={avgRating} size={18} /></div>
-                          <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 4 }}>{reviews.length} avaliações</div>
-                        </div>
-                      </div>
-                      {/* Cards */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                        {reviews.map((r, i) => (
-                          <div key={i} style={{ padding: "18px 20px", background: BG_GRAY, borderRadius: 14 }}>
-                            <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
-                              <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
-                                {(r.reviewer_name || "U").charAt(0).toUpperCase()}
-                              </div>
-                              <div style={{ flex: 1 }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4, marginBottom: 3 }}>
-                                  <span style={{ fontSize: 14, fontWeight: 700, color: NEAR_BLACK }}>{r.reviewer_name || "Usuário verificado"}</span>
-                                  <span style={{ fontSize: 12, color: GRAY_TEXT }}>
-                                    {new Date(r.created_at).toLocaleDateString("pt-BR", { month: "short", year: "numeric" })}
-                                  </span>
-                                </div>
-                                <Stars rating={r.rating || 5} size={12} />
-                              </div>
-                            </div>
-                            {r.comment && (
-                              <p style={{ fontSize: 14, color: GRAY_TEXT, lineHeight: 1.7, margin: 0 }}>{r.comment}</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ textAlign: "center", padding: "48px 0" }}>
-                      <div style={{ fontSize: 36, opacity: 0.18, marginBottom: 14 }}>⭐</div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6 }}>
-                        Seja o primeiro a avaliar esta solução
-                      </div>
-                      <div style={{ fontSize: 13, color: GRAY_TEXT }}>As avaliações aparecem após a aquisição.</div>
-                    </div>
-                  )
+                  <ReviewsTab
+                    solutionId={id}
+                    user={user}
+                    alreadyOwned={alreadyOwned}
+                    isMobile={isMobile}
+                  />
                 )}
 
               </div>
