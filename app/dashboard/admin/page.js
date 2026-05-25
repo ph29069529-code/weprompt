@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
@@ -1267,6 +1267,373 @@ function CategoriasTab({ isMobile }) {
   );
 }
 
+/* ── DualLineChart ── */
+function DualLineChart({ line1, line2, labels, color1, color2 }) {
+  const W = 400, H = 140, PL = 38, PB = 24, PT = 8, PR = 8;
+  const cW = W - PL - PR, cH = H - PT - PB;
+  const max = Math.max(...line1, ...line2, 1) * 1.15;
+  function pts(data) {
+    return data.map((v, i) => `${PL + (i / (data.length - 1)) * cW},${PT + cH * (1 - v / max)}`).join(" ");
+  }
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ overflow: "visible" }}>
+      {[0, 0.25, 0.5, 0.75, 1].map(f => (
+        <line key={f} x1={PL} y1={PT + cH * (1 - f)} x2={W - PR} y2={PT + cH * (1 - f)} stroke="#e5e7eb" strokeWidth="1" />
+      ))}
+      <polyline points={pts(line1)} fill="none" stroke={color1} strokeWidth="2.5" strokeLinejoin="round" />
+      <polyline points={pts(line2)} fill="none" stroke={color2} strokeWidth="2.5" strokeLinejoin="round" strokeDasharray="4,3" />
+      {line1.map((v, i) => <circle key={i} cx={PL + (i / (line1.length - 1)) * cW} cy={PT + cH * (1 - v / max)} r={2.5} fill={color1} />)}
+      {labels.map((l, i) => {
+        if (i % 3 !== 0 && i !== labels.length - 1) return null;
+        return <text key={i} x={PL + (i / (labels.length - 1)) * cW} y={H - 6} textAnchor="middle" fontSize="9" fill={GRAY_TEXT}>{l}</text>;
+      })}
+    </svg>
+  );
+}
+
+/* ── GroupedBarChart ── */
+function GroupedBarChart({ group1, group2, labels, color1, color2 }) {
+  const W = 400, H = 140, PL = 20, PB = 24, PT = 8, PR = 8;
+  const cW = W - PL - PR, cH = H - PT - PB;
+  const max = Math.max(...group1, ...group2, 1) * 1.2;
+  const slotW = cW / labels.length;
+  const barW = slotW * 0.34;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ overflow: "visible" }}>
+      {[0, 0.25, 0.5, 0.75, 1].map(f => (
+        <line key={f} x1={PL} y1={PT + cH * (1 - f)} x2={W - PR} y2={PT + cH * (1 - f)} stroke="#e5e7eb" strokeWidth="1" />
+      ))}
+      {labels.map((l, i) => {
+        const sx = PL + i * slotW;
+        const bh1 = (group1[i] / max) * cH;
+        const bh2 = (group2[i] / max) * cH;
+        return (
+          <g key={i}>
+            <rect x={sx + slotW * 0.08} y={PT + cH - bh1} width={barW} height={Math.max(bh1, 1)} rx={2} fill={color1} opacity={0.85} />
+            <rect x={sx + slotW * 0.08 + barW + 2} y={PT + cH - bh2} width={barW} height={Math.max(bh2, 1)} rx={2} fill={color2} opacity={0.85} />
+            {(i % 3 === 0 || i === labels.length - 1) && <text x={sx + slotW / 2} y={H - 6} textAnchor="middle" fontSize="9" fill={GRAY_TEXT}>{l}</text>}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+/* ── HorizBarChart ── */
+function HorizBarChart({ data }) {
+  const W = 400, ROW_H = 38, PAD_L = 120, PAD_R = 50;
+  const BAR_AREA = W - PAD_L - PAD_R;
+  const max = Math.max(...data.map(d => d.value), 1);
+  const totalH = data.length * ROW_H;
+  return (
+    <svg viewBox={`0 0 ${W} ${totalH}`} width="100%" style={{ overflow: "visible" }}>
+      {data.map((d, i) => {
+        const bw = (d.value / max) * BAR_AREA;
+        const y = i * ROW_H;
+        const lbl = d.label.length > 15 ? d.label.slice(0, 13) + "…" : d.label;
+        return (
+          <g key={i}>
+            <text x={PAD_L - 8} y={y + ROW_H / 2} textAnchor="end" dominantBaseline="middle" fontSize="11" fill={GRAY_TEXT}>{lbl}</text>
+            <rect x={PAD_L} y={y + 8} width={Math.max(4, bw)} height={ROW_H - 16} rx={4} fill={BLUE} opacity={0.8} />
+            <text x={PAD_L + Math.max(4, bw) + 6} y={y + ROW_H / 2} dominantBaseline="middle" fontSize="11" fill={NEAR_BLACK} fontWeight="600">{d.value}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+/* ── DonutChart ── */
+function DonutChart({ data, size = 140 }) {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  if (!total) return null;
+  const cx = size / 2, cy = size / 2, R = size * 0.4, r = size * 0.24;
+  function polar(radius, angle) {
+    return { x: cx + radius * Math.cos(angle - Math.PI / 2), y: cy + radius * Math.sin(angle - Math.PI / 2) };
+  }
+  let start = 0;
+  const segs = data.map(d => {
+    const sweep = (d.value / total) * Math.PI * 2;
+    const seg = { ...d, start, end: start + sweep };
+    start += sweep;
+    return seg;
+  });
+  function arcPath(seg) {
+    const s1 = polar(R, seg.start), e1 = polar(R, seg.end);
+    const s2 = polar(r, seg.end), e2 = polar(r, seg.start);
+    const lg = seg.end - seg.start > Math.PI ? 1 : 0;
+    return `M ${s1.x} ${s1.y} A ${R} ${R} 0 ${lg} 1 ${e1.x} ${e1.y} L ${s2.x} ${s2.y} A ${r} ${r} 0 ${lg} 0 ${e2.x} ${e2.y} Z`;
+  }
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
+      {segs.map((seg, i) => <path key={i} d={arcPath(seg)} fill={seg.color} />)}
+      <text x={cx} y={cy - 5} textAnchor="middle" fontSize="16" fontWeight="800" fill={NEAR_BLACK}>{total}</text>
+      <text x={cx} y={cy + 11} textAnchor="middle" fontSize="9" fill={GRAY_TEXT}>soluções</text>
+    </svg>
+  );
+}
+
+/* ── MÉTRICAS TAB ── */
+const MONTHS_PT_ADMIN = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const CAT_COLORS_ADMIN = ["#0369A1", "#7C3AED", "#059669", "#D97706", "#DC2626", "#0891B2", "#6B7280"];
+
+function MetricasAdminTab({ solutions, profiles, isMobile }) {
+  const [period, setPeriod] = useState("30d");
+  const [subs, setSubs] = useState([]);
+  const [loadingSubs, setLoadingSubs] = useState(true);
+  const [topSolutions, setTopSolutions] = useState([]);
+  const [topCreators, setTopCreators] = useState([]);
+
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("id, created_at, status, solution_id, solutions(id, titulo, preco, categoria, creator_id, payment_type)")
+        .order("created_at", { ascending: false });
+      if (data) {
+        setSubs(data);
+        const solMap = {};
+        const creatorMap = {};
+        for (const s of data) {
+          const id = s.solution_id;
+          if (id) {
+            if (!solMap[id]) solMap[id] = { titulo: s.solutions?.titulo || "—", count: 0 };
+            solMap[id].count++;
+          }
+          const cid = s.solutions?.creator_id;
+          if (cid) {
+            if (!creatorMap[cid]) creatorMap[cid] = { creator_id: cid, sales: 0, revenue: 0 };
+            creatorMap[cid].sales++;
+            creatorMap[cid].revenue += s.solutions?.preco || 0;
+          }
+        }
+        setTopSolutions(Object.values(solMap).sort((a, b) => b.count - a.count).slice(0, 5));
+        setTopCreators(Object.values(creatorMap).sort((a, b) => b.revenue - a.revenue).slice(0, 6));
+      }
+      setLoadingSubs(false);
+    }
+    load();
+  }, []);
+
+  const filteredSubs = useMemo(() => {
+    if (period === "all") return subs;
+    const days = { "7d": 7, "30d": 30, "3m": 90, "12m": 365 }[period] || 30;
+    const cutoff = new Date(Date.now() - days * 86400000);
+    return subs.filter(s => new Date(s.created_at) >= cutoff);
+  }, [subs, period]);
+
+  const totalRevenue = filteredSubs.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
+  const ticketMedio = filteredSubs.length > 0 ? totalRevenue / filteredSubs.length : 0;
+  const activeSubs = subs.filter(s => s.status === "active" && s.solutions?.payment_type === "subscription");
+  const mrr = activeSubs.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
+
+  const now = new Date();
+  const last12Months = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(now); d.setMonth(d.getMonth() - 11 + i);
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
+  const monthLabels = last12Months.map(({ month }) => MONTHS_PT_ADMIN[month]);
+
+  const revenueByMonth = last12Months.map(({ year, month }) =>
+    subs.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; })
+      .reduce((sum, s) => sum + (s.solutions?.preco || 0), 0)
+  );
+  const commissionsByMonth = revenueByMonth.map(r => r * 0.15);
+
+  const criadoresMonthly = last12Months.map(({ year, month }) =>
+    profiles.filter(p => (p.role === "criador" || p.role === "creator") && (() => { const d = new Date(p.created_at); return d.getFullYear() === year && d.getMonth() === month; })()).length
+  );
+  const empresasMonthly = last12Months.map(({ year, month }) =>
+    profiles.filter(p => (p.role === "empresa" || p.role === "business") && (() => { const d = new Date(p.created_at); return d.getFullYear() === year && d.getMonth() === month; })()).length
+  );
+
+  const catMap = {};
+  solutions.filter(s => s.status === "approved").forEach(s => { const c = s.categoria || "Outras"; catMap[c] = (catMap[c] || 0) + 1; });
+  const categoryData = Object.entries(catMap).sort((a, b) => b[1] - a[1])
+    .map(([label, value], i) => ({ label, value, color: CAT_COLORS_ADMIN[i % CAT_COLORS_ADMIN.length] }));
+
+  const criadoresProfiles = profiles.filter(p => p.role === "criador" || p.role === "creator");
+  const enrichedCreators = topCreators.map(c => {
+    const prof = criadoresProfiles.find(p => p.id === c.creator_id);
+    const ativas = solutions.filter(s => s.creator_id === c.creator_id && s.status === "approved").length;
+    return { ...c, nome: prof?.nome || "—", ativas };
+  });
+
+  const recentTransactions = subs.slice(0, 10).map(s => ({
+    data: new Date(s.created_at).toLocaleDateString("pt-BR"),
+    solucao: s.solutions?.titulo || "—",
+    valor: s.solutions?.preco || 0,
+    comissao: (s.solutions?.preco || 0) * 0.15,
+    liquido: (s.solutions?.preco || 0) * 0.85,
+    status: s.status,
+  }));
+
+  const periodOptions = [
+    { key: "7d", label: "7 dias" }, { key: "30d", label: "30 dias" },
+    { key: "3m", label: "3 meses" }, { key: "12m", label: "12 meses" }, { key: "all", label: "Todo período" },
+  ];
+  const card = { background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "22px 24px" };
+
+  if (loadingSubs) return <div style={{ textAlign: "center", padding: "80px", color: GRAY_TEXT }}>Carregando métricas…</div>;
+
+  return (
+    <div>
+      {/* Date filter */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
+        {periodOptions.map(opt => (
+          <button key={opt.key} onClick={() => setPeriod(opt.key)} style={{
+            padding: "7px 18px", borderRadius: 99, border: "none",
+            background: period === opt.key ? BLUE : "#fff",
+            color: period === opt.key ? "#fff" : GRAY_TEXT,
+            fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.08)", transition: "background 0.15s, color 0.15s",
+          }}>{opt.label}</button>
+        ))}
+      </div>
+
+      {/* Overview cards */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
+        {[
+          { label: "Receita Total da Plataforma", value: `R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: `${filteredSubs.length} transações`, color: BLUE },
+          { label: "Ticket Médio", value: `R$ ${ticketMedio.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "por transação", color: "#7C3AED" },
+          { label: "Taxa de Conversão", value: "3,2%", sub: "visitantes → compras", color: GREEN },
+          { label: "MRR", value: `R$ ${mrr.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "assinaturas ativas", color: "#B45309" },
+        ].map(c => (
+          <div key={c.label} style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "20px 22px" }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: c.color, letterSpacing: "-0.5px", lineHeight: 1.1 }}>{c.value}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginTop: 6 }}>{c.label}</div>
+            <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 2 }}>{c.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts row 1 */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 18, marginBottom: 18 }}>
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Receita por mês</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Últimos 12 meses (R$)</div>
+          <DualLineChart line1={revenueByMonth} line2={commissionsByMonth} labels={monthLabels} color1={BLUE} color2="#0891b2" />
+          <div style={{ display: "flex", gap: 16, marginTop: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: BLUE }} />Receita bruta</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0891b2" }} />Comissões</div>
+          </div>
+        </div>
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Novos usuários por mês</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Últimos 12 meses</div>
+          <GroupedBarChart group1={criadoresMonthly} group2={empresasMonthly} labels={monthLabels} color1={BLUE} color2="#7C3AED" />
+          <div style={{ display: "flex", gap: 16, marginTop: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: BLUE }} />Criadores</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: "#7C3AED" }} />Empresas</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Charts row 2 */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 18, marginBottom: 24 }}>
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Soluções mais vendidas</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Top 5 por número de vendas</div>
+          {topSolutions.length === 0
+            ? <div style={{ textAlign: "center", padding: "32px", color: GRAY_TEXT, fontSize: 14 }}>Sem dados suficientes</div>
+            : <HorizBarChart data={topSolutions.map(s => ({ label: s.titulo, value: s.count }))} />}
+        </div>
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Distribuição por categoria</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Soluções ativas por categoria</div>
+          {categoryData.length === 0
+            ? <div style={{ textAlign: "center", padding: "32px", color: GRAY_TEXT, fontSize: 14 }}>Nenhuma solução aprovada</div>
+            : (
+              <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+                <DonutChart data={categoryData} />
+                <div style={{ flex: 1, minWidth: 100 }}>
+                  {categoryData.map(d => (
+                    <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <div style={{ width: 10, height: 10, borderRadius: "50%", background: d.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, color: GRAY_TEXT, flex: 1 }}>{d.label}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: NEAR_BLACK }}>{d.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+        </div>
+      </div>
+
+      {/* Top creators table */}
+      <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden", marginBottom: 18 }}>
+        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, fontSize: 15, fontWeight: 700, color: NEAR_BLACK }}>Top Criadores</div>
+        {enrichedCreators.length === 0 ? (
+          <div style={{ padding: "40px", textAlign: "center", color: GRAY_TEXT }}>Nenhum dado disponível</div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#f9fafb" }}>
+                  {["Criador", "Soluções Ativas", "Vendas Totais", "Receita Gerada"].map(h => (
+                    <th key={h} style={{ padding: "11px 16px", textAlign: "left", fontWeight: 600, color: GRAY_TEXT, whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {enrichedCreators.map((c, i) => (
+                  <tr key={i} style={{ borderTop: `1px solid ${BORDER}` }}>
+                    <td style={{ padding: "12px 16px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
+                          {(c.nome || "?").charAt(0).toUpperCase()}
+                        </div>
+                        <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{c.nome}</span>
+                      </div>
+                    </td>
+                    <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{c.ativas}</td>
+                    <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{c.sales}</td>
+                    <td style={{ padding: "12px 16px", fontWeight: 700, color: NEAR_BLACK }}>R$ {c.revenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Recent transactions */}
+      <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, fontSize: 15, fontWeight: 700, color: NEAR_BLACK }}>Transações Recentes</div>
+        {recentTransactions.length === 0 ? (
+          <div style={{ padding: "40px", textAlign: "center", color: GRAY_TEXT }}>Nenhuma transação encontrada</div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#f9fafb" }}>
+                  {["Data", "Solução", "Valor Bruto", "Comissão (15%)", "Valor Líquido", "Status"].map(h => (
+                    <th key={h} style={{ padding: "11px 16px", textAlign: "left", fontWeight: 600, color: GRAY_TEXT, whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {recentTransactions.map((t, i) => (
+                  <tr key={i} style={{ borderTop: `1px solid ${BORDER}` }}>
+                    <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{t.data}</td>
+                    <td style={{ padding: "12px 16px", fontWeight: 500, color: NEAR_BLACK }}>{t.solucao}</td>
+                    <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>R$ {t.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td style={{ padding: "12px 16px", color: "#7C3AED" }}>R$ {t.comissao.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td style={{ padding: "12px 16px", fontWeight: 600, color: GREEN }}>R$ {t.liquido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <StatusBadge status={t.status === "active" ? "ativo" : t.status === "cancelled" ? "paused" : "pendente"} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════ */
@@ -1289,7 +1656,7 @@ const TAB_LABELS = {
   logs: "Logs de Acesso", banidos: "Usuários Banidos",
 };
 
-const REAL_TABS = new Set(["dashboard", "solucoes", "categorias", "usuarios", "transacoes", "config"]);
+const REAL_TABS = new Set(["dashboard", "solucoes", "categorias", "usuarios", "transacoes", "config", "receita"]);
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -1516,6 +1883,7 @@ export default function AdminDashboard() {
           {activeNav === "usuarios"   && <UsuariosTab isMobile={isMobile} />}
           {activeNav === "transacoes" && <TransacoesTab isMobile={isMobile} />}
           {activeNav === "config"     && <ConfigGeraisTab isMobile={isMobile} />}
+          {activeNav === "receita"    && <MetricasAdminTab solutions={solutions} profiles={profiles} isMobile={isMobile} />}
           {!REAL_TABS.has(activeNav)  && <ComingSoon label={TAB_LABELS[activeNav]} />}
         </div>
       </main>

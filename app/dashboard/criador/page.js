@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
@@ -821,6 +821,233 @@ function NavItem({ iconD, label, active, onClick }) {
   );
 }
 
+const GREEN_CRIADOR = "#059669";
+const MONTHS_PT_C = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+/* ── SimpleLineChart ── */
+function SimpleLineChart({ data, labels }) {
+  const W = 400, H = 140, PL = 44, PB = 26, PT = 8, PR = 8;
+  const cW = W - PL - PR, cH = H - PT - PB;
+  const max = Math.max(...data, 1) * 1.15;
+  function gx(i) { return PL + (i / Math.max(data.length - 1, 1)) * cW; }
+  function gy(v) { return PT + cH * (1 - v / max); }
+  const pts = data.map((v, i) => `${gx(i)},${gy(v)}`).join(" ");
+  const area = `M ${gx(0)},${PT + cH} ${data.map((v, i) => `L ${gx(i)},${gy(v)}`).join(" ")} L ${gx(data.length - 1)},${PT + cH} Z`;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ overflow: "visible" }}>
+      <defs>
+        <linearGradient id="lineGradC" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#0369A1" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#0369A1" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {[0, 0.25, 0.5, 0.75, 1].map(f => {
+        const y = PT + cH * (1 - f);
+        return (
+          <g key={f}>
+            <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="#e5e7eb" strokeWidth="1" />
+            {f > 0 && <text x={PL - 4} y={y + 4} textAnchor="end" fontSize="9" fill="#6E6E73">
+              {max * f >= 1000 ? `${(max * f / 1000).toFixed(0)}k` : Math.round(max * f)}
+            </text>}
+          </g>
+        );
+      })}
+      <path d={area} fill="url(#lineGradC)" />
+      <polyline points={pts} fill="none" stroke="#0369A1" strokeWidth="2.5" strokeLinejoin="round" />
+      {data.map((v, i) => <circle key={i} cx={gx(i)} cy={gy(v)} r={3} fill="#0369A1" />)}
+      {labels.map((l, i) => <text key={i} x={gx(i)} y={H - 6} textAnchor="middle" fontSize="10" fill="#6E6E73">{l}</text>)}
+    </svg>
+  );
+}
+
+/* ── HorizBarChart ── */
+function HorizBarChartC({ data }) {
+  const W = 400, ROW_H = 38, PAD_L = 120, PAD_R = 50;
+  const BAR_AREA = W - PAD_L - PAD_R;
+  const max = Math.max(...data.map(d => d.value), 1);
+  return (
+    <svg viewBox={`0 0 ${W} ${data.length * ROW_H}`} width="100%" style={{ overflow: "visible" }}>
+      {data.map((d, i) => {
+        const bw = (d.value / max) * BAR_AREA;
+        const y = i * ROW_H;
+        const lbl = d.label.length > 15 ? d.label.slice(0, 13) + "…" : d.label;
+        return (
+          <g key={i}>
+            <text x={PAD_L - 8} y={y + ROW_H / 2} textAnchor="end" dominantBaseline="middle" fontSize="11" fill="#6E6E73">{lbl}</text>
+            <rect x={PAD_L} y={y + 8} width={Math.max(4, bw)} height={ROW_H - 16} rx={4} fill="#0369A1" opacity={0.8} />
+            <text x={PAD_L + Math.max(4, bw) + 6} y={y + ROW_H / 2} dominantBaseline="middle" fontSize="11" fill="#1D1D1F" fontWeight="600">{d.value}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+/* ── ANALYTICS TAB ── */
+function AnalyticsCriadorTab({ solutions, userId, isMobile }) {
+  const [period, setPeriod] = useState("30d");
+  const [subs, setSubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [avgRating, setAvgRating] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      const solutionIds = solutions.map(s => s.id);
+      if (solutionIds.length === 0) { setLoading(false); return; }
+      const [subsRes, reviewsRes] = await Promise.all([
+        supabase.from("subscriptions").select("id, created_at, status, solution_id, solutions(id, titulo, preco, categoria)").in("solution_id", solutionIds).order("created_at", { ascending: false }),
+        supabase.from("reviews").select("rating").in("solution_id", solutionIds),
+      ]);
+      if (subsRes.data) setSubs(subsRes.data);
+      if (reviewsRes.data?.length > 0) {
+        setAvgRating((reviewsRes.data.reduce((s, r) => s + r.rating, 0) / reviewsRes.data.length).toFixed(1));
+      }
+      setLoading(false);
+    }
+    load();
+  }, [solutions, userId]);
+
+  const filteredSubs = useMemo(() => {
+    if (period === "all") return subs;
+    const days = { "7d": 7, "30d": 30, "3m": 90, "12m": 365 }[period] || 30;
+    const cutoff = new Date(Date.now() - days * 86400000);
+    return subs.filter(s => new Date(s.created_at) >= cutoff);
+  }, [subs, period]);
+
+  const now = new Date();
+  const last6Months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now); d.setMonth(d.getMonth() - 5 + i);
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
+  const monthLabels = last6Months.map(({ month }) => MONTHS_PT_C[month]);
+  const revenueByMonth = last6Months.map(({ year, month }) =>
+    subs.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; })
+      .reduce((sum, s) => sum + (s.solutions?.preco || 0), 0)
+  );
+
+  const thisMonth = subs.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth(); });
+  const totalRevenue = subs.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
+
+  const solMap = {};
+  for (const s of subs) {
+    if (!solMap[s.solution_id]) solMap[s.solution_id] = { titulo: s.solutions?.titulo || "—", count: 0, revenue: 0 };
+    solMap[s.solution_id].count++;
+    solMap[s.solution_id].revenue += s.solutions?.preco || 0;
+  }
+  const solSales = Object.values(solMap).sort((a, b) => b.count - a.count);
+
+  const solPerformance = solutions.map(sol => {
+    const sd = solMap[sol.id] || { count: 0, revenue: 0 };
+    return { id: sol.id, titulo: sol.titulo, categoria: sol.categoria, status: sol.status, vendas: sd.count, receita: sd.revenue, comissao: sd.revenue * 0.15, liquido: sd.revenue * 0.85 };
+  });
+
+  const periodOptions = [
+    { key: "7d", label: "7 dias" }, { key: "30d", label: "30 dias" },
+    { key: "3m", label: "3 meses" }, { key: "12m", label: "12 meses" }, { key: "all", label: "Todo período" },
+  ];
+  const card = { background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "22px 24px" };
+
+  if (loading) return <div style={{ textAlign: "center", padding: "80px", color: GRAY_TEXT }}>Carregando analytics…</div>;
+
+  return (
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Analytics</h1>
+        <p style={{ fontSize: 14, color: GRAY_TEXT }}>Performance das suas soluções de IA.</p>
+      </div>
+
+      {/* Date filter */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
+        {periodOptions.map(opt => (
+          <button key={opt.key} onClick={() => setPeriod(opt.key)} style={{
+            padding: "7px 18px", borderRadius: 99, border: "none",
+            background: period === opt.key ? BLUE : "#fff",
+            color: period === opt.key ? "#fff" : GRAY_TEXT,
+            fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.08)", transition: "background 0.15s, color 0.15s",
+          }}>{opt.label}</button>
+        ))}
+      </div>
+
+      {/* Overview cards */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
+        {[
+          { label: "Receita Total", value: `R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "acumulada" },
+          { label: "Vendas este mês", value: thisMonth.length, sub: MONTHS_PT_C[now.getMonth()] + "/" + now.getFullYear() },
+          { label: "Avaliação Média", value: avgRating ? `⭐ ${avgRating}` : "—", sub: "média das reviews" },
+          { label: "Visualizações", value: "—", sub: "em breve" },
+        ].map(c => (
+          <div key={c.label} style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "20px 22px" }}>
+            <div style={{ fontSize: 24, fontWeight: 800, color: BLUE, letterSpacing: "-0.5px" }}>{c.value}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginTop: 6 }}>{c.label}</div>
+            <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 2 }}>{c.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 18, marginBottom: 24 }}>
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Receita por mês</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Últimos 6 meses (R$)</div>
+          <SimpleLineChart data={revenueByMonth} labels={monthLabels} />
+        </div>
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Vendas por solução</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Ranking por número de vendas</div>
+          {solSales.length === 0
+            ? <div style={{ textAlign: "center", padding: "32px", color: GRAY_TEXT, fontSize: 14 }}>Sem vendas ainda</div>
+            : <HorizBarChartC data={solSales.map(s => ({ label: s.titulo, value: s.count }))} />}
+        </div>
+      </div>
+
+      {/* Performance table */}
+      <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, fontSize: 15, fontWeight: 700, color: NEAR_BLACK }}>Performance por Solução</div>
+        {solPerformance.length === 0 ? (
+          <div style={{ padding: "40px", textAlign: "center", color: GRAY_TEXT }}>Nenhuma solução publicada.</div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#f9fafb" }}>
+                  {["Solução", "Vendas", "Receita Bruta", "Comissão (15%)", "Receita Líquida", "Status"].map(h => (
+                    <th key={h} style={{ padding: "11px 16px", textAlign: "left", fontWeight: 600, color: GRAY_TEXT, whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {solPerformance.map((s) => (
+                  <tr key={s.id} style={{ borderTop: `1px solid ${BORDER}` }}>
+                    <td style={{ padding: "12px 16px" }}>
+                      <div style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.titulo}</div>
+                      <div style={{ fontSize: 11, color: GRAY_TEXT }}>{s.categoria}</div>
+                    </td>
+                    <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.vendas}</td>
+                    <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>R$ {s.receita.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td style={{ padding: "12px 16px", color: "#7C3AED" }}>R$ {s.comissao.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td style={{ padding: "12px 16px", fontWeight: 700, color: GREEN_CRIADOR }}>R$ {s.liquido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{
+                        display: "inline-block",
+                        background: s.status === "approved" ? "rgba(5,150,105,0.1)" : s.status === "pending" ? "rgba(217,119,6,0.1)" : "rgba(107,114,128,0.1)",
+                        color: s.status === "approved" ? "#15803D" : s.status === "pending" ? "#B45309" : "#4B5563",
+                        fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
+                      }}>
+                        {s.status === "approved" ? "Ativo" : s.status === "pending" ? "Em análise" : "Pausado"}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════ */
@@ -1293,18 +1520,7 @@ export default function CriadorDashboard() {
 
           {/* ── TAB: ANALYTICS ── */}
           {activeNav === "analytics" && (
-            <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "80px 32px", textAlign: "center" }}>
-              <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.15, color: NEAR_BLACK, display: "flex", justifyContent: "center" }}>
-                <Icon d={icons.chart} size={56} />
-              </div>
-              <h2 style={{ fontSize: 20, fontWeight: 700, color: NEAR_BLACK, marginBottom: 8 }}>Analytics</h2>
-              <p style={{ fontSize: 14, color: GRAY_TEXT, marginBottom: 24 }}>Métricas avançadas de performance chegam em breve.</p>
-              <span style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                background: "#e0f2fe", color: BLUE,
-                borderRadius: 999, padding: "8px 18px", fontSize: 13, fontWeight: 600,
-              }}>Em breve</span>
-            </div>
+            <AnalyticsCriadorTab solutions={solutions} userId={user?.id} isMobile={isMobile} />
           )}
 
           {/* ── TAB: VENDAS ── */}

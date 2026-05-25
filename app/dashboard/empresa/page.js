@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
@@ -34,6 +34,7 @@ const icons = {
   grid:    "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
   explore: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
   history: "M12 8v4l3 3M12 3a9 9 0 100 18A9 9 0 0012 3z",
+  chart:   "M18 20V10M12 20V4M6 20v-6",
   settings:"M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z",
   logout:  "M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9",
   check:   "M20 6L9 17l-5-5",
@@ -573,6 +574,225 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
   );
 }
 
+const MONTHS_PT_E = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const CAT_COLORS_E = ["#0369A1", "#7C3AED", "#059669", "#D97706", "#DC2626", "#0891B2"];
+
+/* ── SimpleBarChart ── */
+function SimpleBarChart({ data, labels }) {
+  const W = 400, H = 140, PL = 44, PB = 26, PT = 8, PR = 8;
+  const cW = W - PL - PR, cH = H - PT - PB;
+  const max = Math.max(...data, 1) * 1.15;
+  const barW = (cW / data.length) * 0.55;
+  const gap = cW / data.length;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ overflow: "visible" }}>
+      {[0, 0.25, 0.5, 0.75, 1].map(f => {
+        const y = PT + cH * (1 - f);
+        return (
+          <g key={f}>
+            <line x1={PL} y1={y} x2={W - PR} y2={y} stroke="#e5e7eb" strokeWidth="1" />
+            {f > 0 && <text x={PL - 4} y={y + 4} textAnchor="end" fontSize="9" fill="#6E6E73">
+              {max * f >= 1000 ? `${(max * f / 1000).toFixed(0)}k` : Math.round(max * f)}
+            </text>}
+          </g>
+        );
+      })}
+      {data.map((v, i) => {
+        const bh = Math.max((v / max) * cH, v > 0 ? 2 : 0);
+        const x = PL + gap * i + (gap - barW) / 2;
+        return (
+          <g key={i}>
+            <rect x={x} y={PT + cH - bh} width={barW} height={bh} fill="#0369A1" rx={4} opacity={i === data.length - 1 ? 1 : 0.65} />
+            <text x={x + barW / 2} y={H - 6} textAnchor="middle" fontSize="10" fill="#6E6E73">{labels[i]}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
+/* ── DonutChart ── */
+function DonutChartE({ data, size = 140 }) {
+  const total = data.reduce((s, d) => s + d.value, 0);
+  if (!total) return null;
+  const cx = size / 2, cy = size / 2, R = size * 0.4, r = size * 0.24;
+  function polar(radius, angle) {
+    return { x: cx + radius * Math.cos(angle - Math.PI / 2), y: cy + radius * Math.sin(angle - Math.PI / 2) };
+  }
+  let start = 0;
+  const segs = data.map(d => {
+    const sweep = (d.value / total) * Math.PI * 2;
+    const seg = { ...d, start, end: start + sweep };
+    start += sweep;
+    return seg;
+  });
+  function arcPath(seg) {
+    const s1 = polar(R, seg.start), e1 = polar(R, seg.end);
+    const s2 = polar(r, seg.end), e2 = polar(r, seg.start);
+    const lg = seg.end - seg.start > Math.PI ? 1 : 0;
+    return `M ${s1.x} ${s1.y} A ${R} ${R} 0 ${lg} 1 ${e1.x} ${e1.y} L ${s2.x} ${s2.y} A ${r} ${r} 0 ${lg} 0 ${e2.x} ${e2.y} Z`;
+  }
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
+      {segs.map((seg, i) => <path key={i} d={arcPath(seg)} fill={seg.color} />)}
+      <text x={cx} y={cy - 5} textAnchor="middle" fontSize="16" fontWeight="800" fill="#1D1D1F">{total}</text>
+      <text x={cx} y={cy + 11} textAnchor="middle" fontSize="9" fill="#6E6E73">adquiridas</text>
+    </svg>
+  );
+}
+
+/* ── ANALYTICS EMPRESA TAB ── */
+function AnalyticsEmpresaTab({ subscriptions, isMobile }) {
+  const [period, setPeriod] = useState("30d");
+
+  const filteredSubs = useMemo(() => {
+    if (period === "all") return subscriptions;
+    const days = { "7d": 7, "30d": 30, "3m": 90, "12m": 365 }[period] || 30;
+    const cutoff = new Date(Date.now() - days * 86400000);
+    return subscriptions.filter(s => new Date(s.created_at) >= cutoff);
+  }, [subscriptions, period]);
+
+  const activeSubs = subscriptions.filter(s => s.status === "active");
+  const totalInvested = subscriptions.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
+  const estimatedSavings = totalInvested * 3;
+
+  const now = new Date();
+  const last6Months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now); d.setMonth(d.getMonth() - 5 + i);
+    return { year: d.getFullYear(), month: d.getMonth() };
+  });
+  const monthLabels = last6Months.map(({ month }) => MONTHS_PT_E[month]);
+  const gastosByMonth = last6Months.map(({ year, month }) =>
+    subscriptions.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; })
+      .reduce((sum, s) => sum + (s.solutions?.preco || 0), 0)
+  );
+
+  const catMap = {};
+  subscriptions.forEach(s => { const c = s.solutions?.categoria || "Outras"; catMap[c] = (catMap[c] || 0) + 1; });
+  const categoryData = Object.entries(catMap).sort((a, b) => b[1] - a[1])
+    .map(([label, value], i) => ({ label, value, color: CAT_COLORS_E[i % CAT_COLORS_E.length] }));
+
+  const periodOptions = [
+    { key: "7d", label: "7 dias" }, { key: "30d", label: "30 dias" },
+    { key: "3m", label: "3 meses" }, { key: "12m", label: "12 meses" }, { key: "all", label: "Todo período" },
+  ];
+  const card = { background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "22px 24px" };
+
+  return (
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Analytics</h1>
+        <p style={{ fontSize: 14, color: GRAY_TEXT }}>Análise de investimentos em soluções de IA.</p>
+      </div>
+
+      {/* Date filter */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
+        {periodOptions.map(opt => (
+          <button key={opt.key} onClick={() => setPeriod(opt.key)} style={{
+            padding: "7px 18px", borderRadius: 99, border: "none",
+            background: period === opt.key ? BLUE : "#fff",
+            color: period === opt.key ? "#fff" : GRAY_TEXT,
+            fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.08)", transition: "background 0.15s, color 0.15s",
+          }}>{opt.label}</button>
+        ))}
+      </div>
+
+      {/* Overview cards */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
+        {[
+          { label: "Total Investido em Soluções", value: `R$ ${totalInvested.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: `${filteredSubs.length} transações no período` },
+          { label: "Soluções Adquiridas", value: subscriptions.length, sub: `${activeSubs.length} ativas atualmente` },
+          { label: "Economia Estimada", value: `R$ ${estimatedSavings.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "vs contratar dev (3× o investido)" },
+        ].map(c => (
+          <div key={c.label} style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "24px" }}>
+            <div style={{ fontSize: 26, fontWeight: 800, color: BLUE, letterSpacing: "-0.5px" }}>{c.value}</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: NEAR_BLACK, marginTop: 6 }}>{c.label}</div>
+            <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 2 }}>{c.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 18, marginBottom: 24 }}>
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Gastos por mês</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Últimos 6 meses (R$)</div>
+          <SimpleBarChart data={gastosByMonth} labels={monthLabels} />
+        </div>
+        <div style={card}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Soluções por categoria</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Distribuição das aquisições</div>
+          {categoryData.length === 0
+            ? <div style={{ textAlign: "center", padding: "32px", color: GRAY_TEXT, fontSize: 14 }}>Nenhuma solução adquirida</div>
+            : (
+              <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+                <DonutChartE data={categoryData} />
+                <div style={{ flex: 1, minWidth: 100 }}>
+                  {categoryData.map(d => (
+                    <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                      <div style={{ width: 10, height: 10, borderRadius: "50%", background: d.color, flexShrink: 0 }} />
+                      <span style={{ fontSize: 12, color: GRAY_TEXT, flex: 1 }}>{d.label}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: NEAR_BLACK }}>{d.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+        </div>
+      </div>
+
+      {/* ROI table */}
+      <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, fontSize: 15, fontWeight: 700, color: NEAR_BLACK }}>ROI por Solução</div>
+        {subscriptions.length === 0 ? (
+          <div style={{ padding: "40px", textAlign: "center", color: GRAY_TEXT }}>Nenhuma solução adquirida ainda.</div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#f9fafb" }}>
+                  {["Solução", "Categoria", "Valor Pago", "Status", "Data de Aquisição"].map(h => (
+                    <th key={h} style={{ padding: "11px 16px", textAlign: "left", fontWeight: 600, color: GRAY_TEXT, whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {subscriptions.map((sub) => (
+                  <tr key={sub.id} style={{ borderTop: `1px solid ${BORDER}` }}>
+                    <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>{sub.solutions?.titulo || "—"}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{ background: "#e0f2fe", color: BLUE, fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 99 }}>
+                        {sub.solutions?.categoria || "—"}
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>
+                      {sub.solutions?.preco != null ? `R$ ${Number(sub.solutions.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Grátis"}
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{
+                        display: "inline-block",
+                        background: sub.status === "active" ? "rgba(5,150,105,0.1)" : "rgba(220,38,38,0.1)",
+                        color: sub.status === "active" ? "#15803D" : "#B91C1C",
+                        fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
+                      }}>
+                        {sub.status === "active" ? "Ativo" : "Cancelado"}
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>
+                      {new Date(sub.created_at).toLocaleDateString("pt-BR")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════ */
@@ -660,6 +880,7 @@ export default function EmpresaDashboard() {
     { key: "solucoes",      iconD: icons.grid,     label: "Soluções Adquiridas" },
     { key: "explorar",      iconD: icons.explore,  label: "Explorar Catálogo", href: "/solucoes" },
     { key: "historico",     iconD: icons.history,  label: "Histórico de Compras" },
+    { key: "analytics",     iconD: icons.chart,    label: "Analytics" },
     { key: "configuracoes", iconD: icons.settings, label: "Configurações" },
   ];
 
@@ -1073,6 +1294,11 @@ export default function EmpresaDashboard() {
                 </div>
               )}
             </>
+          )}
+
+          {/* ── TAB: ANALYTICS ── */}
+          {activeNav === "analytics" && (
+            <AnalyticsEmpresaTab subscriptions={subscriptions} isMobile={isMobile} />
           )}
 
           {/* ── TAB: CONFIGURAÇÕES ── */}
