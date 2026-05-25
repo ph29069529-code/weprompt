@@ -178,7 +178,7 @@ function Footer({ isMobile }) {
         </a>
         <p style={{ fontSize: 13, color: GRAY_TEXT, margin: 0 }}>© 2026 WePrompt. O 1º marketplace de IA da América Latina.</p>
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 24 }}>
-          {[["Termos para Criadores", "/para-criadores/termos"], ["Termos para Empresas", "/para-empresas/termos"], ["Contato", "mailto:contato@weprompt.app.br"]].map(([label, href]) => (
+          {[["Termos para Criadores", "/para-criadores/termos"], ["Termos para Empresas", "/para-empresas/termos"], ["Política de Privacidade", "/privacidade"], ["Contato", "mailto:contato@weprompt.app.br"]].map(([label, href]) => (
             <a key={label} href={href} style={{ fontSize: 13, color: GRAY_TEXT, textDecoration: "none", transition: "color 0.15s" }}
               onMouseEnter={e => e.currentTarget.style.color = NEAR_BLACK} onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}>
               {label}

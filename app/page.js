@@ -1112,6 +1112,7 @@ export default function Home() {
             {[
               ["Termos para Criadores", "/para-criadores/termos"],
               ["Termos para Empresas", "/para-empresas/termos"],
+              ["Política de Privacidade", "/privacidade"],
               ["Contato", "mailto:contato@weprompt.app.br"],
             ].map(([label, href]) => (
               <a key={label} href={href} style={{
