@@ -1634,6 +1634,770 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
   );
 }
 
+/* ── CriadoresUTab ── */
+function CriadoresUTab({ isMobile }) {
+  const [criadores, setCriadores]         = useState([]);
+  const [loading, setLoading]             = useState(true);
+  const [filter, setFilter]               = useState("todos");
+  const [search, setSearch]               = useState("");
+  const [actionLoading, setActionLoading] = useState(null);
+
+  useEffect(() => {
+    supabase.from("profiles").select("*").in("role", ["criador", "creator"]).order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setCriadores(data); setLoading(false); });
+  }, []);
+
+  async function toggleBan(id, status) {
+    setActionLoading(id);
+    const next = status === "banido" ? "ativo" : "banido";
+    await supabase.from("profiles").update({ status: next }).eq("id", id);
+    setCriadores(prev => prev.map(c => c.id === id ? { ...c, status: next } : c));
+    setActionLoading(null);
+  }
+
+  const visible = criadores
+    .filter(c => filter === "todos" || (filter === "ativos" ? (c.status !== "banido" && c.status !== "pausado") : c.status === filter))
+    .filter(c => !search || [c.nome, c.email].some(f => f?.toLowerCase().includes(search.toLowerCase())));
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
+        {["todos", "ativos", "pausados"].map(f => (
+          <button key={f} onClick={() => setFilter(f)} style={{ padding: "6px 16px", borderRadius: 8, border: `1px solid ${filter === f ? BLUE : BORDER}`, background: filter === f ? BLUE : "#fff", color: filter === f ? "#fff" : NEAR_BLACK, fontSize: 13, fontWeight: 600, cursor: "pointer", textTransform: "capitalize" }}>
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nome ou e-mail…" style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 13, minWidth: 220, outline: "none" }} />
+      </div>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Carregando…</div>
+      ) : visible.length === 0 ? (
+        <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Nenhum criador encontrado.</div>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: BG_GRAY }}>
+                {["Criador", "E-mail", "Status", "Cadastro", "Ação"].map(h => (
+                  <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 700, color: GRAY_TEXT, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map((c, i) => (
+                <tr key={c.id} style={{ borderBottom: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                  <td style={{ padding: "12px 14px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 34, height: 34, borderRadius: "50%", background: BLUE, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{initials(c.nome)}</div>
+                      <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{c.nome || "—"}</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{c.email}</td>
+                  <td style={{ padding: "12px 14px" }}><StatusBadge status={c.status || "ativo"} /></td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{formatDate(c.created_at)}</td>
+                  <td style={{ padding: "12px 14px" }}>
+                    <button onClick={() => toggleBan(c.id, c.status)} disabled={actionLoading === c.id} style={{ padding: "5px 14px", borderRadius: 7, border: "none", background: c.status === "banido" ? GREEN : DANGER, color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: actionLoading === c.id ? 0.6 : 1 }}>
+                      {c.status === "banido" ? "Desbanir" : "Banir"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── EmpresasUTab ── */
+function EmpresasUTab({ isMobile }) {
+  const [empresas, setEmpresas]           = useState([]);
+  const [loading, setLoading]             = useState(true);
+  const [filter, setFilter]               = useState("todos");
+  const [search, setSearch]               = useState("");
+  const [actionLoading, setActionLoading] = useState(null);
+
+  useEffect(() => {
+    supabase.from("profiles").select("*, subscriptions(plan)").in("role", ["empresa", "business"]).order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setEmpresas(data); setLoading(false); });
+  }, []);
+
+  async function toggleBan(id, status) {
+    setActionLoading(id);
+    const next = status === "banido" ? "ativo" : "banido";
+    await supabase.from("profiles").update({ status: next }).eq("id", id);
+    setEmpresas(prev => prev.map(e => e.id === id ? { ...e, status: next } : e));
+    setActionLoading(null);
+  }
+
+  function getPlan(e) { return e.subscriptions?.[0]?.plan || "free"; }
+
+  const visible = empresas
+    .filter(e => filter === "todos" || getPlan(e) === filter)
+    .filter(e => !search || [e.nome, e.email].some(f => f?.toLowerCase().includes(search.toLowerCase())));
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
+        {["todos", "free", "business", "enterprise"].map(f => (
+          <button key={f} onClick={() => setFilter(f)} style={{ padding: "6px 16px", borderRadius: 8, border: `1px solid ${filter === f ? BLUE : BORDER}`, background: filter === f ? BLUE : "#fff", color: filter === f ? "#fff" : NEAR_BLACK, fontSize: 13, fontWeight: 600, cursor: "pointer", textTransform: "capitalize" }}>
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nome ou e-mail…" style={{ marginLeft: "auto", padding: "6px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 13, minWidth: 220, outline: "none" }} />
+      </div>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Carregando…</div>
+      ) : visible.length === 0 ? (
+        <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Nenhuma empresa encontrada.</div>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: BG_GRAY }}>
+                {["Empresa", "E-mail", "Plano", "Status", "Cadastro", "Ação"].map(h => (
+                  <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 700, color: GRAY_TEXT, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map((e, i) => (
+                <tr key={e.id} style={{ borderBottom: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                  <td style={{ padding: "12px 14px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{initials(e.nome)}</div>
+                      <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{e.nome || "—"}</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{e.email}</td>
+                  <td style={{ padding: "12px 14px" }}>
+                    <span style={{ padding: "3px 10px", borderRadius: 6, background: "#EDE9FE", color: "#7C3AED", fontSize: 11, fontWeight: 700, textTransform: "uppercase" }}>{getPlan(e)}</span>
+                  </td>
+                  <td style={{ padding: "12px 14px" }}><StatusBadge status={e.status || "ativo"} /></td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{formatDate(e.created_at)}</td>
+                  <td style={{ padding: "12px 14px" }}>
+                    <button onClick={() => toggleBan(e.id, e.status)} disabled={actionLoading === e.id} style={{ padding: "5px 14px", borderRadius: 7, border: "none", background: e.status === "banido" ? GREEN : DANGER, color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: actionLoading === e.id ? 0.6 : 1 }}>
+                      {e.status === "banido" ? "Desbanir" : "Banir"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── RepassesTab ── */
+function RepassesTab({ isMobile }) {
+  const [repasses, setRepasses] = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [paid, setPaid]         = useState(new Set());
+
+  useEffect(() => {
+    supabase.from("subscriptions").select("*, profiles:user_id(nome, email)").order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setRepasses(data); setLoading(false); });
+  }, []);
+
+  const COMISSAO = 0.15;
+  function fmt(cents) { return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+
+  const totalBruto   = repasses.reduce((s, r) => s + (r.amount || 0), 0);
+  const totalComissao = Math.round(totalBruto * COMISSAO);
+  const totalLiquido  = totalBruto - totalComissao;
+  const pendentes     = repasses.filter(r => !paid.has(r.id)).length;
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 28 }}>
+        <KpiCard label="Receita Bruta"       value={fmt(totalBruto)}    iconD={icons.cash}    />
+        <KpiCard label="Comissão (15%)"      value={fmt(totalComissao)} iconD={icons.percent} accent={DANGER} />
+        <KpiCard label="Valor Líquido"       value={fmt(totalLiquido)}  iconD={icons.arrows}  accent={GREEN} />
+        <KpiCard label="Repasses Pendentes"  value={String(pendentes)}  iconD={icons.tag}     accent="#F59E0B" />
+      </div>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Carregando…</div>
+      ) : repasses.length === 0 ? (
+        <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Nenhum repasse encontrado.</div>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: BG_GRAY }}>
+                {["Criador", "Bruto", "Comissão", "Líquido", "Status", "Ação"].map(h => (
+                  <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 700, color: GRAY_TEXT, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {repasses.map((r, i) => {
+                const bruto  = r.amount || 0;
+                const com    = Math.round(bruto * COMISSAO);
+                const liq    = bruto - com;
+                const isPaid = paid.has(r.id);
+                return (
+                  <tr key={r.id} style={{ borderBottom: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                    <td style={{ padding: "12px 14px", fontWeight: 600, color: NEAR_BLACK }}>{r.profiles?.nome || r.profiles?.email || "—"}</td>
+                    <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{fmt(bruto)}</td>
+                    <td style={{ padding: "12px 14px", color: DANGER }}>{fmt(com)}</td>
+                    <td style={{ padding: "12px 14px", color: GREEN, fontWeight: 700 }}>{fmt(liq)}</td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <span style={{ padding: "3px 10px", borderRadius: 6, background: isPaid ? "#D1FAE5" : "#FEF9C3", color: isPaid ? GREEN : "#92400E", fontSize: 11, fontWeight: 700 }}>
+                        {isPaid ? "Pago" : "Pendente"}
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px 14px" }}>
+                      {!isPaid && (
+                        <button onClick={() => setPaid(prev => new Set([...prev, r.id]))} style={{ padding: "5px 12px", borderRadius: 7, border: "none", background: BLUE, color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                          Marcar como pago
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── RelatoriosTab ── */
+function RelatoriosTab({ isMobile }) {
+  const [period, setPeriod]   = useState("6m");
+  const [toastMsg, setToastMsg] = useState("");
+
+  const PERIODS = [
+    { value: "1m", label: "Último mês" },
+    { value: "3m", label: "Últimos 3 meses" },
+    { value: "6m", label: "Últimos 6 meses" },
+    { value: "12m", label: "Último ano" },
+  ];
+
+  const cards = [
+    { label: "Relatório de Receita",   desc: "Faturamento total, comissões e repasses por período.",        icon: "💰" },
+    { label: "Relatório de Usuários",  desc: "Novos cadastros, churn e distribuição por plano.",            icon: "👥" },
+    { label: "Relatório de Soluções",  desc: "Soluções publicadas, aprovadas e mais acessadas.",           icon: "📦" },
+    { label: "Relatório Fiscal",       desc: "Dados para declaração fiscal e emissão de notas fiscais.",   icon: "📄" },
+  ];
+
+  function gerarPDF(label) {
+    setToastMsg(`${label} gerado com sucesso!`);
+    setTimeout(() => setToastMsg(""), 3000);
+  }
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK }}>Período:</span>
+        <select value={period} onChange={e => setPeriod(e.target.value)} style={{ padding: "7px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 13, background: "#fff", cursor: "pointer" }}>
+          {PERIODS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+        </select>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20 }}>
+        {cards.map(c => (
+          <div key={c.label} style={{ background: "#fff", borderRadius: 14, border: `1px solid ${BORDER}`, padding: 24 }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>{c.icon}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6 }}>{c.label}</div>
+            <div style={{ fontSize: 13, color: GRAY_TEXT, marginBottom: 20, lineHeight: 1.5 }}>{c.desc}</div>
+            <button onClick={() => gerarPDF(c.label)} style={{ padding: "8px 18px", borderRadius: 9, border: "none", background: BLUE, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+              Gerar PDF
+            </button>
+          </div>
+        ))}
+      </div>
+      {toastMsg && (
+        <div style={{ position: "fixed", bottom: 24, right: 24, background: GREEN, color: "#fff", borderRadius: 10, padding: "12px 20px", fontWeight: 700, fontSize: 14, zIndex: 9999 }}>
+          ✓ {toastMsg}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── TaxasTab ── */
+function TaxasRow({ label, k, prefix, form, onChange }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+      <span style={{ fontSize: 13, color: NEAR_BLACK }}>{label}</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        {prefix && <span style={{ fontSize: 13, color: GRAY_TEXT }}>{prefix}</span>}
+        <input type="number" value={form[k]} onChange={e => onChange(k, e.target.value)} style={{ width: 90, padding: "6px 10px", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 13, textAlign: "right" }} />
+      </div>
+    </div>
+  );
+}
+
+function TaxasTab({ isMobile }) {
+  const [saved, setSaved] = useState(false);
+  const [form, setForm]   = useState({
+    comissao_free: "20", comissao_pro: "15", comissao_premium: "10",
+    prazo_repasse: "30", minimo_repasse: "50",
+    criador_pro_mensal: "49", criador_pro_anual: "470",
+    criador_premium_mensal: "99", criador_premium_anual: "950",
+    empresa_business_mensal: "199", empresa_business_anual: "1990",
+    empresa_enterprise_mensal: "499", empresa_enterprise_anual: "4990",
+  });
+
+  function setField(k, v) { setForm(prev => ({ ...prev, [k]: v })); setSaved(false); }
+
+  const S = { background: "#fff", borderRadius: 14, border: `1px solid ${BORDER}`, padding: 24, marginBottom: 20 };
+  const T = { fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 18, paddingBottom: 12, borderBottom: `1px solid ${BORDER}` };
+
+  return (
+    <div style={{ maxWidth: 600 }}>
+      <div style={S}>
+        <div style={T}>Comissões por Plano Criador</div>
+        <TaxasRow label="Criador Free"    k="comissao_free"    prefix="%" form={form} onChange={setField} />
+        <TaxasRow label="Criador Pro"     k="comissao_pro"     prefix="%" form={form} onChange={setField} />
+        <TaxasRow label="Criador Premium" k="comissao_premium" prefix="%" form={form} onChange={setField} />
+      </div>
+      <div style={S}>
+        <div style={T}>Regras de Repasse</div>
+        <TaxasRow label="Prazo de repasse (dias)"        k="prazo_repasse"  form={form} onChange={setField} />
+        <TaxasRow label="Valor mínimo para repasse (R$)" k="minimo_repasse" prefix="R$" form={form} onChange={setField} />
+      </div>
+      <div style={S}>
+        <div style={T}>Planos Criador</div>
+        <TaxasRow label="Pro — Mensal"     k="criador_pro_mensal"     prefix="R$" form={form} onChange={setField} />
+        <TaxasRow label="Pro — Anual"      k="criador_pro_anual"      prefix="R$" form={form} onChange={setField} />
+        <TaxasRow label="Premium — Mensal" k="criador_premium_mensal" prefix="R$" form={form} onChange={setField} />
+        <TaxasRow label="Premium — Anual"  k="criador_premium_anual"  prefix="R$" form={form} onChange={setField} />
+      </div>
+      <div style={S}>
+        <div style={T}>Planos Empresa</div>
+        <TaxasRow label="Business — Mensal"   k="empresa_business_mensal"   prefix="R$" form={form} onChange={setField} />
+        <TaxasRow label="Business — Anual"    k="empresa_business_anual"    prefix="R$" form={form} onChange={setField} />
+        <TaxasRow label="Enterprise — Mensal" k="empresa_enterprise_mensal" prefix="R$" form={form} onChange={setField} />
+        <TaxasRow label="Enterprise — Anual"  k="empresa_enterprise_anual"  prefix="R$" form={form} onChange={setField} />
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <button onClick={() => setSaved(true)} style={{ padding: "10px 28px", borderRadius: 10, border: "none", background: BLUE, color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+          Salvar Configurações
+        </button>
+        {saved && <span style={{ color: GREEN, fontWeight: 600, fontSize: 14 }}>✓ Salvo!</span>}
+      </div>
+    </div>
+  );
+}
+
+/* ── BannersTab ── */
+function BannersTab({ isMobile }) {
+  const SLOTS = ["Hero", "Soluções", "E-mail"];
+  const [banners, setBanners] = useState(SLOTS.map(slot => ({ slot, active: true, preview: null })));
+
+  function toggleActive(i) {
+    setBanners(prev => prev.map((b, j) => j === i ? { ...b, active: !b.active } : b));
+  }
+
+  function handleFile(i, e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => setBanners(prev => prev.map((b, j) => j === i ? { ...b, preview: ev.target.result } : b));
+    reader.readAsDataURL(file);
+  }
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
+      {banners.map((b, i) => (
+        <div key={b.slot} style={{ background: "#fff", borderRadius: 14, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
+          <div style={{ height: 160, background: BG_GRAY, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+            {b.preview ? (
+              <img src={b.preview} alt={b.slot} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <div style={{ textAlign: "center", color: GRAY_TEXT }}>
+                <div style={{ fontSize: 36, marginBottom: 6 }}>🖼️</div>
+                <div style={{ fontSize: 12 }}>Sem imagem</div>
+              </div>
+            )}
+          </div>
+          <div style={{ padding: 16 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 12 }}>Banner {b.slot}</div>
+            <label style={{ display: "block", padding: "8px 0", borderRadius: 8, border: `1px dashed ${BORDER}`, textAlign: "center", fontSize: 13, color: BLUE, cursor: "pointer", marginBottom: 12 }}>
+              Upload imagem
+              <input type="file" accept="image/*" onChange={e => handleFile(i, e)} style={{ display: "none" }} />
+            </label>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 13, color: NEAR_BLACK }}>Status</span>
+              <button onClick={() => toggleActive(i)} style={{ padding: "4px 16px", borderRadius: 20, border: "none", background: b.active ? GREEN : GRAY_TEXT, color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                {b.active ? "Ativo" : "Inativo"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── EmailsTab ── */
+function EmailsTab({ isMobile }) {
+  const TEMPLATES = [
+    { key: "boas-vindas",  label: "Boas-vindas",       desc: "Enviado quando um novo usuário se cadastra." },
+    { key: "aprovacao",    label: "Solução Aprovada",   desc: "Enviado ao criador quando uma solução é aprovada." },
+    { key: "rejeicao",     label: "Solução Rejeitada",  desc: "Enviado ao criador quando uma solução é rejeitada." },
+    { key: "repasse",      label: "Repasse Realizado",  desc: "Confirmação de repasse para o criador." },
+    { key: "nova-compra",  label: "Nova Compra",        desc: "Notificação de compra para a empresa." },
+  ];
+  const [enabled, setEnabled]   = useState(new Set(["boas-vindas", "aprovacao", "nova-compra"]));
+  const [testEmail, setTestEmail] = useState("");
+  const [template, setTemplate]   = useState("boas-vindas");
+  const [sending, setSending]     = useState(false);
+  const [sent, setSent]           = useState(false);
+
+  function toggleTemplate(k) {
+    setEnabled(prev => { const next = new Set(prev); next.has(k) ? next.delete(k) : next.add(k); return next; });
+  }
+
+  async function sendTest() {
+    if (!testEmail) return;
+    setSending(true);
+    try {
+      await fetch("/api/emails/boas-vindas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: testEmail, template }) });
+    } catch (_) {}
+    setSending(false); setSent(true);
+    setTimeout(() => setSent(false), 3000);
+  }
+
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 24, alignItems: "start" }}>
+      <div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 16 }}>Templates</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {TEMPLATES.map(t => (
+            <div key={t.key} style={{ background: "#fff", borderRadius: 12, border: `1px solid ${BORDER}`, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: NEAR_BLACK }}>{t.label}</div>
+                <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 2 }}>{t.desc}</div>
+              </div>
+              <button onClick={() => toggleTemplate(t.key)} style={{ padding: "4px 14px", borderRadius: 20, border: "none", background: enabled.has(t.key) ? GREEN : "#e5e7eb", color: enabled.has(t.key) ? "#fff" : GRAY_TEXT, fontSize: 12, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
+                {enabled.has(t.key) ? "Ativo" : "Inativo"}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 16 }}>Enviar E-mail de Teste</div>
+        <div style={{ background: "#fff", borderRadius: 12, border: `1px solid ${BORDER}`, padding: 20 }}>
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: GRAY_TEXT, display: "block", marginBottom: 6 }}>Template</label>
+            <select value={template} onChange={e => setTemplate(e.target.value)} style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 13 }}>
+              {TEMPLATES.map(t => <option key={t.key} value={t.key}>{t.label}</option>)}
+            </select>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: GRAY_TEXT, display: "block", marginBottom: 6 }}>E-mail de destino</label>
+            <input type="email" value={testEmail} onChange={e => setTestEmail(e.target.value)} placeholder="admin@exemplo.com" style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 13, boxSizing: "border-box" }} />
+          </div>
+          <button onClick={sendTest} disabled={sending || !testEmail} style={{ width: "100%", padding: "10px 0", borderRadius: 9, border: "none", background: BLUE, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", opacity: sending || !testEmail ? 0.6 : 1 }}>
+            {sending ? "Enviando…" : sent ? "✓ Enviado!" : "Enviar Teste"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── TicketsTab ── */
+function TicketsTab({ isMobile }) {
+  const [filter, setFilter]   = useState("todos");
+  const [modal, setModal]     = useState(false);
+  const [tickets, setTickets] = useState([]);
+  const [form, setForm]       = useState({ titulo: "", email: "", descricao: "" });
+
+  const FILTERS = ["todos", "aberto", "em_andamento", "resolvido"];
+  const FILTER_LABELS = { todos: "Todos", aberto: "Aberto", em_andamento: "Em andamento", resolvido: "Resolvido" };
+
+  function criarTicket() {
+    if (!form.titulo || !form.email) return;
+    setTickets(prev => [{ id: Date.now(), ...form, status: "aberto", created_at: new Date().toISOString() }, ...prev]);
+    setModal(false);
+    setForm({ titulo: "", email: "", descricao: "" });
+  }
+
+  const visible = tickets.filter(t => filter === "todos" || t.status === filter);
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+        <div style={{ display: "flex", gap: 8 }}>
+          {FILTERS.map(f => (
+            <button key={f} onClick={() => setFilter(f)} style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${filter === f ? BLUE : BORDER}`, background: filter === f ? BLUE : "#fff", color: filter === f ? "#fff" : NEAR_BLACK, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+              {FILTER_LABELS[f]}
+            </button>
+          ))}
+        </div>
+        <button onClick={() => setModal(true)} style={{ padding: "8px 18px", borderRadius: 9, border: "none", background: BLUE, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+          + Abrir Ticket Manual
+        </button>
+      </div>
+      {visible.length === 0 ? (
+        <div style={{ textAlign: "center", padding: 80, color: GRAY_TEXT }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>🎫</div>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Nenhum ticket encontrado</div>
+          <div style={{ fontSize: 13 }}>Tickets de suporte aparecerão aqui.</div>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {visible.map(t => (
+            <div key={t.id} style={{ background: "#fff", borderRadius: 12, border: `1px solid ${BORDER}`, padding: "14px 18px", display: "flex", alignItems: "flex-start", gap: 14 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: NEAR_BLACK }}>{t.titulo}</div>
+                <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 2 }}>{t.email} · {formatDate(t.created_at)}</div>
+                {t.descricao && <div style={{ fontSize: 12, color: NEAR_BLACK, marginTop: 8, lineHeight: 1.5 }}>{t.descricao}</div>}
+              </div>
+              <StatusBadge status={t.status} />
+            </div>
+          ))}
+        </div>
+      )}
+      {modal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 16 }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 28, width: "100%", maxWidth: 480 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Abrir Ticket Manual</div>
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: GRAY_TEXT, display: "block", marginBottom: 6 }}>Título *</label>
+              <input value={form.titulo} onChange={e => setForm(p => ({ ...p, titulo: e.target.value }))} style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 13, boxSizing: "border-box" }} />
+            </div>
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: GRAY_TEXT, display: "block", marginBottom: 6 }}>E-mail *</label>
+              <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 13, boxSizing: "border-box" }} />
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: GRAY_TEXT, display: "block", marginBottom: 6 }}>Descrição</label>
+              <textarea value={form.descricao} onChange={e => setForm(p => ({ ...p, descricao: e.target.value }))} rows={3} style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: `1px solid ${BORDER}`, fontSize: 13, boxSizing: "border-box", resize: "vertical" }} />
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setModal(false)} style={{ flex: 1, padding: "9px 0", borderRadius: 9, border: `1px solid ${BORDER}`, background: "#fff", color: NEAR_BLACK, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancelar</button>
+              <button onClick={criarTicket} style={{ flex: 1, padding: "9px 0", borderRadius: 9, border: "none", background: BLUE, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Criar Ticket</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── DenunciasTab ── */
+function DenunciasTab({ isMobile }) {
+  const STATUS_FLOW   = ["Pendente", "Investigando", "Resolvido", "Arquivado"];
+  const STATUS_COLORS = { Pendente: "#FEF9C3", Investigando: "#DBEAFE", Resolvido: "#D1FAE5", Arquivado: "#F3F4F6" };
+  const STATUS_TEXT   = { Pendente: "#92400E", Investigando: "#1E40AF", Resolvido: "#065F46", Arquivado: "#6B7280" };
+
+  const [denuncias, setDenuncias] = useState([
+    { id: 1, tipo: "Conteúdo inapropriado", denunciado: "Usuário A", motivo: "Descrição ofensiva na solução.",         status: "Pendente",     created_at: new Date().toISOString() },
+    { id: 2, tipo: "Fraude",                denunciado: "Usuário B", motivo: "Solução não entregue após pagamento.",  status: "Investigando", created_at: new Date().toISOString() },
+  ]);
+
+  function nextStatus(id) {
+    setDenuncias(prev => prev.map(d => {
+      if (d.id !== id) return d;
+      const idx = STATUS_FLOW.indexOf(d.status);
+      return { ...d, status: STATUS_FLOW[Math.min(idx + 1, STATUS_FLOW.length - 1)] };
+    }));
+  }
+
+  return (
+    <div>
+      {denuncias.length === 0 ? (
+        <div style={{ textAlign: "center", padding: 80, color: GRAY_TEXT }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>🚩</div>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Nenhuma denúncia</div>
+          <div style={{ fontSize: 13 }}>Denúncias dos usuários aparecerão aqui.</div>
+        </div>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: BG_GRAY }}>
+                {["Tipo", "Denunciado", "Motivo", "Status", "Avançar"].map(h => (
+                  <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 700, color: GRAY_TEXT, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {denuncias.map((d, i) => (
+                <tr key={d.id} style={{ borderBottom: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                  <td style={{ padding: "12px 14px", fontWeight: 600, color: NEAR_BLACK }}>{d.tipo}</td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{d.denunciado}</td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT, maxWidth: 220 }}>{d.motivo}</td>
+                  <td style={{ padding: "12px 14px" }}>
+                    <span style={{ padding: "3px 10px", borderRadius: 6, background: STATUS_COLORS[d.status], color: STATUS_TEXT[d.status], fontSize: 11, fontWeight: 700 }}>{d.status}</span>
+                  </td>
+                  <td style={{ padding: "12px 14px" }}>
+                    {d.status !== "Arquivado" && (
+                      <button onClick={() => nextStatus(d.id)} style={{ padding: "5px 12px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "#fff", color: NEAR_BLACK, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                        Avançar →
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── LogsTab ── */
+function LogsTab({ isMobile }) {
+  const [roleFilter, setRoleFilter] = useState("todos");
+
+  const ROLES = ["todos", "admin", "criador", "empresa"];
+
+  const now = Date.now();
+  const DUMMY_LOGS = [
+    { id: 1,  usuario: "Pedro Santos",  role: "admin",   acao: "Login",                   ip: "192.168.1.1",   ts: now - 1000 * 60 * 5 },
+    { id: 2,  usuario: "Ana Lima",      role: "criador", acao: "Publicou solução",         ip: "177.12.34.56",  ts: now - 1000 * 60 * 12 },
+    { id: 3,  usuario: "Tech Corp",     role: "empresa", acao: "Comprou solução",          ip: "200.123.45.67", ts: now - 1000 * 60 * 30 },
+    { id: 4,  usuario: "Maria Silva",   role: "criador", acao: "Atualizou perfil",         ip: "187.45.67.89",  ts: now - 1000 * 60 * 60 },
+    { id: 5,  usuario: "Carlos Mendes", role: "empresa", acao: "Login",                   ip: "200.98.76.54",  ts: now - 1000 * 60 * 90 },
+    { id: 6,  usuario: "Pedro Santos",  role: "admin",   acao: "Aprovou solução",          ip: "192.168.1.1",   ts: now - 1000 * 60 * 120 },
+    { id: 7,  usuario: "Juliana Rocha", role: "criador", acao: "Login",                   ip: "179.34.56.78",  ts: now - 1000 * 60 * 180 },
+    { id: 8,  usuario: "StartupXYZ",    role: "empresa", acao: "Assinou plano Business",  ip: "201.45.67.12",  ts: now - 1000 * 60 * 240 },
+    { id: 9,  usuario: "Pedro Santos",  role: "admin",   acao: "Baniu usuário",            ip: "192.168.1.1",   ts: now - 1000 * 60 * 300 },
+    { id: 10, usuario: "Diego Costa",   role: "criador", acao: "Publicou solução",         ip: "187.23.45.67",  ts: now - 1000 * 60 * 360 },
+  ];
+
+  const visible = roleFilter === "todos" ? DUMMY_LOGS : DUMMY_LOGS.filter(l => l.role === roleFilter);
+
+  function timeAgo(ts) {
+    const diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 60) return `${diff}s atrás`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}min atrás`;
+    return `${Math.floor(diff / 3600)}h atrás`;
+  }
+
+  function exportCSV() {
+    const header = "ID,Usuário,Role,Ação,IP,Horário";
+    const rows   = visible.map(l => `${l.id},"${l.usuario}",${l.role},"${l.acao}",${l.ip},${new Date(l.ts).toISOString()}`);
+    const blob   = new Blob([[header, ...rows].join("\n")], { type: "text/csv" });
+    const url    = URL.createObjectURL(blob);
+    const a      = document.createElement("a");
+    a.href = url; a.download = "logs.csv"; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  const ROLE_COLORS = { admin: { bg: "#FEF3C7", color: "#92400E" }, criador: { bg: "#DBEAFE", color: "#1E40AF" }, empresa: { bg: "#EDE9FE", color: "#7C3AED" } };
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+        <div style={{ display: "flex", gap: 8 }}>
+          {ROLES.map(r => (
+            <button key={r} onClick={() => setRoleFilter(r)} style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${roleFilter === r ? BLUE : BORDER}`, background: roleFilter === r ? BLUE : "#fff", color: roleFilter === r ? "#fff" : NEAR_BLACK, fontSize: 12, fontWeight: 600, cursor: "pointer", textTransform: "capitalize" }}>
+              {r.charAt(0).toUpperCase() + r.slice(1)}
+            </button>
+          ))}
+        </div>
+        <button onClick={exportCSV} style={{ padding: "7px 16px", borderRadius: 8, border: `1px solid ${BORDER}`, background: "#fff", color: NEAR_BLACK, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+          Exportar CSV
+        </button>
+      </div>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <thead>
+            <tr style={{ background: BG_GRAY }}>
+              {["Usuário", "Role", "Ação", "IP", "Horário"].map(h => (
+                <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 700, color: GRAY_TEXT, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {visible.map((l, i) => (
+              <tr key={l.id} style={{ borderBottom: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                <td style={{ padding: "12px 14px", fontWeight: 600, color: NEAR_BLACK }}>{l.usuario}</td>
+                <td style={{ padding: "12px 14px" }}>
+                  <span style={{ padding: "2px 8px", borderRadius: 5, fontSize: 11, fontWeight: 700, ...ROLE_COLORS[l.role] }}>{l.role}</span>
+                </td>
+                <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{l.acao}</td>
+                <td style={{ padding: "12px 14px", color: GRAY_TEXT, fontFamily: "monospace" }}>{l.ip}</td>
+                <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{timeAgo(l.ts)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ── BanidosTab ── */
+function BanidosTab({ isMobile }) {
+  const [banidos, setBanidos]             = useState([]);
+  const [loading, setLoading]             = useState(true);
+  const [actionLoading, setActionLoading] = useState(null);
+
+  useEffect(() => {
+    supabase.from("profiles").select("*").eq("status", "banido").order("updated_at", { ascending: false })
+      .then(({ data }) => { if (data) setBanidos(data); setLoading(false); });
+  }, []);
+
+  async function desbanir(id) {
+    setActionLoading(id);
+    await supabase.from("profiles").update({ status: "ativo" }).eq("id", id);
+    setBanidos(prev => prev.filter(b => b.id !== id));
+    setActionLoading(null);
+  }
+
+  return (
+    <div>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Carregando…</div>
+      ) : banidos.length === 0 ? (
+        <div style={{ textAlign: "center", padding: 80, color: GRAY_TEXT }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>🔓</div>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Nenhum usuário banido</div>
+          <div style={{ fontSize: 13 }}>Usuários banidos aparecerão aqui.</div>
+        </div>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: BG_GRAY }}>
+                {["Usuário", "E-mail", "Role", "Banido desde", "Ação"].map(h => (
+                  <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 700, color: GRAY_TEXT, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {banidos.map((b, i) => (
+                <tr key={b.id} style={{ borderBottom: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                  <td style={{ padding: "12px 14px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 34, height: 34, borderRadius: "50%", background: DANGER, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{initials(b.nome)}</div>
+                      <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{b.nome || "—"}</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{b.email}</td>
+                  <td style={{ padding: "12px 14px" }}>
+                    <span style={{ padding: "2px 8px", borderRadius: 5, background: "#F3F4F6", color: GRAY_TEXT, fontSize: 11, fontWeight: 700 }}>{b.role}</span>
+                  </td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{formatDate(b.updated_at || b.created_at)}</td>
+                  <td style={{ padding: "12px 14px" }}>
+                    <button onClick={() => desbanir(b.id)} disabled={actionLoading === b.id} style={{ padding: "5px 14px", borderRadius: 7, border: "none", background: GREEN, color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", opacity: actionLoading === b.id ? 0.6 : 1 }}>
+                      Desbanir
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════ */
@@ -1658,7 +2422,7 @@ const TAB_LABELS = {
   logs: "Logs de Acesso", banidos: "Usuários Banidos",
 };
 
-const REAL_TABS = new Set(["dashboard", "solucoes", "categorias", "usuarios", "transacoes", "config", "receita", "metricas"]);
+const REAL_TABS = new Set(["dashboard", "solucoes", "categorias", "usuarios", "transacoes", "config", "receita", "metricas", "criadores_u", "empresas_u", "repasses", "relatorios", "taxas", "banners", "emails", "tickets", "denuncias", "logs", "banidos"]);
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -1885,9 +2649,20 @@ export default function AdminDashboard() {
           {activeNav === "usuarios"   && <UsuariosTab isMobile={isMobile} />}
           {activeNav === "transacoes" && <TransacoesTab isMobile={isMobile} />}
           {activeNav === "config"     && <ConfigGeraisTab isMobile={isMobile} />}
-          {activeNav === "receita"    && <MetricasAdminTab solutions={solutions} profiles={profiles} isMobile={isMobile} />}
+          {activeNav === "receita"     && <MetricasAdminTab solutions={solutions} profiles={profiles} isMobile={isMobile} />}
           {activeNav === "metricas"   && <MetricasAdminTab solutions={solutions} profiles={profiles} isMobile={isMobile} />}
-          {!REAL_TABS.has(activeNav)  && <ComingSoon label={TAB_LABELS[activeNav]} />}
+          {activeNav === "criadores_u" && <CriadoresUTab isMobile={isMobile} />}
+          {activeNav === "empresas_u"  && <EmpresasUTab isMobile={isMobile} />}
+          {activeNav === "repasses"    && <RepassesTab isMobile={isMobile} />}
+          {activeNav === "relatorios"  && <RelatoriosTab isMobile={isMobile} />}
+          {activeNav === "taxas"       && <TaxasTab isMobile={isMobile} />}
+          {activeNav === "banners"     && <BannersTab isMobile={isMobile} />}
+          {activeNav === "emails"      && <EmailsTab isMobile={isMobile} />}
+          {activeNav === "tickets"     && <TicketsTab isMobile={isMobile} />}
+          {activeNav === "denuncias"   && <DenunciasTab isMobile={isMobile} />}
+          {activeNav === "logs"        && <LogsTab isMobile={isMobile} />}
+          {activeNav === "banidos"     && <BanidosTab isMobile={isMobile} />}
+          {!REAL_TABS.has(activeNav)   && <ComingSoon label={TAB_LABELS[activeNav]} />}
         </div>
       </main>
 
