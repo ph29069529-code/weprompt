@@ -29,8 +29,8 @@ export async function POST(request) {
     const session = await stripe.checkout.sessions.create({
       mode: isSubscription ? "subscription" : "payment",
       line_items: [{ price_data: priceData, quantity: 1 }],
-      success_url: `${origin}/dashboard/empresa/success?solution_id=${solution_id}`,
-      cancel_url: `${origin}/solucoes`,
+      success_url: `${origin}/obrigado?session_id={CHECKOUT_SESSION_ID}&solution_id=${solution_id}`,
+      cancel_url: `${origin}/checkout/${solution_id}`,
       metadata: {
         solution_id: String(solution_id),
         user_id: String(user_id),
