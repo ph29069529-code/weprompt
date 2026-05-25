@@ -1642,6 +1642,7 @@ const SIDEBAR_SECTIONS = [
   { label: "CONTEÚDO",    items: [{ key: "solucoes",   label: "Soluções",         icon: "puzzle" }, { key: "categorias", label: "Categorias", icon: "tag" }] },
   { label: "USUÁRIOS",    items: [{ key: "usuarios",   label: "Todos Usuários",   icon: "users" }, { key: "criadores_u", label: "Criadores", icon: "pencil" }, { key: "empresas_u", label: "Empresas", icon: "building" }] },
   { label: "FINANCEIRO",  items: [{ key: "transacoes", label: "Transações",       icon: "arrows" }, { key: "repasses", label: "Repasses", icon: "cash" }, { key: "receita", label: "Receita", icon: "chart" }] },
+  { label: "ANALYTICS",   items: [{ key: "metricas",   label: "Métricas",         icon: "chart" }, { key: "relatorios", label: "Relatórios", icon: "file" }] },
   { label: "PLATAFORMA",  items: [{ key: "config",     label: "Config. Gerais",   icon: "settings" }, { key: "taxas", label: "Taxas e Comissões", icon: "percent" }, { key: "banners", label: "Banners", icon: "photo" }, { key: "emails", label: "E-mails", icon: "mail" }] },
   { label: "SUPORTE",     items: [{ key: "tickets",    label: "Tickets",          icon: "message" }, { key: "denuncias", label: "Denúncias", icon: "flag" }] },
   { label: "SEGURANÇA",   items: [{ key: "logs",       label: "Logs de Acesso",   icon: "shield" }, { key: "banidos", label: "Usuários Banidos", icon: "ban" }] },
@@ -1651,12 +1652,13 @@ const TAB_LABELS = {
   dashboard: "Painel Administrativo", solucoes: "Soluções", categorias: "Categorias",
   usuarios: "Todos os Usuários", criadores_u: "Criadores", empresas_u: "Empresas",
   transacoes: "Transações", repasses: "Repasses", receita: "Receita",
+  metricas: "Métricas da Plataforma", relatorios: "Relatórios",
   config: "Configurações Gerais", taxas: "Taxas e Comissões", banners: "Banners",
   emails: "E-mails", tickets: "Tickets", denuncias: "Denúncias",
   logs: "Logs de Acesso", banidos: "Usuários Banidos",
 };
 
-const REAL_TABS = new Set(["dashboard", "solucoes", "categorias", "usuarios", "transacoes", "config", "receita"]);
+const REAL_TABS = new Set(["dashboard", "solucoes", "categorias", "usuarios", "transacoes", "config", "receita", "metricas"]);
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -1884,6 +1886,7 @@ export default function AdminDashboard() {
           {activeNav === "transacoes" && <TransacoesTab isMobile={isMobile} />}
           {activeNav === "config"     && <ConfigGeraisTab isMobile={isMobile} />}
           {activeNav === "receita"    && <MetricasAdminTab solutions={solutions} profiles={profiles} isMobile={isMobile} />}
+          {activeNav === "metricas"   && <MetricasAdminTab solutions={solutions} profiles={profiles} isMobile={isMobile} />}
           {!REAL_TABS.has(activeNav)  && <ComingSoon label={TAB_LABELS[activeNav]} />}
         </div>
       </main>
