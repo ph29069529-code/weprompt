@@ -2,17 +2,6 @@
 
 import { useState, useEffect } from "react";
 import WePromptLogo from "./components/WePromptLogo";
-import { supabase } from "./lib/supabase";
-
-function getDashboardUrl(session) {
-  if (!session) return "/login";
-  const role = session.user.user_metadata?.role;
-  const email = session.user.email;
-  if (email === "ph29069529@gmail.com") return "/dashboard/admin";
-  if (role === "criador") return "/dashboard/criador";
-  return "/dashboard/empresa";
-}
-
 const PURPLE = "#0EA5E9";
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT = "#6E6E73";
@@ -29,13 +18,6 @@ function useWindowSize() {
   }, []);
   return width;
 }
-
-const NAV_LINKS = [
-  ["Explorar", "/solucoes"],
-  ["Preços", "/precos"],
-  ["Como funciona", "#como-funciona"],
-  ["Para Criadores", "/criadores"],
-];
 
 const Arrow = () => (
   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ display: "inline-block", flexShrink: 0 }}>
@@ -292,17 +274,8 @@ function GlassStack() {
 }
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [session, setSession] = useState(null);
   const width = useWindowSize();
   const isMobile = width < 768;
-  const dashboardUrl = getDashboardUrl(session);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, s) => setSession(s));
-    return () => subscription.unsubscribe();
-  }, []);
 
   /* ── Reveal animations ── */
   useEffect(() => {
@@ -327,163 +300,7 @@ export default function Home() {
         @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
         @keyframes pulse-orb { 0%,100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.06); } }
-        .nav-hover:hover { color: ${NEAR_BLACK} !important; background: rgba(0,0,0,0.04) !important; }
       `}</style>
-
-      {/* ════════════════════════════════════════
-          NAVBAR
-      ════════════════════════════════════════ */}
-      <header style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: "rgba(255,255,255,0.86)",
-        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(0,0,0,0.07)",
-      }}>
-        <div style={{
-          maxWidth: 1200, margin: "0 auto",
-          padding: "0 32px", height: 64,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-        }}>
-          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <WePromptLogo id="header" textColor={NEAR_BLACK} />
-          </a>
-
-          {!isMobile && (
-            <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
-              {NAV_LINKS.map(([label, href]) => (
-                <a key={label} href={href} style={{
-                  fontSize: 14, fontWeight: 500, color: GRAY_TEXT,
-                  textDecoration: "none", padding: "6px 14px", borderRadius: 8,
-                  transition: "color 0.15s, background 0.15s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.color = NEAR_BLACK; e.currentTarget.style.background = "rgba(0,0,0,0.05)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = GRAY_TEXT; e.currentTarget.style.background = "transparent"; }}
-                >
-                  {label}
-                </a>
-              ))}
-            </nav>
-          )}
-
-          {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              {session ? (
-                <a href={dashboardUrl} style={{
-                  borderRadius: 999, padding: "9px 22px",
-                  background: "#0369A1", color: "#fff",
-                  fontSize: 14, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  textDecoration: "none",
-                  transition: "background 0.15s",
-                }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                  onMouseLeave={e => e.currentTarget.style.background = "#0369A1"}
-                >
-                  Meu Dashboard <Arrow />
-                </a>
-              ) : (
-                <>
-                  <a href="/login" style={{
-                    borderRadius: 999, padding: "8px 20px", fontSize: 14, fontWeight: 500,
-                    textDecoration: "none", color: "#0369A1",
-                    border: "2px solid #0369A1", background: "transparent",
-                    transition: "background 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                  >
-                    Entrar
-                  </a>
-                  <a href="/cadastro" style={{
-                    borderRadius: 999, padding: "9px 22px",
-                    background: "#0369A1", color: "#fff",
-                    fontSize: 14, fontWeight: 600,
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    textDecoration: "none",
-                    transition: "background 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                    onMouseLeave={e => e.currentTarget.style.background = "#0369A1"}
-                  >
-                    Criar conta <Arrow />
-                  </a>
-                </>
-              )}
-            </div>
-          )}
-
-          {isMobile && (
-            <button onClick={() => setMenuOpen(o => !o)} aria-label="Menu" style={{
-              background: "none", border: "none", cursor: "pointer",
-              fontSize: 22, color: NEAR_BLACK, padding: "4px 8px", display: "flex", alignItems: "center",
-            }}>
-              {menuOpen ? "✕" : "☰"}
-            </button>
-          )}
-        </div>
-
-        {isMobile && menuOpen && (
-          <div style={{
-            position: "fixed", top: 64, left: 0, right: 0, zIndex: 99,
-            background: "rgba(255,255,255,0.97)",
-            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(0,0,0,0.07)",
-            padding: "12px 24px 24px",
-            display: "flex", flexDirection: "column", gap: 4,
-          }}>
-            {NAV_LINKS.map(([label, href]) => (
-              <a key={label} href={href} onClick={() => setMenuOpen(false)} style={{
-                padding: "13px 4px", fontSize: 17, fontWeight: 500,
-                color: NEAR_BLACK, textDecoration: "none",
-                borderBottom: "1px solid rgba(0,0,0,0.05)",
-              }}>
-                {label}
-              </a>
-            ))}
-            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-              {session ? (
-                <a href={dashboardUrl} style={{
-                  flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
-                  background: "#0369A1", color: "#fff",
-                  fontSize: 14, fontWeight: 600,
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                  textDecoration: "none", transition: "background 0.15s",
-                }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                  onMouseLeave={e => e.currentTarget.style.background = "#0369A1"}
-                >
-                  Meu Dashboard <Arrow />
-                </a>
-              ) : (
-                <>
-                  <a href="/login" style={{
-                    flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
-                    fontSize: 14, fontWeight: 500, textDecoration: "none", color: "#0369A1",
-                    border: "2px solid #0369A1", transition: "background 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                  >
-                    Entrar
-                  </a>
-                  <a href="/cadastro" style={{
-                    flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
-                    background: "#0369A1", color: "#fff",
-                    fontSize: 14, fontWeight: 600,
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                    textDecoration: "none", transition: "background 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                    onMouseLeave={e => e.currentTarget.style.background = "#0369A1"}
-                  >
-                    Criar conta <Arrow />
-                  </a>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </header>
 
       {/* ════════════════════════════════════════
           HERO — 100vh, white, two-column

@@ -1,6 +1,7 @@
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
+import NavbarController from "./components/NavbarController";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -47,6 +48,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
       <body className={`${dmSans.className} min-h-full flex flex-col`}>
+        <NavbarController />
         {children}
         <PWAInstallPrompt />
       </body>

@@ -2,29 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import WePromptLogo from "../components/WePromptLogo";
 
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT  = "#6E6E73";
 const BG_GRAY    = "#F5F5F7";
 const BLUE       = "#0369A1";
-
-function getDashboardUrl(session) {
-  if (!session) return "/login";
-  const role  = session.user.user_metadata?.role;
-  const email = session.user.email;
-  if (email === "ph29069529@gmail.com") return "/dashboard/admin";
-  if (role === "criador") return "/dashboard/criador";
-  return "/dashboard/empresa";
-}
-
-
-const NAV_LINKS = [
-  ["Explorar", "/solucoes"],
-  ["Preços", "/precos"],
-  ["Como funciona", "/#como-funciona"],
-  ["Para Criadores", "/criadores"],
-];
 
 function useWindowSize() {
   const [width, setWidth] = useState(
@@ -183,18 +165,9 @@ export default function SolucoesPage() {
   const [loading, setLoading]             = useState(true);
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [searchQuery, setSearchQuery]     = useState("");
-  const [menuOpen, setMenuOpen]           = useState(false);
-  const [session, setSession]             = useState(null);
   const width      = useWindowSize();
   const isMobile   = width < 768;
   const isTablet   = width >= 768 && width < 1024;
-  const dashboardUrl = getDashboardUrl(session);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, s) => setSession(s));
-    return () => subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     supabase.from("categories").select("nome, icone, cor").order("nome")
@@ -229,159 +202,6 @@ export default function SolucoesPage() {
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
       `}</style>
-
-      {/* ── NAVBAR ── */}
-      <header style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: "rgba(255,255,255,0.86)",
-        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid rgba(0,0,0,0.07)",
-      }}>
-        <div style={{
-          maxWidth: 1200, margin: "0 auto",
-          padding: "0 32px", height: 64,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-        }}>
-          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <WePromptLogo id="solucoes-header" textColor={NEAR_BLACK} />
-          </a>
-
-          {!isMobile && (
-            <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
-              {NAV_LINKS.map(([label, href]) => (
-                <a key={label} href={href} style={{
-                  fontSize: 14, fontWeight: label === "Explorar" ? 600 : 500,
-                  color: label === "Explorar" ? BLUE : GRAY_TEXT,
-                  textDecoration: "none", padding: "6px 14px", borderRadius: 8,
-                  transition: "color 0.15s, background 0.15s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.color = NEAR_BLACK; e.currentTarget.style.background = "rgba(0,0,0,0.05)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = label === "Explorar" ? BLUE : GRAY_TEXT; e.currentTarget.style.background = "transparent"; }}
-                >
-                  {label}
-                </a>
-              ))}
-            </nav>
-          )}
-
-          {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              {session ? (
-                <a href={dashboardUrl} style={{
-                  borderRadius: 999, padding: "9px 22px",
-                  background: BLUE, color: "#fff",
-                  fontSize: 14, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  textDecoration: "none", transition: "background 0.15s",
-                }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                  onMouseLeave={e => e.currentTarget.style.background = BLUE}
-                >
-                  Meu Dashboard <Arrow />
-                </a>
-              ) : (
-                <>
-                  <a href="/login" style={{
-                    borderRadius: 999, padding: "8px 20px", fontSize: 14, fontWeight: 500,
-                    textDecoration: "none", color: BLUE,
-                    border: "2px solid " + BLUE, background: "transparent",
-                    transition: "background 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                  >
-                    Entrar
-                  </a>
-                  <a href="/cadastro" style={{
-                    borderRadius: 999, padding: "9px 22px",
-                    background: BLUE, color: "#fff",
-                    fontSize: 14, fontWeight: 600,
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    textDecoration: "none", transition: "background 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                    onMouseLeave={e => e.currentTarget.style.background = BLUE}
-                  >
-                    Criar conta <Arrow />
-                  </a>
-                </>
-              )}
-            </div>
-          )}
-
-          {isMobile && (
-            <button onClick={() => setMenuOpen(o => !o)} aria-label="Menu" style={{
-              background: "none", border: "none", cursor: "pointer",
-              fontSize: 22, color: NEAR_BLACK, padding: "4px 8px", display: "flex", alignItems: "center",
-            }}>
-              {menuOpen ? "✕" : "☰"}
-            </button>
-          )}
-        </div>
-
-        {isMobile && menuOpen && (
-          <div style={{
-            position: "fixed", top: 64, left: 0, right: 0, zIndex: 99,
-            background: "rgba(255,255,255,0.97)",
-            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(0,0,0,0.07)",
-            padding: "12px 24px 24px",
-            display: "flex", flexDirection: "column", gap: 4,
-          }}>
-            {NAV_LINKS.map(([label, href]) => (
-              <a key={label} href={href} onClick={() => setMenuOpen(false)} style={{
-                padding: "13px 4px", fontSize: 17, fontWeight: 500,
-                color: label === "Explorar" ? BLUE : NEAR_BLACK,
-                textDecoration: "none",
-                borderBottom: "1px solid rgba(0,0,0,0.05)",
-              }}>
-                {label}
-              </a>
-            ))}
-            <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-              {session ? (
-                <a href={dashboardUrl} style={{
-                  flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
-                  background: BLUE, color: "#fff",
-                  fontSize: 14, fontWeight: 600,
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                  textDecoration: "none", transition: "background 0.15s",
-                }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                  onMouseLeave={e => e.currentTarget.style.background = BLUE}
-                >
-                  Meu Dashboard <Arrow />
-                </a>
-              ) : (
-                <>
-                  <a href="/login" style={{
-                    flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
-                    fontSize: 14, fontWeight: 500, textDecoration: "none", color: BLUE,
-                    border: "2px solid " + BLUE, transition: "background 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                  >
-                    Entrar
-                  </a>
-                  <a href="/cadastro" style={{
-                    flex: 1, textAlign: "center", borderRadius: 999, padding: "13px",
-                    background: BLUE, color: "#fff",
-                    fontSize: 14, fontWeight: 600,
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                    textDecoration: "none", transition: "background 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                    onMouseLeave={e => e.currentTarget.style.background = BLUE}
-                  >
-                    Criar conta <Arrow />
-                  </a>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </header>
 
       {/* ── HEADER SECTION ── */}
       <section style={{
