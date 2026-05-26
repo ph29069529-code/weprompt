@@ -535,19 +535,30 @@ function ConfigGeraisTab({ isMobile }) {
 
 /* ── TRANSAÇÕES TAB ── */
 function TransacoesTab({ isMobile }) {
+  const [subs, setSubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("subscriptions")
+      .select("id, created_at, status, solution_id, user_id, solutions(titulo, preco, payment_type, creator_id), buyer:profiles!subscriptions_user_id_fkey(nome, email)")
+      .order("created_at", { ascending: false })
+      .limit(100)
+      .then(({ data }) => { setSubs(data || []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const fmt = v => `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  const totalBruto       = subs.reduce((s, r) => s + (r.solutions?.preco || 0), 0);
+  const totalComissao    = totalBruto * 0.15;
+  const repassePendente  = subs.filter(r => r.status === "active").reduce((s, r) => s + (r.solutions?.preco || 0) * 0.85, 0);
+  const repasseRealizado = subs.filter(r => r.status === "cancelled" || r.status === "completed").reduce((s, r) => s + (r.solutions?.preco || 0) * 0.85, 0);
+
   const summary = [
-    { label: "Receita Bruta",       value: "R$ 8.900", sub: "este mês",        color: BLUE },
-    { label: "Comissões",           value: "R$ 1.335", sub: "15% avg",          color: "#7C3AED" },
-    { label: "Repasses Pendentes",  value: "R$ 2.240", sub: "4 pendentes",      color: "#B45309" },
-    { label: "Repasses Realizados", value: "R$ 5.325", sub: "total acumulado",  color: GREEN },
-  ];
-  const rows = [
-    { data: "24/05/2026", tipo: "venda",      usuario: "TechCorp Ltda",  solucao: "GPT Analyst Pro",      valor: "R$ 97,00",  status: "concluido" },
-    { data: "23/05/2026", tipo: "assinatura", usuario: "Startup ABC",    solucao: "Data Pipeline AI",     valor: "R$ 297,00", status: "concluido" },
-    { data: "22/05/2026", tipo: "repasse",    usuario: "João Silva",     solucao: "Automação de E-mails", valor: "R$ 77,60",  status: "concluido" },
-    { data: "21/05/2026", tipo: "venda",      usuario: "Maria Santos",   solucao: "Chatbot Builder",      valor: "R$ 49,00",  status: "concluido" },
-    { data: "20/05/2026", tipo: "repasse",    usuario: "Carlos Dev",     solucao: "SEO Optimizer AI",     valor: "R$ 41,65",  status: "pendente_repasse" },
-    { data: "19/05/2026", tipo: "assinatura", usuario: "AgenciaMKT",     solucao: "Content Generator",    valor: "R$ 97,00",  status: "concluido" },
+    { label: "Receita Bruta",       value: fmt(totalBruto),       sub: `${subs.length} transações`,    color: BLUE },
+    { label: "Comissões (15%)",      value: fmt(totalComissao),    sub: "retidos pela plataforma",      color: "#7C3AED" },
+    { label: "Repasses Pendentes",   value: fmt(repassePendente),  sub: "assinaturas ativas",           color: "#B45309" },
+    { label: "Repasses Realizados",  value: fmt(repasseRealizado), sub: "transações encerradas",        color: GREEN },
   ];
 
   return (
@@ -564,29 +575,46 @@ function TransacoesTab({ isMobile }) {
 
       <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
         <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, fontWeight: 700, fontSize: 15, color: NEAR_BLACK }}>Histórico de Transações</div>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead>
-              <tr style={{ background: "#f9fafb" }}>
-                {["Data", "Tipo", "Usuário / Criador", "Solução", "Valor", "Status"].map(h => (
-                  <th key={h} style={{ padding: "11px 16px", textAlign: "left", fontWeight: 600, color: GRAY_TEXT, whiteSpace: "nowrap" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r, i) => (
-                <tr key={i} style={{ borderTop: `1px solid ${BORDER}` }}>
-                  <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{r.data}</td>
-                  <td style={{ padding: "12px 16px" }}><StatusBadge status={r.tipo} /></td>
-                  <td style={{ padding: "12px 16px", fontWeight: 500, color: NEAR_BLACK }}>{r.usuario}</td>
-                  <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{r.solucao}</td>
-                  <td style={{ padding: "12px 16px", fontWeight: 700, color: NEAR_BLACK }}>{r.valor}</td>
-                  <td style={{ padding: "12px 16px" }}><StatusBadge status={r.status} /></td>
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "60px", color: GRAY_TEXT }}>Carregando transações…</div>
+        ) : subs.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "80px 24px" }}>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>🧾</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 8 }}>Nenhuma transação registrada ainda</div>
+            <div style={{ fontSize: 14, color: GRAY_TEXT }}>As transações aparecerão aqui conforme as compras forem realizadas.</div>
+          </div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#f9fafb" }}>
+                  {["Data", "Tipo", "Comprador", "Solução", "Valor", "Status"].map(h => (
+                    <th key={h} style={{ padding: "11px 16px", textAlign: "left", fontWeight: 600, color: GRAY_TEXT, whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {subs.map((r, i) => {
+                  const tipo   = r.solutions?.payment_type === "subscription" ? "assinatura" : "venda";
+                  const nome   = r.buyer?.nome || r.buyer?.email || "—";
+                  const titulo = r.solutions?.titulo || "—";
+                  const valor  = fmt(r.solutions?.preco || 0);
+                  const badge  = r.status === "active" ? "ativo" : r.status === "cancelled" ? "paused" : "pendente";
+                  return (
+                    <tr key={r.id || i} style={{ borderTop: `1px solid ${BORDER}` }}>
+                      <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{new Date(r.created_at).toLocaleDateString("pt-BR")}</td>
+                      <td style={{ padding: "12px 16px" }}><StatusBadge status={tipo} /></td>
+                      <td style={{ padding: "12px 16px", fontWeight: 500, color: NEAR_BLACK }}>{nome}</td>
+                      <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{titulo}</td>
+                      <td style={{ padding: "12px 16px", fontWeight: 700, color: NEAR_BLACK }}>{valor}</td>
+                      <td style={{ padding: "12px 16px" }}><StatusBadge status={badge} /></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1542,15 +1570,13 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
   ];
   const card = { background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "22px 24px" };
 
-  if (loading) return <div style={{ textAlign: "center", padding: "80px", color: GRAY_TEXT }}>Carregando métricas…</div>;
-
   return (
     <div>
-      {/* Period filter */}
+      {/* Period filter — always visible, even while loading */}
       <div style={{ display: "flex", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
         {periodOptions.map(opt => (
           <button key={opt.key} onClick={() => setPeriod(opt.key)} style={{
-            padding: "7px 18px", borderRadius: 99,
+            padding: "8px 20px", borderRadius: 999,
             border: period === opt.key ? "none" : `1px solid ${BORDER}`,
             background: period === opt.key ? BLUE : "#fff",
             color: period === opt.key ? "#fff" : GRAY_TEXT,
@@ -1559,6 +1585,10 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
           }}>{opt.label}</button>
         ))}
       </div>
+
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "80px", color: GRAY_TEXT }}>Carregando métricas…</div>
+      ) : (<>
 
       {/* Overview cards */}
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
@@ -1699,6 +1729,7 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
           </div>
         )}
       </div>
+      </>)}
     </div>
   );
 }
