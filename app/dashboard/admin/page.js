@@ -818,8 +818,34 @@ function DashboardTab({ solutions, profiles, onApprove, onConfirmReject, onView,
   const [rejectingId, setRejectingId]     = useState(null);
   const [rejectReason, setRejectReason]   = useState("");
   const [rejectLoading, setRejectLoading] = useState(false);
+  const [revenueData, setRevenueData]     = useState([0,0,0,0,0,0]);
 
   const pending      = solutions.filter(s => s.status === "pending");
+
+  const now = new Date();
+  const last6Months = useMemo(() => Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now); d.setMonth(d.getMonth() - 5 + i);
+    return { year: d.getFullYear(), month: d.getMonth() };
+  }), []);
+  const chartLabels = last6Months.map(({ month }) =>
+    ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"][month]
+  );
+
+  useEffect(() => {
+    async function loadRevenue() {
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("created_at, solutions(preco)");
+      if (data) {
+        const byMonth = last6Months.map(({ year, month }) =>
+          data.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; })
+            .reduce((sum, s) => sum + (s.solutions?.preco || 0), 0)
+        );
+        setRevenueData(byMonth);
+      }
+    }
+    loadRevenue();
+  }, [last6Months]);
 
   async function submitRejectDash(s) {
     if (!rejectReason.trim()) return;
@@ -833,10 +859,12 @@ function DashboardTab({ solutions, profiles, onApprove, onConfirmReject, onView,
   const empresas     = profiles.filter(p => p.role === "empresa"  || p.role === "business");
   const recentSignups = [...profiles].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
 
-  const chartLabels  = ["Dez", "Jan", "Fev", "Mar", "Abr", "Mai"];
-  const revenueData  = [4200, 5800, 4900, 7200, 6400, 8900];
-  const criadoresData = [24, 31, 28, 40, 36, Math.max(criadores.length, 48)];
-  const empresasData  = [18, 22, 19, 27, 25, Math.max(empresas.length, 32)];
+  const criadoresData = last6Months.map(({ year, month }) =>
+    profiles.filter(p => (p.role === "criador" || p.role === "creator") && (() => { const d = new Date(p.created_at); return d.getFullYear() === year && d.getMonth() === month; })()).length
+  );
+  const empresasData = last6Months.map(({ year, month }) =>
+    profiles.filter(p => (p.role === "empresa" || p.role === "business") && (() => { const d = new Date(p.created_at); return d.getFullYear() === year && d.getMonth() === month; })()).length
+  );
 
   const quickActions = [
     { label: "Adicionar Categoria", icon: icons.tag,     color: BLUE },
@@ -2251,41 +2279,25 @@ function DenunciasTab({ isMobile }) {
 /* ── LogsTab ── */
 function LogsTab({ isMobile }) {
   const [roleFilter, setRoleFilter] = useState("todos");
+  const [logs, setLogs]             = useState([]);
+  const [loading, setLoading]       = useState(true);
 
   const ROLES = ["todos", "admin", "criador", "empresa"];
 
-  const now = Date.now();
-  const DUMMY_LOGS = [
-    { id: 1,  usuario: "Pedro Santos",  role: "admin",   acao: "Login",                   ip: "192.168.1.1",   ts: now - 1000 * 60 * 5 },
-    { id: 2,  usuario: "Ana Lima",      role: "criador", acao: "Publicou solução",         ip: "177.12.34.56",  ts: now - 1000 * 60 * 12 },
-    { id: 3,  usuario: "Tech Corp",     role: "empresa", acao: "Comprou solução",          ip: "200.123.45.67", ts: now - 1000 * 60 * 30 },
-    { id: 4,  usuario: "Maria Silva",   role: "criador", acao: "Atualizou perfil",         ip: "187.45.67.89",  ts: now - 1000 * 60 * 60 },
-    { id: 5,  usuario: "Carlos Mendes", role: "empresa", acao: "Login",                   ip: "200.98.76.54",  ts: now - 1000 * 60 * 90 },
-    { id: 6,  usuario: "Pedro Santos",  role: "admin",   acao: "Aprovou solução",          ip: "192.168.1.1",   ts: now - 1000 * 60 * 120 },
-    { id: 7,  usuario: "Juliana Rocha", role: "criador", acao: "Login",                   ip: "179.34.56.78",  ts: now - 1000 * 60 * 180 },
-    { id: 8,  usuario: "StartupXYZ",    role: "empresa", acao: "Assinou plano Business",  ip: "201.45.67.12",  ts: now - 1000 * 60 * 240 },
-    { id: 9,  usuario: "Pedro Santos",  role: "admin",   acao: "Baniu usuário",            ip: "192.168.1.1",   ts: now - 1000 * 60 * 300 },
-    { id: 10, usuario: "Diego Costa",   role: "criador", acao: "Publicou solução",         ip: "187.23.45.67",  ts: now - 1000 * 60 * 360 },
-  ];
+  useEffect(() => {
+    async function loadLogs() {
+      const { data } = await supabase
+        .from("logs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (data) setLogs(data);
+      setLoading(false);
+    }
+    loadLogs().catch(() => setLoading(false));
+  }, []);
 
-  const visible = roleFilter === "todos" ? DUMMY_LOGS : DUMMY_LOGS.filter(l => l.role === roleFilter);
-
-  function timeAgo(ts) {
-    const diff = Math.floor((Date.now() - ts) / 1000);
-    if (diff < 60) return `${diff}s atrás`;
-    if (diff < 3600) return `${Math.floor(diff / 60)}min atrás`;
-    return `${Math.floor(diff / 3600)}h atrás`;
-  }
-
-  function exportCSV() {
-    const header = "ID,Usuário,Role,Ação,IP,Horário";
-    const rows   = visible.map(l => `${l.id},"${l.usuario}",${l.role},"${l.acao}",${l.ip},${new Date(l.ts).toISOString()}`);
-    const blob   = new Blob([[header, ...rows].join("\n")], { type: "text/csv" });
-    const url    = URL.createObjectURL(blob);
-    const a      = document.createElement("a");
-    a.href = url; a.download = "logs.csv"; a.click();
-    URL.revokeObjectURL(url);
-  }
+  const visible = roleFilter === "todos" ? logs : logs.filter(l => l.role === roleFilter);
 
   const ROLE_COLORS = { admin: { bg: "#FEF3C7", color: "#92400E" }, criador: { bg: "#DBEAFE", color: "#1E40AF" }, empresa: { bg: "#EDE9FE", color: "#7C3AED" } };
 
@@ -2299,34 +2311,41 @@ function LogsTab({ isMobile }) {
             </button>
           ))}
         </div>
-        <button onClick={exportCSV} style={{ padding: "7px 16px", borderRadius: 8, border: `1px solid ${BORDER}`, background: "#fff", color: NEAR_BLACK, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-          Exportar CSV
-        </button>
       </div>
-      <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-          <thead>
-            <tr style={{ background: BG_GRAY }}>
-              {["Usuário", "Role", "Ação", "IP", "Horário"].map(h => (
-                <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 700, color: GRAY_TEXT, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {visible.map((l, i) => (
-              <tr key={l.id} style={{ borderBottom: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                <td style={{ padding: "12px 14px", fontWeight: 600, color: NEAR_BLACK }}>{l.usuario}</td>
-                <td style={{ padding: "12px 14px" }}>
-                  <span style={{ padding: "2px 8px", borderRadius: 5, fontSize: 11, fontWeight: 700, ...ROLE_COLORS[l.role] }}>{l.role}</span>
-                </td>
-                <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{l.acao}</td>
-                <td style={{ padding: "12px 14px", color: GRAY_TEXT, fontFamily: "monospace" }}>{l.ip}</td>
-                <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{timeAgo(l.ts)}</td>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Carregando…</div>
+      ) : visible.length === 0 ? (
+        <div style={{ textAlign: "center", padding: 80, color: GRAY_TEXT }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6 }}>Nenhum log registrado ainda</div>
+          <div style={{ fontSize: 13 }}>Os logs de acesso aparecerão aqui conforme a plataforma for utilizada.</div>
+        </div>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: BG_GRAY }}>
+                {["Usuário", "Role", "Ação", "IP", "Horário"].map(h => (
+                  <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontWeight: 700, color: GRAY_TEXT, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {visible.map((l, i) => (
+                <tr key={l.id} style={{ borderBottom: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                  <td style={{ padding: "12px 14px", fontWeight: 600, color: NEAR_BLACK }}>{l.usuario || l.user_id || "—"}</td>
+                  <td style={{ padding: "12px 14px" }}>
+                    <span style={{ padding: "2px 8px", borderRadius: 5, fontSize: 11, fontWeight: 700, ...(ROLE_COLORS[l.role] || { bg: "#F3F4F6", color: GRAY_TEXT }) }}>{l.role || "—"}</span>
+                  </td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{l.acao || l.action || "—"}</td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT, fontFamily: "monospace" }}>{l.ip || "—"}</td>
+                  <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{new Date(l.created_at).toLocaleString("pt-BR")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

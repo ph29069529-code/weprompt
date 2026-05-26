@@ -555,22 +555,20 @@ function CheckoutContent({ isMobile }) {
               </div>
             </div>
 
-            {/* Testimonials */}
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 14 }}>O que dizem nossos clientes</div>
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
-                <TestimonialCard
-                  quote="Implementei em menos de 1 hora e já vi resultado no mesmo dia."
-                  author="Carlos M."
-                  role="CEO"
-                  solution="Agente de Vendas"
-                />
-                <TestimonialCard
-                  quote="Suporte incrível, me ajudaram a configurar tudo. Vale muito."
-                  author="Ana P."
-                  role="Marketing"
-                  solution="Automação WhatsApp"
-                />
+            {/* Trust card */}
+            <div style={{ background: "#fff", borderRadius: 16, padding: 24, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 16 }}>Por que confiar na WePrompt?</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {[
+                  "Soluções verificadas pela nossa equipe",
+                  "Suporte em português incluído",
+                  "Garantia de 7 dias ou seu dinheiro de volta",
+                ].map(item => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <CheckIcon size={20} color={GREEN} />
+                    <span style={{ fontSize: 14, color: NEAR_BLACK, fontWeight: 500 }}>{item}</span>
+                  </div>
+                ))}
               </div>
             </div>
 

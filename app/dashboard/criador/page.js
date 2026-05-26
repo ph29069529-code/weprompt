@@ -1105,6 +1105,31 @@ export default function CriadorDashboard() {
     init();
   }, [router]);
 
+  useEffect(() => {
+    async function loadChart() {
+      if (!user || solutions.length === 0) return;
+      const solutionIds = solutions.map(s => s.id);
+      const now = new Date();
+      const last6 = Array.from({ length: 6 }, (_, i) => {
+        const d = new Date(now); d.setMonth(d.getMonth() - 5 + i);
+        return { year: d.getFullYear(), month: d.getMonth() };
+      });
+      setChartLabels(last6.map(({ month }) => MONTHS_PT_C[month]));
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("created_at, solutions(preco)")
+        .in("solution_id", solutionIds);
+      if (data) {
+        const byMonth = last6.map(({ year, month }) =>
+          data.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; })
+            .reduce((sum, s) => sum + (s.solutions?.preco || 0), 0)
+        );
+        setChartData(byMonth);
+      }
+    }
+    loadChart();
+  }, [user, solutions]);
+
   function openCreate() { setEditingSolution(null); setModalOpen(true); }
   function openEdit(s) { setEditingSolution(s); setModalOpen(true); }
   function closeModal() { setModalOpen(false); setEditingSolution(null); }
@@ -1159,8 +1184,8 @@ export default function CriadorDashboard() {
 
   const activeSolutions = solutions.filter(s => s.ativo && s.status === "approved").length;
 
-  const CHART_DATA   = [1200, 1800, 1400, 2200, 1900, 2600];
-  const CHART_LABELS = ["Dez", "Jan", "Fev", "Mar", "Abr", "Mai"];
+  const [chartData, setChartData]     = useState([0,0,0,0,0,0]);
+  const [chartLabels, setChartLabels] = useState(["Jan","Fev","Mar","Abr","Mai","Jun"]);
 
 
   return (
@@ -1289,9 +1314,11 @@ export default function CriadorDashboard() {
                     <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK }}>Receita nos últimos 6 meses</div>
                     <div style={{ fontSize: 13, color: GRAY_TEXT, marginTop: 2 }}>Dados ilustrativos</div>
                   </div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: BLUE }}>R$ 2.600</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: BLUE }}>
+                    {`R$ ${chartData.reduce((a, b) => a + b, 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+                  </div>
                 </div>
-                <BarChart data={CHART_DATA} labels={CHART_LABELS} />
+                <BarChart data={chartData} labels={chartLabels} />
               </div>
 
               {/* Solutions table */}
