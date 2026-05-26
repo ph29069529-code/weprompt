@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import WePromptLogo from "./components/WePromptLogo";
 import { supabase } from "./lib/supabase";
 
@@ -119,18 +119,10 @@ function CreatorCard() {
       </div>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 6 }}>Receita este mês</div>
-        <div style={{ fontSize: 42, fontWeight: 800, color: "#fff", letterSpacing: "-1.5px", lineHeight: 1 }}>R$ 4.832</div>
-        <div style={{
-          display: "inline-flex", alignItems: "center", gap: 5, marginTop: 8,
-          background: "rgba(22,163,74,0.18)", border: "1px solid rgba(22,163,74,0.3)",
-          borderRadius: 99, padding: "3px 10px",
-        }}>
-          <span style={{ color: "#4ADE80", fontSize: 12, fontWeight: 700 }}>↑ +38%</span>
-          <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>vs. mês anterior</span>
-        </div>
+        <div style={{ fontSize: 42, fontWeight: 800, color: "#fff", letterSpacing: "-1.5px", lineHeight: 1 }}>—</div>
       </div>
       <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
-        {[{ label: "Assinantes", value: "47" }, { label: "Novas vendas", value: "12" }].map(({ label, value }) => (
+        {[{ label: "Assinantes", value: "—" }, { label: "Novas vendas", value: "—" }].map(({ label, value }) => (
           <div key={label} style={{
             flex: 1, background: "rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px",
           }}>
@@ -200,13 +192,12 @@ function GlassStack() {
         <span style={{ fontSize: 12, fontWeight: 600, color: "#0EA5E9" }}>WePrompt Dashboard</span>
       </div>
       <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-        {[["500+", "Soluções"], ["180+", "Criadores"]].map(([val, lbl]) => (
+        {["Soluções de IA", "Criadores"].map(lbl => (
           <div key={lbl} style={{
             flex: 1, background: "rgba(14,165,233,0.08)", borderRadius: 10,
             padding: "12px 14px", border: "1px solid rgba(14,165,233,0.2)",
           }}>
-            <div style={{ fontSize: 24, fontWeight: 800, color: "#0EA5E9" }}>{val}</div>
-            <div style={{ fontSize: 11, color: "#0369A1", marginTop: 2 }}>{lbl}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#0EA5E9" }}>{lbl}</div>
           </div>
         ))}
       </div>
@@ -303,12 +294,9 @@ function GlassStack() {
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [session, setSession] = useState(null);
-  const [counts, setCounts] = useState({ solutions: 0, creators: 0, companies: 0 });
   const width = useWindowSize();
   const isMobile = width < 768;
   const dashboardUrl = getDashboardUrl(session);
-  const statsRef = useRef(null);
-  const statsTriggered = useRef(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
@@ -323,31 +311,6 @@ export default function Home() {
       { threshold: 0.12, rootMargin: "0px 0px -50px 0px" }
     );
     document.querySelectorAll(".reveal, .reveal-left, .reveal-right").forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  /* ── Count-up animation ── */
-  useEffect(() => {
-    if (!statsRef.current) return;
-    const observer = new IntersectionObserver(entries => {
-      if (!entries[0].isIntersecting || statsTriggered.current) return;
-      statsTriggered.current = true;
-      const targets = { solutions: 500, creators: 180, companies: 10000 };
-      const duration = 1600;
-      const startTime = performance.now();
-      function tick(now) {
-        const p = Math.min((now - startTime) / duration, 1);
-        const ease = 1 - Math.pow(1 - p, 3);
-        setCounts({
-          solutions: Math.floor(ease * targets.solutions),
-          creators: Math.floor(ease * targets.creators),
-          companies: Math.floor(ease * targets.companies),
-        });
-        if (p < 1) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    }, { threshold: 0.3 });
-    observer.observe(statsRef.current);
     return () => observer.disconnect();
   }, []);
 
@@ -676,49 +639,6 @@ export default function Home() {
       </div>
 
       {/* ════════════════════════════════════════
-          STATS — white, count-up
-      ════════════════════════════════════════ */}
-      <section ref={statsRef} style={{
-        background: "#fff",
-        padding: isMobile ? "88px 32px" : "128px 32px",
-      }}>
-        <div style={{
-          maxWidth: 960, margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-          gap: isMobile ? 56 : 0,
-        }}>
-          {[
-            { count: counts.solutions, suffix: "+", label: "Soluções de IA" },
-            { count: counts.creators,  suffix: "+", label: "Criadores Ativos" },
-            { count: counts.companies, suffix: "+", label: "Empresas Atendidas" },
-          ].map(({ count, suffix, label }, i) => (
-            <div key={label} className="reveal" style={{
-              textAlign: "center",
-              borderLeft: i > 0 && !isMobile ? "1px solid rgba(0,0,0,0.08)" : "none",
-              padding: isMobile ? "0" : "0 56px",
-            }}>
-              <div style={{
-                width: 40, height: 3, background: PURPLE,
-                margin: "0 auto 28px", borderRadius: 99,
-              }} />
-              <div style={{
-                fontSize: "clamp(52px, 7vw, 88px)",
-                fontWeight: 800, color: NEAR_BLACK,
-                letterSpacing: "-3px", lineHeight: 1,
-                marginBottom: 14,
-                fontVariantNumeric: "tabular-nums",
-              }}>
-                <span style={{ color: PURPLE }}>{count.toLocaleString("pt-BR")}</span>
-                <span style={{ color: PURPLE }}>{suffix}</span>
-              </div>
-              <div style={{ fontSize: 17, fontWeight: 500, color: GRAY_TEXT }}>{label}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════
           FOR CREATORS — gray, split
       ════════════════════════════════════════ */}
       <section style={{
@@ -752,7 +672,7 @@ export default function Home() {
               {[
                 { title: "Publique em minutos", desc: "Cadastre, descreva e envie sua solução. Nossa curadoria aprova em até 48 horas úteis." },
                 { title: "Receba via PIX automaticamente", desc: "Sem burocracia, sem intermediários. Repasse direto na sua conta após cada venda confirmada." },
-                { title: "Alcance de mais de 10.000 empresas", desc: "Todo o mercado empresarial brasileiro que busca IA — pronto para descobrir sua solução." },
+                { title: "Alcance empresas em todo o Brasil", desc: "Todo o mercado empresarial brasileiro que busca IA — pronto para descobrir sua solução." },
               ].map(({ title, desc }) => (
                 <div key={title} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
                   <CheckIcon />
@@ -1053,7 +973,7 @@ export default function Home() {
             color: "rgba(255,255,255,0.68)",
             maxWidth: 520, margin: "0 auto 52px", lineHeight: 1.65,
           }}>
-            Junte-se a mais de 10.000 empresas que já adotam soluções de IA com suporte em português.
+            A plataforma brasileira para encontrar, contratar e escalar soluções de IA com suporte em português.
           </p>
           <div className="reveal" style={{
             display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap",

@@ -78,7 +78,7 @@ const PLANS = [
 ];
 
 const BENEFITS = [
-  { icon: "🌎", title: "Alcance nacional", desc: "Distribua para mais de 10.000 empresas que buscam ativamente soluções de IA — sem precisar fazer marketing por conta própria." },
+  { icon: "🌎", title: "Alcance nacional", desc: "Chegue a empresas brasileiras que buscam ativamente soluções de IA — sem precisar fazer marketing por conta própria." },
   { icon: "💸", title: "PIX automático", desc: "Receba seu repasse via PIX de forma automática. Sem complicação, sem burocracia, sem espera interminável para sacar." },
   { icon: "📊", title: "Dashboard completo", desc: "Acompanhe assinantes, receita e performance em tempo real. Tome decisões baseadas em dados reais do seu negócio." },
   { icon: "🤝", title: "Suporte dedicado", desc: "Do cadastro até a aprovação e além. Uma equipe real, em português, pronta para ajudar você a crescer na plataforma." },
@@ -321,7 +321,7 @@ export default function CriadoresPage() {
               fontSize: isMobile ? 17 : 20, lineHeight: 1.65, color: GRAY_TEXT,
               maxWidth: 560, margin: "0 auto 40px",
             }}>
-              Distribua para mais de 10.000 empresas. Receba via PIX. Sem burocracia.
+              Publique sua solução de IA, chegue a empresas brasileiras e receba via PIX. Sem burocracia.
             </p>
 
             {/* CTA buttons */}
@@ -354,26 +354,6 @@ export default function CriadoresPage() {
               >
                 Ver como funciona
               </a>
-            </div>
-
-            {/* Stat chips */}
-            <div className="reveal reveal-delay-4" style={{
-              display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap",
-            }}>
-              {[
-                { label: "R$ 4.832", sub: "receita média/mês" },
-                { label: "47",       sub: "assinantes médios" },
-                { label: "48h",      sub: "aprovação" },
-              ].map(({ label, sub }) => (
-                <div key={sub} style={{
-                  background: BG_GRAY,
-                  borderRadius: 999, padding: "10px 20px",
-                  display: "flex", alignItems: "center", gap: 8,
-                }}>
-                  <span style={{ fontSize: 16, fontWeight: 800, color: BLUE }}>{label}</span>
-                  <span style={{ fontSize: 13, color: GRAY_TEXT }}>{sub}</span>
-                </div>
-              ))}
             </div>
 
           </div>
