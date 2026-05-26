@@ -1408,73 +1408,111 @@ const CAT_COLORS_ADMIN = ["#0369A1", "#7C3AED", "#059669", "#D97706", "#DC2626",
 function MetricasAdminTab({ solutions, profiles, isMobile }) {
   const [period, setPeriod] = useState("30d");
   const [subs, setSubs] = useState([]);
-  const [loadingSubs, setLoadingSubs] = useState(true);
-  const [topSolutions, setTopSolutions] = useState([]);
-  const [topCreators, setTopCreators] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // ISO cutoff date derived from period — re-fetch triggers when this changes
+  const cutoff = useMemo(() => {
+    if (period === "all") return null;
+    const days = { "7d": 7, "30d": 30, "3m": 90, "12m": 365 }[period] || 30;
+    return new Date(Date.now() - days * 86400000).toISOString();
+  }, [period]);
 
   useEffect(() => {
-    async function load() {
-      const { data } = await supabase
-        .from("subscriptions")
-        .select("id, created_at, status, solution_id, solutions(id, titulo, preco, categoria, creator_id, payment_type)")
-        .order("created_at", { ascending: false });
-      if (data) {
-        setSubs(data);
-        const solMap = {};
-        const creatorMap = {};
-        for (const s of data) {
-          const id = s.solution_id;
-          if (id) {
-            if (!solMap[id]) solMap[id] = { titulo: s.solutions?.titulo || "—", count: 0 };
-            solMap[id].count++;
-          }
-          const cid = s.solutions?.creator_id;
-          if (cid) {
-            if (!creatorMap[cid]) creatorMap[cid] = { creator_id: cid, sales: 0, revenue: 0 };
-            creatorMap[cid].sales++;
-            creatorMap[cid].revenue += s.solutions?.preco || 0;
-          }
-        }
-        setTopSolutions(Object.values(solMap).sort((a, b) => b.count - a.count).slice(0, 5));
-        setTopCreators(Object.values(creatorMap).sort((a, b) => b.revenue - a.revenue).slice(0, 6));
-      }
-      setLoadingSubs(false);
+    setLoading(true);
+    let q = supabase
+      .from("subscriptions")
+      .select("id, created_at, status, solution_id, solutions(id, titulo, preco, categoria, creator_id, payment_type)")
+      .order("created_at", { ascending: false });
+    if (cutoff) q = q.gte("created_at", cutoff);
+    q.then(({ data }) => {
+      setSubs(data || []);
+      setLoading(false);
+    });
+  }, [cutoff]);
+
+  // KPIs — all derived from period-filtered subs
+  const totalRevenue = subs.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
+  const ticketMedio = subs.length > 0 ? totalRevenue / subs.length : 0;
+  const mrr = subs
+    .filter(s => s.status === "active" && s.solutions?.payment_type === "subscription")
+    .reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
+
+  // Time buckets that adapt to the selected period
+  const { bucketLabels, revenueByBucket, commissionsByBucket, criadoresByBucket, empresasByBucket } = useMemo(() => {
+    const now = new Date();
+    let buckets;
+    if (period === "7d") {
+      buckets = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(now); d.setDate(d.getDate() - 6 + i);
+        return { year: d.getFullYear(), month: d.getMonth(), day: d.getDate(), type: "day" };
+      });
+    } else if (period === "30d") {
+      buckets = Array.from({ length: 30 }, (_, i) => {
+        const d = new Date(now); d.setDate(d.getDate() - 29 + i);
+        return { year: d.getFullYear(), month: d.getMonth(), day: d.getDate(), type: "day" };
+      });
+    } else {
+      const months = period === "3m" ? 3 : 12;
+      buckets = Array.from({ length: months }, (_, i) => {
+        const d = new Date(now); d.setMonth(d.getMonth() - (months - 1) + i);
+        return { year: d.getFullYear(), month: d.getMonth(), type: "month" };
+      });
     }
-    load();
-  }, []);
 
-  const filteredSubs = useMemo(() => {
-    if (period === "all") return subs;
-    const days = { "7d": 7, "30d": 30, "3m": 90, "12m": 365 }[period] || 30;
-    const cutoff = new Date(Date.now() - days * 86400000);
-    return subs.filter(s => new Date(s.created_at) >= cutoff);
-  }, [subs, period]);
+    const labels = buckets.map(b =>
+      b.type === "day"
+        ? new Date(b.year, b.month, b.day).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })
+        : MONTHS_PT_ADMIN[b.month]
+    );
 
-  const totalRevenue = filteredSubs.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
-  const ticketMedio = filteredSubs.length > 0 ? totalRevenue / filteredSubs.length : 0;
-  const activeSubs = subs.filter(s => s.status === "active" && s.solutions?.payment_type === "subscription");
-  const mrr = activeSubs.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
+    function matchesBucket(dateStr, b) {
+      const d = new Date(dateStr);
+      if (b.type === "day") return d.getFullYear() === b.year && d.getMonth() === b.month && d.getDate() === b.day;
+      return d.getFullYear() === b.year && d.getMonth() === b.month;
+    }
 
-  const now = new Date();
-  const last12Months = Array.from({ length: 12 }, (_, i) => {
-    const d = new Date(now); d.setMonth(d.getMonth() - 11 + i);
-    return { year: d.getFullYear(), month: d.getMonth() };
-  });
-  const monthLabels = last12Months.map(({ month }) => MONTHS_PT_ADMIN[month]);
+    const revByB = buckets.map(b =>
+      subs.filter(s => matchesBucket(s.created_at, b)).reduce((sum, s) => sum + (s.solutions?.preco || 0), 0)
+    );
+    const comByB = revByB.map(r => r * 0.15);
+    const criByB = buckets.map(b =>
+      profiles.filter(p => (p.role === "criador" || p.role === "creator") && p.created_at && matchesBucket(p.created_at, b)).length
+    );
+    const empByB = buckets.map(b =>
+      profiles.filter(p => (p.role === "empresa" || p.role === "business") && p.created_at && matchesBucket(p.created_at, b)).length
+    );
 
-  const revenueByMonth = last12Months.map(({ year, month }) =>
-    subs.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; })
-      .reduce((sum, s) => sum + (s.solutions?.preco || 0), 0)
-  );
-  const commissionsByMonth = revenueByMonth.map(r => r * 0.15);
+    return { bucketLabels: labels, revenueByBucket: revByB, commissionsByBucket: comByB, criadoresByBucket: criByB, empresasByBucket: empByB };
+  }, [subs, profiles, period]);
 
-  const criadoresMonthly = last12Months.map(({ year, month }) =>
-    profiles.filter(p => (p.role === "criador" || p.role === "creator") && (() => { const d = new Date(p.created_at); return d.getFullYear() === year && d.getMonth() === month; })()).length
-  );
-  const empresasMonthly = last12Months.map(({ year, month }) =>
-    profiles.filter(p => (p.role === "empresa" || p.role === "business") && (() => { const d = new Date(p.created_at); return d.getFullYear() === year && d.getMonth() === month; })()).length
-  );
+  // Top solutions from period-filtered subs
+  const topSolutions = useMemo(() => {
+    const map = {};
+    for (const s of subs) {
+      const id = s.solution_id;
+      if (id) {
+        if (!map[id]) map[id] = { titulo: s.solutions?.titulo || "—", count: 0 };
+        map[id].count++;
+      }
+    }
+    return Object.values(map).sort((a, b) => b.count - a.count).slice(0, 5);
+  }, [subs]);
 
+  // Top creators from period-filtered subs
+  const topCreators = useMemo(() => {
+    const map = {};
+    for (const s of subs) {
+      const cid = s.solutions?.creator_id;
+      if (cid) {
+        if (!map[cid]) map[cid] = { creator_id: cid, sales: 0, revenue: 0 };
+        map[cid].sales++;
+        map[cid].revenue += s.solutions?.preco || 0;
+      }
+    }
+    return Object.values(map).sort((a, b) => b.revenue - a.revenue).slice(0, 6);
+  }, [subs]);
+
+  // Category donut (approved solutions — not time-filtered, structural data)
   const catMap = {};
   solutions.filter(s => s.status === "approved").forEach(s => { const c = s.categoria || "Outras"; catMap[c] = (catMap[c] || 0) + 1; });
   const categoryData = Object.entries(catMap).sort((a, b) => b[1] - a[1])
@@ -1496,25 +1534,28 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
     status: s.status,
   }));
 
+  const periodLabel = { "7d": "Últimos 7 dias", "30d": "Últimos 30 dias", "3m": "Últimos 3 meses", "12m": "Últimos 12 meses", "all": "Todo o período" }[period];
+
   const periodOptions = [
     { key: "7d", label: "7 dias" }, { key: "30d", label: "30 dias" },
     { key: "3m", label: "3 meses" }, { key: "12m", label: "12 meses" }, { key: "all", label: "Todo período" },
   ];
   const card = { background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "22px 24px" };
 
-  if (loadingSubs) return <div style={{ textAlign: "center", padding: "80px", color: GRAY_TEXT }}>Carregando métricas…</div>;
+  if (loading) return <div style={{ textAlign: "center", padding: "80px", color: GRAY_TEXT }}>Carregando métricas…</div>;
 
   return (
     <div>
-      {/* Date filter */}
+      {/* Period filter */}
       <div style={{ display: "flex", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
         {periodOptions.map(opt => (
           <button key={opt.key} onClick={() => setPeriod(opt.key)} style={{
-            padding: "7px 18px", borderRadius: 99, border: "none",
+            padding: "7px 18px", borderRadius: 99,
+            border: period === opt.key ? "none" : `1px solid ${BORDER}`,
             background: period === opt.key ? BLUE : "#fff",
             color: period === opt.key ? "#fff" : GRAY_TEXT,
             fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.08)", transition: "background 0.15s, color 0.15s",
+            transition: "background 0.15s, color 0.15s",
           }}>{opt.label}</button>
         ))}
       </div>
@@ -1522,7 +1563,7 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
       {/* Overview cards */}
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
         {[
-          { label: "Receita Total da Plataforma", value: `R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: `${filteredSubs.length} transações`, color: BLUE },
+          { label: "Receita Total da Plataforma", value: `R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: `${subs.length} transações`, color: BLUE },
           { label: "Ticket Médio", value: `R$ ${ticketMedio.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "por transação", color: "#7C3AED" },
           { label: "Taxa de Conversão", value: "3,2%", sub: "visitantes → compras", color: GREEN },
           { label: "MRR", value: `R$ ${mrr.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "assinaturas ativas", color: "#B45309" },
@@ -1538,18 +1579,18 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
       {/* Charts row 1 */}
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 18, marginBottom: 18 }}>
         <div style={card}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Receita por mês</div>
-          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Últimos 12 meses (R$)</div>
-          <DualLineChart line1={revenueByMonth} line2={commissionsByMonth} labels={monthLabels} color1={BLUE} color2="#0891b2" />
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Receita ao longo do período</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>{periodLabel} (R$)</div>
+          <DualLineChart line1={revenueByBucket} line2={commissionsByBucket} labels={bucketLabels} color1={BLUE} color2="#0891b2" />
           <div style={{ display: "flex", gap: 16, marginTop: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: BLUE }} />Receita bruta</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0891b2" }} />Comissões</div>
           </div>
         </div>
         <div style={card}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Novos usuários por mês</div>
-          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Últimos 12 meses</div>
-          <GroupedBarChart group1={criadoresMonthly} group2={empresasMonthly} labels={monthLabels} color1={BLUE} color2="#7C3AED" />
+          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Novos usuários no período</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>{periodLabel}</div>
+          <GroupedBarChart group1={criadoresByBucket} group2={empresasByBucket} labels={bucketLabels} color1={BLUE} color2="#7C3AED" />
           <div style={{ display: "flex", gap: 16, marginTop: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: BLUE }} />Criadores</div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: "#7C3AED" }} />Empresas</div>
@@ -1561,7 +1602,7 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 18, marginBottom: 24 }}>
         <div style={card}>
           <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Soluções mais vendidas</div>
-          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Top 5 por número de vendas</div>
+          <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>{periodLabel} — top 5 por vendas</div>
           {topSolutions.length === 0
             ? <div style={{ textAlign: "center", padding: "32px", color: GRAY_TEXT, fontSize: 14 }}>Sem dados suficientes</div>
             : <HorizBarChart data={topSolutions.map(s => ({ label: s.titulo, value: s.count }))} />}
