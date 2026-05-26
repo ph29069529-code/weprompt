@@ -1240,7 +1240,17 @@ export default function CriadorDashboard() {
               <div style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {displayName}
               </div>
-              <div style={{ fontSize: 11, color: GRAY_TEXT }}>Criador</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 11, color: GRAY_TEXT }}>Criador</span>
+                <span style={{
+                  background: "linear-gradient(135deg, #F59E0B, #D97706)",
+                  color: "#fff", borderRadius: 999,
+                  fontSize: 11, fontWeight: 700, padding: "3px 10px",
+                  flexShrink: 0,
+                }}>
+                  🏅 Criador Fundador
+                </span>
+              </div>
             </div>
           </div>
           <button onClick={handleSignOut} style={{

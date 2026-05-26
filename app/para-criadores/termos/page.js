@@ -278,8 +278,8 @@ export default function TermosCriadores() {
                 <tbody>
                   {[
                     { plan: "Free",    price: "R$ 0",       sols: "Até 3",     comm: "20%", badge: null,                          color: GRAY_TEXT },
-                    { plan: "Pro",     price: "R$ 97/mês",  sols: "Ilimitado", comm: "15%", badge: "3 meses grátis fundadores",   color: BLUE },
-                    { plan: "Premium", price: "R$ 297/mês", sols: "Ilimitado", comm: "10%", badge: "3 meses grátis fundadores",   color: "#7C3AED" },
+                    { plan: "Pro",     price: "R$ 97/mês",  sols: "Ilimitado", comm: "15%", badge: "1 mês grátis fundadores",   color: BLUE },
+                    { plan: "Premium", price: "R$ 297/mês", sols: "Ilimitado", comm: "10%", badge: null,                          color: "#7C3AED" },
                   ].map((r, i) => (
                     <tr key={r.plan} style={{ borderTop: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
                       <td style={{ padding: "14px 16px", fontWeight: 700, color: r.color }}>{r.plan}</td>
@@ -328,14 +328,14 @@ export default function TermosCriadores() {
 
           <Section number="6" title="Período gratuito para fundadores">
             <div style={{ background: "rgba(5,150,105,0.06)", border: "1px solid rgba(5,150,105,0.2)", borderRadius: 14, padding: "20px 24px", marginBottom: 16 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#059669", marginBottom: 6 }}>🎁 Oferta de fundadores</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#059669", marginBottom: 6 }}>🏅 Oferta de Criador Fundador</div>
               <div style={{ fontSize: 14, color: GRAY_TEXT, lineHeight: 1.7 }}>
-                Criadores que se cadastrarem <strong style={{ color: NEAR_BLACK }}>até a data de lançamento</strong> ganham{" "}
-                <strong style={{ color: "#059669" }}>3 meses gratuitos</strong> nos planos Pro (R$ 97/mês) e Premium (R$ 297/mês).
+                Os primeiros <strong style={{ color: NEAR_BLACK }}>100 criadores</strong> que se cadastrarem ganham{" "}
+                <strong style={{ color: "#059669" }}>1 mês gratuito</strong> no plano Pro (R$ 97/mês).
               </div>
             </div>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-              <Li>Os 3 meses gratuitos são contados a partir da ativação do plano.</Li>
+              <Li>O mês gratuito é contado a partir da ativação do plano Pro.</Li>
               <Li>Após o período, a cobrança normal é iniciada automaticamente.</Li>
               <Li>Cancelamento a qualquer momento, sem taxa e sem fidelidade.</Li>
               <Li>Oferta não cumulável com outros benefícios promocionais.</Li>

@@ -229,16 +229,14 @@ function PricingCard({ plan, billing, isMobile }) {
         </div>
       )}
 
-      {plan.founder && (
+      {plan.founder && !plan.premium && (
         <div style={{
-          display: "inline-flex", alignItems: "center", gap: 5,
-          background: plan.dark ? "rgba(255,255,255,0.15)" : "rgba(3,105,161,0.08)",
-          color: plan.dark ? "#fff" : BLUE,
-          border: `1px solid ${plan.dark ? "rgba(255,255,255,0.2)" : "rgba(3,105,161,0.2)"}`,
-          fontSize: 11, fontWeight: 700, padding: "4px 12px",
-          borderRadius: 999, marginBottom: 16, alignSelf: "flex-start",
+          background: "#fef3c7", color: "#92400e",
+          fontSize: 12, fontWeight: 700, padding: "4px 12px",
+          borderRadius: 999, marginBottom: 8, alignSelf: "flex-start",
+          display: "inline-block",
         }}>
-          ✦ 3 meses grátis · Fundadores
+          🏅 Criador Fundador — 1º mês grátis
         </div>
       )}
 
@@ -282,6 +280,13 @@ function PricingCard({ plan, billing, isMobile }) {
           </>
         )}
       </div>
+
+      {/* Founder Pro free month note */}
+      {plan.founder && !plan.premium && (
+        <div style={{ fontSize: 13, color: "#059669", fontWeight: 600, marginBottom: 4 }}>
+          Primeiro mês gratuito para os 100 primeiros criadores
+        </div>
+      )}
 
       {/* Annual note / savings prompt */}
       {!isFree && (
@@ -647,9 +652,9 @@ export default function PrecosPage() {
                 borderRadius: 14, textAlign: "center",
                 fontSize: 13, color: GRAY_TEXT, lineHeight: 1.8,
               }}>
-                <strong style={{ color: BLUE }}>✦ Oferta de Criadores Fundadores:</strong>{" "}
-                Os primeiros 500 criadores ganham 3 meses gratuitos nos planos Pro e Premium.
-                Aplicado automaticamente no cadastro. Sem cartão de crédito nos primeiros 3 meses.
+                <strong style={{ color: BLUE }}>🏅 Oferta de Criadores Fundadores:</strong>{" "}
+                Os primeiros 100 criadores ganham 1 mês grátis no plano Pro.
+                Aplicado automaticamente no cadastro. Sem cartão de crédito no primeiro mês.
               </div>
             )}
           </div>

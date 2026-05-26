@@ -299,6 +299,20 @@ function CadastroForm() {
               </div>
             </div>
 
+            {/* Founder banner — shown when criador is selected */}
+            {role === "criador" && (
+              <div style={{
+                background: "#f0fdf4", border: "1px solid #bbf7d0",
+                borderRadius: 12, padding: "12px 16px", marginBottom: 20,
+                display: "flex", gap: 10, alignItems: "flex-start",
+              }}>
+                <span style={{ fontSize: 18, flexShrink: 0 }}>🏅</span>
+                <div style={{ fontSize: 13, color: "#166534", lineHeight: 1.5 }}>
+                  <strong>Você está se cadastrando como Criador Fundador</strong> — 1 mês grátis no plano Pro liberado automaticamente após cadastro.
+                </div>
+              </div>
+            )}
+
             {/* Full name */}
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginBottom: 8, display: "block" }}>

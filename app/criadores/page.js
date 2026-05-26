@@ -105,8 +105,9 @@ const TESTIMONIALS = [
 ];
 
 export default function CriadoresPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [session,  setSession]  = useState(null);
+  const [menuOpen, setMenuOpen]       = useState(false);
+  const [session,  setSession]        = useState(null);
+  const [founderCount, setFounderCount] = useState(null);
   const width      = useWindowSize();
   const isMobile   = width < 768;
   const isTablet   = width >= 768 && width < 1024;
@@ -116,6 +117,14 @@ export default function CriadoresPage() {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, s) => setSession(s));
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .in("role", ["criador", "creator"])
+      .then(({ count }) => setFounderCount(count ?? 0));
   }, []);
 
   useEffect(() => {
@@ -359,6 +368,107 @@ export default function CriadoresPage() {
           </div>
         </section>
 
+        {/* ── FOUNDER OFFER BANNER ── */}
+        <section style={{ background: "#fff", padding: isMobile ? "32px 24px 0" : "48px 48px 0" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <div style={{
+              background: "linear-gradient(135deg, #0369A1, #0891B2)",
+              borderRadius: 20, padding: isMobile ? "32px 24px" : "40px",
+              marginBottom: 48,
+            }}>
+              {/* Badge */}
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                background: "#fff", color: "#0369A1",
+                borderRadius: 999, padding: "5px 14px",
+                fontSize: 12, fontWeight: 700, marginBottom: 20,
+              }}>
+                ⚡ Oferta de Lançamento
+              </div>
+
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr auto",
+                gap: isMobile ? 28 : 40,
+                alignItems: "center",
+              }}>
+                {/* Left: title + benefits */}
+                <div>
+                  <h2 style={{
+                    fontSize: isMobile ? 22 : 28, fontWeight: 800,
+                    color: "#fff", letterSpacing: "-0.5px", marginBottom: 24, lineHeight: 1.2,
+                  }}>
+                    Seja um dos 100 Criadores Fundadores
+                  </h2>
+
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                    gap: 12, marginBottom: 28,
+                  }}>
+                    {[
+                      { icon: "🎁", title: "1 mês grátis no plano Pro",  sub: "Valor de R$97, sem precisar de cartão" },
+                      { icon: "🏅", title: "Badge Criador Fundador",      sub: "Permanente no seu perfil para sempre" },
+                      { icon: "🔝", title: "Destaque no catálogo",        sub: "Suas soluções em primeiro nas buscas" },
+                      { icon: "💰", title: "Comissão de 15%",             sub: "Menor taxa da plataforma durante o mês grátis" },
+                    ].map(b => (
+                      <div key={b.title} style={{
+                        background: "rgba(255,255,255,0.15)",
+                        borderRadius: 12, padding: "12px 16px",
+                        display: "flex", gap: 12, alignItems: "flex-start",
+                      }}>
+                        <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1.3 }}>{b.icon}</span>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2 }}>{b.title}</div>
+                          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", lineHeight: 1.4 }}>{b.sub}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <a href="/cadastro?role=criador" style={{
+                    display: "inline-flex", alignItems: "center", gap: 8,
+                    background: "#fff", color: "#0369A1",
+                    borderRadius: 12, padding: "16px 32px",
+                    fontSize: 15, fontWeight: 700, textDecoration: "none",
+                    transition: "opacity 0.15s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
+                    onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+                  >
+                    Quero ser Criador Fundador →
+                  </a>
+                </div>
+
+                {/* Right: counter */}
+                <div style={{
+                  textAlign: isMobile ? "left" : "center",
+                  minWidth: isMobile ? undefined : 180,
+                }}>
+                  <div style={{ fontSize: isMobile ? 48 : 64, fontWeight: 800, color: "#fff", lineHeight: 1, letterSpacing: "-2px" }}>
+                    {founderCount ?? "…"}
+                  </div>
+                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.75)", marginBottom: 16, marginTop: 4 }}>
+                    de 100 vagas preenchidas
+                  </div>
+                  <div style={{
+                    height: 8, borderRadius: 999,
+                    background: "rgba(255,255,255,0.2)",
+                    overflow: "hidden",
+                  }}>
+                    <div style={{
+                      height: "100%", borderRadius: 999,
+                      background: "rgba(255,255,255,0.65)",
+                      width: `${Math.min(((founderCount ?? 0) / 100) * 100, 100)}%`,
+                      transition: "width 0.6s ease",
+                    }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── HOW IT WORKS ── */}
         <section id="como-funciona" style={{ background: BG_GRAY, padding: isMobile ? "64px 24px" : "96px 24px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -475,8 +585,8 @@ export default function CriadoresPage() {
                       </div>
                     )}
 
-                    {/* Founder badge */}
-                    {plan.founder && (
+                    {/* Founder badge — Pro only */}
+                    {plan.founder && !plan.premium && (
                       <div style={{
                         display: "inline-flex", alignItems: "center", gap: 5,
                         background: plan.dark ? "rgba(255,255,255,0.15)" : "rgba(3,105,161,0.08)",
@@ -485,7 +595,7 @@ export default function CriadoresPage() {
                         fontSize: 11, fontWeight: 700, padding: "4px 12px",
                         borderRadius: 999, marginBottom: 16, alignSelf: "flex-start",
                       }}>
-                        ✦ 3 meses grátis · Fundadores
+                        🏅 1 mês grátis · Fundadores
                       </div>
                     )}
 
