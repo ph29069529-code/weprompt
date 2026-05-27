@@ -146,14 +146,14 @@ const FloatingIconsHero = React.forwardRef<
 
       {/* Container for the foreground content */}
       <div className="relative z-10 text-center px-4">
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-b from-foreground to-foreground/70 text-transparent bg-clip-text">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight" style={{ color: '#111827' }}>
           {title}
         </h1>
-        <p className="mt-6 max-w-xl mx-auto text-lg text-muted-foreground">
+        <p className="mt-6 max-w-xl mx-auto text-lg" style={{ color: '#6b7280' }}>
           {subtitle}
         </p>
         <div className="mt-10">
-          <Button asChild size="lg" className="px-8 py-6 text-base font-semibold">
+          <Button asChild size="lg" className="px-8 py-6 text-base font-semibold" style={{ backgroundColor: '#111827', color: '#ffffff' }}>
             <a href={ctaHref}>{ctaText}</a>
           </Button>
         </div>
