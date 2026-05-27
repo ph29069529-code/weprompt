@@ -155,16 +155,16 @@ function PageNavbar({ session, isMobile }) {
           zIndex: 50,
           background: "#fff",
           borderRadius: 999,
-          padding: "0 24px",
-          height: 52,
+          padding: "10px 32px",
+          height: 60,
           boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
           border: "1px solid #f1f5f9",
-          display: "flex", alignItems: "center", gap: 32,
-          maxWidth: 860,
+          display: "flex", alignItems: "center", gap: 40,
+          maxWidth: 1000,
         }}>
           {/* Logo */}
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <img src="/logo-light.png" style={{ height: 28, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
+            <img src="/logo-light.png" style={{ height: 38, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
           </a>
 
           {/* Divider */}
@@ -216,19 +216,19 @@ function PageNavbar({ session, isMobile }) {
             {session ? (
               <a href={dashboardUrl} style={{
                 background: "#111827", color: "#fff", borderRadius: 999,
-                padding: "9px 20px", fontSize: 14, fontWeight: 600,
+                padding: "11px 24px", fontSize: 15, fontWeight: 600,
                 textDecoration: "none", whiteSpace: "nowrap",
               }}>
                 Meu Dashboard →
               </a>
             ) : (
               <>
-                <a href="/login" style={{ fontSize: 14, color: "#374151", textDecoration: "none", whiteSpace: "nowrap" }}>
+                <a href="/login" style={{ fontSize: 15, color: "#374151", textDecoration: "none", whiteSpace: "nowrap" }}>
                   Falar conosco
                 </a>
                 <a href="/cadastro" style={{
                   background: "#111827", color: "#fff", borderRadius: 999,
-                  padding: "9px 20px", fontSize: 14, fontWeight: 600,
+                  padding: "11px 24px", fontSize: 15, fontWeight: 600,
                   textDecoration: "none", whiteSpace: "nowrap",
                 }}>
                   Começar grátis
@@ -324,7 +324,7 @@ function NavPlainLink({ href, children, chevron }) {
   return (
     <a href={href} style={{
       display: "inline-flex", alignItems: "center", gap: 3,
-      fontSize: 14, fontWeight: 500,
+      fontSize: 15, fontWeight: 500,
       color: hov ? "#111827" : "#374151",
       textDecoration: "none", whiteSpace: "nowrap",
       transition: "color 0.15s",
