@@ -207,14 +207,22 @@ function PageNavbar({ session, isMobile }) {
 
 /* ─── Hero side panel (swap-animated circle grid) ───────────────── */
 const LEFT_ICONS = [
-  { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" },
   { src: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/0/01/Google_Docs_logo_%282014-2020%29.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Salesforce.com_logo.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Nextcloud_Logo.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/b/b2/Bootstrap_logo.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Zoom_Communications_Logo.svg" },
 ];
 
 const RIGHT_ICONS = [
@@ -228,7 +236,7 @@ const RIGHT_ICONS = [
   { type: "avatar", color: "#6366f1", initials: "D", label: "Dev"         },
 ];
 
-const TOTAL_CIRCLES = 20;
+const TOTAL_CIRCLES = 25;
 
 function makeInitialPositions(iconCount) {
   const arr = Array(TOTAL_CIRCLES).fill(null);
@@ -365,9 +373,9 @@ function HeroSidePanel({ side, isMobile }) {
         position: "absolute", top: "50%", left: "50%",
         transform: "translate(-50%, -50%)",
         display: "grid",
-        gridTemplateColumns: "repeat(4, 52px)",
-        columnGap: 12,
-        rowGap: isRight ? 36 : 12,
+        gridTemplateColumns: "repeat(4, 56px)",
+        gap: "16px",
+        rowGap: isRight ? "40px" : "16px",
       }}>
         {positions.map((iconIdx, i) => {
           const icon = iconIdx !== null ? icons[iconIdx] : null;
