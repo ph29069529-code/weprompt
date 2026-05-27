@@ -206,17 +206,79 @@ function PageNavbar({ session, isMobile }) {
 }
 
 /* ─── Hero side panel (swap-animated circle grid) ───────────────── */
-const PANEL_ICONS = ["📄", "📊", "🎨", "💬", "📧", "📅", "⚡", "🤖"];
+const PANEL_ICONS = [
+  { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg",                                                        label: null          },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg",                             label: null          },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg",                                                               label: "Criador"     },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",                                                         label: "Empresa"     },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg",                                               label: null          },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg",                             label: "Fundador"    },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png",                                                               label: null          },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg",                                                                   label: "Empresa PME" },
+];
 const TOTAL_CIRCLES = 20;
-const ICON_LABELS = { "📧": "Empresa", "🤖": "Criador", "⚡": "Fundador", "📄": "Empresa PME" };
 
 function makeInitialPositions(seed) {
   const arr = Array(TOTAL_CIRCLES).fill(null);
-  const indices = [...Array(TOTAL_CIRCLES).keys()]
+  const slots = [...Array(TOTAL_CIRCLES).keys()]
     .sort(() => (seed + Math.random()) - 0.5)
     .slice(0, PANEL_ICONS.length);
-  indices.forEach((idx, i) => { arr[idx] = PANEL_ICONS[i]; });
+  slots.forEach((slot, i) => { arr[slot] = i; });
   return arr;
+}
+
+function IconCircle({ iconIdx, cellKey, showLabel, side }) {
+  const [errored, setErrored] = useState(false);
+  const icon = PANEL_ICONS[iconIdx];
+  const label = side === "right" ? icon.label : null;
+
+  return (
+    <div style={{
+      position: "relative",
+      width: 52, height: 52, borderRadius: "50%",
+      background: "#fff",
+      boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      overflow: "hidden",
+      flexShrink: 0,
+      animation: "iconPop 0.4s ease forwards",
+    }}>
+      {/* Label above circle — right panel only */}
+      {label && (
+        <span style={{
+          position: "absolute", top: -22, left: "50%",
+          fontSize: 11, fontWeight: 600, color: "#374151",
+          whiteSpace: "nowrap",
+          background: "#fff", borderRadius: 6, padding: "2px 6px",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+          animation: "labelPop 0.4s ease forwards",
+          zIndex: 5,
+        }}>
+          {label}
+        </span>
+      )}
+
+      {/* App logo image */}
+      {!errored ? (
+        <img
+          src={icon.src}
+          alt=""
+          style={{ width: 30, height: 30, objectFit: "contain", display: "block" }}
+          onError={() => setErrored(true)}
+        />
+      ) : (
+        /* Fallback: colored circle with first letter of src hostname */
+        <div style={{
+          width: 30, height: 30, borderRadius: "50%",
+          background: "#e5e7eb",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 13, fontWeight: 700, color: "#374151",
+        }}>
+          {icon.src.replace("https://", "").charAt(0).toUpperCase()}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function HeroSidePanel({ side, isMobile }) {
@@ -226,8 +288,8 @@ function HeroSidePanel({ side, isMobile }) {
     const interval = setInterval(() => {
       setPositions(prev => {
         const next = [...prev];
-        const filled = next.map((v, i) => v ? i : -1).filter(i => i >= 0);
-        const empty  = next.map((v, i) => !v ? i : -1).filter(i => i >= 0);
+        const filled = next.map((v, i) => v !== null ? i : -1).filter(i => i >= 0);
+        const empty  = next.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
         if (!filled.length || !empty.length) return next;
         const from = filled[Math.floor(Math.random() * filled.length)];
         const to   = empty[Math.floor(Math.random() * empty.length)];
@@ -281,45 +343,23 @@ function HeroSidePanel({ side, isMobile }) {
         gridTemplateColumns: "repeat(4, 52px)",
         gap: 12,
       }}>
-        {positions.map((icon, i) => {
-          const label = side === "right" && icon ? ICON_LABELS[icon] : null;
-          return (
-            <div key={i} style={{
-              position: "relative",
-              width: 52, height: 52, borderRadius: "50%",
-              background: icon ? "#fff" : "#f1f5f9",
-              boxShadow: icon ? "0 2px 12px rgba(0,0,0,0.10)" : "none",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "background 0.4s ease, box-shadow 0.4s ease",
-              flexShrink: 0,
-            }}>
-              {/* Label above circle — right panel only */}
-              {label && (
-                <span key={icon + i + "label"} style={{
-                  position: "absolute", top: -22, left: "50%",
-                  transform: "translateX(-50%)",
-                  fontSize: 11, fontWeight: 600, color: "#374151",
-                  whiteSpace: "nowrap",
-                  background: "#fff", borderRadius: 6, padding: "2px 6px",
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                  animation: "labelPop 0.4s ease forwards",
-                  zIndex: 5,
-                }}>
-                  {label}
-                </span>
-              )}
-              {/* Icon */}
-              {icon && (
-                <span key={icon + i} style={{
-                  fontSize: 24, lineHeight: 1,
-                  animation: "iconPop 0.4s ease forwards",
-                }}>
-                  {icon}
-                </span>
-              )}
-            </div>
-          );
-        })}
+        {positions.map((iconIdx, i) => (
+          <div key={i} style={{
+            width: 52, height: 52, borderRadius: "50%",
+            background: iconIdx !== null ? "transparent" : "#f1f5f9",
+            transition: "background 0.4s ease",
+            flexShrink: 0,
+          }}>
+            {iconIdx !== null && (
+              <IconCircle
+                key={`${iconIdx}-${i}`}
+                iconIdx={iconIdx}
+                cellKey={`${iconIdx}-${i}`}
+                side={side}
+              />
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
