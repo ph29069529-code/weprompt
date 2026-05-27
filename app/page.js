@@ -155,16 +155,16 @@ function PageNavbar({ session, isMobile }) {
           zIndex: 50,
           background: "#fff",
           borderRadius: 999,
-          padding: "10px 32px",
+          padding: "10px 48px",
           height: 60,
           boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
           border: "1px solid #f1f5f9",
-          display: "flex", alignItems: "center", gap: 40,
-          maxWidth: 1000,
+          display: "flex", alignItems: "center", gap: 48,
+          maxWidth: 1160,
         }}>
           {/* Logo */}
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <img src="/logo-light.png" style={{ height: 38, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
+            <img src="/logo-light.png" style={{ height: 44, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
           </a>
 
           {/* Divider */}
@@ -340,22 +340,22 @@ function NavPlainLink({ href, children, chevron }) {
 
 /* ─── Hero side panel (swap-animated circle grid) ───────────────── */
 const LEFT_ICONS = [
-  { src: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/0/01/Google_Docs_logo_%282014-2020%29.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Salesforce.com_logo.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/8/8e/Nextcloud_Logo.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/b/b2/Bootstrap_logo.svg" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Zoom_Communications_Logo.svg" },
+  { src: "https://cdn.simpleicons.org/slack" },
+  { src: "https://cdn.simpleicons.org/gmail" },
+  { src: "https://cdn.simpleicons.org/googlecalendar" },
+  { src: "https://cdn.simpleicons.org/microsoftteams" },
+  { src: "https://cdn.simpleicons.org/microsoftexcel" },
+  { src: "https://cdn.simpleicons.org/notion" },
+  { src: "https://cdn.simpleicons.org/whatsapp" },
+  { src: "https://cdn.simpleicons.org/googledrive" },
+  { src: "https://cdn.simpleicons.org/telegram" },
+  { src: "https://cdn.simpleicons.org/stripe" },
+  { src: "https://cdn.simpleicons.org/zoom" },
+  { src: "https://cdn.simpleicons.org/trello" },
+  { src: "https://cdn.simpleicons.org/hubspot" },
+  { src: "https://cdn.simpleicons.org/mailchimp" },
+  { src: "https://cdn.simpleicons.org/zapier" },
+  { src: "https://cdn.simpleicons.org/salesforce" },
 ];
 
 const RIGHT_ICONS = [
