@@ -42,8 +42,27 @@ export function HeroSection() {
           <div className="h-[80rem] -translate-y-[350px] absolute right-0 top-0 w-56 rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(24,95%,53%,.04)_0,transparent_100%)]" />
         </div>
 
-        <section>
+        <section className="bg-zinc-950">
           <div className="relative pt-24 md:pt-36">
+            {/* Night background image */}
+            <AnimatedGroup
+              variants={{
+                container: { visible: { transition: { delayChildren: 1 } } },
+                item: {
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { type: 'spring', bounce: 0.3, duration: 2 } },
+                },
+              }}
+              className="absolute inset-0 -z-20">
+              <img
+                src="https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120"
+                alt="background"
+                className="absolute inset-x-0 top-56 -z-20 block lg:top-32"
+                width="3276"
+                height="4095"
+              />
+            </AnimatedGroup>
+
             {/* Radial gradient fade at bottom */}
             <div
               aria-hidden
