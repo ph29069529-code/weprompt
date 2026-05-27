@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "./lib/supabase";
+import { HeroSection } from "@/components/blocks/hero-section-1";
 
 /* ─── Design tokens ──────────────────────────────────────────────── */
 const BLUE      = "#2563EB";
@@ -669,166 +670,9 @@ export default function Home() {
     <div style={{ fontFamily: "'DM Sans', sans-serif", color: TEXT, background: WHITE }}>
 
       {/* ════════════════════════════════════
-          SECTION 1 — NAVBAR
+          SECTION 1+2 — HERO (includes navbar)
       ════════════════════════════════════ */}
-      <PageNavbar session={session} isMobile={isMobile} />
-
-      {/* ════════════════════════════════════
-          SECTION 2 — HERO
-      ════════════════════════════════════ */}
-      <section style={{
-        position: "relative", background: "#fff",
-        minHeight: "100vh", overflow: "hidden",
-        display: "flex", flexDirection: "column",
-      }}>
-        {/* Side panels */}
-        <HeroSidePanel side="left" isMobile={isMobile} />
-        <HeroSidePanel side="right" isMobile={isMobile} />
-
-        {/* Center content */}
-        <div style={{
-          position: "relative", zIndex: 10,
-          flex: 1, display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center",
-          textAlign: "center",
-          padding: isMobile ? "72px 24px 64px" : "100px 32px 80px",
-          maxWidth: 760, margin: "0 auto", width: "100%",
-        }}>
-          {/* H1 */}
-          <h1 style={{
-            fontSize: isMobile ? 40 : 64,
-            fontWeight: 700, color: "#111827",
-            lineHeight: 1.15, letterSpacing: "-1.5px",
-            margin: "0 0 28px", textAlign: "center",
-          }}>
-            <span style={{ display: "block", marginBottom: 10 }}>Gerencie Seu Negócio</span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
-              <span>com&nbsp;</span>
-              <span style={{
-                display: "inline-flex", alignItems: "center",
-                position: "relative",
-              }}>
-                {/* Main pill */}
-                <span style={{
-                  background: "linear-gradient(to right, #f97316, #f43f5e)",
-                  borderRadius: "24px 24px 24px 6px",
-                  padding: isMobile ? "8px 22px" : "10px 32px",
-                  color: "#fff",
-                  fontSize: isMobile ? 40 : 64,
-                  fontWeight: 700,
-                  letterSpacing: "-1.5px",
-                  lineHeight: 1.15,
-                  display: "inline-block",
-                }}>
-                  IA Curada
-                </span>
-                {/* Triangle tail — flush against bottom-left corner */}
-                <span style={{
-                  position: "absolute", bottom: -11, left: 18,
-                  width: 0, height: 0,
-                  borderLeft: "0px solid transparent",
-                  borderRight: "16px solid transparent",
-                  borderTop: "12px solid #f97316",
-                  display: "block",
-                }} />
-              </span>
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p style={{
-            fontSize: isMobile ? 16 : 18,
-            color: "#6b7280", lineHeight: 1.7,
-            margin: "0 0 52px", maxWidth: 520,
-            fontWeight: 400,
-          }}>
-            Cada solução foi testada e aprovada antes de chegar até você. Implemente com confiança, suporte em português.
-          </p>
-
-          {/* Search bar */}
-          <form onSubmit={handleSearch} style={{
-            width: "100%", maxWidth: 640, margin: "0 auto 28px",
-          }}>
-            <div style={{
-              background: "#fff",
-              border: "1.5px solid #e2e8f0",
-              borderRadius: 999,
-              padding: "8px 8px 8px 24px",
-              display: "flex", alignItems: "center", gap: 12,
-              boxShadow: "0 2px 16px rgba(0,0,0,0.07), 0 0 0 4px rgba(37,99,235,0.04)",
-            }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Buscar soluções de IA para o seu negócio..."
-                style={{
-                  flex: 1, border: "none", outline: "none",
-                  fontSize: 15, color: "#111827",
-                  background: "transparent",
-                  fontFamily: "'DM Sans', sans-serif",
-                  minWidth: 0,
-                }}
-              />
-              <button type="submit" style={{
-                background: "#111827", color: "#fff",
-                borderRadius: 999, padding: "11px 22px",
-                border: "none", cursor: "pointer",
-                fontSize: 14, fontWeight: 600, flexShrink: 0,
-                display: "flex", alignItems: "center", gap: 6,
-                fontFamily: "'DM Sans', sans-serif",
-                letterSpacing: "-0.2px",
-                whiteSpace: "nowrap",
-              }}>
-                Buscar
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </button>
-            </div>
-          </form>
-
-          {/* Category tags */}
-          <div style={{
-            display: "flex", flexWrap: "wrap", gap: 8,
-            justifyContent: "center",
-          }}>
-            {HERO_TAGS.map(tag => (
-              <a
-                key={tag}
-                href={`/solucoes?busca=${encodeURIComponent(tag)}`}
-                style={{
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 999,
-                  padding: "7px 16px",
-                  fontSize: 13, fontWeight: 500, color: "#4b5563",
-                  background: "#fff",
-                  cursor: "pointer",
-                  textDecoration: "none",
-                  transition: "background 0.15s, border-color 0.15s, color 0.15s",
-                  whiteSpace: "nowrap",
-                  letterSpacing: "-0.1px",
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = "#f1f5f9";
-                  e.currentTarget.style.borderColor = "#94a3b8";
-                  e.currentTarget.style.color = "#111827";
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = "#fff";
-                  e.currentTarget.style.borderColor = "#e5e7eb";
-                  e.currentTarget.style.color = "#4b5563";
-                }}
-              >
-                {tag}
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* ════════════════════════════════════
           SECTION 3 — CATEGORIAS
