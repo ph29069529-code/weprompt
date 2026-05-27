@@ -32,7 +32,7 @@ export function HeroSection() {
     return (
         <>
             <HeroHeader />
-            <main className="overflow-hidden">
+            <main className="overflow-hidden" style={{ backgroundColor: '#09090b' }}>
                 <div
                     aria-hidden
                     className="z-[2] absolute inset-0 pointer-events-none isolate opacity-50 contain-strict hidden lg:block">
@@ -40,7 +40,7 @@ export function HeroSection() {
                     <div className="h-[80rem] absolute left-0 top-0 w-56 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
                     <div className="h-[80rem] -translate-y-[350px] absolute left-0 top-0 w-56 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
                 </div>
-                <section className="bg-zinc-950">
+                <section className="bg-zinc-950" style={{ backgroundColor: '#09090b', position: 'relative' }}>
                     <div className="relative pt-24 md:pt-36">
                         <div style={{ position: 'absolute', inset: 0, zIndex: -1, background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120,119,198,0.15), transparent)' }} />
                         <div aria-hidden className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--background)_75%)]" />
@@ -264,8 +264,11 @@ const HeroHeader = () => {
         <header>
             <nav
                 data-state={menuState && 'active'}
-                className="fixed z-20 w-full px-2 group">
-                <div className={cn('mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12', isScrolled && 'bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5')}>
+                className="fixed z-20 w-full px-2 group"
+                style={{ backgroundColor: 'transparent' }}>
+                <div
+                    className={cn('mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12', isScrolled && 'max-w-4xl rounded-2xl lg:px-5')}
+                    style={isScrolled ? { backgroundColor: 'rgba(9,9,11,0.8)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)' } : { backgroundColor: 'transparent' }}>
                     <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
                         <div className="flex w-full justify-between lg:w-auto">
                             <Link
@@ -290,7 +293,8 @@ const HeroHeader = () => {
                                     <li key={index}>
                                         <Link
                                             href={item.href}
-                                            className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                            className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                                            style={{ color: 'rgba(255,255,255,0.7)' }}>
                                             <span>{item.name}</span>
                                         </Link>
                                     </li>
@@ -317,7 +321,8 @@ const HeroHeader = () => {
                                     asChild
                                     variant="outline"
                                     size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
+                                    className={cn(isScrolled && 'lg:hidden')}
+                                    style={{ borderColor: 'rgba(255,255,255,0.2)', color: 'white', background: 'transparent' }}>
                                     <Link href="/login">
                                         <span>Entrar</span>
                                     </Link>
@@ -325,7 +330,8 @@ const HeroHeader = () => {
                                 <Button
                                     asChild
                                     size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
+                                    className={cn(isScrolled && 'lg:hidden')}
+                                    style={{ backgroundColor: 'white', color: '#09090b' }}>
                                     <Link href="/cadastro">
                                         <span>Começar grátis</span>
                                     </Link>
@@ -333,7 +339,8 @@ const HeroHeader = () => {
                                 <Button
                                     asChild
                                     size="sm"
-                                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
+                                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}
+                                    style={{ backgroundColor: 'white', color: '#09090b' }}>
                                     <Link href="/cadastro">
                                         <span>Começar grátis</span>
                                     </Link>
