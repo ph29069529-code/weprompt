@@ -43,39 +43,9 @@ const FooterLink = ({ href, children }) => {
   );
 };
 
-const NavLink = ({ href, children, active }) => {
-  const [hov, setHov] = useState(false);
-  return (
-    <a
-      href={href}
-      style={{
-        fontSize: 14,
-        fontWeight: 500,
-        color: hov || active ? BLUE : MUTED,
-        textDecoration: "none",
-        paddingBottom: 2,
-        borderBottom: active ? `2px solid ${BLUE}` : "2px solid transparent",
-        transition: "color 0.15s, border-color 0.15s",
-        whiteSpace: "nowrap",
-      }}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-    >
-      {children}
-    </a>
-  );
-};
-
 /* ─── Inline Navbar ──────────────────────────────────────────────── */
 function PageNavbar({ session, isMobile }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const dashboardUrl = session?.user?.user_metadata?.tipo === "criador"
     ? "/dashboard/criador"
@@ -83,59 +53,61 @@ function PageNavbar({ session, isMobile }) {
     ? "/dashboard/empresa"
     : "/dashboard/admin";
 
-  const NAV_LINKS = [
-    { label: "Home",      href: "/" },
-    { label: "Sobre",     href: "/#sobre" },
-    { label: "Soluções",  href: "/solucoes" },
-    { label: "Preços",    href: "/precos" },
-    { label: "Criadores", href: "/criadores" },
-    { label: "Contato",   href: "mailto:contato@weprompt.app.br" },
+  const NAV_CENTER = [
+    { label: "Explorar",    href: "/solucoes" },
+    { label: "Soluções ▾", href: "/solucoes" },
+    { label: "Empresa ▾",  href: "/para-empresas/termos" },
   ];
+
+  const NavCenterLink = ({ href, children }) => {
+    const [h, setH] = useState(false);
+    return (
+      <a href={href} style={{
+        fontSize: 14, fontWeight: 500,
+        color: h ? "#111827" : "#374151",
+        textDecoration: "none", whiteSpace: "nowrap",
+        transition: "color 0.15s",
+      }}
+        onMouseEnter={() => setH(true)}
+        onMouseLeave={() => setH(false)}
+      >{children}</a>
+    );
+  };
 
   return (
     <>
       <header style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        background: WHITE,
-        borderBottom: `1px solid ${scrolled ? BORDER : "transparent"}`,
-        boxShadow: scrolled ? "0 1px 12px rgba(0,0,0,0.06)" : "none",
-        transition: "box-shadow 0.2s, border-color 0.2s",
-        height: 64,
-        display: "flex",
-        alignItems: "center",
+        position: "sticky", top: 0, zIndex: 50,
+        background: "#fff",
+        borderBottom: "1px solid #f1f5f9",
+        height: 64, display: "flex", alignItems: "center",
       }}>
         <div style={{
-          maxWidth: 1280,
-          margin: "0 auto",
-          width: "100%",
-          padding: "0 48px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          maxWidth: 1200, margin: "0 auto", width: "100%",
+          padding: "0 32px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
           gap: 24,
         }}>
-          {/* Logo */}
+          {/* Left: logo */}
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <img src="/logo-light.png" style={{ height: 40, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
+            <img src="/logo-light.png" style={{ height: 32, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
           </a>
 
-          {/* Desktop nav */}
+          {/* Center: nav links */}
           {!isMobile && (
-            <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
-              {NAV_LINKS.map(({ label, href }) => (
-                <NavLink key={label} href={href}>{label}</NavLink>
+            <nav style={{ display: "flex", alignItems: "center", gap: 32 }}>
+              {NAV_CENTER.map(({ label, href }) => (
+                <NavCenterLink key={label} href={href}>{label}</NavCenterLink>
               ))}
             </nav>
           )}
 
-          {/* Right actions */}
+          {/* Right: actions */}
           {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
               {session ? (
                 <a href={dashboardUrl} style={{
-                  background: DARK, color: WHITE, borderRadius: 999,
+                  background: "#111827", color: "#fff", borderRadius: 999,
                   padding: "10px 20px", fontSize: 14, fontWeight: 600,
                   textDecoration: "none", whiteSpace: "nowrap",
                 }}>
@@ -143,15 +115,15 @@ function PageNavbar({ session, isMobile }) {
                 </a>
               ) : (
                 <>
-                  <a href="/login" style={{ fontSize: 14, fontWeight: 500, color: MUTED, textDecoration: "none" }}>
-                    Entrar
+                  <a href="/login" style={{ fontSize: 14, color: "#374151", textDecoration: "none", whiteSpace: "nowrap" }}>
+                    Falar conosco
                   </a>
                   <a href="/cadastro" style={{
-                    background: DARK, color: WHITE, borderRadius: 999,
+                    background: "#111827", color: "#fff", borderRadius: 999,
                     padding: "10px 20px", fontSize: 14, fontWeight: 600,
                     textDecoration: "none", whiteSpace: "nowrap",
                   }}>
-                    Começar grátis →
+                    Começar grátis
                   </a>
                 </>
               )}
@@ -160,12 +132,11 @@ function PageNavbar({ session, isMobile }) {
 
           {/* Mobile hamburger */}
           {isMobile && (
-            <button
-              onClick={() => setMenuOpen(true)}
+            <button onClick={() => setMenuOpen(true)}
               style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}
               aria-label="Abrir menu"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={TEXT} strokeWidth="2" strokeLinecap="round">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <line x1="3" y1="12" x2="21" y2="12"/>
                 <line x1="3" y1="18" x2="21" y2="18"/>
@@ -178,57 +149,53 @@ function PageNavbar({ session, isMobile }) {
       {/* Mobile overlay */}
       {menuOpen && (
         <div style={{
-          position: "fixed", inset: 0, zIndex: 100,
-          background: WHITE,
-          display: "flex", flexDirection: "column",
-          padding: "0 24px",
+          position: "fixed", inset: 0, zIndex: 100, background: "#fff",
+          display: "flex", flexDirection: "column", padding: "0 24px",
         }}>
           <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <a href="/" style={{ textDecoration: "none" }}>
-              <img src="/logo-light.png" style={{ height: 40, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
+              <img src="/logo-light.png" style={{ height: 32, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
             </a>
             <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={TEXT} strokeWidth="2" strokeLinecap="round">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18"/>
                 <line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
             </button>
           </div>
           <nav style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 24 }}>
-            {NAV_LINKS.map(({ label, href }) => (
+            {[
+              { label: "Explorar",          href: "/solucoes" },
+              { label: "Soluções",          href: "/solucoes" },
+              { label: "Para Empresas",     href: "/para-empresas/termos" },
+              { label: "Para Criadores",    href: "/criadores" },
+              { label: "Preços",            href: "/precos" },
+            ].map(({ label, href }) => (
               <a key={label} href={href} onClick={() => setMenuOpen(false)} style={{
-                fontSize: 18, fontWeight: 600, color: TEXT, textDecoration: "none",
-                padding: "14px 0", borderBottom: `1px solid ${BORDER}`,
-              }}>
-                {label}
-              </a>
+                fontSize: 18, fontWeight: 600, color: "#111827", textDecoration: "none",
+                padding: "14px 0", borderBottom: "1px solid #f1f5f9",
+              }}>{label}</a>
             ))}
           </nav>
           <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 32 }}>
             {session ? (
               <a href={dashboardUrl} style={{
-                background: DARK, color: WHITE, borderRadius: 12,
+                background: "#111827", color: "#fff", borderRadius: 12,
                 padding: "14px 24px", fontSize: 15, fontWeight: 700,
                 textDecoration: "none", textAlign: "center",
-              }}>
-                Meu Dashboard →
-              </a>
+              }}>Meu Dashboard →</a>
             ) : (
               <>
                 <a href="/login" style={{
-                  border: `1.5px solid ${BORDER}`, color: TEXT, borderRadius: 12,
+                  border: "1.5px solid #e5e7eb", color: "#374151", borderRadius: 12,
                   padding: "14px 24px", fontSize: 15, fontWeight: 600,
                   textDecoration: "none", textAlign: "center",
-                }}>
-                  Entrar
-                </a>
+                }}>Falar conosco</a>
                 <a href="/cadastro" style={{
-                  background: BLUE, color: WHITE, borderRadius: 12,
+                  background: "#111827", color: "#fff", borderRadius: 12,
                   padding: "14px 24px", fontSize: 15, fontWeight: 700,
                   textDecoration: "none", textAlign: "center",
-                }}>
-                  Começar grátis →
-                </a>
+                }}>Começar grátis</a>
               </>
             )}
           </div>
@@ -238,118 +205,89 @@ function PageNavbar({ session, isMobile }) {
   );
 }
 
-/* ─── Hero right visual ──────────────────────────────────────────── */
-function HeroVisual() {
+/* ─── Hero side panel (animated circle grid) ────────────────────── */
+const SIDE_ICONS = [
+  { emoji: "📄", bg: "#4285F4", top: "8%",  left: "18%", dur: "3.8s", delay: "0s"    },
+  { emoji: "📊", bg: "#1D6F42", top: "22%", left: "55%", dur: "5.1s", delay: "0.6s"  },
+  { emoji: "🎨", bg: "#A259FF", top: "38%", left: "8%",  dur: "4.2s", delay: "1.1s"  },
+  { emoji: "💬", bg: "#611F69", top: "52%", left: "62%", dur: "3.5s", delay: "0.3s"  },
+  { emoji: "📧", bg: "#EA4335", top: "66%", left: "28%", dur: "4.9s", delay: "1.4s"  },
+  { emoji: "📅", bg: "#1967D2", top: "80%", left: "70%", dur: "3.2s", delay: "0.8s"  },
+  { emoji: "🤖", bg: "#F97316", top: "15%", left: "75%", dur: "5.5s", delay: "0.2s"  },
+  { emoji: "⚡", bg: "#FF6900", top: "72%", left: "5%",  dur: "4.0s", delay: "1.8s"  },
+];
+
+function HeroSidePanel({ side, isMobile }) {
+  if (isMobile) return null;
+  const cols = 5;
+  const circleSize = 44;
+  const gap = 14;
+  const pad = 20;
+  const circles = Array.from({ length: cols * 14 });
+
   return (
-    <div style={{ position: "relative", height: 480, width: "100%" }}>
-      {/* Grid dots background */}
+    <div style={{
+      position: "absolute", top: 0, bottom: 0,
+      [side]: 0, width: 280,
+      overflow: "hidden", pointerEvents: "none",
+    }}>
+      {/* Fade mask toward center */}
       <div style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "radial-gradient(circle, #cbd5e1 1px, transparent 1px)",
-        backgroundSize: "28px 28px",
-        borderRadius: 32,
-        opacity: 0.5,
+        position: "absolute", inset: 0, zIndex: 2,
+        background: side === "left"
+          ? "linear-gradient(to right, transparent 60%, #fff 100%)"
+          : "linear-gradient(to left, transparent 60%, #fff 100%)",
+      }} />
+      {/* Top + bottom fades */}
+      <div style={{
+        position: "absolute", inset: 0, zIndex: 2,
+        background: "linear-gradient(to bottom, #fff 0%, transparent 12%, transparent 88%, #fff 100%)",
       }} />
 
-      {/* Main gradient card */}
+      {/* Circle grid */}
       <div style={{
-        position: "absolute", inset: "16px 0 16px 32px",
-        background: "linear-gradient(135deg, #1E40AF 0%, #3B82F6 55%, #06B6D4 100%)",
-        borderRadius: 32,
-        overflow: "hidden",
+        position: "absolute", top: 0, left: 0, right: 0,
+        display: "grid",
+        gridTemplateColumns: `repeat(${cols}, ${circleSize}px)`,
+        gap,
+        padding: pad,
       }}>
-        {/* Inner shimmer */}
-        <div style={{
-          position: "absolute", top: -60, right: -60,
-          width: 240, height: 240,
-          borderRadius: "50%",
-          background: "rgba(255,255,255,0.06)",
-        }} />
-        <div style={{
-          position: "absolute", bottom: -40, left: -40,
-          width: 180, height: 180,
-          borderRadius: "50%",
-          background: "rgba(255,255,255,0.04)",
-        }} />
-      </div>
-
-      {/* Floating glass card 1 — top right: Agentes de IA */}
-      <div style={{
-        position: "absolute", top: 24, right: -16,
-        background: "rgba(255,255,255,0.15)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.3)",
-        borderRadius: 20,
-        padding: "18px 22px",
-        color: WHITE,
-        width: 200,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
-      }}>
-        <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 6, fontWeight: 600, letterSpacing: "0.06em" }}>01</div>
-        <div style={{ fontSize: 24, marginBottom: 4 }}>🤖</div>
-        <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 2 }}>Agentes de IA</div>
-        <div style={{ fontSize: 12, opacity: 0.75 }}>Automatize processos completos</div>
-      </div>
-
-      {/* Floating glass card 2 — bottom left: Solução Verificada */}
-      <div style={{
-        position: "absolute", bottom: 48, left: 16,
-        background: "rgba(255,255,255,0.15)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.3)",
-        borderRadius: 20,
-        padding: "18px 22px",
-        color: WHITE,
-        width: 210,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
-      }}>
-        <div style={{
-          display: "inline-flex", alignItems: "center", gap: 6,
-          background: "rgba(16,185,129,0.25)", borderRadius: 999,
-          padding: "3px 10px", marginBottom: 10,
-          fontSize: 11, fontWeight: 700, color: "#6EE7B7",
-        }}>
-          ✓ Solução Verificada
-        </div>
-        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Agente de Vendas WhatsApp</div>
-        <div style={{ fontSize: 16, fontWeight: 800 }}>R$ 97,00</div>
-      </div>
-
-      {/* Floating white card — center: mini dashboard */}
-      <div style={{
-        position: "absolute", top: "50%", left: "50%",
-        transform: "translate(-30%, -50%)",
-        background: WHITE,
-        borderRadius: 16,
-        padding: "16px 18px",
-        boxShadow: "0 16px 48px rgba(0,0,0,0.18)",
-        width: 200,
-      }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
-          Dashboard WePrompt
-        </div>
-        {[
-          { name: "Agente Vendas",   status: "Ativo" },
-          { name: "Auto Proposta",   status: "Ativo" },
-          { name: "Suporte 24h",     status: "Ativo" },
-        ].map(({ name, status }) => (
-          <div key={name} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${BORDER}` }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: BLUE }} />
-              <span style={{ fontSize: 11, color: TEXT, fontWeight: 500 }}>{name}</span>
-            </div>
-            <span style={{
-              fontSize: 10, fontWeight: 700, color: "#059669",
-              background: "#D1FAE5", borderRadius: 999, padding: "2px 6px",
-            }}>{status}</span>
-          </div>
+        {circles.map((_, i) => (
+          <div key={i} style={{
+            width: circleSize, height: circleSize, borderRadius: "50%",
+            background: "#f1f5f9", flexShrink: 0,
+          }} />
         ))}
       </div>
+
+      {/* Floating app icons */}
+      {SIDE_ICONS.map(({ emoji, bg, top, left, dur, delay }) => (
+        <div key={emoji + top} style={{
+          position: "absolute", top, left,
+          width: circleSize, height: circleSize,
+          borderRadius: 12,
+          background: bg,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 22,
+          boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+          animation: `heroFloat ${dur} ease-in-out infinite`,
+          animationDelay: delay,
+          zIndex: 3,
+        }}>
+          {emoji}
+        </div>
+      ))}
     </div>
   );
 }
+
+/* ─── Right-side role labels ─────────────────────────────────────── */
+const ROLE_LABELS = [
+  { top: "15%", label: "Empresa",     initials: "E", color: "#F97316" },
+  { top: "30%", label: "Criador",     initials: "C", color: "#8B5CF6" },
+  { top: "55%", label: "Fundador",    initials: "F", color: "#10B981" },
+  { top: "70%", label: "Empresa PME", initials: "P", color: "#3B82F6" },
+];
 
 /* ─── Category card ─────────────────────────────────────────────── */
 function CategoryCard({ name, icon, color, count, slug }) {
@@ -464,6 +402,20 @@ export default function Home() {
 
   const displayCats = (categories && categories.length > 0) ? categories : PLACEHOLDER_CATS;
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  function handleSearch(e) {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/solucoes?busca=${encodeURIComponent(searchQuery.trim())}`;
+    }
+  }
+
+  const HERO_TAGS = [
+    "Atendimento IA", "Automação de E-mails", "Redes Sociais",
+    "Geração de Leads", "Análise de Dados", "WhatsApp IA", "Chatbots",
+  ];
+
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", color: TEXT, background: WHITE }}>
 
@@ -475,92 +427,185 @@ export default function Home() {
       {/* ════════════════════════════════════
           SECTION 2 — HERO
       ════════════════════════════════════ */}
-      <section style={{ background: WHITE, padding: isMobile ? "60px 24px 72px" : "80px 48px" }}>
-        <div style={{
-          maxWidth: 1280, margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-          gap: isMobile ? 48 : 64,
-          alignItems: "center",
-        }}>
-          {/* Left: text */}
-          <div>
-            {/* Badge */}
+      <section style={{
+        position: "relative", background: "#fff",
+        minHeight: "100vh", overflow: "hidden",
+        display: "flex", flexDirection: "column",
+      }}>
+        {/* Keyframes */}
+        <style>{`
+          @keyframes heroFloat {
+            0%, 100% { transform: translateY(0px); }
+            50%       { transform: translateY(-8px); }
+          }
+        `}</style>
+
+        {/* Left side panel */}
+        <HeroSidePanel side="left" isMobile={isMobile} />
+
+        {/* Right side panel */}
+        {!isMobile && (
+          <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 280, overflow: "hidden", pointerEvents: "none" }}>
+            {/* Fade masks */}
+            <div style={{ position: "absolute", inset: 0, zIndex: 2, background: "linear-gradient(to left, transparent 60%, #fff 100%)" }} />
+            <div style={{ position: "absolute", inset: 0, zIndex: 2, background: "linear-gradient(to bottom, #fff 0%, transparent 12%, transparent 88%, #fff 100%)" }} />
+            {/* Circle grid */}
             <div style={{
-              display: "inline-flex", alignItems: "center",
-              background: "#EFF6FF", color: BLUE,
-              borderRadius: 999, padding: "6px 14px",
-              fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
-              textTransform: "uppercase", marginBottom: 24,
+              position: "absolute", top: 0, left: 0, right: 0,
+              display: "grid", gridTemplateColumns: "repeat(5, 44px)", gap: 14, padding: 20,
             }}>
-              ✦ 1º Marketplace de IA do Brasil
-            </div>
-
-            {/* H1 */}
-            <h1 style={{ fontSize: isMobile ? 36 : 52, fontWeight: 800, color: DARK, lineHeight: 1.08, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
-              Encontre Soluções de IA Que
-            </h1>
-            <h1 style={{ fontSize: isMobile ? 36 : 52, fontWeight: 800, color: DARK, lineHeight: 1.08, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
-              Transformam Seu Negócio
-            </h1>
-            <h1 style={{ fontSize: isMobile ? 36 : 52, fontWeight: 800, color: BLUE, lineHeight: 1.08, margin: "0 0 24px", letterSpacing: "-0.02em", fontStyle: "italic" }}>
-              Em Resultados Reais
-            </h1>
-
-            <p style={{ fontSize: 16, color: MUTED, lineHeight: 1.75, margin: "0 0 32px", maxWidth: 480 }}>
-              O primeiro marketplace brasileiro de soluções de inteligência artificial. Curadoria especializada, suporte em português e pagamentos em reais.
-            </p>
-
-            {/* Buttons */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 40 }}>
-              <a href="/solucoes" style={{
-                background: BLUE, color: WHITE, borderRadius: 12,
-                padding: "14px 28px", fontSize: 15, fontWeight: 700,
-                textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6,
-                boxShadow: "0 4px 16px rgba(37,99,235,0.35)",
-                transition: "transform 0.15s, box-shadow 0.15s",
-              }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(37,99,235,0.45)"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(37,99,235,0.35)"; }}
-              >
-                Explorar Soluções →
-              </a>
-              <a href="/criadores" style={{
-                background: "transparent", border: `1.5px solid ${BORDER}`, color: TEXT,
-                borderRadius: 12, padding: "14px 28px", fontSize: 15, fontWeight: 600,
-                textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6,
-                transition: "border-color 0.15s, color 0.15s",
-              }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = BLUE; e.currentTarget.style.color = BLUE; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = TEXT; }}
-              >
-                Para Criadores ↗
-              </a>
-            </div>
-
-            {/* Stats */}
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, auto)",
-              gap: isMobile ? "20px 32px" : "0 40px",
-              justifyContent: isMobile ? "start" : "start",
-            }}>
-              {[
-                { num: "1º",     label: "Marketplace de IA" },
-                { num: "48h",    label: "Aprovação de soluções" },
-                { num: "100",    label: "Vagas de fundador" },
-                { num: "7 dias", label: "Garantia de reembolso" },
-              ].map(({ num, label }) => (
-                <div key={label}>
-                  <div style={{ fontSize: 28, fontWeight: 800, color: DARK, lineHeight: 1 }}>{num}</div>
-                  <div style={{ fontSize: 13, color: MUTED, marginTop: 4 }}>{label}</div>
-                </div>
+              {Array.from({ length: 70 }).map((_, i) => (
+                <div key={i} style={{ width: 44, height: 44, borderRadius: "50%", background: "#f1f5f9" }} />
               ))}
             </div>
+            {/* Floating icons */}
+            {SIDE_ICONS.map(({ emoji, bg, top, left, dur, delay }) => (
+              <div key={emoji + "r"} style={{
+                position: "absolute", top, left,
+                width: 44, height: 44, borderRadius: 12,
+                background: bg,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 22, boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+                animation: `heroFloat ${dur} ease-in-out infinite`,
+                animationDelay: delay, zIndex: 3,
+              }}>{emoji}</div>
+            ))}
+            {/* Role labels */}
+            {ROLE_LABELS.map(({ top, label, initials, color }) => (
+              <div key={label} style={{
+                position: "absolute", top, right: 8, zIndex: 4,
+                display: "flex", alignItems: "center", gap: 8,
+                pointerEvents: "none",
+              }}>
+                <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500, whiteSpace: "nowrap" }}>{label}</span>
+                <div style={{
+                  width: 28, height: 28, borderRadius: "50%",
+                  background: color,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 700, color: "#fff",
+                  flexShrink: 0,
+                }}>{initials}</div>
+              </div>
+            ))}
           </div>
+        )}
 
-          {/* Right: visual */}
-          {!isMobile && <HeroVisual />}
+        {/* Center content */}
+        <div style={{
+          position: "relative", zIndex: 10,
+          flex: 1, display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+          textAlign: "center",
+          padding: isMobile ? "72px 24px 64px" : "120px 32px 80px",
+          maxWidth: 760, margin: "0 auto", width: "100%",
+        }}>
+          {/* H1 */}
+          <h1 style={{
+            fontSize: isMobile ? 40 : 64,
+            fontWeight: 900, color: "#111827",
+            lineHeight: 1.05, letterSpacing: "-2px",
+            margin: 0,
+          }}>
+            Encontre Soluções de IA
+          </h1>
+          <h1 style={{
+            fontSize: isMobile ? 40 : 64,
+            fontWeight: 900, color: "#111827",
+            lineHeight: 1.05, letterSpacing: "-2px",
+            margin: "0 0 4px",
+          }}>
+            Para o Seu Negócio com
+          </h1>
+          {/* Inline gradient badge */}
+          <h1 style={{
+            fontSize: isMobile ? 40 : 64,
+            fontWeight: 900, lineHeight: 1.05,
+            letterSpacing: "-2px", margin: "0 0 24px",
+          }}>
+            <span style={{
+              background: "linear-gradient(135deg, #f97316, #ef4444)",
+              borderRadius: 999,
+              padding: isMobile ? "2px 20px" : "4px 28px",
+              color: "#fff",
+              display: "inline-block",
+            }}>
+              IA Curada
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p style={{
+            fontSize: isMobile ? 16 : 18,
+            color: "#6b7280", lineHeight: 1.65,
+            margin: "0 0 40px", maxWidth: 540,
+          }}>
+            Cada solução foi testada e aprovada antes de chegar até você. Implemente com confiança, suporte em português.
+          </p>
+
+          {/* Search bar */}
+          <form onSubmit={handleSearch} style={{
+            width: "100%", maxWidth: 680, margin: "0 auto 24px",
+          }}>
+            <div style={{
+              background: "#fff",
+              border: "1.5px solid #e5e7eb",
+              borderRadius: 16,
+              padding: "14px 16px 14px 20px",
+              display: "flex", alignItems: "center", gap: 12,
+              boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
+            }}>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Buscar soluções de IA para o seu negócio..."
+                style={{
+                  flex: 1, border: "none", outline: "none",
+                  fontSize: 16, color: "#111827",
+                  background: "transparent",
+                  fontFamily: "'DM Sans', sans-serif",
+                  minWidth: 0,
+                }}
+              />
+              <button type="submit" style={{
+                background: "#111827", color: "#fff",
+                borderRadius: 10, padding: "8px 16px",
+                border: "none", cursor: "pointer",
+                fontSize: 18, lineHeight: 1, flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                ↑
+              </button>
+            </div>
+          </form>
+
+          {/* Category tags */}
+          <div style={{
+            display: "flex", flexWrap: "wrap", gap: 10,
+            justifyContent: "center",
+          }}>
+            {HERO_TAGS.map(tag => (
+              <a
+                key={tag}
+                href={`/solucoes?busca=${encodeURIComponent(tag)}`}
+                style={{
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 999,
+                  padding: "8px 18px",
+                  fontSize: 14, color: "#374151",
+                  background: "#fff",
+                  cursor: "pointer",
+                  textDecoration: "none",
+                  transition: "background 0.15s, border-color 0.15s",
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.borderColor = "#d1d5db"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#e5e7eb"; }}
+              >
+                {tag}
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
