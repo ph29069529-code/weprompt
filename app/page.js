@@ -147,31 +147,25 @@ function PageNavbar({ session, isMobile }) {
         }
       `}</style>
 
-      {/* ── Floating pill (desktop only) ── */}
+      {/* ── Full-width fixed bar (desktop only) ── */}
       {!isMobile && (
-        <nav style={{
-          position: "fixed", top: 16, left: "50%",
-          transform: "translateX(-50%)",
+        <header style={{
+          position: "fixed", top: 0, left: 0, right: 0,
           zIndex: 50,
           background: "#fff",
-          borderRadius: 999,
-          padding: "12px 56px",
-          height: 60,
-          boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
-          border: "1px solid #f1f5f9",
-          display: "flex", alignItems: "center", gap: 56,
-          maxWidth: "90vw", minWidth: 900,
+          borderBottom: "1px solid #f1f5f9",
+          height: 68,
+          display: "flex", alignItems: "center",
+          padding: "0 48px",
+          justifyContent: "space-between",
         }}>
           {/* Logo */}
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <img src="/logo-light.png" style={{ height: 52, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
+            <img src="/logo-light.png" style={{ height: 44, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
           </a>
 
-          {/* Divider */}
-          <div style={{ width: 1, height: 20, background: "#e5e7eb", flexShrink: 0 }} />
-
-          {/* Nav links */}
-          <div style={{ display: "flex", alignItems: "center", gap: 24, flex: 1 }}>
+          {/* Center nav links */}
+          <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
 
             {/* Explorar */}
             <NavPlainLink href="/solucoes">Explorar</NavPlainLink>
@@ -215,8 +209,8 @@ function PageNavbar({ session, isMobile }) {
           <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
             {session ? (
               <a href={dashboardUrl} style={{
-                background: "#111827", color: "#fff", borderRadius: 999,
-                padding: "11px 24px", fontSize: 15, fontWeight: 600,
+                background: "#111827", color: "#fff", borderRadius: 8,
+                padding: "10px 24px", fontSize: 15, fontWeight: 600,
                 textDecoration: "none", whiteSpace: "nowrap",
               }}>
                 Meu Dashboard →
@@ -227,8 +221,8 @@ function PageNavbar({ session, isMobile }) {
                   Falar conosco
                 </a>
                 <a href="/cadastro" style={{
-                  background: "#111827", color: "#fff", borderRadius: 999,
-                  padding: "11px 24px", fontSize: 15, fontWeight: 600,
+                  background: "#111827", color: "#fff", borderRadius: 8,
+                  padding: "10px 24px", fontSize: 15, fontWeight: 600,
                   textDecoration: "none", whiteSpace: "nowrap",
                 }}>
                   Começar grátis
@@ -236,7 +230,7 @@ function PageNavbar({ session, isMobile }) {
               </>
             )}
           </div>
-        </nav>
+        </header>
       )}
 
       {/* ── Mobile: hamburger button only ── */}
