@@ -118,7 +118,7 @@ function PageNavbar({ session, isMobile }) {
         }}>
           {/* Logo */}
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <img src="/logo-light.png" height={36} style={{ height: 36, width: "auto", maxWidth: 160, objectFit: "contain", display: "block" }} alt="WePrompt" />
+            <img src="/logo-light.png" style={{ height: 40, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
           </a>
 
           {/* Desktop nav */}
@@ -185,7 +185,7 @@ function PageNavbar({ session, isMobile }) {
         }}>
           <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <a href="/" style={{ textDecoration: "none" }}>
-              <img src="/logo-light.png" height={36} style={{ height: 36, width: "auto", maxWidth: 160, objectFit: "contain", display: "block" }} alt="WePrompt" />
+              <img src="/logo-light.png" style={{ height: 40, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
             </a>
             <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={TEXT} strokeWidth="2" strokeLinecap="round">
@@ -384,7 +384,7 @@ function CategoryCard({ name, icon, color, count, slug }) {
         <div style={{ padding: "16px 20px" }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{name}</div>
           <div style={{ fontSize: 13, color: MUTED, marginBottom: 12 }}>
-            {count !== null ? `${count} solução${count !== 1 ? "ões" : ""} disponível${count !== 1 ? "is" : ""}` : "Em breve"}
+            {count === null ? "Em breve" : count === 0 ? "Nenhuma solução ainda" : count === 1 ? "1 solução disponível" : `${count} soluções disponíveis`}
           </div>
           <span style={{ fontSize: 13, fontWeight: 600, color: BLUE }}>Explorar →</span>
         </div>
