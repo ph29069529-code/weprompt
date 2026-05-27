@@ -697,23 +697,38 @@ export default function Home() {
           {/* H1 */}
           <h1 style={{
             fontSize: isMobile ? 40 : 64,
-            fontWeight: 900, color: "#111827",
-            lineHeight: 1.1, letterSpacing: "-2px",
+            fontWeight: 700, color: "#111827",
+            lineHeight: 1.1, letterSpacing: "-1.5px",
             margin: "0 0 24px", textAlign: "center",
           }}>
             <span>Gerencie Seu Negócio</span>
             <br />
-            <span>com </span>
+            <span>com</span>
             <span style={{
               display: "inline-flex", alignItems: "center",
-              background: "linear-gradient(135deg, #f97316, #ef4444)",
-              borderRadius: 999,
-              padding: isMobile ? "2px 20px" : "4px 28px",
-              color: "#fff",
-              fontSize: "inherit",
-              fontWeight: 900,
+              position: "relative", marginLeft: 12, verticalAlign: "middle",
             }}>
-              IA Curada
+              {/* Main pill */}
+              <span style={{
+                background: "linear-gradient(to right, #f97316, #f43f5e)",
+                borderRadius: "24px 24px 24px 6px",
+                padding: isMobile ? "10px 24px" : "10px 32px",
+                color: "#fff",
+                fontSize: isMobile ? 38 : 60,
+                fontWeight: 700,
+                letterSpacing: "-1px",
+                lineHeight: 1,
+              }}>
+                IA Curada
+              </span>
+              {/* Triangle tail */}
+              <span style={{
+                position: "absolute", bottom: -10, left: 20,
+                width: 0, height: 0,
+                borderLeft: "14px solid transparent",
+                borderRight: "6px solid transparent",
+                borderTop: "14px solid #f97316",
+              }} />
             </span>
           </h1>
 
