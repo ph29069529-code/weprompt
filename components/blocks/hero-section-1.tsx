@@ -187,28 +187,58 @@ export function HeroSection() {
                       weprompt.com.br
                     </div>
                   </div>
-                  {/* Placeholder dashboard */}
-                  <div
-                    className="aspect-[15/8] relative rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col items-center justify-center gap-4 border border-slate-200">
-                    <img
-                      src="/logo-light.png"
-                      alt="WePrompt"
-                      className="h-12 opacity-20"
-                    />
-                    <div className="text-xs text-slate-300 font-medium tracking-widest uppercase">
-                      WePrompt Marketplace
-                    </div>
-                    {/* Fake UI skeleton */}
-                    <div className="absolute inset-6 grid grid-cols-3 gap-3 opacity-30">
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="bg-white rounded-lg border border-slate-200 p-3 flex flex-col gap-2">
-                          <div className="h-2 bg-slate-200 rounded w-3/4" />
-                          <div className="h-2 bg-slate-100 rounded w-1/2" />
-                          <div className="h-8 bg-slate-100 rounded mt-auto" />
+                  {/* Dark dashboard mockup */}
+                  <div className="aspect-video w-full rounded-2xl bg-zinc-900 flex flex-col p-5 gap-4 overflow-hidden">
+                    {/* Top stat bars */}
+                    <div className="flex gap-3">
+                      <div className="flex-1 bg-zinc-800 rounded-lg p-3 flex items-center gap-3">
+                        <div className="w-2 h-8 rounded-full bg-blue-500 shrink-0" />
+                        <div className="flex flex-col gap-1.5 flex-1">
+                          <div className="h-2 bg-zinc-700 rounded w-2/3" />
+                          <div className="h-2 bg-zinc-600 rounded w-1/3" />
                         </div>
-                      ))}
+                      </div>
+                      <div className="flex-1 bg-zinc-800 rounded-lg p-3 flex items-center gap-3">
+                        <div className="w-2 h-8 rounded-full bg-orange-500 shrink-0" />
+                        <div className="flex flex-col gap-1.5 flex-1">
+                          <div className="h-2 bg-zinc-700 rounded w-1/2" />
+                          <div className="h-2 bg-zinc-600 rounded w-2/5" />
+                        </div>
+                      </div>
+                      <div className="flex-1 bg-zinc-800 rounded-lg p-3 flex items-center gap-3">
+                        <div className="w-2 h-8 rounded-full bg-emerald-500 shrink-0" />
+                        <div className="flex flex-col gap-1.5 flex-1">
+                          <div className="h-2 bg-zinc-700 rounded w-3/4" />
+                          <div className="h-2 bg-zinc-600 rounded w-1/2" />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Content grid */}
+                    <div className="flex gap-3 flex-1">
+                      <div className="flex-1 bg-zinc-800 rounded-lg p-3 flex flex-col gap-2">
+                        <div className="h-2 bg-zinc-700 rounded w-1/2 mb-1" />
+                        {[80, 55, 70, 40, 65].map((w, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            <div className="h-1.5 bg-zinc-600 rounded flex-1" style={{ maxWidth: `${w}%` }} />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="w-2/5 bg-zinc-800 rounded-lg p-3 flex flex-col gap-2">
+                        <div className="h-2 bg-zinc-700 rounded w-2/3 mb-1" />
+                        <div className="flex-1 rounded-lg bg-zinc-700/50 flex items-end gap-1 px-2 pb-2">
+                          {[40, 70, 50, 90, 60, 80].map((h, i) => (
+                            <div
+                              key={i}
+                              className="flex-1 rounded-sm"
+                              style={{
+                                height: `${h}%`,
+                                background: i % 3 === 0 ? '#3b82f6' : i % 3 === 1 ? '#f97316' : '#10b981',
+                                opacity: 0.7,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
