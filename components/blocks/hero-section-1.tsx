@@ -93,7 +93,7 @@ export function HeroSection() {
                   </Link>
 
                   {/* H1 */}
-                  <h1 className="mt-8 mx-auto text-balance font-bold tracking-tight text-gray-900 text-5xl md:text-6xl lg:mt-16 xl:text-[4.5rem] leading-[1.12]">
+                  <h1 className="mt-8 mx-auto text-balance font-bold tracking-tight text-white text-5xl md:text-6xl lg:mt-16 xl:text-[4.5rem] leading-[1.12]">
                     <span className="block mb-3">Gerencie Seu Negócio</span>
                     <span className="inline-flex items-center justify-center flex-wrap gap-x-3">
                       <span>com</span>
@@ -316,8 +316,8 @@ const HeroHeader = () => {
         className="fixed z-20 w-full px-2 group">
         <div
           className={cn(
-            'mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12',
-            isScrolled && 'bg-white/80 max-w-4xl rounded-2xl border border-gray-200 backdrop-blur-lg lg:px-5',
+            'mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12 bg-transparent',
+            isScrolled && 'bg-zinc-900/80 max-w-4xl rounded-2xl border border-zinc-800 backdrop-blur-lg lg:px-5',
           )}>
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
 
@@ -325,7 +325,7 @@ const HeroHeader = () => {
             <div className="flex w-full justify-between lg:w-auto">
               <Link href="/" aria-label="home" className="flex items-center">
                 <img
-                  src="/logo-light.png"
+                  src="/logo-dark.png"
                   style={{ height: 40 }}
                   alt="WePrompt"
                 />
