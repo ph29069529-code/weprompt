@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Menu, X } from 'lucide-react';
+import { ArrowRight, ChevronRight, Menu, X } from 'lucide-react';
 import { type Variants } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { AnimatedGroup } from '@/components/ui/animated-group';
@@ -33,24 +33,32 @@ export function HeroSection() {
     <>
       <HeroHeader />
       <main className="overflow-hidden">
-        {/* Decorative light rays */}
         <div
           aria-hidden
           className="z-[2] absolute inset-0 pointer-events-none isolate opacity-50 contain-strict hidden lg:block">
-          <div className="w-[35rem] h-[80rem] -translate-y-[350px] absolute left-0 top-0 -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(215,100%,60%,.07)_0,hsla(215,100%,60%,.02)_50%,transparent_80%)]" />
-          <div className="h-[80rem] absolute left-0 top-0 w-56 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(215,100%,60%,.05)_0,transparent_100%)] [translate:5%_-50%]" />
-          <div className="h-[80rem] -translate-y-[350px] absolute right-0 top-0 w-56 rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(24,95%,53%,.04)_0,transparent_100%)]" />
+          <div className="w-[35rem] h-[80rem] -translate-y-[350px] absolute left-0 top-0 -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(0,0%,85%,.08)_0,hsla(0,0%,55%,.02)_50%,hsla(0,0%,45%,0)_80%)]" />
+          <div className="h-[80rem] absolute left-0 top-0 w-56 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
+          <div className="h-[80rem] -translate-y-[350px] absolute left-0 top-0 w-56 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
         </div>
 
         <section className="bg-zinc-950">
           <div className="relative pt-24 md:pt-36">
-            {/* Night background image */}
             <AnimatedGroup
               variants={{
-                container: { visible: { transition: { delayChildren: 1 } } },
+                container: {
+                  visible: {
+                    transition: {
+                      delayChildren: 1,
+                    },
+                  },
+                },
                 item: {
                   hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0, transition: { type: 'spring', bounce: 0.3, duration: 2 } },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { type: 'spring', bounce: 0.3, duration: 2 },
+                  },
                 },
               }}
               className="absolute inset-0 -z-20">
@@ -63,10 +71,9 @@ export function HeroSection() {
               />
             </AnimatedGroup>
 
-            {/* Radial gradient fade at bottom */}
             <div
               aria-hidden
-              className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,white_75%)]"
+              className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--background)_75%)]"
             />
 
             <div className="mx-auto max-w-7xl px-6">
@@ -75,25 +82,25 @@ export function HeroSection() {
                   {/* Announcement badge */}
                   <Link
                     href="/solucoes"
-                    className="hover:bg-white/80 bg-white/60 group mx-auto flex w-fit items-center gap-4 rounded-full border border-gray-200 p-1 pl-4 shadow-sm shadow-black/5 transition-all duration-300 backdrop-blur-sm">
-                    <span className="text-gray-700 text-sm font-medium">
+                    className="hover:bg-zinc-800 bg-zinc-900/80 group mx-auto flex w-fit items-center gap-4 rounded-full border border-zinc-700 p-1 pl-4 shadow-md shadow-black/20 transition-all duration-300">
+                    <span className="text-zinc-300 text-sm">
                       Primeiro marketplace de IA do Brasil
                     </span>
-                    <span className="block h-4 w-0.5 border-l border-gray-200" />
-                    <div className="bg-white group-hover:bg-gray-50 size-6 overflow-hidden rounded-full duration-500 border border-gray-100">
+                    <span className="block h-4 w-0.5 border-l border-zinc-700 bg-zinc-700" />
+                    <div className="bg-zinc-800 group-hover:bg-zinc-700 size-6 overflow-hidden rounded-full duration-500">
                       <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
                         <span className="flex size-6">
-                          <ArrowRight className="m-auto size-3 text-gray-500" />
+                          <ArrowRight className="m-auto size-3 text-zinc-400" />
                         </span>
                         <span className="flex size-6">
-                          <ArrowRight className="m-auto size-3 text-gray-500" />
+                          <ArrowRight className="m-auto size-3 text-zinc-400" />
                         </span>
                       </div>
                     </div>
                   </Link>
 
-                  {/* H1 */}
-                  <h1 className="mt-8 mx-auto text-balance font-bold tracking-tight text-white text-5xl md:text-6xl lg:mt-16 xl:text-[4.5rem] leading-[1.12]">
+                  {/* H1 with speech bubble pill */}
+                  <h1 className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem] font-bold tracking-tight text-white leading-[1.12]">
                     <span className="block mb-3">Gerencie Seu Negócio</span>
                     <span className="inline-flex items-center justify-center flex-wrap gap-x-3">
                       <span>com</span>
@@ -129,7 +136,7 @@ export function HeroSection() {
                   </h1>
 
                   {/* Subtitle */}
-                  <p className="mx-auto mt-8 max-w-2xl text-balance text-lg text-gray-500 leading-relaxed">
+                  <p className="mx-auto mt-8 max-w-2xl text-balance text-lg text-zinc-400">
                     Cada solução foi testada e aprovada antes de chegar até você.
                     Implemente com confiança, suporte em português.
                   </p>
@@ -148,12 +155,12 @@ export function HeroSection() {
                     },
                     ...transitionVariants,
                   }}
-                  className="mt-12 flex flex-col items-center justify-center gap-3 md:flex-row">
-                  <div className="rounded-[14px] border border-gray-200 bg-gray-50 p-0.5">
+                  className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
+                  <div className="bg-white/10 rounded-[14px] border border-white/10 p-0.5">
                     <Button
                       asChild
                       size="lg"
-                      className="rounded-xl px-6 text-base bg-[#111827] hover:bg-[#1f2937] text-white">
+                      className="rounded-xl px-5 text-base bg-white text-zinc-900 hover:bg-zinc-100">
                       <Link href="/solucoes">
                         <span className="text-nowrap">Explorar Soluções</span>
                       </Link>
@@ -163,7 +170,7 @@ export function HeroSection() {
                     asChild
                     size="lg"
                     variant="ghost"
-                    className="rounded-xl px-6 text-gray-600 hover:text-gray-900">
+                    className="h-10.5 rounded-xl px-5 text-zinc-300 hover:text-white hover:bg-white/10">
                     <Link href="/criadores">
                       <span className="text-nowrap">Para Criadores</span>
                     </Link>
@@ -188,27 +195,24 @@ export function HeroSection() {
               <div className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
                 <div
                   aria-hidden
-                  className="bg-gradient-to-b to-white from-transparent from-35% absolute inset-0 z-10"
+                  className="bg-gradient-to-b to-zinc-950 absolute inset-0 z-10 from-transparent from-35%"
                 />
-                <div className="ring-gray-200 bg-white relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-gray-200 p-4 shadow-lg shadow-zinc-950/10 ring-1">
+                <div className="bg-zinc-900 relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-zinc-800 p-4 shadow-lg shadow-zinc-950/50 ring-1 ring-zinc-800">
                   {/* Browser chrome */}
-                  <div className="bg-gray-50 border-b border-gray-200 rounded-t-xl px-4 py-3 flex items-center gap-3 -mx-4 -mt-4 mb-4">
-                    <div className="flex gap-1.5">
+                  <div className="bg-zinc-800 border-b border-zinc-700 rounded-t-xl px-4 py-3 flex items-center gap-3 -mx-4 -mt-4 mb-4">
+                    <div className="flex gap-1.5 shrink-0">
                       {['#ff5f57', '#febc2e', '#28c840'].map((c) => (
-                        <div
-                          key={c}
-                          className="w-3 h-3 rounded-full"
-                          style={{ background: c }}
-                        />
+                        <div key={c} className="w-3 h-3 rounded-full" style={{ background: c }} />
                       ))}
                     </div>
-                    <div className="flex-1 max-w-xs mx-auto bg-white border border-gray-200 rounded-md px-3 py-1 text-xs text-gray-400 text-center">
+                    <div className="flex-1 max-w-xs mx-auto bg-zinc-900 border border-zinc-700 rounded-md px-3 py-1 text-xs text-zinc-500 text-center">
                       weprompt.com.br
                     </div>
                   </div>
-                  {/* Dark dashboard mockup */}
+
+                  {/* Dark dashboard */}
                   <div className="aspect-video w-full rounded-2xl bg-zinc-900 flex flex-col p-5 gap-4 overflow-hidden">
-                    {/* Top stat bars */}
+                    {/* Stat bars */}
                     <div className="flex gap-3">
                       <div className="flex-1 bg-zinc-800 rounded-lg p-3 flex items-center gap-3">
                         <div className="w-2 h-8 rounded-full bg-blue-500 shrink-0" />
@@ -238,7 +242,7 @@ export function HeroSection() {
                         <div className="h-2 bg-zinc-700 rounded w-1/2 mb-1" />
                         {[80, 55, 70, 40, 65].map((w, i) => (
                           <div key={i} className="flex items-center gap-2">
-                            <div className="h-1.5 bg-zinc-600 rounded flex-1" style={{ maxWidth: `${w}%` }} />
+                            <div className="h-1.5 bg-zinc-600 rounded" style={{ width: `${w}%` }} />
                           </div>
                         ))}
                       </div>
@@ -251,7 +255,8 @@ export function HeroSection() {
                               className="flex-1 rounded-sm"
                               style={{
                                 height: `${h}%`,
-                                background: i % 3 === 0 ? '#3b82f6' : i % 3 === 1 ? '#f97316' : '#10b981',
+                                background:
+                                  i % 3 === 0 ? '#3b82f6' : i % 3 === 1 ? '#f97316' : '#10b981',
                                 opacity: 0.7,
                               }}
                             />
@@ -267,17 +272,28 @@ export function HeroSection() {
         </section>
 
         {/* Stats — replaces customer logos */}
-        <section className="bg-white pb-16 pt-16 md:pb-32">
+        <section className="bg-zinc-950 pb-16 pt-16 md:pb-32">
           <div className="group relative m-auto max-w-5xl px-6">
-            <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-8 sm:grid-cols-3">
+            <div className="absolute inset-0 z-10 flex scale-95 items-center justify-center opacity-0 duration-500 group-hover:scale-100 group-hover:opacity-100">
+              <Link href="/solucoes" className="block text-sm text-zinc-400 duration-150 hover:text-white">
+                <span>Ver todas as soluções</span>
+                <ChevronRight className="ml-1 inline-block size-3" />
+              </Link>
+            </div>
+            <div className="group-hover:blur-xs mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-8 sm:grid-cols-3 transition-all duration-500 group-hover:opacity-50">
               {[
-                { label: '1º Marketplace de IA',   desc: 'Pioneiro no Brasil'           },
-                { label: 'Soluções Testadas',       desc: 'Aprovadas antes de publicar'  },
-                { label: 'Suporte em Português',    desc: 'Time local, PT-BR'            },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center border-t border-gray-100 pt-6">
-                  <div className="text-sm font-bold text-gray-900 mb-1">{stat.label}</div>
-                  <div className="text-xs text-gray-400">{stat.desc}</div>
+                { label: '1º Marketplace de IA',  desc: 'Pioneiro no Brasil'          },
+                { label: 'Soluções Testadas',      desc: 'Aprovadas antes de publicar' },
+                { label: 'Suporte em Português',   desc: 'Time local, PT-BR'           },
+              ].map((stat, i) => (
+                <div
+                  key={stat.label}
+                  className={cn(
+                    'text-center py-6',
+                    i > 0 && 'border-t sm:border-t-0 sm:border-l border-zinc-800',
+                  )}>
+                  <div className="text-sm font-bold text-white mb-1">{stat.label}</div>
+                  <div className="text-xs text-zinc-500">{stat.desc}</div>
                 </div>
               ))}
             </div>
@@ -290,21 +306,19 @@ export function HeroSection() {
 
 /* ─── Menu items ─────────────────────────────────────────────────────── */
 const menuItems = [
-  { name: 'Explorar',       href: '/solucoes'             },
-  { name: 'Soluções',       href: '/solucoes'             },
-  { name: 'Preços',         href: '/precos'               },
-  { name: 'Para Criadores', href: '/criadores'            },
+  { name: 'Explorar',       href: '/solucoes'  },
+  { name: 'Soluções',       href: '/solucoes'  },
+  { name: 'Preços',         href: '/precos'    },
+  { name: 'Para Criadores', href: '/criadores' },
 ];
 
-/* ─── HeroHeader — scroll-aware shrinking navbar ────────────────────── */
+/* ─── HeroHeader ─────────────────────────────────────────────────────── */
 const HeroHeader = () => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
 
   React.useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -326,7 +340,7 @@ const HeroHeader = () => {
               <Link href="/" aria-label="home" className="flex items-center">
                 <img
                   src="/logo-dark.png"
-                  style={{ height: 40 }}
+                  style={{ height: 40, width: 'auto', objectFit: 'contain' }}
                   alt="WePrompt"
                 />
               </Link>
@@ -335,8 +349,8 @@ const HeroHeader = () => {
                 onClick={() => setMenuState(!menuState)}
                 aria-label={menuState ? 'Close Menu' : 'Open Menu'}
                 className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
-                <Menu className="group-data-[state=active]:scale-0 group-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
-                <X className="group-data-[state=active]:rotate-0 group-data-[state=active]:scale-100 group-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
+                <Menu className="group-data-[state=active]:scale-0 group-data-[state=active]:opacity-0 m-auto size-6 text-white duration-200" />
+                <X className="group-data-[state=active]:rotate-0 group-data-[state=active]:scale-100 group-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 text-white duration-200" />
               </button>
             </div>
 
@@ -347,7 +361,7 @@ const HeroHeader = () => {
                   <li key={index}>
                     <Link
                       href={item.href}
-                      className="text-gray-500 hover:text-gray-900 block duration-150 font-medium">
+                      className="text-zinc-400 hover:text-white block duration-150 font-medium">
                       <span>{item.name}</span>
                     </Link>
                   </li>
@@ -355,16 +369,16 @@ const HeroHeader = () => {
               </ul>
             </div>
 
-            {/* Auth buttons */}
-            <div className="bg-white group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border border-gray-200 p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
-              {/* Mobile links */}
+            {/* Auth buttons + mobile menu */}
+            <div className="bg-zinc-900 group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border border-zinc-800 p-6 shadow-2xl shadow-black/40 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none">
+              {/* Mobile nav links */}
               <div className="lg:hidden">
                 <ul className="space-y-6 text-base">
                   {menuItems.map((item, index) => (
                     <li key={index}>
                       <Link
                         href={item.href}
-                        className="text-gray-600 hover:text-gray-900 block duration-150 font-medium">
+                        className="text-zinc-300 hover:text-white block duration-150 font-medium">
                         <span>{item.name}</span>
                       </Link>
                     </li>
@@ -378,7 +392,7 @@ const HeroHeader = () => {
                   variant="outline"
                   size="sm"
                   className={cn(
-                    'border-gray-200 text-gray-700 hover:bg-gray-50',
+                    'border-zinc-700 text-zinc-200 bg-transparent hover:bg-zinc-800 hover:text-white',
                     isScrolled && 'lg:hidden',
                   )}>
                   <Link href="/login">
@@ -389,7 +403,7 @@ const HeroHeader = () => {
                   asChild
                   size="sm"
                   className={cn(
-                    'bg-[#111827] hover:bg-[#1f2937] text-white',
+                    'bg-white text-zinc-900 hover:bg-zinc-100',
                     isScrolled && 'lg:hidden',
                   )}>
                   <Link href="/cadastro">
@@ -400,7 +414,7 @@ const HeroHeader = () => {
                   asChild
                   size="sm"
                   className={cn(
-                    'bg-[#111827] hover:bg-[#1f2937] text-white',
+                    'bg-white text-zinc-900 hover:bg-zinc-100',
                     isScrolled ? 'lg:inline-flex' : 'hidden',
                   )}>
                   <Link href="/cadastro">
