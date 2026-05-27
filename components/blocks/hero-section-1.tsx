@@ -40,49 +40,17 @@ export function HeroSection() {
                     <div className="h-[80rem] absolute left-0 top-0 w-56 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
                     <div className="h-[80rem] -translate-y-[350px] absolute left-0 top-0 w-56 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
                 </div>
-                <section>
+                <section className="bg-zinc-950">
                     <div className="relative pt-24 md:pt-36">
-                        <AnimatedGroup
-                            variants={{
-                                container: {
-                                    visible: {
-                                        transition: {
-                                            delayChildren: 1,
-                                        },
-                                    },
-                                },
-                                item: {
-                                    hidden: {
-                                        opacity: 0,
-                                        y: 20,
-                                    },
-                                    visible: {
-                                        opacity: 1,
-                                        y: 0,
-                                        transition: {
-                                            type: 'spring',
-                                            bounce: 0.3,
-                                            duration: 2,
-                                        },
-                                    },
-                                },
-                            }}
-                            className="absolute inset-0 -z-20">
-                            <img
-                                src="https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120"
-                                alt="background"
-                                className="absolute inset-x-0 top-56 -z-20 hidden lg:top-32 dark:block"
-                                width="3276"
-                                height="4095"
-                            />
-                        </AnimatedGroup>
+                        <div style={{ position: 'absolute', inset: 0, zIndex: -1, background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120,119,198,0.15), transparent)' }} />
                         <div aria-hidden className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--background)_75%)]" />
                         <div className="mx-auto max-w-7xl px-6">
                             <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                                 <AnimatedGroup variants={transitionVariants}>
                                     <Link
                                         href="/solucoes"
-                                        className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950">
+                                        className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
+                                        style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', color: 'white' }}>
                                         <span className="text-foreground text-sm">Primeiro marketplace de IA do Brasil</span>
                                         <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
 
@@ -98,10 +66,10 @@ export function HeroSection() {
                                         </div>
                                     </Link>
 
-                                    <h1 className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+                                    <h1 className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]" style={{ color: 'white' }}>
                                         Soluções de IA que Transformam Seu Negócio
                                     </h1>
-                                    <p className="mx-auto mt-8 max-w-2xl text-balance text-lg">
+                                    <p className="mx-auto mt-8 max-w-2xl text-balance text-lg" style={{ color: 'rgba(255,255,255,0.7)' }}>
                                         Cada solução foi testada e aprovada antes de chegar até você. Implemente com confiança, suporte em português.
                                     </p>
                                 </AnimatedGroup>
@@ -304,7 +272,7 @@ const HeroHeader = () => {
                                 href="/"
                                 aria-label="home"
                                 className="flex items-center space-x-2">
-                                <img src="/logo-light.png" style={{ height: 36, width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} alt="WePrompt" />
+                                <span style={{ color: 'white', fontWeight: 800, fontSize: 20, letterSpacing: '-0.5px' }}>WePrompt</span>
                             </Link>
 
                             <button
