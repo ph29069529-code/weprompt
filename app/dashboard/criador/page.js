@@ -1211,7 +1211,7 @@ export default function CriadorDashboard() {
         {/* Logo */}
         <div style={{ padding: "22px 20px 18px" }}>
           <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="dash-sidebar" textColor={NEAR_BLACK} />
+            <WePromptLogo id="dash-sidebar" dark />
           </a>
         </div>
         <div style={{ height: 1, background: BORDER, margin: "0 16px 16px" }} />
@@ -1282,7 +1282,7 @@ export default function CriadorDashboard() {
             display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
             <a href="/" style={{ textDecoration: "none" }}>
-              <WePromptLogo id="dash-mobile" textColor={NEAR_BLACK} />
+              <WePromptLogo id="dash-mobile" dark />
             </a>
             <button onClick={() => setSidebarOpen(o => !o)} style={{
               background: "none", border: "none", cursor: "pointer",

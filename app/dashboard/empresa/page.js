@@ -944,7 +944,7 @@ export default function EmpresaDashboard() {
       }}>
         <div style={{ padding: "22px 20px 18px" }}>
           <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="empresa-sidebar" textColor={NEAR_BLACK} />
+            <WePromptLogo id="empresa-sidebar" dark />
           </a>
         </div>
         <div style={{ height: 1, background: BORDER, margin: "0 16px 16px" }} />
@@ -1001,7 +1001,7 @@ export default function EmpresaDashboard() {
             display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
             <a href="/" style={{ textDecoration: "none" }}>
-              <WePromptLogo id="empresa-mobile" textColor={NEAR_BLACK} />
+              <WePromptLogo id="empresa-mobile" dark />
             </a>
             <button onClick={() => setSidebarOpen(o => !o)} style={{
               background: "none", border: "none", cursor: "pointer",

@@ -117,19 +117,8 @@ function PageNavbar({ session, isMobile }) {
           gap: 24,
         }}>
           {/* Logo */}
-          <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: 8,
-              background: BLUE,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.9"/>
-                <path d="M2 17l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <span style={{ fontSize: 20, fontWeight: 800, color: DARK, letterSpacing: "-0.02em" }}>WePrompt</span>
+          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
+            <img src="/logo-light.png" height={36} style={{ objectFit: "contain", display: "block" }} alt="WePrompt" />
           </a>
 
           {/* Desktop nav */}
@@ -195,15 +184,8 @@ function PageNavbar({ session, isMobile }) {
           padding: "0 24px",
         }}>
           <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8, background: BLUE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.9"/>
-                  <path d="M2 17l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                  <path d="M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <span style={{ fontSize: 20, fontWeight: 800, color: DARK }}>WePrompt</span>
+            <a href="/" style={{ textDecoration: "none" }}>
+              <img src="/logo-light.png" height={36} style={{ objectFit: "contain", display: "block" }} alt="WePrompt" />
             </a>
             <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={TEXT} strokeWidth="2" strokeLinecap="round">
@@ -720,31 +702,38 @@ export default function Home() {
                 Sobre Nós
               </div>
               <h2 style={{ fontSize: isMobile ? 30 : 40, fontWeight: 800, color: WHITE, lineHeight: 1.15, margin: "0 0 8px", letterSpacing: "-0.02em" }}>
-                Nascemos Para Democratizar a IA
+                Feitos Para Quem Cria.
               </h2>
-              <h2 style={{ fontSize: isMobile ? 30 : 40, fontWeight: 800, color: ACCENT, lineHeight: 1.15, margin: "0 0 24px", letterSpacing: "-0.02em" }}>
-                No Brasil
+              <h2 style={{ fontSize: isMobile ? 30 : 40, fontWeight: 800, color: ACCENT, lineHeight: 1.15, margin: "0 0 28px", letterSpacing: "-0.02em" }}>
+                E Para Quem Precisa Crescer.
               </h2>
               <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", lineHeight: 1.8, margin: "0 0 16px" }}>
-                A WePrompt é o primeiro marketplace de soluções de inteligência artificial da América Latina. Nossa missão é tornar a IA acessível para qualquer empresa brasileira, independente do tamanho ou orçamento.
+                A WePrompt nasceu com um propósito simples: conectar criadores talentosos de soluções de IA com empresas que precisam de ferramentas que realmente funcionam.
+              </p>
+              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", lineHeight: 1.8, margin: "0 0 16px" }}>
+                Para as empresas, cada solução dentro da WePrompt passou por uma curadoria especializada e foi testada antes de chegar até você. Aqui você não arrisca — você simplesmente escolhe, adquire e implementa com confiança.
               </p>
               <p style={{ fontSize: 15, color: "rgba(255,255,255,0.7)", lineHeight: 1.8, margin: "0 0 32px" }}>
-                Conectamos criadores talentosos com empresas que precisam inovar — com suporte em português, pagamentos em reais e curadoria especializada.
+                Para os criadores, a WePrompt é o espaço construído 100% para vocês. Um lugar onde suas soluções chegam a milhares de empresas, onde você faz dinheiro de verdade e onde o crescimento da plataforma é o seu crescimento.
               </p>
 
-              {/* Value pills */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                {["🎯 Missão", "👁 Visão", "💎 Valores"].map((pill) => (
-                  <span key={pill} style={{
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    borderRadius: 999,
-                    padding: "8px 16px",
-                    color: WHITE,
-                    fontSize: 13,
-                    fontWeight: 500,
+              {/* Stats row */}
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
+                {[
+                  { icon: "🏢", title: "PMEs atendidas",  sub: "Crescendo todo dia" },
+                  { icon: "✅", title: "Curadoria 100%",  sub: "Toda solução é testada" },
+                  { icon: "🌎", title: "América Latina",  sub: "Nossa visão de alcance" },
+                ].map(({ icon, title, sub }) => (
+                  <div key={title} style={{
+                    background: "rgba(255,255,255,0.06)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 16,
+                    padding: "20px 18px",
                   }}>
-                    {pill}
-                  </span>
+                    <div style={{ fontSize: 24, marginBottom: 8 }}>{icon}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: WHITE, marginBottom: 4 }}>{title}</div>
+                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{sub}</div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -755,13 +744,12 @@ export default function Home() {
               borderRadius: 24,
               padding: isMobile ? "32px 24px" : "40px",
             }}>
-              <div style={{ fontSize: 24, fontWeight: 800, color: WHITE, marginBottom: 4, letterSpacing: "-0.02em" }}>WePrompt</div>
-              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 32 }}>Fundada em 2026 · São Paulo, Brasil</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: WHITE, marginBottom: 28, letterSpacing: "-0.02em" }}>Nossa Missão</div>
 
               {[
-                "🏆 1º Marketplace de IA do Brasil",
-                "🇧🇷 Suporte 100% em Português",
-                "🔒 Pagamentos Seguros em Reais",
+                "✅ Soluções 100% testadas e aprovadas",
+                "🎯 Espaço feito para criadores venderem",
+                "🌎 A maior plataforma de IA da América Latina",
               ].map((item, i) => (
                 <div key={item} style={{
                   padding: "18px 0",
@@ -844,18 +832,8 @@ export default function Home() {
           }}>
             {/* Col 1: Brand */}
             <div>
-              <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                <div style={{
-                  width: 32, height: 32, borderRadius: 8, background: BLUE,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.9"/>
-                    <path d="M2 17l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                    <path d="M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                </div>
-                <span style={{ fontSize: 18, fontWeight: 800, color: WHITE }}>WePrompt</span>
+              <a href="/" style={{ textDecoration: "none", display: "block", marginBottom: 16 }}>
+                <img src="/logo-dark.png" height={36} style={{ objectFit: "contain", display: "block" }} alt="WePrompt" />
               </a>
               <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 240 }}>
                 O 1º marketplace de soluções de IA da América Latina.

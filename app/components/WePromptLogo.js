@@ -1,9 +1,10 @@
-export default function WePromptLogo({ id, textColor }) {
+export default function WePromptLogo({ id, dark }) {
   return (
     <img
-      src="/logo.png"
+      id={id}
+      src={dark ? "/logo-dark.png" : "/logo-light.png"}
       alt="WePrompt"
-      style={{ height: 120, width: "auto", display: "block", maxWidth: "none" }}
+      style={{ height: 36, width: "auto", display: "block", maxWidth: "none", objectFit: "contain" }}
     />
   );
 }
