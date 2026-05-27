@@ -206,59 +206,51 @@ function PageNavbar({ session, isMobile }) {
 }
 
 /* ─── Hero side panel (swap-animated circle grid) ───────────────── */
-const PANEL_ICONS = [
-  { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg",                                                        label: null          },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg",                             label: null          },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg",                                                               label: "Criador"     },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",                                                         label: "Empresa"     },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg",                                               label: null          },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg",                             label: "Fundador"    },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png",                                                               label: null          },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg",                                                                   label: "Empresa PME" },
+const LEFT_ICONS = [
+  { src: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg" },
 ];
+
+const RIGHT_ICONS = [
+  { type: "avatar", color: "#f97316", initials: "E", label: "Empresa"     },
+  { type: "avatar", color: "#8b5cf6", initials: "C", label: "Criador"     },
+  { type: "avatar", color: "#10b981", initials: "F", label: "Fundador"    },
+  { type: "avatar", color: "#3b82f6", initials: "P", label: "Empresa PME" },
+  { type: "avatar", color: "#ef4444", initials: "A", label: "Agência"     },
+  { type: "avatar", color: "#f59e0b", initials: "S", label: "SaaS"        },
+  { type: "avatar", color: "#06b6d4", initials: "M", label: "Marketing"   },
+  { type: "avatar", color: "#6366f1", initials: "D", label: "Dev"         },
+];
+
 const TOTAL_CIRCLES = 20;
 
-function makeInitialPositions(seed) {
+function makeInitialPositions(iconCount) {
   const arr = Array(TOTAL_CIRCLES).fill(null);
   const slots = [...Array(TOTAL_CIRCLES).keys()]
-    .sort(() => (seed + Math.random()) - 0.5)
-    .slice(0, PANEL_ICONS.length);
+    .sort(() => Math.random() - 0.5)
+    .slice(0, iconCount);
   slots.forEach((slot, i) => { arr[slot] = i; });
   return arr;
 }
 
-function IconCircle({ iconIdx, cellKey, showLabel, side }) {
+/* Left panel cell: app logo image */
+function LogoCircle({ icon }) {
   const [errored, setErrored] = useState(false);
-  const icon = PANEL_ICONS[iconIdx];
-  const label = side === "right" ? icon.label : null;
-
   return (
     <div style={{
-      position: "relative",
       width: 52, height: 52, borderRadius: "50%",
       background: "#fff",
       boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
       display: "flex", alignItems: "center", justifyContent: "center",
       overflow: "hidden",
-      flexShrink: 0,
       animation: "iconPop 0.4s ease forwards",
     }}>
-      {/* Label above circle — right panel only */}
-      {label && (
-        <span style={{
-          position: "absolute", top: -22, left: "50%",
-          fontSize: 11, fontWeight: 600, color: "#374151",
-          whiteSpace: "nowrap",
-          background: "#fff", borderRadius: 6, padding: "2px 6px",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-          animation: "labelPop 0.4s ease forwards",
-          zIndex: 5,
-        }}>
-          {label}
-        </span>
-      )}
-
-      {/* App logo image */}
       {!errored ? (
         <img
           src={icon.src}
@@ -267,7 +259,6 @@ function IconCircle({ iconIdx, cellKey, showLabel, side }) {
           onError={() => setErrored(true)}
         />
       ) : (
-        /* Fallback: colored circle with first letter of src hostname */
         <div style={{
           width: 30, height: 30, borderRadius: "50%",
           background: "#e5e7eb",
@@ -281,8 +272,42 @@ function IconCircle({ iconIdx, cellKey, showLabel, side }) {
   );
 }
 
+/* Right panel cell: colored avatar with label */
+function AvatarCircle({ icon }) {
+  return (
+    <div style={{ position: "relative", paddingTop: 24 }}>
+      {/* Label above */}
+      <span style={{
+        position: "absolute", top: 2, left: "50%",
+        fontSize: 11, fontWeight: 700, color: "#374151",
+        whiteSpace: "nowrap",
+        background: "#fff", borderRadius: 6, padding: "2px 8px",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+        animation: "labelPop 0.4s ease forwards",
+        zIndex: 5,
+      }}>
+        {icon.label}
+      </span>
+      {/* Avatar */}
+      <div style={{
+        width: 52, height: 52, borderRadius: "50%",
+        background: icon.color,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+        animation: "iconPop 0.4s ease forwards",
+      }}>
+        <span style={{ fontSize: 18, fontWeight: 800, color: "#fff", lineHeight: 1 }}>
+          {icon.initials}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function HeroSidePanel({ side, isMobile }) {
-  const [positions, setPositions] = useState(() => makeInitialPositions(side === "left" ? 0 : 1));
+  const icons = side === "right" ? RIGHT_ICONS : LEFT_ICONS;
+  const [positions, setPositions] = useState(() => makeInitialPositions(icons.length));
+  const isRight = side === "right";
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -325,9 +350,9 @@ function HeroSidePanel({ side, isMobile }) {
       {/* Fade toward center */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-        background: side === "left"
-          ? "linear-gradient(to right, transparent 55%, #fff 100%)"
-          : "linear-gradient(to left,  transparent 55%, #fff 100%)",
+        background: isRight
+          ? "linear-gradient(to left,  transparent 55%, #fff 100%)"
+          : "linear-gradient(to right, transparent 55%, #fff 100%)",
       }} />
       {/* Top + bottom fade */}
       <div style={{
@@ -335,31 +360,39 @@ function HeroSidePanel({ side, isMobile }) {
         background: "linear-gradient(to bottom, #fff 0%, transparent 14%, transparent 86%, #fff 100%)",
       }} />
 
-      {/* 4 × 5 circle grid */}
+      {/* Circle grid */}
       <div style={{
         position: "absolute", top: "50%", left: "50%",
         transform: "translate(-50%, -50%)",
         display: "grid",
         gridTemplateColumns: "repeat(4, 52px)",
-        gap: 12,
+        columnGap: 12,
+        rowGap: isRight ? 36 : 12,
       }}>
-        {positions.map((iconIdx, i) => (
-          <div key={i} style={{
-            width: 52, height: 52, borderRadius: "50%",
-            background: iconIdx !== null ? "transparent" : "#f1f5f9",
-            transition: "background 0.4s ease",
-            flexShrink: 0,
-          }}>
-            {iconIdx !== null && (
-              <IconCircle
-                key={`${iconIdx}-${i}`}
-                iconIdx={iconIdx}
-                cellKey={`${iconIdx}-${i}`}
-                side={side}
-              />
-            )}
-          </div>
-        ))}
+        {positions.map((iconIdx, i) => {
+          const icon = iconIdx !== null ? icons[iconIdx] : null;
+          return isRight ? (
+            /* Right panel cell — extra paddingTop baked into AvatarCircle */
+            <div key={i} style={{ width: 52 }}>
+              {icon ? (
+                <AvatarCircle key={`${iconIdx}-${i}`} icon={icon} />
+              ) : (
+                <div style={{ paddingTop: 24 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#f1f5f9" }} />
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Left panel cell */
+            <div key={i} style={{
+              width: 52, height: 52, borderRadius: "50%",
+              background: icon ? "transparent" : "#f1f5f9",
+              transition: "background 0.4s ease",
+            }}>
+              {icon && <LogoCircle key={`${iconIdx}-${i}`} icon={icon} />}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
