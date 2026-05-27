@@ -156,6 +156,7 @@ function PageNavbar({ session, isMobile }) {
           background: "#fff",
           borderRadius: 999,
           height: 68,
+          overflow: "hidden",
           padding: "0 32px",
           boxShadow: "0 2px 24px rgba(0,0,0,0.08)",
           border: "1px solid #f0f0f0",
@@ -165,7 +166,7 @@ function PageNavbar({ session, isMobile }) {
         }}>
           {/* Logo */}
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <img src="/logo-light.png" style={{ height: 80, width: "auto", objectFit: "contain", display: "block", margin: "auto 0" }} alt="WePrompt" />
+            <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0" }} alt="WePrompt" />
           </a>
 
           {/* Center nav links */}
