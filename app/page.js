@@ -208,6 +208,7 @@ function PageNavbar({ session, isMobile }) {
 /* ─── Hero side panel (swap-animated circle grid) ───────────────── */
 const PANEL_ICONS = ["📄", "📊", "🎨", "💬", "📧", "📅", "⚡", "🤖"];
 const TOTAL_CIRCLES = 20;
+const ICON_LABELS = { "📧": "Empresa", "🤖": "Criador", "⚡": "Fundador", "📄": "Empresa PME" };
 
 function makeInitialPositions(seed) {
   const arr = Array(TOTAL_CIRCLES).fill(null);
@@ -217,13 +218,6 @@ function makeInitialPositions(seed) {
   indices.forEach((idx, i) => { arr[idx] = PANEL_ICONS[i]; });
   return arr;
 }
-
-const ROLE_LABELS = [
-  { top: "15%", label: "Empresa",     initials: "E", color: "#F97316" },
-  { top: "30%", label: "Criador",     initials: "C", color: "#8B5CF6" },
-  { top: "55%", label: "Fundador",    initials: "F", color: "#10B981" },
-  { top: "70%", label: "Empresa PME", initials: "P", color: "#3B82F6" },
-];
 
 function HeroSidePanel({ side, isMobile }) {
   const [positions, setPositions] = useState(() => makeInitialPositions(side === "left" ? 0 : 1));
@@ -253,6 +247,19 @@ function HeroSidePanel({ side, isMobile }) {
       [side]: 0, width: 280,
       overflow: "hidden", pointerEvents: "none",
     }}>
+      <style>{`
+        @keyframes iconPop {
+          0%   { opacity: 0; transform: scale(0.5); }
+          70%  { opacity: 1; transform: scale(1.08); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes labelPop {
+          0%   { opacity: 0; transform: translateX(-50%) scale(0.8); }
+          70%  { opacity: 1; transform: translateX(-50%) scale(1.05); }
+          100% { opacity: 1; transform: translateX(-50%) scale(1); }
+        }
+      `}</style>
+
       {/* Fade toward center */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
@@ -274,41 +281,46 @@ function HeroSidePanel({ side, isMobile }) {
         gridTemplateColumns: "repeat(4, 52px)",
         gap: 12,
       }}>
-        {positions.map((icon, i) => (
-          <div key={i} style={{
-            width: 52, height: 52, borderRadius: "50%",
-            background: icon ? "#fff" : "#f1f5f9",
-            boxShadow: icon ? "0 2px 12px rgba(0,0,0,0.10)" : "none",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            transition: "background 0.4s ease, box-shadow 0.4s ease",
-            flexShrink: 0,
-          }}>
-            <span style={{
-              fontSize: 24,
-              opacity: icon ? 1 : 0,
-              transition: "opacity 0.4s ease",
-              lineHeight: 1,
+        {positions.map((icon, i) => {
+          const label = side === "right" && icon ? ICON_LABELS[icon] : null;
+          return (
+            <div key={i} style={{
+              position: "relative",
+              width: 52, height: 52, borderRadius: "50%",
+              background: icon ? "#fff" : "#f1f5f9",
+              boxShadow: icon ? "0 2px 12px rgba(0,0,0,0.10)" : "none",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "background 0.4s ease, box-shadow 0.4s ease",
+              flexShrink: 0,
             }}>
-              {icon || ""}
-            </span>
-          </div>
-        ))}
+              {/* Label above circle — right panel only */}
+              {label && (
+                <span key={icon + i + "label"} style={{
+                  position: "absolute", top: -22, left: "50%",
+                  transform: "translateX(-50%)",
+                  fontSize: 11, fontWeight: 600, color: "#374151",
+                  whiteSpace: "nowrap",
+                  background: "#fff", borderRadius: 6, padding: "2px 6px",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                  animation: "labelPop 0.4s ease forwards",
+                  zIndex: 5,
+                }}>
+                  {label}
+                </span>
+              )}
+              {/* Icon */}
+              {icon && (
+                <span key={icon + i} style={{
+                  fontSize: 24, lineHeight: 1,
+                  animation: "iconPop 0.4s ease forwards",
+                }}>
+                  {icon}
+                </span>
+              )}
+            </div>
+          );
+        })}
       </div>
-
-      {/* Role labels — right panel only */}
-      {side === "right" && ROLE_LABELS.map(({ top, label, initials, color }) => (
-        <div key={label} style={{
-          position: "absolute", top, right: 8, zIndex: 4,
-          display: "flex", alignItems: "center", gap: 8,
-        }}>
-          <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500, whiteSpace: "nowrap" }}>{label}</span>
-          <div style={{
-            width: 28, height: 28, borderRadius: "50%", background: color, flexShrink: 0,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 11, fontWeight: 700, color: "#fff",
-          }}>{initials}</div>
-        </div>
-      ))}
     </div>
   );
 }
@@ -473,31 +485,20 @@ export default function Home() {
           <h1 style={{
             fontSize: isMobile ? 40 : 64,
             fontWeight: 900, color: "#111827",
-            lineHeight: 1.05, letterSpacing: "-2px",
-            margin: 0,
+            lineHeight: 1.1, letterSpacing: "-2px",
+            margin: "0 0 24px", textAlign: "center",
           }}>
-            Encontre Soluções de IA
-          </h1>
-          <h1 style={{
-            fontSize: isMobile ? 40 : 64,
-            fontWeight: 900, color: "#111827",
-            lineHeight: 1.05, letterSpacing: "-2px",
-            margin: "0 0 4px",
-          }}>
-            Para o Seu Negócio com
-          </h1>
-          {/* Inline gradient badge */}
-          <h1 style={{
-            fontSize: isMobile ? 40 : 64,
-            fontWeight: 900, lineHeight: 1.05,
-            letterSpacing: "-2px", margin: "0 0 24px",
-          }}>
+            <span>Gerencie Seu Negócio</span>
+            <br />
+            <span>com </span>
             <span style={{
+              display: "inline-flex", alignItems: "center",
               background: "linear-gradient(135deg, #f97316, #ef4444)",
               borderRadius: 999,
               padding: isMobile ? "2px 20px" : "4px 28px",
               color: "#fff",
-              display: "inline-block",
+              fontSize: "inherit",
+              fontWeight: 900,
             }}>
               IA Curada
             </span>
