@@ -43,9 +43,77 @@ const FooterLink = ({ href, children }) => {
   );
 };
 
-/* ─── Inline Navbar ──────────────────────────────────────────────── */
+/* ─── Floating pill navbar ───────────────────────────────────────── */
+const SOLUCOES_ITEMS = [
+  { icon: "🤖", label: "Agentes de IA",    desc: "Automatize processos",   href: "/solucoes?categoria=agentes-de-ia"  },
+  { icon: "⚡", label: "Automação",         desc: "Make, n8n e mais",       href: "/solucoes?categoria=automacao"      },
+  { icon: "💬", label: "Chatbots",          desc: "Atendimento 24h",        href: "/solucoes?categoria=chatbots"       },
+  { icon: "📣", label: "Marketing IA",      desc: "Copies e campanhas",     href: "/solucoes?categoria=marketing-ia"   },
+  { icon: "📊", label: "Análise de Dados",  desc: "Insights rápidos",       href: "/solucoes?categoria=analise-de-dados" },
+  { icon: "📱", label: "WhatsApp IA",       desc: "Vendas no WhatsApp",     href: "/solucoes?categoria=whatsapp-ia"   },
+];
+
+const EMPRESA_ITEMS = [
+  { icon: "🏢", label: "Para Empresas",  desc: "Encontre soluções testadas", href: "/#como-funciona" },
+  { icon: "💰", label: "Preços",         desc: "Planos e valores",           href: "/precos"         },
+  { icon: "❓", label: "Como funciona",  desc: "Entenda a plataforma",       href: "/#como-funciona" },
+];
+
+function DropdownMenu({ items, seeAllHref, onMouseEnter, onMouseLeave }) {
+  const [hovIdx, setHovIdx] = useState(null);
+  return (
+    <div
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={{
+        position: "absolute", top: "calc(100% + 12px)", left: 0,
+        background: "#fff", borderRadius: 16,
+        boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+        padding: 16, minWidth: 220, zIndex: 100,
+        animation: "dropIn 0.15s ease forwards",
+      }}
+    >
+      {items.map((item, i) => (
+        <a key={item.label} href={item.href}
+          style={{
+            display: "flex", alignItems: "center", gap: 12,
+            padding: "8px 10px", borderRadius: 10, textDecoration: "none",
+            background: hovIdx === i ? "#f8fafc" : "transparent",
+            transition: "background 0.12s",
+          }}
+          onMouseEnter={() => setHovIdx(i)}
+          onMouseLeave={() => setHovIdx(null)}
+        >
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: "#f1f5f9",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 16, flexShrink: 0,
+          }}>{item.icon}</div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", lineHeight: 1.3 }}>{item.label}</div>
+            <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.3 }}>{item.desc}</div>
+          </div>
+        </a>
+      ))}
+      {seeAllHref && (
+        <a href={seeAllHref} style={{
+          display: "block", marginTop: 8,
+          background: "#f8fafc", borderRadius: 10, padding: "9px 12px",
+          fontSize: 13, fontWeight: 600, color: "#2563EB",
+          textDecoration: "none",
+        }}>
+          Ver todas as soluções →
+        </a>
+      )}
+    </div>
+  );
+}
+
 function PageNavbar({ session, isMobile }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const leaveTimer = useRef(null);
 
   const dashboardUrl = session?.user?.user_metadata?.tipo === "criador"
     ? "/dashboard/criador"
@@ -53,100 +121,146 @@ function PageNavbar({ session, isMobile }) {
     ? "/dashboard/empresa"
     : "/dashboard/admin";
 
-  const NAV_CENTER = [
-    { label: "Explorar",    href: "/solucoes" },
-    { label: "Soluções ▾", href: "/solucoes" },
-    { label: "Empresa ▾",  href: "/para-empresas/termos" },
-  ];
+  function openDropdown(key) {
+    if (leaveTimer.current) clearTimeout(leaveTimer.current);
+    setActiveDropdown(key);
+  }
+  function closeDropdown() {
+    leaveTimer.current = setTimeout(() => setActiveDropdown(null), 150);
+  }
 
-  const NavCenterLink = ({ href, children }) => {
-    const [h, setH] = useState(false);
-    return (
-      <a href={href} style={{
-        fontSize: 14, fontWeight: 500,
-        color: h ? "#111827" : "#374151",
-        textDecoration: "none", whiteSpace: "nowrap",
-        transition: "color 0.15s",
-      }}
-        onMouseEnter={() => setH(true)}
-        onMouseLeave={() => setH(false)}
-      >{children}</a>
-    );
-  };
+  const linkStyle = (hov) => ({
+    fontSize: 14, fontWeight: 500,
+    color: hov ? "#111827" : "#374151",
+    textDecoration: "none", whiteSpace: "nowrap",
+    transition: "color 0.15s", cursor: "pointer",
+    background: "none", border: "none", padding: 0,
+    fontFamily: "inherit",
+  });
 
   return (
     <>
-      <header style={{
-        position: "sticky", top: 0, zIndex: 50,
-        background: "#fff",
-        borderBottom: "1px solid #f1f5f9",
-        height: 64, display: "flex", alignItems: "center",
-      }}>
-        <div style={{
-          maxWidth: 1200, margin: "0 auto", width: "100%",
-          padding: "0 32px",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 24,
+      <style>{`
+        @keyframes dropIn {
+          from { opacity: 0; transform: translateY(-4px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
+      {/* ── Floating pill (desktop only) ── */}
+      {!isMobile && (
+        <nav style={{
+          position: "fixed", top: 16, left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 50,
+          background: "#fff",
+          borderRadius: 999,
+          padding: "0 24px",
+          height: 52,
+          boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
+          border: "1px solid #f1f5f9",
+          display: "flex", alignItems: "center", gap: 32,
+          maxWidth: 860,
         }}>
-          {/* Left: logo */}
+          {/* Logo */}
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <img src="/logo-light.png" style={{ height: 32, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
+            <img src="/logo-light.png" style={{ height: 28, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
           </a>
 
-          {/* Center: nav links */}
-          {!isMobile && (
-            <nav style={{ display: "flex", alignItems: "center", gap: 32 }}>
-              {NAV_CENTER.map(({ label, href }) => (
-                <NavCenterLink key={label} href={href}>{label}</NavCenterLink>
-              ))}
-            </nav>
-          )}
+          {/* Divider */}
+          <div style={{ width: 1, height: 20, background: "#e5e7eb", flexShrink: 0 }} />
 
-          {/* Right: actions */}
-          {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
-              {session ? (
-                <a href={dashboardUrl} style={{
-                  background: "#111827", color: "#fff", borderRadius: 999,
-                  padding: "10px 20px", fontSize: 14, fontWeight: 600,
-                  textDecoration: "none", whiteSpace: "nowrap",
-                }}>
-                  Meu Dashboard →
-                </a>
-              ) : (
-                <>
-                  <a href="/login" style={{ fontSize: 14, color: "#374151", textDecoration: "none", whiteSpace: "nowrap" }}>
-                    Falar conosco
-                  </a>
-                  <a href="/cadastro" style={{
-                    background: "#111827", color: "#fff", borderRadius: 999,
-                    padding: "10px 20px", fontSize: 14, fontWeight: 600,
-                    textDecoration: "none", whiteSpace: "nowrap",
-                  }}>
-                    Começar grátis
-                  </a>
-                </>
+          {/* Nav links */}
+          <div style={{ display: "flex", alignItems: "center", gap: 24, flex: 1 }}>
+
+            {/* Explorar */}
+            <NavPlainLink href="/solucoes">Explorar</NavPlainLink>
+
+            {/* Soluções ▾ */}
+            <div style={{ position: "relative" }}
+              onMouseEnter={() => openDropdown("solucoes")}
+              onMouseLeave={closeDropdown}
+            >
+              <NavPlainLink href="/solucoes" chevron>Soluções</NavPlainLink>
+              {activeDropdown === "solucoes" && (
+                <DropdownMenu
+                  items={SOLUCOES_ITEMS}
+                  seeAllHref="/solucoes"
+                  onMouseEnter={() => openDropdown("solucoes")}
+                  onMouseLeave={closeDropdown}
+                />
               )}
             </div>
-          )}
 
-          {/* Mobile hamburger */}
-          {isMobile && (
-            <button onClick={() => setMenuOpen(true)}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}
-              aria-label="Abrir menu"
+            {/* Empresa ▾ */}
+            <div style={{ position: "relative" }}
+              onMouseEnter={() => openDropdown("empresa")}
+              onMouseLeave={closeDropdown}
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <line x1="3" y1="12" x2="21" y2="12"/>
-                <line x1="3" y1="18" x2="21" y2="18"/>
-              </svg>
-            </button>
-          )}
-        </div>
-      </header>
+              <NavPlainLink href="/para-empresas/termos" chevron>Empresa</NavPlainLink>
+              {activeDropdown === "empresa" && (
+                <DropdownMenu
+                  items={EMPRESA_ITEMS}
+                  onMouseEnter={() => openDropdown("empresa")}
+                  onMouseLeave={closeDropdown}
+                />
+              )}
+            </div>
 
-      {/* Mobile overlay */}
+            {/* Para Criadores */}
+            <NavPlainLink href="/criadores">Para Criadores</NavPlainLink>
+          </div>
+
+          {/* Right actions */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
+            {session ? (
+              <a href={dashboardUrl} style={{
+                background: "#111827", color: "#fff", borderRadius: 999,
+                padding: "9px 20px", fontSize: 14, fontWeight: 600,
+                textDecoration: "none", whiteSpace: "nowrap",
+              }}>
+                Meu Dashboard →
+              </a>
+            ) : (
+              <>
+                <a href="/login" style={{ fontSize: 14, color: "#374151", textDecoration: "none", whiteSpace: "nowrap" }}>
+                  Falar conosco
+                </a>
+                <a href="/cadastro" style={{
+                  background: "#111827", color: "#fff", borderRadius: 999,
+                  padding: "9px 20px", fontSize: 14, fontWeight: 600,
+                  textDecoration: "none", whiteSpace: "nowrap",
+                }}>
+                  Começar grátis
+                </a>
+              </>
+            )}
+          </div>
+        </nav>
+      )}
+
+      {/* ── Mobile: hamburger button only ── */}
+      {isMobile && (
+        <button
+          onClick={() => setMenuOpen(true)}
+          style={{
+            position: "fixed", top: 16, right: 16, zIndex: 50,
+            background: "#fff", border: "1px solid #f1f5f9",
+            borderRadius: 999, width: 44, height: 44,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer", boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+          }}
+          aria-label="Abrir menu"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      )}
+
+      {/* ── Mobile full-screen overlay ── */}
       {menuOpen && (
         <div style={{
           position: "fixed", inset: 0, zIndex: 100, background: "#fff",
@@ -154,7 +268,7 @@ function PageNavbar({ session, isMobile }) {
         }}>
           <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <a href="/" style={{ textDecoration: "none" }}>
-              <img src="/logo-light.png" style={{ height: 32, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
+              <img src="/logo-light.png" style={{ height: 28, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
             </a>
             <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
@@ -165,11 +279,11 @@ function PageNavbar({ session, isMobile }) {
           </div>
           <nav style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 24 }}>
             {[
-              { label: "Explorar",          href: "/solucoes" },
-              { label: "Soluções",          href: "/solucoes" },
-              { label: "Para Empresas",     href: "/para-empresas/termos" },
-              { label: "Para Criadores",    href: "/criadores" },
-              { label: "Preços",            href: "/precos" },
+              { label: "Explorar",       href: "/solucoes"             },
+              { label: "Soluções",       href: "/solucoes"             },
+              { label: "Para Empresas",  href: "/para-empresas/termos" },
+              { label: "Para Criadores", href: "/criadores"            },
+              { label: "Preços",         href: "/precos"               },
             ].map(({ label, href }) => (
               <a key={label} href={href} onClick={() => setMenuOpen(false)} style={{
                 fontSize: 18, fontWeight: 600, color: "#111827", textDecoration: "none",
@@ -202,6 +316,25 @@ function PageNavbar({ session, isMobile }) {
         </div>
       )}
     </>
+  );
+}
+
+function NavPlainLink({ href, children, chevron }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <a href={href} style={{
+      display: "inline-flex", alignItems: "center", gap: 3,
+      fontSize: 14, fontWeight: 500,
+      color: hov ? "#111827" : "#374151",
+      textDecoration: "none", whiteSpace: "nowrap",
+      transition: "color 0.15s",
+    }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+    >
+      {children}
+      {chevron && <span style={{ fontSize: 10, opacity: 0.6 }}>▾</span>}
+    </a>
   );
 }
 
