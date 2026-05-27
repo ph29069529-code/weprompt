@@ -205,25 +205,47 @@ function PageNavbar({ session, isMobile }) {
   );
 }
 
-/* ─── Hero side panel (animated circle grid) ────────────────────── */
-const SIDE_ICONS = [
-  { emoji: "📄", bg: "#4285F4", top: "8%",  left: "18%", dur: "3.8s", delay: "0s"    },
-  { emoji: "📊", bg: "#1D6F42", top: "22%", left: "55%", dur: "5.1s", delay: "0.6s"  },
-  { emoji: "🎨", bg: "#A259FF", top: "38%", left: "8%",  dur: "4.2s", delay: "1.1s"  },
-  { emoji: "💬", bg: "#611F69", top: "52%", left: "62%", dur: "3.5s", delay: "0.3s"  },
-  { emoji: "📧", bg: "#EA4335", top: "66%", left: "28%", dur: "4.9s", delay: "1.4s"  },
-  { emoji: "📅", bg: "#1967D2", top: "80%", left: "70%", dur: "3.2s", delay: "0.8s"  },
-  { emoji: "🤖", bg: "#F97316", top: "15%", left: "75%", dur: "5.5s", delay: "0.2s"  },
-  { emoji: "⚡", bg: "#FF6900", top: "72%", left: "5%",  dur: "4.0s", delay: "1.8s"  },
+/* ─── Hero side panel (swap-animated circle grid) ───────────────── */
+const PANEL_ICONS = ["📄", "📊", "🎨", "💬", "📧", "📅", "⚡", "🤖"];
+const TOTAL_CIRCLES = 20;
+
+function makeInitialPositions(seed) {
+  const arr = Array(TOTAL_CIRCLES).fill(null);
+  const indices = [...Array(TOTAL_CIRCLES).keys()]
+    .sort(() => (seed + Math.random()) - 0.5)
+    .slice(0, PANEL_ICONS.length);
+  indices.forEach((idx, i) => { arr[idx] = PANEL_ICONS[i]; });
+  return arr;
+}
+
+const ROLE_LABELS = [
+  { top: "15%", label: "Empresa",     initials: "E", color: "#F97316" },
+  { top: "30%", label: "Criador",     initials: "C", color: "#8B5CF6" },
+  { top: "55%", label: "Fundador",    initials: "F", color: "#10B981" },
+  { top: "70%", label: "Empresa PME", initials: "P", color: "#3B82F6" },
 ];
 
 function HeroSidePanel({ side, isMobile }) {
+  const [positions, setPositions] = useState(() => makeInitialPositions(side === "left" ? 0 : 1));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPositions(prev => {
+        const next = [...prev];
+        const filled = next.map((v, i) => v ? i : -1).filter(i => i >= 0);
+        const empty  = next.map((v, i) => !v ? i : -1).filter(i => i >= 0);
+        if (!filled.length || !empty.length) return next;
+        const from = filled[Math.floor(Math.random() * filled.length)];
+        const to   = empty[Math.floor(Math.random() * empty.length)];
+        next[to]   = next[from];
+        next[from] = null;
+        return next;
+      });
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
   if (isMobile) return null;
-  const cols = 5;
-  const circleSize = 44;
-  const gap = 14;
-  const pad = 20;
-  const circles = Array.from({ length: cols * 14 });
 
   return (
     <div style={{
@@ -231,63 +253,65 @@ function HeroSidePanel({ side, isMobile }) {
       [side]: 0, width: 280,
       overflow: "hidden", pointerEvents: "none",
     }}>
-      {/* Fade mask toward center */}
+      {/* Fade toward center */}
       <div style={{
-        position: "absolute", inset: 0, zIndex: 2,
+        position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
         background: side === "left"
-          ? "linear-gradient(to right, transparent 60%, #fff 100%)"
-          : "linear-gradient(to left, transparent 60%, #fff 100%)",
+          ? "linear-gradient(to right, transparent 55%, #fff 100%)"
+          : "linear-gradient(to left,  transparent 55%, #fff 100%)",
       }} />
-      {/* Top + bottom fades */}
+      {/* Top + bottom fade */}
       <div style={{
-        position: "absolute", inset: 0, zIndex: 2,
-        background: "linear-gradient(to bottom, #fff 0%, transparent 12%, transparent 88%, #fff 100%)",
+        position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+        background: "linear-gradient(to bottom, #fff 0%, transparent 14%, transparent 86%, #fff 100%)",
       }} />
 
-      {/* Circle grid */}
+      {/* 4 × 5 circle grid */}
       <div style={{
-        position: "absolute", top: 0, left: 0, right: 0,
+        position: "absolute", top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
         display: "grid",
-        gridTemplateColumns: `repeat(${cols}, ${circleSize}px)`,
-        gap,
-        padding: pad,
+        gridTemplateColumns: "repeat(4, 52px)",
+        gap: 12,
       }}>
-        {circles.map((_, i) => (
+        {positions.map((icon, i) => (
           <div key={i} style={{
-            width: circleSize, height: circleSize, borderRadius: "50%",
-            background: "#f1f5f9", flexShrink: 0,
-          }} />
+            width: 52, height: 52, borderRadius: "50%",
+            background: icon ? "#fff" : "#f1f5f9",
+            boxShadow: icon ? "0 2px 12px rgba(0,0,0,0.10)" : "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            transition: "background 0.4s ease, box-shadow 0.4s ease",
+            flexShrink: 0,
+          }}>
+            <span style={{
+              fontSize: 24,
+              opacity: icon ? 1 : 0,
+              transition: "opacity 0.4s ease",
+              lineHeight: 1,
+            }}>
+              {icon || ""}
+            </span>
+          </div>
         ))}
       </div>
 
-      {/* Floating app icons */}
-      {SIDE_ICONS.map(({ emoji, bg, top, left, dur, delay }) => (
-        <div key={emoji + top} style={{
-          position: "absolute", top, left,
-          width: circleSize, height: circleSize,
-          borderRadius: 12,
-          background: bg,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 22,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
-          animation: `heroFloat ${dur} ease-in-out infinite`,
-          animationDelay: delay,
-          zIndex: 3,
+      {/* Role labels — right panel only */}
+      {side === "right" && ROLE_LABELS.map(({ top, label, initials, color }) => (
+        <div key={label} style={{
+          position: "absolute", top, right: 8, zIndex: 4,
+          display: "flex", alignItems: "center", gap: 8,
         }}>
-          {emoji}
+          <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500, whiteSpace: "nowrap" }}>{label}</span>
+          <div style={{
+            width: 28, height: 28, borderRadius: "50%", background: color, flexShrink: 0,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 11, fontWeight: 700, color: "#fff",
+          }}>{initials}</div>
         </div>
       ))}
     </div>
   );
 }
-
-/* ─── Right-side role labels ─────────────────────────────────────── */
-const ROLE_LABELS = [
-  { top: "15%", label: "Empresa",     initials: "E", color: "#F97316" },
-  { top: "30%", label: "Criador",     initials: "C", color: "#8B5CF6" },
-  { top: "55%", label: "Fundador",    initials: "F", color: "#10B981" },
-  { top: "70%", label: "Empresa PME", initials: "P", color: "#3B82F6" },
-];
 
 /* ─── Category card ─────────────────────────────────────────────── */
 function CategoryCard({ name, icon, color, count, slug }) {
@@ -432,63 +456,9 @@ export default function Home() {
         minHeight: "100vh", overflow: "hidden",
         display: "flex", flexDirection: "column",
       }}>
-        {/* Keyframes */}
-        <style>{`
-          @keyframes heroFloat {
-            0%, 100% { transform: translateY(0px); }
-            50%       { transform: translateY(-8px); }
-          }
-        `}</style>
-
-        {/* Left side panel */}
+        {/* Side panels */}
         <HeroSidePanel side="left" isMobile={isMobile} />
-
-        {/* Right side panel */}
-        {!isMobile && (
-          <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 280, overflow: "hidden", pointerEvents: "none" }}>
-            {/* Fade masks */}
-            <div style={{ position: "absolute", inset: 0, zIndex: 2, background: "linear-gradient(to left, transparent 60%, #fff 100%)" }} />
-            <div style={{ position: "absolute", inset: 0, zIndex: 2, background: "linear-gradient(to bottom, #fff 0%, transparent 12%, transparent 88%, #fff 100%)" }} />
-            {/* Circle grid */}
-            <div style={{
-              position: "absolute", top: 0, left: 0, right: 0,
-              display: "grid", gridTemplateColumns: "repeat(5, 44px)", gap: 14, padding: 20,
-            }}>
-              {Array.from({ length: 70 }).map((_, i) => (
-                <div key={i} style={{ width: 44, height: 44, borderRadius: "50%", background: "#f1f5f9" }} />
-              ))}
-            </div>
-            {/* Floating icons */}
-            {SIDE_ICONS.map(({ emoji, bg, top, left, dur, delay }) => (
-              <div key={emoji + "r"} style={{
-                position: "absolute", top, left,
-                width: 44, height: 44, borderRadius: 12,
-                background: bg,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 22, boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
-                animation: `heroFloat ${dur} ease-in-out infinite`,
-                animationDelay: delay, zIndex: 3,
-              }}>{emoji}</div>
-            ))}
-            {/* Role labels */}
-            {ROLE_LABELS.map(({ top, label, initials, color }) => (
-              <div key={label} style={{
-                position: "absolute", top, right: 8, zIndex: 4,
-                display: "flex", alignItems: "center", gap: 8,
-                pointerEvents: "none",
-              }}>
-                <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500, whiteSpace: "nowrap" }}>{label}</span>
-                <div style={{
-                  width: 28, height: 28, borderRadius: "50%",
-                  background: color,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, fontWeight: 700, color: "#fff",
-                  flexShrink: 0,
-                }}>{initials}</div>
-              </div>
-            ))}
-          </div>
-        )}
+        <HeroSidePanel side="right" isMobile={isMobile} />
 
         {/* Center content */}
         <div style={{
