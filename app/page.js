@@ -155,16 +155,16 @@ function PageNavbar({ session, isMobile }) {
           zIndex: 50,
           background: "#fff",
           borderRadius: 999,
-          padding: "10px 48px",
+          padding: "12px 56px",
           height: 60,
           boxShadow: "0 2px 20px rgba(0,0,0,0.08)",
           border: "1px solid #f1f5f9",
-          display: "flex", alignItems: "center", gap: 48,
-          maxWidth: 1160,
+          display: "flex", alignItems: "center", gap: 56,
+          maxWidth: "90vw", minWidth: 900,
         }}>
           {/* Logo */}
           <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <img src="/logo-light.png" style={{ height: 44, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
+            <img src="/logo-light.png" style={{ height: 52, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
           </a>
 
           {/* Divider */}
