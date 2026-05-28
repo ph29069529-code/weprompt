@@ -1711,48 +1711,6 @@ export default function Home() {
       </section>
 
       {/* ════════════════════════════════════
-          SECTION 6 — CTA FINAL
-      ════════════════════════════════════ */}
-      <section style={{
-        background: "linear-gradient(135deg, #1E40AF 0%, #2563EB 100%)",
-        padding: isMobile ? "72px 24px" : "80px 48px",
-        textAlign: "center",
-      }}>
-        <div style={{ maxWidth: 720, margin: "0 auto" }}>
-          <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: WHITE, margin: "0 0 16px", lineHeight: 1.15, letterSpacing: "-0.02em" }}>
-            Pronto Para Transformar Seu Negócio Com IA?
-          </h2>
-          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.8)", lineHeight: 1.7, margin: "0 0 36px" }}>
-            Junte-se às empresas que já descobriram o poder das soluções de IA da WePrompt.
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 16 }}>
-            <a href="/solucoes" style={{
-              background: WHITE, color: BLUE, borderRadius: 12,
-              padding: "14px 28px", fontSize: 15, fontWeight: 700,
-              textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6,
-              transition: "opacity 0.15s",
-            }}
-              onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
-              onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-            >
-              Explorar Soluções →
-            </a>
-            <a href="/cadastro" style={{
-              background: "transparent", border: "1.5px solid rgba(255,255,255,0.5)", color: WHITE,
-              borderRadius: 12, padding: "14px 28px", fontSize: 15, fontWeight: 600,
-              textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 6,
-              transition: "border-color 0.15s",
-            }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = WHITE}
-              onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)"}
-            >
-              Quero ser Criador
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════
           SECTION 7 — FOOTER
       ════════════════════════════════════ */}
       <div style={{ position: "relative" }}>
