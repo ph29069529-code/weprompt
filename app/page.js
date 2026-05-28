@@ -1567,7 +1567,7 @@ export default function Home() {
             </div>
             {/* Right: scrolling columns */}
             <div style={{ flex: 1.5, height: 520, overflow: "hidden", position: "relative" }}>
-              <div style={{ display: "flex", gap: 12, width: "100%", justifyContent: "flex-end" }}>
+              <div style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center" }}>
                 {/* Column 1 — UP */}
                 <div style={{ animation: "scrollUp 25s linear infinite", width: 88 }}>
                   {[
