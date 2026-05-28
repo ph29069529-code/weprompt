@@ -275,7 +275,7 @@ const HeroHeader = () => {
                                 href="/"
                                 aria-label="home"
                                 className="flex items-center space-x-2">
-                                <span style={{ color: 'white', fontWeight: 800, fontSize: 20, letterSpacing: '-0.5px' }}>WePrompt</span>
+                                <span style={{ color: 'white', fontWeight: 800, fontSize: 32, letterSpacing: '-0.5px' }}>WePrompt</span>
                             </Link>
 
                             <button
