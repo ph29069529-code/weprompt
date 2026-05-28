@@ -1278,6 +1278,107 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ════════════════════════════════════
+          SECTION 3b — INTEGRAÇÕES
+      ════════════════════════════════════ */}
+      <section style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
+        <style>{`
+          @keyframes scrollUp1 { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+          @keyframes scrollUp2 { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+          @keyframes scrollUp3 { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        `}</style>
+        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 80, flexDirection: isMobile ? "column" : "row" }}>
+            {/* Left */}
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "inline-block", background: "#EFF6FF", color: BLUE, borderRadius: 999, padding: "5px 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                Integrações
+              </div>
+              <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: "#111827", lineHeight: 1.2, marginTop: 12, marginBottom: 0 }}>
+                Funciona com as Ferramentas que Você Já Usa
+              </h2>
+              <p style={{ fontSize: 16, color: "#6b7280", marginTop: 16, maxWidth: 400, lineHeight: 1.6, marginBottom: 0 }}>
+                As soluções da WePrompt se integram com as plataformas que o seu negócio já usa — de ferramentas de produtividade e CRMs a apps de comunicação.
+              </p>
+              <a href="/solucoes" style={{ display: "inline-block", border: "1.5px solid #e5e7eb", borderRadius: 999, padding: "12px 28px", fontSize: 14, fontWeight: 600, color: "#111827", marginTop: 28, textDecoration: "none", cursor: "pointer" }}>
+                Explorar Soluções →
+              </a>
+            </div>
+            {/* Right: scrolling columns */}
+            <div style={{ flex: 1, height: 480, overflow: "hidden", position: "relative" }}>
+              <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
+                {/* Column 1 */}
+                <div style={{ animation: "scrollUp1 25s linear infinite" }}>
+                  {[
+                    { name: "Google",   url: "https://cdn.simpleicons.org/google" },
+                    { name: "Slack",    url: "https://cdn.simpleicons.org/slack/4A154B" },
+                    { name: "WhatsApp", url: "https://cdn.simpleicons.org/whatsapp/25D366" },
+                    { name: "Gmail",    url: "https://cdn.simpleicons.org/gmail/EA4335" },
+                    { name: "Notion",   url: "https://cdn.simpleicons.org/notion/000000" },
+                    { name: "Stripe",   url: "https://cdn.simpleicons.org/stripe/635BFF" },
+                    { name: "Google",   url: "https://cdn.simpleicons.org/google" },
+                    { name: "Slack",    url: "https://cdn.simpleicons.org/slack/4A154B" },
+                    { name: "WhatsApp", url: "https://cdn.simpleicons.org/whatsapp/25D366" },
+                    { name: "Gmail",    url: "https://cdn.simpleicons.org/gmail/EA4335" },
+                    { name: "Notion",   url: "https://cdn.simpleicons.org/notion/000000" },
+                    { name: "Stripe",   url: "https://cdn.simpleicons.org/stripe/635BFF" },
+                  ].map((ic, i) => (
+                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "8px auto" }}>
+                      <img src={ic.url} width={32} height={32} alt={ic.name} />
+                    </div>
+                  ))}
+                </div>
+                {/* Column 2 */}
+                <div style={{ animation: "scrollUp2 20s linear infinite" }}>
+                  {[
+                    { name: "Zapier",   url: "https://cdn.simpleicons.org/zapier/FF4A00" },
+                    { name: "HubSpot",  url: "https://cdn.simpleicons.org/hubspot/FF7A59" },
+                    { name: "Telegram", url: "https://cdn.simpleicons.org/telegram/26A5E4" },
+                    { name: "Trello",   url: "https://cdn.simpleicons.org/trello/0052CC" },
+                    { name: "Zoom",     url: "https://cdn.simpleicons.org/zoom/2D8CFF" },
+                    { name: "Shopify",  url: "https://cdn.simpleicons.org/shopify/96BF48" },
+                    { name: "Zapier",   url: "https://cdn.simpleicons.org/zapier/FF4A00" },
+                    { name: "HubSpot",  url: "https://cdn.simpleicons.org/hubspot/FF7A59" },
+                    { name: "Telegram", url: "https://cdn.simpleicons.org/telegram/26A5E4" },
+                    { name: "Trello",   url: "https://cdn.simpleicons.org/trello/0052CC" },
+                    { name: "Zoom",     url: "https://cdn.simpleicons.org/zoom/2D8CFF" },
+                    { name: "Shopify",  url: "https://cdn.simpleicons.org/shopify/96BF48" },
+                  ].map((ic, i) => (
+                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "8px auto" }}>
+                      <img src={ic.url} width={32} height={32} alt={ic.name} />
+                    </div>
+                  ))}
+                </div>
+                {/* Column 3 */}
+                <div style={{ animation: "scrollUp3 30s linear infinite" }}>
+                  {[
+                    { name: "Discord",   url: "https://cdn.simpleicons.org/discord/5865F2" },
+                    { name: "Figma",     url: "https://cdn.simpleicons.org/figma" },
+                    { name: "GitHub",    url: "https://cdn.simpleicons.org/github/181717" },
+                    { name: "Airtable",  url: "https://cdn.simpleicons.org/airtable/18BFFF" },
+                    { name: "Monday",    url: "https://cdn.simpleicons.org/mondaydotcom/F62B54" },
+                    { name: "Mailchimp", url: "https://cdn.simpleicons.org/mailchimp/FFE01B" },
+                    { name: "Discord",   url: "https://cdn.simpleicons.org/discord/5865F2" },
+                    { name: "Figma",     url: "https://cdn.simpleicons.org/figma" },
+                    { name: "GitHub",    url: "https://cdn.simpleicons.org/github/181717" },
+                    { name: "Airtable",  url: "https://cdn.simpleicons.org/airtable/18BFFF" },
+                    { name: "Monday",    url: "https://cdn.simpleicons.org/mondaydotcom/F62B54" },
+                    { name: "Mailchimp", url: "https://cdn.simpleicons.org/mailchimp/FFE01B" },
+                  ].map((ic, i) => (
+                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "8px auto" }}>
+                      <img src={ic.url} width={32} height={32} alt={ic.name} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Top fade */}
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to bottom, white, transparent)", zIndex: 1, pointerEvents: "none" }} />
+              {/* Bottom fade */}
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to top, white, transparent)", zIndex: 1, pointerEvents: "none" }} />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ════════════════════════════════════
           SECTION 4 — COMO FUNCIONA
