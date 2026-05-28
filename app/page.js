@@ -653,6 +653,37 @@ export default function Home() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Card hover states
+  const [hov1, setHov1] = useState(false);
+  const [hov2, setHov2] = useState(false);
+  const [hov3, setHov3] = useState(false);
+  const [hov4, setHov4] = useState(false);
+  const [hov5, setHov5] = useState(false);
+  const [hov6, setHov6] = useState(false);
+
+  // Bar chart intersection animation
+  const chartRef = useRef(null);
+  const [chartAnimated, setChartAnimated] = useState(false);
+  useEffect(() => {
+    const el = chartRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setChartAnimated(true); },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Typewriter loop for chat messages
+  const [visibleMsgs, setVisibleMsgs] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setVisibleMsgs(prev => (prev >= 4 ? 0 : prev + 1));
+    }, 1200);
+    return () => clearInterval(id);
+  }, []);
+
   function handleSearch(e) {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -841,12 +872,18 @@ export default function Home() {
         }}>
 
           {/* LEFT CARD */}
-          <div style={{
-            flex: isMobile ? "none" : "1.2",
-            background: WHITE, border: "1px solid #f0f0f0", borderRadius: 24,
-            padding: 40, minHeight: isMobile ? "auto" : 520,
-            position: "relative", overflow: "hidden",
-          }}>
+          <div
+            onMouseEnter={() => setHov1(true)}
+            onMouseLeave={() => setHov1(false)}
+            style={{
+              flex: isMobile ? "none" : "1.2",
+              background: WHITE, border: "1px solid #f0f0f0", borderRadius: 24,
+              padding: 40, minHeight: isMobile ? "auto" : 520,
+              position: "relative", overflow: "hidden",
+              transform: hov1 ? "scale(1.02)" : "scale(1)",
+              boxShadow: hov1 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
+              transition: "all 0.3s ease",
+            }}>
             <div style={{ background: "#EFF6FF", borderRadius: 12, padding: "8px 16px", display: "inline-block" }}>
               <em style={{ color: "#2563EB", fontSize: 14 }}>"Quero economizar tempo com automação"</em>
             </div>
@@ -900,13 +937,19 @@ export default function Home() {
           </div>
 
           {/* RIGHT CARD */}
-          <div style={{
-            flex: isMobile ? "none" : "1",
-            background: "linear-gradient(160deg, #a855f7 0%, #ec4899 50%, #f97316 100%)",
-            borderRadius: 24, padding: 40,
-            minHeight: isMobile ? "auto" : 520,
-            position: "relative", overflow: "hidden",
-          }}>
+          <div
+            onMouseEnter={() => setHov2(true)}
+            onMouseLeave={() => setHov2(false)}
+            style={{
+              flex: isMobile ? "none" : "1",
+              background: "linear-gradient(160deg, #a855f7 0%, #ec4899 50%, #f97316 100%)",
+              borderRadius: 24, padding: 40,
+              minHeight: isMobile ? "auto" : 520,
+              position: "relative", overflow: "hidden",
+              transform: hov2 ? "scale(1.02)" : "scale(1)",
+              boxShadow: hov2 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
+              transition: "all 0.3s ease",
+            }}>
             <h3 style={{
               fontSize: isMobile ? 28 : 36, fontWeight: 800, color: "white",
               lineHeight: 1.2, maxWidth: 260, letterSpacing: "-0.02em", margin: 0,
@@ -943,7 +986,13 @@ export default function Home() {
                   { from: "user", text: "Sim, quero ver!" },
                   { from: "bot",  text: "Perfeito! Vou te encaminhar para o plano ideal." },
                 ].map((msg, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: msg.from === "user" ? "flex-end" : "flex-start" }}>
+                  <div key={i} style={{
+                    display: "flex",
+                    justifyContent: msg.from === "user" ? "flex-end" : "flex-start",
+                    opacity: i < visibleMsgs ? 1 : 0,
+                    transform: i < visibleMsgs ? "translateY(0)" : "translateY(8px)",
+                    transition: "opacity 0.4s ease, transform 0.4s ease",
+                  }}>
                     <div style={{
                       background: msg.from === "user" ? "white" : "rgba(255,255,255,0.15)",
                       color: msg.from === "user" ? "#111827" : "white",
@@ -974,7 +1023,15 @@ export default function Home() {
           }}>
 
             {/* CARD 1 — Finances */}
-            <div style={{ background: WHITE, border: "1px solid #f0f0f0", borderRadius: 24, padding: 32 }}>
+            <div
+              onMouseEnter={() => setHov3(true)}
+              onMouseLeave={() => setHov3(false)}
+              style={{
+                background: WHITE, border: "1px solid #f0f0f0", borderRadius: 24, padding: 32,
+                transform: hov3 ? "scale(1.02)" : "scale(1)",
+                boxShadow: hov3 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
+                transition: "all 0.3s ease",
+              }}>
               <div style={{ background: "#EFF6FF", borderRadius: 12, padding: "8px 16px", display: "inline-block" }}>
                 <em style={{ color: "#2563EB", fontSize: 14 }}>"Quero automatizar minhas finanças"</em>
               </div>
@@ -988,11 +1045,14 @@ export default function Home() {
                 </div>
                 <div style={{ color: "white", fontSize: 28, fontWeight: 800, marginTop: 8, letterSpacing: "-0.02em" }}>R$ 48.320</div>
                 <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 4 }}>Receita total este mês</div>
-                <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 60, marginTop: 16 }}>
+                <div ref={chartRef} style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 60, marginTop: 16 }}>
                   {[30, 40, 35, 50, 45, 55, 48, 70].map((h, i) => (
                     <div key={i} style={{
-                      flex: 1, height: `${h}%`, borderRadius: "3px 3px 0 0",
+                      flex: 1,
+                      height: chartAnimated ? `${h}%` : "0%",
+                      borderRadius: "3px 3px 0 0",
                       background: i === 7 ? "#1d4ed8" : "#1e3a5f",
+                      transition: `height 0.8s ease ${i * 0.08}s`,
                     }} />
                   ))}
                 </div>
@@ -1013,7 +1073,15 @@ export default function Home() {
             </div>
 
             {/* CARD 2 — Campaigns */}
-            <div style={{ background: "linear-gradient(160deg, #a855f7, #ec4899, #f97316)", borderRadius: 24, padding: 32 }}>
+            <div
+              onMouseEnter={() => setHov4(true)}
+              onMouseLeave={() => setHov4(false)}
+              style={{
+                background: "linear-gradient(160deg, #a855f7, #ec4899, #f97316)", borderRadius: 24, padding: 32,
+                transform: hov4 ? "scale(1.02)" : "scale(1)",
+                boxShadow: hov4 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
+                transition: "all 0.3s ease",
+              }}>
               <h3 style={{ fontSize: 24, fontWeight: 800, color: "white", marginTop: 32, marginBottom: 0, lineHeight: 1.2, letterSpacing: "-0.02em" }}>
                 Gere Suas Campanhas
               </h3>
@@ -1035,7 +1103,15 @@ export default function Home() {
             </div>
 
             {/* CARD 3 — Leads */}
-            <div style={{ background: WHITE, border: "1px solid #f0f0f0", borderRadius: 24, padding: 32 }}>
+            <div
+              onMouseEnter={() => setHov5(true)}
+              onMouseLeave={() => setHov5(false)}
+              style={{
+                background: WHITE, border: "1px solid #f0f0f0", borderRadius: 24, padding: 32,
+                transform: hov5 ? "scale(1.02)" : "scale(1)",
+                boxShadow: hov5 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
+                transition: "all 0.3s ease",
+              }}>
               <div style={{ background: "#EFF6FF", borderRadius: 12, padding: "8px 16px", display: "inline-block" }}>
                 <em style={{ color: "#2563EB", fontSize: 14 }}>"Quero encontrar novos clientes"</em>
               </div>
@@ -1082,13 +1158,19 @@ export default function Home() {
           maxWidth: 1280, margin: "0 auto",
           padding: isMobile ? "0 20px 48px" : "0 48px 48px",
         }}>
-          <div style={{
-            background: "#2563EB", borderRadius: 24,
-            padding: isMobile ? "40px 24px" : 56,
-            display: "flex", flexDirection: isMobile ? "column" : "row",
-            alignItems: isMobile ? "flex-start" : "center",
-            gap: isMobile ? 32 : 48,
-          }}>
+          <div
+            onMouseEnter={() => setHov6(true)}
+            onMouseLeave={() => setHov6(false)}
+            style={{
+              background: "#2563EB", borderRadius: 24,
+              padding: isMobile ? "40px 24px" : 56,
+              display: "flex", flexDirection: isMobile ? "column" : "row",
+              alignItems: isMobile ? "flex-start" : "center",
+              gap: isMobile ? 32 : 48,
+              transform: hov6 ? "scale(1.02)" : "scale(1)",
+              boxShadow: hov6 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
+              transition: "all 0.3s ease",
+            }}>
 
             {/* Left: text */}
             <div style={{ flex: "1" }}>
