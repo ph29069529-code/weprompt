@@ -1283,9 +1283,8 @@ export default function Home() {
       ════════════════════════════════════ */}
       <section style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
         <style>{`
-          @keyframes scrollUp1 { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
-          @keyframes scrollUp2 { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
-          @keyframes scrollUp3 { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+          @keyframes scrollUp   { 0% { transform: translateY(0);    } 100% { transform: translateY(-50%); } }
+          @keyframes scrollDown { 0% { transform: translateY(-50%); } 100% { transform: translateY(0);    } }
         `}</style>
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 80, flexDirection: isMobile ? "column" : "row" }}>
@@ -1307,66 +1306,87 @@ export default function Home() {
             {/* Right: scrolling columns */}
             <div style={{ flex: 1, height: 480, overflow: "hidden", position: "relative" }}>
               <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-                {/* Column 1 */}
-                <div style={{ animation: "scrollUp1 25s linear infinite" }}>
+                {/* Column 1 — UP */}
+                <div style={{ animation: "scrollUp 25s linear infinite" }}>
                   {[
-                    { name: "Google",   url: "https://cdn.simpleicons.org/google" },
-                    { name: "Slack",    url: "https://cdn.simpleicons.org/slack/4A154B" },
-                    { name: "WhatsApp", url: "https://cdn.simpleicons.org/whatsapp/25D366" },
-                    { name: "Gmail",    url: "https://cdn.simpleicons.org/gmail/EA4335" },
-                    { name: "Notion",   url: "https://cdn.simpleicons.org/notion/000000" },
-                    { name: "Stripe",   url: "https://cdn.simpleicons.org/stripe/635BFF" },
-                    { name: "Google",   url: "https://cdn.simpleicons.org/google" },
-                    { name: "Slack",    url: "https://cdn.simpleicons.org/slack/4A154B" },
-                    { name: "WhatsApp", url: "https://cdn.simpleicons.org/whatsapp/25D366" },
-                    { name: "Gmail",    url: "https://cdn.simpleicons.org/gmail/EA4335" },
-                    { name: "Notion",   url: "https://cdn.simpleicons.org/notion/000000" },
-                    { name: "Stripe",   url: "https://cdn.simpleicons.org/stripe/635BFF" },
+                    { name: "Slack",    url: "https://www.google.com/s2/favicons?domain=slack.com&sz=64" },
+                    { name: "Notion",   url: "https://www.google.com/s2/favicons?domain=notion.so&sz=64" },
+                    { name: "Gmail",    url: "https://www.google.com/s2/favicons?domain=gmail.com&sz=64" },
+                    { name: "WhatsApp", url: "https://www.google.com/s2/favicons?domain=whatsapp.com&sz=64" },
+                    { name: "Stripe",   url: "https://www.google.com/s2/favicons?domain=stripe.com&sz=64" },
+                    { name: "Zoom",     url: "https://www.google.com/s2/favicons?domain=zoom.us&sz=64" },
+                    { name: "Slack",    url: "https://www.google.com/s2/favicons?domain=slack.com&sz=64" },
+                    { name: "Notion",   url: "https://www.google.com/s2/favicons?domain=notion.so&sz=64" },
+                    { name: "Gmail",    url: "https://www.google.com/s2/favicons?domain=gmail.com&sz=64" },
+                    { name: "WhatsApp", url: "https://www.google.com/s2/favicons?domain=whatsapp.com&sz=64" },
+                    { name: "Stripe",   url: "https://www.google.com/s2/favicons?domain=stripe.com&sz=64" },
+                    { name: "Zoom",     url: "https://www.google.com/s2/favicons?domain=zoom.us&sz=64" },
                   ].map((ic, i) => (
-                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "8px auto" }}>
-                      <img src={ic.url} width={32} height={32} alt={ic.name} />
+                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                      <img src={ic.url} width={36} height={36} alt={ic.name} style={{ objectFit: "contain" }} />
                     </div>
                   ))}
                 </div>
-                {/* Column 2 */}
-                <div style={{ animation: "scrollUp2 20s linear infinite" }}>
+                {/* Column 2 — DOWN */}
+                <div style={{ animation: "scrollDown 20s linear infinite" }}>
                   {[
-                    { name: "Zapier",   url: "https://cdn.simpleicons.org/zapier/FF4A00" },
-                    { name: "HubSpot",  url: "https://cdn.simpleicons.org/hubspot/FF7A59" },
-                    { name: "Telegram", url: "https://cdn.simpleicons.org/telegram/26A5E4" },
-                    { name: "Trello",   url: "https://cdn.simpleicons.org/trello/0052CC" },
-                    { name: "Zoom",     url: "https://cdn.simpleicons.org/zoom/2D8CFF" },
-                    { name: "Shopify",  url: "https://cdn.simpleicons.org/shopify/96BF48" },
-                    { name: "Zapier",   url: "https://cdn.simpleicons.org/zapier/FF4A00" },
-                    { name: "HubSpot",  url: "https://cdn.simpleicons.org/hubspot/FF7A59" },
-                    { name: "Telegram", url: "https://cdn.simpleicons.org/telegram/26A5E4" },
-                    { name: "Trello",   url: "https://cdn.simpleicons.org/trello/0052CC" },
-                    { name: "Zoom",     url: "https://cdn.simpleicons.org/zoom/2D8CFF" },
-                    { name: "Shopify",  url: "https://cdn.simpleicons.org/shopify/96BF48" },
+                    { name: "Zapier",   url: "https://www.google.com/s2/favicons?domain=zapier.com&sz=64" },
+                    { name: "HubSpot",  url: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64" },
+                    { name: "Trello",   url: "https://www.google.com/s2/favicons?domain=trello.com&sz=64" },
+                    { name: "Shopify",  url: "https://www.google.com/s2/favicons?domain=shopify.com&sz=64" },
+                    { name: "Telegram", url: "https://www.google.com/s2/favicons?domain=telegram.org&sz=64" },
+                    { name: "Discord",  url: "https://www.google.com/s2/favicons?domain=discord.com&sz=64" },
+                    { name: "Zapier",   url: "https://www.google.com/s2/favicons?domain=zapier.com&sz=64" },
+                    { name: "HubSpot",  url: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64" },
+                    { name: "Trello",   url: "https://www.google.com/s2/favicons?domain=trello.com&sz=64" },
+                    { name: "Shopify",  url: "https://www.google.com/s2/favicons?domain=shopify.com&sz=64" },
+                    { name: "Telegram", url: "https://www.google.com/s2/favicons?domain=telegram.org&sz=64" },
+                    { name: "Discord",  url: "https://www.google.com/s2/favicons?domain=discord.com&sz=64" },
                   ].map((ic, i) => (
-                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "8px auto" }}>
-                      <img src={ic.url} width={32} height={32} alt={ic.name} />
+                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                      <img src={ic.url} width={36} height={36} alt={ic.name} style={{ objectFit: "contain" }} />
                     </div>
                   ))}
                 </div>
-                {/* Column 3 */}
-                <div style={{ animation: "scrollUp3 30s linear infinite" }}>
+                {/* Column 3 — UP */}
+                <div style={{ animation: "scrollUp 30s linear infinite" }}>
                   {[
-                    { name: "Discord",   url: "https://cdn.simpleicons.org/discord/5865F2" },
-                    { name: "Figma",     url: "https://cdn.simpleicons.org/figma" },
-                    { name: "GitHub",    url: "https://cdn.simpleicons.org/github/181717" },
-                    { name: "Airtable",  url: "https://cdn.simpleicons.org/airtable/18BFFF" },
-                    { name: "Monday",    url: "https://cdn.simpleicons.org/mondaydotcom/F62B54" },
-                    { name: "Mailchimp", url: "https://cdn.simpleicons.org/mailchimp/FFE01B" },
-                    { name: "Discord",   url: "https://cdn.simpleicons.org/discord/5865F2" },
-                    { name: "Figma",     url: "https://cdn.simpleicons.org/figma" },
-                    { name: "GitHub",    url: "https://cdn.simpleicons.org/github/181717" },
-                    { name: "Airtable",  url: "https://cdn.simpleicons.org/airtable/18BFFF" },
-                    { name: "Monday",    url: "https://cdn.simpleicons.org/mondaydotcom/F62B54" },
-                    { name: "Mailchimp", url: "https://cdn.simpleicons.org/mailchimp/FFE01B" },
+                    { name: "Figma",     url: "https://www.google.com/s2/favicons?domain=figma.com&sz=64" },
+                    { name: "GitHub",    url: "https://www.google.com/s2/favicons?domain=github.com&sz=64" },
+                    { name: "Airtable",  url: "https://www.google.com/s2/favicons?domain=airtable.com&sz=64" },
+                    { name: "Instagram", url: "https://www.google.com/s2/favicons?domain=instagram.com&sz=64" },
+                    { name: "YouTube",   url: "https://www.google.com/s2/favicons?domain=youtube.com&sz=64" },
+                    { name: "LinkedIn",  url: "https://www.google.com/s2/favicons?domain=linkedin.com&sz=64" },
+                    { name: "Figma",     url: "https://www.google.com/s2/favicons?domain=figma.com&sz=64" },
+                    { name: "GitHub",    url: "https://www.google.com/s2/favicons?domain=github.com&sz=64" },
+                    { name: "Airtable",  url: "https://www.google.com/s2/favicons?domain=airtable.com&sz=64" },
+                    { name: "Instagram", url: "https://www.google.com/s2/favicons?domain=instagram.com&sz=64" },
+                    { name: "YouTube",   url: "https://www.google.com/s2/favicons?domain=youtube.com&sz=64" },
+                    { name: "LinkedIn",  url: "https://www.google.com/s2/favicons?domain=linkedin.com&sz=64" },
                   ].map((ic, i) => (
-                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "8px auto" }}>
-                      <img src={ic.url} width={32} height={32} alt={ic.name} />
+                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                      <img src={ic.url} width={36} height={36} alt={ic.name} style={{ objectFit: "contain" }} />
+                    </div>
+                  ))}
+                </div>
+                {/* Column 4 — DOWN */}
+                <div style={{ animation: "scrollDown 22s linear infinite" }}>
+                  {[
+                    { name: "Asana",       url: "https://www.google.com/s2/favicons?domain=asana.com&sz=64" },
+                    { name: "Dropbox",     url: "https://www.google.com/s2/favicons?domain=dropbox.com&sz=64" },
+                    { name: "Salesforce",  url: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" },
+                    { name: "Microsoft",   url: "https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" },
+                    { name: "Mailchimp",   url: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64" },
+                    { name: "Monday",      url: "https://www.google.com/s2/favicons?domain=monday.com&sz=64" },
+                    { name: "Asana",       url: "https://www.google.com/s2/favicons?domain=asana.com&sz=64" },
+                    { name: "Dropbox",     url: "https://www.google.com/s2/favicons?domain=dropbox.com&sz=64" },
+                    { name: "Salesforce",  url: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" },
+                    { name: "Microsoft",   url: "https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" },
+                    { name: "Mailchimp",   url: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64" },
+                    { name: "Monday",      url: "https://www.google.com/s2/favicons?domain=monday.com&sz=64" },
+                  ].map((ic, i) => (
+                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                      <img src={ic.url} width={36} height={36} alt={ic.name} style={{ objectFit: "contain" }} />
                     </div>
                   ))}
                 </div>
