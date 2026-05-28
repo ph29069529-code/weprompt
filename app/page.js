@@ -1389,7 +1389,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0", background: "transparent", border: "none", outline: "none" }} alt="WePrompt" />
+                      <img src="/logo-dark.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0", background: "transparent", border: "none", outline: "none" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1441,7 +1441,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0", background: "transparent", border: "none", outline: "none" }} alt="WePrompt" />
+                      <img src="/logo-dark.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0", background: "transparent", border: "none", outline: "none" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1493,7 +1493,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0", background: "transparent", border: "none", outline: "none" }} alt="WePrompt" />
+                      <img src="/logo-dark.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0", background: "transparent", border: "none", outline: "none" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1536,7 +1536,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0", background: "transparent", border: "none", outline: "none" }} alt="WePrompt" />
+                      <img src="/logo-dark.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0", background: "transparent", border: "none", outline: "none" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
