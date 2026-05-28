@@ -720,6 +720,28 @@ export default function Home() {
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", color: TEXT, background: WHITE }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .hero-speech-bubble { max-width: 60vw !important; font-size: 28px !important; }
+          .section-two-cards { flex-direction: column !important; padding: 24px 16px !important; gap: 16px !important; }
+          .section-two-cards > * { width: 100% !important; min-height: auto !important; }
+          .section-three-cards { grid-template-columns: 1fr !important; padding: 24px 16px !important; }
+          .section-blue-dashboard { flex-direction: column !important; padding: 32px 20px !important; margin: 0 12px 24px !important; border-radius: 20px !important; }
+          .section-blue-dashboard > * { width: 100% !important; }
+          .section-tabbed { padding: 32px 16px !important; }
+          .tabbed-big-card { padding: 20px !important; }
+          .tabbed-mockup { flex-direction: column !important; height: auto !important; }
+          .tabbed-sidebar { display: none !important; }
+          .tabbed-right-content { padding: 16px !important; }
+          .section-integrations { flex-direction: column !important; padding: 40px 20px !important; }
+          .section-integrations-right { display: none !important; }
+          .section-faq { flex-direction: column !important; padding: 40px 16px !important; }
+          .faq-left { width: 100% !important; }
+          .section-footer-top { flex-direction: column !important; gap: 32px !important; }
+          .footer-links-row { flex-wrap: wrap !important; gap: 24px !important; }
+          .section-h2 { font-size: 28px !important; line-height: 1.2 !important; }
+        }
+      `}</style>
 
       {/* ════════════════════════════════════
           SECTION 1 — NAVBAR
@@ -762,7 +784,7 @@ export default function Home() {
                 position: "relative",
               }}>
                 {/* Main pill */}
-                <span style={{
+                <span className="hero-speech-bubble" style={{
                   background: "linear-gradient(to right, #f97316, #f43f5e)",
                   borderRadius: "24px 24px 24px 6px",
                   padding: isMobile ? "8px 22px" : "10px 32px",
@@ -887,7 +909,7 @@ export default function Home() {
           SECTION 1 — DOIS CARDS GRANDES
       ════════════════════════════════════ */}
       <section style={{ background: WHITE }}>
-        <div style={{
+        <div className="section-two-cards" style={{
           maxWidth: 1280, margin: "0 auto",
           padding: isMobile ? "32px 20px" : 48,
           display: "flex", flexDirection: isMobile ? "column" : "row", gap: 16,
@@ -1038,7 +1060,7 @@ export default function Home() {
           maxWidth: 1280, margin: "0 auto",
           padding: isMobile ? "0 20px 40px" : "0 48px 48px",
         }}>
-          <div style={{
+          <div className="section-three-cards" style={{
             display: "grid",
             gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
             gap: 16,
@@ -1181,6 +1203,7 @@ export default function Home() {
           padding: isMobile ? "0 20px 48px" : "0 48px 48px",
         }}>
           <div
+            className="section-blue-dashboard"
             onMouseEnter={() => setHov6(true)}
             onMouseLeave={() => setHov6(false)}
             style={{
@@ -1196,7 +1219,7 @@ export default function Home() {
 
             {/* Left: text */}
             <div style={{ flex: "1" }}>
-              <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: "white", lineHeight: 1.15, letterSpacing: "-0.02em", margin: 0 }}>
+              <h2 className="section-h2" style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: "white", lineHeight: 1.15, letterSpacing: "-0.02em", margin: 0 }}>
                 Tudo em Um Dashboard Simples.
               </h2>
               <a href="/solucoes" style={{
@@ -1282,7 +1305,7 @@ export default function Home() {
       {/* ════════════════════════════════════
           SECTION 4 — COMO FUNCIONA
       ════════════════════════════════════ */}
-      <section style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
+      <section className="section-tabbed" style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
         <style>{`
           @keyframes fadeInTab {
             from { opacity: 0; transform: translateY(4px); }
@@ -1301,7 +1324,7 @@ export default function Home() {
             }}>
               Como Funciona
             </div>
-            <h2 style={{ fontSize: isMobile ? 28 : 44, fontWeight: 800, color: "#111827", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
+            <h2 className="section-h2" style={{ fontSize: isMobile ? 28 : 44, fontWeight: 800, color: "#111827", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
               Uma Solução Para Cada Desafio
             </h2>
             <p style={{ fontSize: isMobile ? 15 : 18, color: "#6b7280", maxWidth: 560, margin: "0 auto", lineHeight: 1.6 }}>
@@ -1310,7 +1333,7 @@ export default function Home() {
           </div>
 
           {/* Big gradient card */}
-          <div style={{
+          <div className="tabbed-big-card" style={{
             background: "linear-gradient(135deg, #a855f7 0%, #ec4899 40%, #f97316 100%)",
             borderRadius: 24, overflow: "hidden", padding: isMobile ? 20 : 32,
           }}>
@@ -1340,8 +1363,8 @@ export default function Home() {
 
               {/* ── TAB 0: Atendimento ao Cliente ── */}
               {activeTab === 0 && (
-                <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
-                  <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
+                <div className="tabbed-mockup" style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
+                  <div className="tabbed-sidebar" style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
                       <img src="/logo-icon.png" style={{ height: 40, width: "160px", objectFit: "cover", objectPosition: "center" }} alt="WePrompt" />
                     </div>
@@ -1357,7 +1380,7 @@ export default function Home() {
                     <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
                     <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
                   </div>
-                  <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                  <div className="tabbed-right-content" style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
                     <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
                       Tivemos um pico de tickets hoje. Consegue identificar o problema principal?
                     </div>
@@ -1392,8 +1415,8 @@ export default function Home() {
 
               {/* ── TAB 1: Vendas e Prospecção ── */}
               {activeTab === 1 && (
-                <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
-                  <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
+                <div className="tabbed-mockup" style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
+                  <div className="tabbed-sidebar" style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
                       <img src="/logo-icon.png" style={{ height: 40, width: "160px", objectFit: "cover", objectPosition: "center" }} alt="WePrompt" />
                     </div>
@@ -1409,7 +1432,7 @@ export default function Home() {
                     <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
                     <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
                   </div>
-                  <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                  <div className="tabbed-right-content" style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
                     <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
                       Quais leads do pipeline ainda não foram contatados esta semana?
                     </div>
@@ -1444,8 +1467,8 @@ export default function Home() {
 
               {/* ── TAB 2: Marketing e Conteúdo ── */}
               {activeTab === 2 && (
-                <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
-                  <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
+                <div className="tabbed-mockup" style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
+                  <div className="tabbed-sidebar" style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
                       <img src="/logo-icon.png" style={{ height: 40, width: "160px", objectFit: "cover", objectPosition: "center" }} alt="WePrompt" />
                     </div>
@@ -1461,7 +1484,7 @@ export default function Home() {
                     <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
                     <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
                   </div>
-                  <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                  <div className="tabbed-right-content" style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
                     <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
                       Cria uma campanha de email para o lançamento do novo produto.
                     </div>
@@ -1487,8 +1510,8 @@ export default function Home() {
 
               {/* ── TAB 3: Gestão Financeira ── */}
               {activeTab === 3 && (
-                <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
-                  <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
+                <div className="tabbed-mockup" style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
+                  <div className="tabbed-sidebar" style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
                       <img src="/logo-icon.png" style={{ height: 40, width: "160px", objectFit: "cover", objectPosition: "center" }} alt="WePrompt" />
                     </div>
@@ -1504,7 +1527,7 @@ export default function Home() {
                     <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
                     <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
                   </div>
-                  <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                  <div className="tabbed-right-content" style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
                     <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
                       Como está o fluxo de caixa deste mês comparado ao anterior?
                     </div>
@@ -1553,10 +1576,10 @@ export default function Home() {
           @keyframes scrollDown { 0% { transform: translateY(-50%); } 100% { transform: translateY(0);    } }
         `}</style>
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 80, flexDirection: isMobile ? "column" : "row" }}>
+          <div className="section-integrations" style={{ display: "flex", alignItems: "center", gap: 80, flexDirection: isMobile ? "column" : "row" }}>
             {/* Left */}
             <div style={{ flex: 0.8, paddingLeft: isMobile ? 0 : 48 }}>
-              <h2 style={{ fontSize: isMobile ? 32 : 52, fontWeight: 800, color: "#111827", lineHeight: 1.1, margin: 0 }}>
+              <h2 className="section-h2" style={{ fontSize: isMobile ? 32 : 52, fontWeight: 800, color: "#111827", lineHeight: 1.1, margin: 0 }}>
                 Funciona com as Ferramentas que Você Já Usa
               </h2>
               <p style={{ fontSize: 20, color: "#6b7280", marginTop: 16, maxWidth: 480, lineHeight: 1.6, marginBottom: 0 }}>
@@ -1567,7 +1590,7 @@ export default function Home() {
               </a>
             </div>
             {/* Right: scrolling columns */}
-            <div style={{ flex: 1.5, height: 520, overflow: "hidden", position: "relative" }}>
+            <div className="section-integrations-right" style={{ flex: 1.5, height: 520, overflow: "hidden", position: "relative" }}>
               <div style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center" }}>
                 {/* Column 1 — UP */}
                 <div style={{ animation: "scrollUp 25s linear infinite", width: 88 }}>
@@ -1668,13 +1691,13 @@ export default function Home() {
       ════════════════════════════════════ */}
       <section style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
-          <div style={{ display: "flex", gap: 80, alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
+          <div className="section-faq" style={{ display: "flex", gap: 80, alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
             {/* Left */}
-            <div style={{ width: isMobile ? "100%" : 300, flexShrink: 0 }}>
+            <div className="faq-left" style={{ width: isMobile ? "100%" : 300, flexShrink: 0 }}>
               <div style={{ display: "inline-block", background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "6px 14px", fontSize: 13, fontWeight: 600 }}>
                 FAQ&apos;s
               </div>
-              <h2 style={{ fontSize: isMobile ? 40 : 52, fontWeight: 800, color: "#111827", marginTop: 16, lineHeight: 1.1, marginBottom: 0 }}>
+              <h2 className="section-h2" style={{ fontSize: isMobile ? 40 : 52, fontWeight: 800, color: "#111827", marginTop: 16, lineHeight: 1.1, marginBottom: 0 }}>
                 WePrompt<br />FAQ
               </h2>
             </div>
@@ -1724,7 +1747,7 @@ export default function Home() {
           position: "relative",
         }}>
           {/* Top row */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
+          <div className="section-footer-top" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
             {/* Left: brand */}
             <div style={{ maxWidth: 320 }}>
               <img src="/logo-icon.png" style={{ height: 224, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
@@ -1733,7 +1756,7 @@ export default function Home() {
               </p>
             </div>
             {/* Right: link columns */}
-            <div style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
+            <div className="footer-links-row" style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
               <div>
                 <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Seguir</div>
                 {[{ label: "Instagram", href: "https://instagram.com" }, { label: "LinkedIn", href: "https://linkedin.com" }, { label: "Twitter/X", href: "https://x.com" }].map(l => (
