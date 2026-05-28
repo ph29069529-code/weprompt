@@ -63,6 +63,7 @@ export default function AdminPage() {
       : ACTIVITY_ROWS.filter((r) => r.status === activeFilter);
 
   return (
+    <div style={{ isolation: "isolate" }}>
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
       {/* TOP NAVBAR */}
       <nav style={{
@@ -419,6 +420,7 @@ export default function AdminPage() {
           </table>
         </div>
       </div>
+    </div>
     </div>
   );
 }
