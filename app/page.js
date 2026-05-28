@@ -1554,8 +1554,8 @@ export default function Home() {
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 80, flexDirection: isMobile ? "column" : "row" }}>
             {/* Left */}
-            <div style={{ flex: 1 }}>
-              <h2 style={{ fontSize: isMobile ? 32 : 48, fontWeight: 800, color: "#111827", lineHeight: 1.1, margin: 0 }}>
+            <div style={{ flex: 0.8, paddingLeft: isMobile ? 0 : 48 }}>
+              <h2 style={{ fontSize: isMobile ? 28 : 36, fontWeight: 800, color: "#111827", lineHeight: 1.1, margin: 0 }}>
                 Funciona com as Ferramentas que Você Já Usa
               </h2>
               <p style={{ fontSize: 18, color: "#6b7280", marginTop: 16, maxWidth: 460, lineHeight: 1.6, marginBottom: 0 }}>
