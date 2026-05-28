@@ -831,6 +831,361 @@ export default function Home() {
       </section>
 
       {/* ════════════════════════════════════
+          SECTION A — DOIS CARDS (AUTOMAÇÃO + COMUNICAÇÃO)
+      ════════════════════════════════════ */}
+      <section style={{ background: BG, padding: isMobile ? "72px 24px" : "96px 48px" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <div style={{
+              display: "inline-block",
+              background: "#EFF6FF", color: BLUE, borderRadius: 999,
+              padding: "5px 14px", fontSize: 11, fontWeight: 700,
+              letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20,
+            }}>
+              O Que Você Pode Fazer
+            </div>
+            <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: DARK, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+              IA que Trabalha
+            </h2>
+            <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: BLUE, margin: "0 0 16px", letterSpacing: "-0.02em" }}>
+              Enquanto Você Escala
+            </h2>
+            <p style={{ fontSize: 16, color: MUTED, maxWidth: 520, margin: "0 auto", lineHeight: 1.7 }}>
+              Soluções prontas que automatizam tarefas repetitivas e transformam a forma como você se comunica com clientes.
+            </p>
+          </div>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: 24,
+          }}>
+            {/* Card 1 — Automation dark */}
+            <div style={{
+              background: DARK, borderRadius: 24, padding: "40px",
+              overflow: "hidden", position: "relative",
+            }}>
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+                  Automação
+                </div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: WHITE, letterSpacing: "-0.03em", marginBottom: 8 }}>
+                  Fluxos Inteligentes
+                </div>
+                <div style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
+                  Conecte ferramentas, dispare ações e elimine tarefas manuais com agentes de IA.
+                </div>
+              </div>
+              <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 16, padding: "20px" }}>
+                {[
+                  { icon: "📥", label: "Novo Lead Recebido",         color: "#3b82f6", status: "Gatilho"      },
+                  { icon: "🤖", label: "IA Classifica e Pontua",     color: "#8b5cf6", status: "Processando"  },
+                  { icon: "📧", label: "E-mail Personalizado Enviado", color: "#10b981", status: "Concluído"   },
+                  { icon: "📊", label: "CRM Atualizado",             color: "#f59e0b", status: "Sincronizado" },
+                ].map((node, i) => (
+                  <div key={node.label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: i < 3 ? 12 : 0 }}>
+                    <div style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      background: node.color + "22", border: `1px solid ${node.color}44`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 16, flexShrink: 0,
+                    }}>{node.icon}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: WHITE, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{node.label}</div>
+                    </div>
+                    <div style={{
+                      fontSize: 11, fontWeight: 600, color: node.color,
+                      background: node.color + "22", borderRadius: 999, padding: "3px 10px", whiteSpace: "nowrap",
+                    }}>{node.status}</div>
+                  </div>
+                ))}
+              </div>
+              <a href="/solucoes?categoria=automacao" style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                marginTop: 24, color: ACCENT, fontSize: 14, fontWeight: 600, textDecoration: "none",
+              }}>
+                Ver soluções de automação →
+              </a>
+            </div>
+
+            {/* Card 2 — Communications gradient */}
+            <div style={{
+              background: "linear-gradient(135deg, #1e40af 0%, #4f46e5 100%)",
+              borderRadius: 24, padding: "40px", overflow: "hidden", position: "relative",
+            }}>
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+                  Comunicação
+                </div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: WHITE, letterSpacing: "-0.03em", marginBottom: 8 }}>
+                  Atendimento 24/7
+                </div>
+                <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6 }}>
+                  Chatbots e agentes que respondem, qualificam e encaminham clientes automaticamente.
+                </div>
+              </div>
+              <div style={{ background: "rgba(255,255,255,0.12)", borderRadius: 16, padding: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
+                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🤖</div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: WHITE }}>Assistente WePrompt</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#34d399" }} />
+                      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>Online agora</span>
+                    </div>
+                  </div>
+                </div>
+                {[
+                  { from: "user", text: "Olá! Quanto custa a solução de WhatsApp?" },
+                  { from: "bot",  text: "Oi! Temos planos a partir de R$97/mês 🎉 Posso te mostrar?" },
+                  { from: "user", text: "Sim, quero ver!" },
+                  { from: "bot",  text: "Perfeito! Vou te encaminhar para o plano ideal ✅" },
+                ].map((msg, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: msg.from === "user" ? "flex-end" : "flex-start", marginBottom: 8 }}>
+                    <div style={{
+                      maxWidth: "78%",
+                      background: msg.from === "user" ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.15)",
+                      color: msg.from === "user" ? "#111827" : WHITE,
+                      borderRadius: msg.from === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                      padding: "9px 13px", fontSize: 12, lineHeight: 1.5,
+                    }}>{msg.text}</div>
+                  </div>
+                ))}
+              </div>
+              <a href="/solucoes?categoria=chatbots" style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                marginTop: 24, color: "rgba(255,255,255,0.9)", fontSize: 14, fontWeight: 600, textDecoration: "none",
+              }}>
+                Ver soluções de chatbots →
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════
+          SECTION B — TRÊS CARDS GRID (FINANÇAS, CAMPANHAS, LEADS)
+      ════════════════════════════════════ */}
+      <section style={{ background: WHITE, padding: isMobile ? "72px 24px" : "96px 48px" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 56 }}>
+            <div style={{
+              display: "inline-block",
+              background: "#EFF6FF", color: BLUE, borderRadius: 999,
+              padding: "5px 14px", fontSize: 11, fontWeight: 700,
+              letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20,
+            }}>
+              Áreas de Atuação
+            </div>
+            <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: DARK, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+              Soluções Para Cada
+            </h2>
+            <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: BLUE, margin: "0 0 16px", letterSpacing: "-0.02em" }}>
+              Área do Seu Negócio
+            </h2>
+            <p style={{ fontSize: 16, color: MUTED, maxWidth: 480, margin: "0 auto", lineHeight: 1.7 }}>
+              Do financeiro ao comercial, temos soluções de IA para cada departamento.
+            </p>
+          </div>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+            gap: 24,
+          }}>
+            {/* Card 1 — Finances */}
+            <div style={{ background: WHITE, borderRadius: 24, border: `1px solid ${BORDER}`, padding: "32px", overflow: "hidden" }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#EFF6FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }}>💰</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: DARK, marginBottom: 6, letterSpacing: "-0.02em" }}>Financeiro</div>
+              <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginBottom: 20 }}>
+                Dashboard de fluxo de caixa, conciliação e previsões automáticas com IA.
+              </div>
+              <div style={{ background: "#F8FAFC", borderRadius: 12, padding: "16px" }}>
+                <div style={{ fontSize: 11, color: MUTED, marginBottom: 8 }}>Receita Mensal</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: DARK, marginBottom: 12 }}>R$ 48.320</div>
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 48 }}>
+                  {[30, 50, 40, 65, 55, 80, 70].map((h, i) => (
+                    <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: "3px 3px 0 0", background: i === 6 ? BLUE : "#DBEAFE" }} />
+                  ))}
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+                  <span style={{ fontSize: 11, color: MUTED }}>Jan</span>
+                  <span style={{ fontSize: 11, color: MUTED }}>Jul</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 8 }}>
+                  <span style={{ fontSize: 12, color: "#10b981", fontWeight: 600 }}>↑ 18%</span>
+                  <span style={{ fontSize: 11, color: MUTED }}>vs mês anterior</span>
+                </div>
+              </div>
+              <a href="/solucoes?categoria=analise-de-dados" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 20, color: BLUE, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Ver soluções →</a>
+            </div>
+
+            {/* Card 2 — Campaigns */}
+            <div style={{ background: WHITE, borderRadius: 24, border: `1px solid ${BORDER}`, padding: "32px", overflow: "hidden" }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }}>📣</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: DARK, marginBottom: 6, letterSpacing: "-0.02em" }}>Campanhas</div>
+              <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginBottom: 20 }}>
+                Crie e otimize campanhas de marketing com IA que escreve, segmenta e analisa.
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {[
+                  { label: "Alcance",    value: "12.4K", icon: "👁️", color: "#EFF6FF", tcolor: BLUE       },
+                  { label: "Cliques",    value: "3.2K",  icon: "🖱️", color: "#F0FDF4", tcolor: "#10b981"  },
+                  { label: "Conversão",  value: "8.7%",  icon: "🎯", color: "#FFF7ED", tcolor: "#f97316"  },
+                  { label: "ROI",        value: "340%",  icon: "📈", color: "#FDF4FF", tcolor: "#9333ea"  },
+                ].map((m) => (
+                  <div key={m.label} style={{ background: m.color, borderRadius: 10, padding: "12px 14px" }}>
+                    <div style={{ fontSize: 16, marginBottom: 4 }}>{m.icon}</div>
+                    <div style={{ fontSize: 17, fontWeight: 800, color: m.tcolor, marginBottom: 2 }}>{m.value}</div>
+                    <div style={{ fontSize: 11, color: MUTED, fontWeight: 500 }}>{m.label}</div>
+                  </div>
+                ))}
+              </div>
+              <a href="/solucoes?categoria=marketing-ia" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 20, color: BLUE, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Ver soluções →</a>
+            </div>
+
+            {/* Card 3 — Leads pipeline */}
+            <div style={{ background: WHITE, borderRadius: 24, border: `1px solid ${BORDER}`, padding: "32px", overflow: "hidden" }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }}>🎯</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: DARK, marginBottom: 6, letterSpacing: "-0.02em" }}>Geração de Leads</div>
+              <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginBottom: 20 }}>
+                Pipeline de vendas com qualificação automática e follow-ups por IA.
+              </div>
+              <div style={{ background: "#F8FAFC", borderRadius: 12, padding: "14px" }}>
+                {[
+                  { name: "Tech Solutions Ltda", stage: "Proposta", color: "#f59e0b", score: 92 },
+                  { name: "Inova Varejo ME",     stage: "Reunião",  color: "#3b82f6", score: 78 },
+                  { name: "Bem Estar Clinic",    stage: "Contato",  color: "#10b981", score: 65 },
+                  { name: "Construtora Alpha",   stage: "Novo",     color: "#8b5cf6", score: 44 },
+                ].map((lead, i) => (
+                  <div key={lead.name} style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    paddingBottom: i < 3 ? 10 : 0, marginBottom: i < 3 ? 10 : 0,
+                    borderBottom: i < 3 ? `1px solid ${BORDER}` : "none",
+                  }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8,
+                      background: lead.color + "22",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 11, fontWeight: 800, color: lead.color, flexShrink: 0,
+                    }}>{lead.name.charAt(0)}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: DARK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{lead.name}</div>
+                      <div style={{ fontSize: 10, color: MUTED }}>{lead.stage}</div>
+                    </div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: lead.color, background: lead.color + "22", borderRadius: 999, padding: "2px 8px", flexShrink: 0 }}>{lead.score}</div>
+                  </div>
+                ))}
+              </div>
+              <a href="/solucoes?categoria=agentes-de-ia" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 20, color: BLUE, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Ver soluções →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════
+          SECTION C — DASHBOARD AZUL
+      ════════════════════════════════════ */}
+      <section style={{ background: BLUE, padding: isMobile ? "72px 24px" : "96px 48px" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: isMobile ? 40 : 64,
+            alignItems: "center",
+          }}>
+            {/* Left: text */}
+            <div>
+              <div style={{
+                display: "inline-block",
+                background: "rgba(255,255,255,0.15)", color: WHITE, borderRadius: 999,
+                padding: "5px 14px", fontSize: 11, fontWeight: 700,
+                letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 24,
+              }}>
+                Plataforma
+              </div>
+              <h2 style={{ fontSize: isMobile ? 30 : 44, fontWeight: 800, color: WHITE, lineHeight: 1.15, margin: "0 0 20px", letterSpacing: "-0.03em" }}>
+                Tudo que Você Precisa em Um Só Lugar
+              </h2>
+              <p style={{ fontSize: 16, color: "rgba(255,255,255,0.8)", lineHeight: 1.75, margin: "0 0 32px" }}>
+                Marketplace curado, suporte em português, pagamentos em reais — a plataforma de IA feita para o Brasil.
+              </p>
+              {[
+                "✅ Soluções testadas e aprovadas",
+                "⚡ Implementação no mesmo dia",
+                "🇧🇷 Suporte 100% em português",
+                "💳 Pagamentos via PIX e cartão",
+              ].map((item) => (
+                <div key={item} style={{ fontSize: 15, fontWeight: 600, color: "rgba(255,255,255,0.9)", marginBottom: 12 }}>
+                  {item}
+                </div>
+              ))}
+              <a href="/solucoes" style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                background: WHITE, color: BLUE, borderRadius: 12, padding: "14px 28px",
+                fontSize: 15, fontWeight: 700, textDecoration: "none", marginTop: 12,
+              }}>
+                Explorar Marketplace →
+              </a>
+            </div>
+
+            {/* Right: dashboard card mockup */}
+            <div style={{ background: WHITE, borderRadius: 24, overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.24)" }}>
+              {/* Browser chrome */}
+              <div style={{ background: DARK, padding: "14px 20px", display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ display: "flex", gap: 5 }}>
+                  {["#ef4444", "#f59e0b", "#10b981"].map((c, i) => (
+                    <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
+                  ))}
+                </div>
+                <div style={{ flex: 1, background: "rgba(255,255,255,0.08)", borderRadius: 6, padding: "4px 12px", fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                  weprompt.app.br/solucoes
+                </div>
+              </div>
+              {/* Sidebar + content */}
+              <div style={{ display: "flex", height: isMobile ? 280 : 320 }}>
+                <div style={{ width: 60, background: "#f8fafc", borderRight: `1px solid ${BORDER}`, padding: "16px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+                  {["🏠", "⚡", "💬", "📊", "🎯"].map((icon, i) => (
+                    <div key={i} style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      background: i === 0 ? BLUE : "transparent",
+                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
+                    }}>{icon}</div>
+                  ))}
+                </div>
+                <div style={{ flex: 1, padding: "20px", overflowY: "hidden" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: DARK, marginBottom: 14 }}>Soluções Recomendadas</div>
+                  {[
+                    { name: "WhatsApp Vendas IA",     tag: "WhatsApp", price: "R$97/mês",  color: "#10b981", emoji: "💬" },
+                    { name: "Agente de Prospecção",   tag: "Agentes",  price: "R$147/mês", color: BLUE,      emoji: "🤖" },
+                    { name: "Social Media Autopilot", tag: "Marketing",price: "R$79/mês",  color: "#8b5cf6", emoji: "📱" },
+                    { name: "Dashboard Financeiro",   tag: "Finanças", price: "R$59/mês",  color: "#f59e0b", emoji: "💰" },
+                  ].map((sol, i) => (
+                    <div key={sol.name} style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "10px 0", borderBottom: i < 3 ? `1px solid ${BORDER}` : "none",
+                    }}>
+                      <div style={{
+                        width: 32, height: 32, borderRadius: 8,
+                        background: sol.color + "18",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        flexShrink: 0, fontSize: 14,
+                      }}>{sol.emoji}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: DARK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sol.name}</div>
+                        <span style={{ fontSize: 10, fontWeight: 600, color: sol.color, background: sol.color + "18", borderRadius: 999, padding: "1px 7px" }}>{sol.tag}</span>
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: DARK, flexShrink: 0 }}>{sol.price}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════
           SECTION 3 — CATEGORIAS
       ════════════════════════════════════ */}
       <section style={{ background: BG, padding: isMobile ? "72px 24px" : "80px 48px" }}>
