@@ -653,6 +653,9 @@ export default function Home() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Tabbed showcase
+  const [activeTab, setActiveTab] = useState(0);
+
   // Card hover states
   const [hov1, setHov1] = useState(false);
   const [hov2, setHov2] = useState(false);
@@ -1325,10 +1328,17 @@ export default function Home() {
       {/* ════════════════════════════════════
           SECTION 4 — COMO FUNCIONA
       ════════════════════════════════════ */}
-      <section style={{ background: WHITE, padding: isMobile ? "72px 24px" : "80px 48px" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-          {/* Header */}
-          <div style={{ textAlign: "center", marginBottom: 56 }}>
+      <section style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
+        <style>{`
+          @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+
+          {/* Top text */}
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
             <div style={{
               display: "inline-block",
               background: "#EFF6FF", color: BLUE, borderRadius: 999,
@@ -1337,38 +1347,232 @@ export default function Home() {
             }}>
               Como Funciona
             </div>
-            <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: DARK, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
-              Simples de Usar,
+            <h2 style={{ fontSize: isMobile ? 28 : 44, fontWeight: 800, color: "#111827", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
+              Uma Solução Para Cada Desafio
             </h2>
-            <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: BLUE, margin: 0, letterSpacing: "-0.02em" }}>
-              Poderoso nos Resultados
-            </h2>
+            <p style={{ fontSize: isMobile ? 15 : 18, color: "#6b7280", maxWidth: 560, margin: "0 auto", lineHeight: 1.6 }}>
+              Explore por categoria e veja como cada solução resolve um problema real do seu negócio.
+            </p>
           </div>
 
-          {/* Steps */}
+          {/* Big gradient card */}
           <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-            gap: 24,
+            background: "linear-gradient(135deg, #a855f7 0%, #ec4899 40%, #f97316 100%)",
+            borderRadius: 24, overflow: "hidden", padding: isMobile ? 20 : 32,
           }}>
-            <StepCard
-              num="01"
-              icon="🔍"
-              title="Explore o catálogo"
-              desc="Navegue por centenas de soluções de IA organizadas por categoria e necessidade."
-            />
-            <StepCard
-              num="02"
-              icon="⚡"
-              title="Adquira com 1 clique"
-              desc="Pagamento seguro em reais via cartão ou PIX. Acesso imediato após confirmação."
-            />
-            <StepCard
-              num="03"
-              icon="🚀"
-              title="Implemente e escale"
-              desc="Suporte em português incluído. Coloque sua solução rodando no mesmo dia."
-            />
+
+            {/* Tab pills */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 32, flexWrap: "wrap" }}>
+              {["Atendimento ao Cliente", "Vendas e Prospecção", "Marketing e Conteúdo", "Gestão Financeira"].map((tab, i) => (
+                <button key={tab} onClick={() => setActiveTab(i)} style={{
+                  background: activeTab === i ? "white" : "rgba(255,255,255,0.15)",
+                  color: activeTab === i ? "#111827" : "white",
+                  borderRadius: 999, padding: "10px 20px",
+                  fontSize: isMobile ? 12 : 14,
+                  fontWeight: activeTab === i ? 600 : 500,
+                  cursor: "pointer",
+                  border: activeTab === i ? "none" : "1px solid rgba(255,255,255,0.2)",
+                  transition: "all 0.2s ease",
+                }}>{tab}</button>
+              ))}
+            </div>
+
+            {/* Mockup card — keyed so React remounts on tab change → triggers fadeInTab */}
+            <div key={activeTab} style={{
+              background: "white", borderRadius: 16, overflow: "hidden",
+              boxShadow: "0 30px 60px rgba(0,0,0,0.2)",
+              animation: "fadeInTab 0.3s ease",
+            }}>
+
+              {/* ── TAB 0: Atendimento ao Cliente ── */}
+              {activeTab === 0 && (
+                <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
+                  <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "white" }}>W</div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
+                    </div>
+                    <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
+                    {["🏠 Home", "💬 Novo Chat", "🔧 Ferramentas"].map(l => (
+                      <div key={l} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2 }}>{l}</div>
+                    ))}
+                    <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2 }}>💬 Chat</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2 }}>🤖 Agente</div>
+                  </div>
+                  <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                    <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
+                      Tivemos um pico de tickets hoje. Consegue identificar o problema principal?
+                    </div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+                      </div>
+                      <div style={{ background: "#f3f4f6", borderRadius: "4px 16px 16px 16px", padding: "12px 18px", maxWidth: "75%", fontSize: 14, color: "#374151", lineHeight: 1.5 }}>
+                        Analisando os tickets de hoje...
+                      </div>
+                    </div>
+                    <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>Análise de Tickets</span>
+                        <span style={{ fontSize: 12, color: "#6b7280" }}>76 analisados hoje</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: "#2563EB", marginTop: 4, marginBottom: 12 }}>Problemas de cobrança estão causando a maioria dos tickets.</div>
+                      {[{ label: "Cobrança", pct: 85, n: 34 }, { label: "Login", pct: 52, n: 21 }, { label: "Entrega", pct: 28, n: 11 }].map(b => (
+                        <div key={b.label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                          <span style={{ fontSize: 12, color: "#6b7280", width: 60, flexShrink: 0 }}>{b.label}</span>
+                          <div style={{ flex: 1, height: 8, borderRadius: 4, background: "#e5e7eb", overflow: "hidden" }}>
+                            <div style={{ width: `${b.pct}%`, height: "100%", background: "#2563EB", borderRadius: 4 }} />
+                          </div>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: "#374151", width: 20, textAlign: "right" }}>{b.n}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── TAB 1: Vendas e Prospecção ── */}
+              {activeTab === 1 && (
+                <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
+                  <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "white" }}>W</div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
+                    </div>
+                    <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
+                    {["🏠 Home", "💬 Novo Chat", "🔧 Ferramentas"].map(l => (
+                      <div key={l} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2 }}>{l}</div>
+                    ))}
+                    <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2 }}>💬 Chat</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2 }}>🤖 Agente</div>
+                  </div>
+                  <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                    <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
+                      Quais leads do pipeline ainda não foram contatados esta semana?
+                    </div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+                      </div>
+                      <div style={{ background: "#f3f4f6", borderRadius: "4px 16px 16px 16px", padding: "12px 18px", maxWidth: "75%", fontSize: 14, color: "#374151", lineHeight: 1.5 }}>
+                        Encontrei 8 leads sem contato nos últimos 7 dias.
+                      </div>
+                    </div>
+                    <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 12 }}>Pipeline de Leads</div>
+                      {[
+                        { ini: "T", bg: "#2563EB", name: "Tech Solutions",  status: "Sem contato",   sbg: "#fee2e2", sc: "#991b1b", score: 92 },
+                        { ini: "M", bg: "#7c3aed", name: "Moda Express",    status: "Em negociação", sbg: "#ede9fe", sc: "#6d28d9", score: 78 },
+                        { ini: "V", bg: "#059669", name: "Varejo Central",  status: "Novo",          sbg: "#dcfce7", sc: "#166534", score: 65 },
+                      ].map((lead, idx) => (
+                        <div key={lead.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: idx < 2 ? "1px solid #f3f4f6" : "none" }}>
+                          <div style={{ width: 28, height: 28, borderRadius: "50%", background: lead.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "white", flexShrink: 0 }}>{lead.ini}</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{lead.name}</div>
+                          </div>
+                          <span style={{ background: lead.sbg, color: lead.sc, borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600, flexShrink: 0 }}>{lead.status}</span>
+                          <span style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{lead.score}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── TAB 2: Marketing e Conteúdo ── */}
+              {activeTab === 2 && (
+                <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
+                  <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "white" }}>W</div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
+                    </div>
+                    <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
+                    {["🏠 Home", "💬 Novo Chat", "🔧 Ferramentas"].map(l => (
+                      <div key={l} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2 }}>{l}</div>
+                    ))}
+                    <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2 }}>💬 Chat</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2 }}>🤖 Agente</div>
+                  </div>
+                  <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                    <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
+                      Cria uma campanha de email para o lançamento do novo produto.
+                    </div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+                      </div>
+                      <div style={{ background: "#f3f4f6", borderRadius: "4px 16px 16px 16px", padding: "12px 18px", maxWidth: "75%", fontSize: 14, color: "#374151", lineHeight: 1.5 }}>
+                        Campanha gerada! Aqui está o rascunho:
+                      </div>
+                    </div>
+                    <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 4 }}>Novidade que vai transformar seu negócio</div>
+                      <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.6, marginBottom: 12 }}>Olá! Temos uma novidade incrível para você. Nossa nova solução de IA vai automatizar seus processos e...</div>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <span style={{ background: "#dcfce7", color: "#166534", borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600 }}>Taxa de abertura estimada: 42%</span>
+                        <span style={{ background: "#dbeafe", color: "#1e40af", borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600 }}>Melhor horário: Terça 10h</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── TAB 3: Gestão Financeira ── */}
+              {activeTab === 3 && (
+                <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
+                  <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "white" }}>W</div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
+                    </div>
+                    <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
+                    {["🏠 Home", "💬 Novo Chat", "🔧 Ferramentas"].map(l => (
+                      <div key={l} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2 }}>{l}</div>
+                    ))}
+                    <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2 }}>💬 Chat</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2 }}>🤖 Agente</div>
+                  </div>
+                  <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
+                    <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
+                      Como está o fluxo de caixa deste mês comparado ao anterior?
+                    </div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+                      </div>
+                      <div style={{ background: "#f3f4f6", borderRadius: "4px 16px 16px 16px", padding: "12px 18px", maxWidth: "75%", fontSize: 14, color: "#374151", lineHeight: 1.5 }}>
+                        Crescimento de 23% vs mês anterior. Destaques:
+                      </div>
+                    </div>
+                    <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+                      <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                        <div style={{ flex: 1, background: "white", border: "1px solid #e5e7eb", borderRadius: 10, padding: "14px 16px" }}>
+                          <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>Este mês</div>
+                          <div style={{ fontSize: 22, fontWeight: 800, color: "#111827", letterSpacing: "-0.02em" }}>R$ 48.320</div>
+                          <span style={{ background: "#dcfce7", color: "#166534", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>+23%</span>
+                        </div>
+                        <div style={{ flex: 1, background: "white", border: "1px solid #e5e7eb", borderRadius: 10, padding: "14px 16px" }}>
+                          <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>Mês anterior</div>
+                          <div style={{ fontSize: 22, fontWeight: 800, color: "#6b7280", letterSpacing: "-0.02em" }}>R$ 39.260</div>
+                          <span style={{ background: "#f3f4f6", color: "#6b7280", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>Base</span>
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 40 }}>
+                        {[30, 40, 35, 50, 45, 55, 48, 70, 62, 80, 73, 85].map((h, i) => (
+                          <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: "2px 2px 0 0", background: i >= 8 ? "#2563EB" : "#dbeafe" }} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
           </div>
         </div>
       </section>
