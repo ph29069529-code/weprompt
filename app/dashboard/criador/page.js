@@ -34,6 +34,7 @@ const METRICS = [
     value: "R$ 196,00",
     sub: "+26% ↑",
     subColor: "#16a34a",
+    route: "/dashboard/criador/vendas",
   },
   {
     iconBg: "#2563EB",
@@ -46,6 +47,7 @@ const METRICS = [
     value: "40",
     sub: "de 64 no total",
     subColor: "#9ca3af",
+    route: "/dashboard/criador/solucoes",
   },
   {
     iconBg: "#ea580c",
@@ -58,6 +60,7 @@ const METRICS = [
     value: "22",
     sub: "soluções pendentes",
     subColor: "#9ca3af",
+    route: "/dashboard/criador/solucoes",
   },
   {
     iconBg: "#7c3aed",
@@ -70,6 +73,7 @@ const METRICS = [
     value: "6",
     sub: "+20% ↑",
     subColor: "#16a34a",
+    route: "/dashboard/criador/vendas",
   },
 ];
 
@@ -167,6 +171,8 @@ export default function CriadorPage() {
             key={tab}
             onClick={() => {
               if (i === 1) { router.push("/dashboard/criador/solucoes"); return; }
+              if (i === 2) { router.push("/dashboard/criador/vendas"); return; }
+              if (i === 3) { router.push("/dashboard/criador/configuracoes"); return; }
               setActiveTab(i);
             }}
             onMouseEnter={() => setHoveredTab(i)}
@@ -219,11 +225,14 @@ export default function CriadorPage() {
           <span style={{ color: "#9ca3af" }}>·</span>
           <span style={{ fontSize: 14, color: "#6b7280" }}>Pagamentos habilitados</span>
         </div>
-        <button style={{
-          fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer",
-          border: "1px solid #e5e7eb", borderRadius: 8, padding: "6px 14px",
-          background: "white",
-        }}>
+        <button
+          onClick={() => window.open("https://dashboard.stripe.com", "_blank")}
+          style={{
+            fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer",
+            border: "1px solid #e5e7eb", borderRadius: 8, padding: "6px 14px",
+            background: "white",
+          }}
+        >
           Gerenciar Pagamentos ↗
         </button>
       </div>
@@ -239,18 +248,24 @@ export default function CriadorPage() {
             </p>
           </div>
           <div style={{ display: "flex", gap: 12 }}>
-            <button style={{
-              border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 18px",
-              fontSize: 14, color: "#374151", display: "flex", alignItems: "center", gap: 6,
-              background: "white", cursor: "pointer",
-            }}>
+            <button
+              onClick={() => router.push("/criadores/user_test")}
+              style={{
+                border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 18px",
+                fontSize: 14, color: "#374151", display: "flex", alignItems: "center", gap: 6,
+                background: "white", cursor: "pointer",
+              }}
+            >
               Ver Minha Loja ↗
             </button>
-            <button style={{
-              background: "#111827", color: "white", borderRadius: 8,
-              padding: "9px 18px", fontSize: 14, fontWeight: 600,
-              border: "none", cursor: "pointer",
-            }}>
+            <button
+              onClick={() => router.push("/dashboard/criador/nova-solucao")}
+              style={{
+                background: "#111827", color: "white", borderRadius: 8,
+                padding: "9px 18px", fontSize: 14, fontWeight: 600,
+                border: "none", cursor: "pointer",
+              }}
+            >
               + Nova Solução
             </button>
           </div>
@@ -263,6 +278,7 @@ export default function CriadorPage() {
             {METRICS.map((m, i) => (
               <div
                 key={m.label}
+                onClick={() => router.push(m.route)}
                 onMouseEnter={() => setHoveredMetric(i)}
                 onMouseLeave={() => setHoveredMetric(null)}
                 style={{
@@ -276,7 +292,7 @@ export default function CriadorPage() {
                   transform: hoveredMetric === i ? "scale(1.02)" : "scale(1)",
                   boxShadow: hoveredMetric === i ? "0 8px 24px rgba(0,0,0,0.08)" : "none",
                   transition: "all 0.2s ease",
-                  cursor: "default",
+                  cursor: "pointer",
                 }}
               >
                 <div style={{
@@ -350,44 +366,58 @@ export default function CriadorPage() {
             </div>
 
             {/* Bar Chart */}
-            <div style={{ position: "relative" }}>
-              <div style={{
-                position: "absolute", left: 0, top: 0, bottom: 24,
-                display: "flex", flexDirection: "column", justifyContent: "space-between",
-                pointerEvents: "none",
-              }}>
-                <span style={{ fontSize: 10, color: "#9ca3af" }}>R$ 74,40</span>
-                <span style={{ fontSize: 10, color: "#9ca3af" }}>R$ 37,20</span>
-                <span style={{ fontSize: 10, color: "#9ca3af" }}>R$ 0</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: CHART_HEIGHT, paddingLeft: 52 }}>
-                {BAR_VALUES.map((v, i) => {
-                  const h = chartReady ? Math.round((v / MAX_BAR) * CHART_HEIGHT) : 0;
-                  return (
-                    <div
-                      key={i}
-                      onMouseEnter={() => setHoveredBar(i)}
-                      onMouseLeave={() => setHoveredBar(null)}
-                      title={`R$ ${v},00`}
-                      style={{
-                        flex: 1,
-                        height: h,
-                        borderRadius: "3px 3px 0 0",
-                        background: hoveredBar === i ? "#2563EB" : "#bfdbfe",
-                        minWidth: 8,
-                        transition: `height 0.6s ease, background 0.15s ease`,
-                        transitionDelay: `${(i * 0.02).toFixed(2)}s`,
-                        cursor: "pointer",
-                      }}
-                    />
-                  );
-                })}
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, paddingLeft: 52 }}>
-                <span style={{ fontSize: 10, color: "#9ca3af" }}>Dez 18</span>
-                <span style={{ fontSize: 10, color: "#9ca3af" }}>Jan 18</span>
-              </div>
-            </div>
+            {(() => {
+              const chartBars = activeRange === "7d"
+                ? BAR_VALUES.slice(-7)
+                : activeRange === "90d"
+                  ? BAR_VALUES.map(v => v * 3)
+                  : BAR_VALUES;
+              const chartMax = activeRange === "90d" ? MAX_BAR * 3 : MAX_BAR;
+              const topLabel = activeRange === "90d" ? "R$ 223,20" : "R$ 74,40";
+              const midLabel = activeRange === "90d" ? "R$ 111,60" : "R$ 37,20";
+              return (
+                <div style={{ position: "relative" }}>
+                  <div style={{
+                    position: "absolute", left: 0, top: 0, bottom: 24,
+                    display: "flex", flexDirection: "column", justifyContent: "space-between",
+                    pointerEvents: "none",
+                  }}>
+                    <span style={{ fontSize: 10, color: "#9ca3af" }}>{topLabel}</span>
+                    <span style={{ fontSize: 10, color: "#9ca3af" }}>{midLabel}</span>
+                    <span style={{ fontSize: 10, color: "#9ca3af" }}>R$ 0</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: CHART_HEIGHT, paddingLeft: 52 }}>
+                    {chartBars.map((v, i) => {
+                      const h = chartReady ? Math.round((v / chartMax) * CHART_HEIGHT) : 0;
+                      return (
+                        <div
+                          key={i}
+                          onMouseEnter={() => setHoveredBar(i)}
+                          onMouseLeave={() => setHoveredBar(null)}
+                          title={`R$ ${v},00`}
+                          style={{
+                            flex: 1,
+                            height: h,
+                            borderRadius: "3px 3px 0 0",
+                            background: hoveredBar === i ? "#2563EB" : "#bfdbfe",
+                            minWidth: 8,
+                            transition: "height 0.6s ease, background 0.15s ease",
+                            transitionDelay: `${(i * 0.02).toFixed(2)}s`,
+                            cursor: "pointer",
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, paddingLeft: 52 }}>
+                    <span style={{ fontSize: 10, color: "#9ca3af" }}>
+                      {activeRange === "7d" ? "Dez 25" : "Dez 18"}
+                    </span>
+                    <span style={{ fontSize: 10, color: "#9ca3af" }}>Jan 18</span>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
 
@@ -411,6 +441,7 @@ export default function CriadorPage() {
               {SALES.map((row, i) => (
                 <tr
                   key={i}
+                  onClick={() => router.push("/dashboard/criador/solucoes")}
                   onMouseEnter={() => setHoveredRow(i)}
                   onMouseLeave={() => setHoveredRow(null)}
                   style={{
