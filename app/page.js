@@ -1546,7 +1546,7 @@ export default function Home() {
       {/* ════════════════════════════════════
           SECTION 4b — INTEGRAÇÕES
       ════════════════════════════════════ */}
-      <section style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
+      <section style={{ background: "#fafafa", padding: isMobile ? "56px 24px" : "60px 48px" }}>
         <style>{`
           @keyframes scrollUp   { 0% { transform: translateY(0);    } 100% { transform: translateY(-50%); } }
           @keyframes scrollDown { 0% { transform: translateY(-50%); } 100% { transform: translateY(0);    } }
@@ -1555,24 +1555,21 @@ export default function Home() {
           <div style={{ display: "flex", alignItems: "center", gap: 80, flexDirection: isMobile ? "column" : "row" }}>
             {/* Left */}
             <div style={{ flex: 1 }}>
-              <div style={{ display: "inline-block", background: "#EFF6FF", color: BLUE, borderRadius: 999, padding: "5px 14px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                Integrações
-              </div>
-              <h2 style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: "#111827", lineHeight: 1.2, marginTop: 12, marginBottom: 0 }}>
+              <h2 style={{ fontSize: isMobile ? 32 : 48, fontWeight: 800, color: "#111827", lineHeight: 1.1, margin: 0 }}>
                 Funciona com as Ferramentas que Você Já Usa
               </h2>
-              <p style={{ fontSize: 16, color: "#6b7280", marginTop: 16, maxWidth: 400, lineHeight: 1.6, marginBottom: 0 }}>
+              <p style={{ fontSize: 18, color: "#6b7280", marginTop: 16, maxWidth: 460, lineHeight: 1.6, marginBottom: 0 }}>
                 As soluções da WePrompt se integram com as plataformas que o seu negócio já usa — de ferramentas de produtividade e CRMs a apps de comunicação.
               </p>
-              <a href="/solucoes" style={{ display: "inline-block", border: "1.5px solid #e5e7eb", borderRadius: 999, padding: "12px 28px", fontSize: 14, fontWeight: 600, color: "#111827", marginTop: 28, textDecoration: "none", cursor: "pointer" }}>
+              <a href="/solucoes" style={{ display: "inline-block", border: "1.5px solid #e5e7eb", borderRadius: 999, padding: "12px 28px", fontSize: 14, fontWeight: 600, color: "#111827", marginTop: 24, textDecoration: "none", cursor: "pointer" }}>
                 Explorar Soluções →
               </a>
             </div>
             {/* Right: scrolling columns */}
-            <div style={{ flex: 1, height: 480, overflow: "hidden", position: "relative" }}>
-              <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
+            <div style={{ flex: 1.5, height: 520, overflow: "hidden", position: "relative" }}>
+              <div style={{ display: "flex", gap: 12, width: "100%", justifyContent: "flex-end" }}>
                 {/* Column 1 — UP */}
-                <div style={{ animation: "scrollUp 25s linear infinite" }}>
+                <div style={{ animation: "scrollUp 25s linear infinite", width: 88 }}>
                   {[
                     { name: "Slack",    url: "https://www.google.com/s2/favicons?domain=slack.com&sz=64" },
                     { name: "Notion",   url: "https://www.google.com/s2/favicons?domain=notion.so&sz=64" },
@@ -1587,13 +1584,13 @@ export default function Home() {
                     { name: "Stripe",   url: "https://www.google.com/s2/favicons?domain=stripe.com&sz=64" },
                     { name: "Zoom",     url: "https://www.google.com/s2/favicons?domain=zoom.us&sz=64" },
                   ].map((ic, i) => (
-                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                      <img src={ic.url} width={36} height={36} alt={ic.name} style={{ objectFit: "contain" }} />
+                    <div key={i} style={{ width: 80, height: 80, background: "white", borderRadius: 20, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                      <img src={ic.url} width={44} height={44} alt={ic.name} style={{ objectFit: "contain" }} />
                     </div>
                   ))}
                 </div>
                 {/* Column 2 — DOWN */}
-                <div style={{ animation: "scrollDown 20s linear infinite" }}>
+                <div style={{ animation: "scrollDown 20s linear infinite", width: 88 }}>
                   {[
                     { name: "Zapier",   url: "https://www.google.com/s2/favicons?domain=zapier.com&sz=64" },
                     { name: "HubSpot",  url: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64" },
@@ -1608,13 +1605,13 @@ export default function Home() {
                     { name: "Telegram", url: "https://www.google.com/s2/favicons?domain=telegram.org&sz=64" },
                     { name: "Discord",  url: "https://www.google.com/s2/favicons?domain=discord.com&sz=64" },
                   ].map((ic, i) => (
-                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                      <img src={ic.url} width={36} height={36} alt={ic.name} style={{ objectFit: "contain" }} />
+                    <div key={i} style={{ width: 80, height: 80, background: "white", borderRadius: 20, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                      <img src={ic.url} width={44} height={44} alt={ic.name} style={{ objectFit: "contain" }} />
                     </div>
                   ))}
                 </div>
                 {/* Column 3 — UP */}
-                <div style={{ animation: "scrollUp 30s linear infinite" }}>
+                <div style={{ animation: "scrollUp 30s linear infinite", width: 88 }}>
                   {[
                     { name: "Figma",     url: "https://www.google.com/s2/favicons?domain=figma.com&sz=64" },
                     { name: "GitHub",    url: "https://www.google.com/s2/favicons?domain=github.com&sz=64" },
@@ -1629,37 +1626,37 @@ export default function Home() {
                     { name: "YouTube",   url: "https://www.google.com/s2/favicons?domain=youtube.com&sz=64" },
                     { name: "LinkedIn",  url: "https://www.google.com/s2/favicons?domain=linkedin.com&sz=64" },
                   ].map((ic, i) => (
-                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                      <img src={ic.url} width={36} height={36} alt={ic.name} style={{ objectFit: "contain" }} />
+                    <div key={i} style={{ width: 80, height: 80, background: "white", borderRadius: 20, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                      <img src={ic.url} width={44} height={44} alt={ic.name} style={{ objectFit: "contain" }} />
                     </div>
                   ))}
                 </div>
                 {/* Column 4 — DOWN */}
-                <div style={{ animation: "scrollDown 22s linear infinite" }}>
+                <div style={{ animation: "scrollDown 22s linear infinite", width: 88 }}>
                   {[
-                    { name: "Asana",       url: "https://www.google.com/s2/favicons?domain=asana.com&sz=64" },
-                    { name: "Dropbox",     url: "https://www.google.com/s2/favicons?domain=dropbox.com&sz=64" },
-                    { name: "Salesforce",  url: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" },
-                    { name: "Microsoft",   url: "https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" },
-                    { name: "Mailchimp",   url: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64" },
-                    { name: "Monday",      url: "https://www.google.com/s2/favicons?domain=monday.com&sz=64" },
-                    { name: "Asana",       url: "https://www.google.com/s2/favicons?domain=asana.com&sz=64" },
-                    { name: "Dropbox",     url: "https://www.google.com/s2/favicons?domain=dropbox.com&sz=64" },
-                    { name: "Salesforce",  url: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" },
-                    { name: "Microsoft",   url: "https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" },
-                    { name: "Mailchimp",   url: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64" },
-                    { name: "Monday",      url: "https://www.google.com/s2/favicons?domain=monday.com&sz=64" },
+                    { name: "Asana",      url: "https://www.google.com/s2/favicons?domain=asana.com&sz=64" },
+                    { name: "Dropbox",    url: "https://www.google.com/s2/favicons?domain=dropbox.com&sz=64" },
+                    { name: "Salesforce", url: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" },
+                    { name: "Microsoft",  url: "https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" },
+                    { name: "Mailchimp",  url: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64" },
+                    { name: "Monday",     url: "https://www.google.com/s2/favicons?domain=monday.com&sz=64" },
+                    { name: "Asana",      url: "https://www.google.com/s2/favicons?domain=asana.com&sz=64" },
+                    { name: "Dropbox",    url: "https://www.google.com/s2/favicons?domain=dropbox.com&sz=64" },
+                    { name: "Salesforce", url: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" },
+                    { name: "Microsoft",  url: "https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" },
+                    { name: "Mailchimp",  url: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64" },
+                    { name: "Monday",     url: "https://www.google.com/s2/favicons?domain=monday.com&sz=64" },
                   ].map((ic, i) => (
-                    <div key={i} style={{ width: 72, height: 72, background: "white", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                      <img src={ic.url} width={36} height={36} alt={ic.name} style={{ objectFit: "contain" }} />
+                    <div key={i} style={{ width: 80, height: 80, background: "white", borderRadius: 20, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                      <img src={ic.url} width={44} height={44} alt={ic.name} style={{ objectFit: "contain" }} />
                     </div>
                   ))}
                 </div>
               </div>
               {/* Top fade */}
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to bottom, white, transparent)", zIndex: 1, pointerEvents: "none" }} />
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to bottom, #fafafa, transparent)", zIndex: 1, pointerEvents: "none" }} />
               {/* Bottom fade */}
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to top, white, transparent)", zIndex: 1, pointerEvents: "none" }} />
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to top, #fafafa, transparent)", zIndex: 1, pointerEvents: "none" }} />
             </div>
           </div>
         </div>
