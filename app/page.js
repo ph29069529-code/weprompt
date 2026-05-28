@@ -1389,7 +1389,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-icon.png" style={{ height: 36, width: "auto", objectFit: "contain", maxWidth: 140 }} alt="WePrompt" />
+                      <img src="/logo-icon.png" style={{ height: 48, width: "100%", objectFit: "contain" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1441,7 +1441,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-icon.png" style={{ height: 36, width: "auto", objectFit: "contain", maxWidth: 140 }} alt="WePrompt" />
+                      <img src="/logo-icon.png" style={{ height: 48, width: "100%", objectFit: "contain" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1493,7 +1493,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-icon.png" style={{ height: 36, width: "auto", objectFit: "contain", maxWidth: 140 }} alt="WePrompt" />
+                      <img src="/logo-icon.png" style={{ height: 48, width: "100%", objectFit: "contain" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1536,7 +1536,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-icon.png" style={{ height: 36, width: "auto", objectFit: "contain", maxWidth: 140 }} alt="WePrompt" />
+                      <img src="/logo-icon.png" style={{ height: 48, width: "100%", objectFit: "contain" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
