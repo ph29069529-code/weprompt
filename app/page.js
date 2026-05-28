@@ -17,10 +17,9 @@ const SHADOW    = "0 4px 24px rgba(0,0,0,0.08)";
 
 /* ─── Hooks ──────────────────────────────────────────────────────── */
 function useWindowSize() {
-  const [width, setWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1280
-  );
+  const [width, setWidth] = useState(0);
   useEffect(() => {
+    setWidth(window.innerWidth);
     function onResize() { setWidth(window.innerWidth); }
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
