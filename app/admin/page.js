@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const TABS = [
   { label: "Dashboard", badge: null },
@@ -52,10 +52,25 @@ const FILTERS = ["Todos", "Aguardando", "Aprovado", "Rejeitado"];
 
 const MAX_BAR_VALUE = 58;
 const MAX_BAR_HEIGHT = 80;
+const BAR_DELAYS = ["0s", "0.1s", "0.2s", "0.3s", "0.4s", "0.5s"];
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [activeFilter, setActiveFilter] = useState("Todos");
+  const [chartReady, setChartReady] = useState(false);
+  const [hoveredMetric, setHoveredMetric] = useState(null);
+  const [hoveredAction, setHoveredAction] = useState(null);
+  const [hoveredRow, setHoveredRow] = useState(null);
+  const [hoveredBar, setHoveredBar] = useState(null);
+  const [hoveredTab, setHoveredTab] = useState(null);
+  const [hoveredActionLink, setHoveredActionLink] = useState(null);
+  const [avatarHovered, setAvatarHovered] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setChartReady(true), 300);
+    return () => clearTimeout(t);
+  }, []);
 
   const filteredRows =
     activeFilter === "Todos"
@@ -89,11 +104,14 @@ export default function AdminPage() {
         <div style={{
           display: "flex",
           alignItems: "center",
-          background: "#f3f4f6",
+          background: searchFocused ? "white" : "#f3f4f6",
           borderRadius: 8,
           padding: "8px 16px",
           width: 360,
           gap: 8,
+          border: searchFocused ? "1px solid #2563EB" : "1px solid transparent",
+          boxShadow: searchFocused ? "0 0 0 3px rgba(37,99,235,0.1)" : "none",
+          transition: "all 0.2s ease",
         }}>
           <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="8" />
@@ -101,6 +119,8 @@ export default function AdminPage() {
           </svg>
           <input
             placeholder="Buscar soluções, usuários..."
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
             style={{ fontSize: 14, border: "none", background: "transparent", outline: "none", flex: 1, color: "#374151" }}
           />
         </div>
@@ -136,19 +156,25 @@ export default function AdminPage() {
             }} />
           </button>
           {/* Avatar */}
-          <div style={{
-            width: 32,
-            height: 32,
-            background: "#2563EB",
-            borderRadius: 999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-            fontSize: 13,
-            fontWeight: 700,
-            cursor: "pointer",
-          }}>
+          <div
+            onMouseEnter={() => setAvatarHovered(true)}
+            onMouseLeave={() => setAvatarHovered(false)}
+            style={{
+              width: 32,
+              height: 32,
+              background: "#2563EB",
+              borderRadius: 999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+              transform: avatarHovered ? "scale(1.1)" : "scale(1)",
+              transition: "transform 0.15s ease",
+            }}
+          >
             A
           </div>
         </div>
@@ -162,43 +188,49 @@ export default function AdminPage() {
         display: "flex",
         gap: 0,
       }}>
-        {TABS.map((tab, i) => (
-          <button
-            key={tab.label}
-            onClick={() => setActiveTab(i)}
-            style={{
-              fontSize: 14,
-              padding: "14px 0",
-              marginRight: 8,
-              paddingRight: 20,
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              border: "none",
-              borderBottom: activeTab === i ? "2px solid #111827" : "2px solid transparent",
-              background: "transparent",
-              color: activeTab === i ? "#111827" : "#6b7280",
-              fontWeight: activeTab === i ? 600 : 400,
-              marginBottom: -1,
-              transition: "color 0.15s",
-            }}
-          >
-            {tab.label}
-            {tab.badge && (
-              <span style={{
-                background: "#fee2e2",
-                color: "#dc2626",
-                borderRadius: 999,
-                fontSize: 11,
-                fontWeight: 700,
-                padding: "2px 7px",
-              }}>
-                {tab.badge}
-              </span>
-            )}
-          </button>
-        ))}
+        {TABS.map((tab, i) => {
+          const isActive = activeTab === i;
+          const isHovered = hoveredTab === i;
+          return (
+            <button
+              key={tab.label}
+              onClick={() => setActiveTab(i)}
+              onMouseEnter={() => setHoveredTab(i)}
+              onMouseLeave={() => setHoveredTab(null)}
+              style={{
+                fontSize: 14,
+                padding: "14px 0",
+                marginRight: 8,
+                paddingRight: 20,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                border: "none",
+                borderBottom: isActive ? "2px solid #111827" : "2px solid transparent",
+                background: "transparent",
+                color: isActive ? "#111827" : isHovered ? "#374151" : "#6b7280",
+                fontWeight: isActive ? 600 : 400,
+                marginBottom: -1,
+                transition: "color 0.15s ease",
+              }}
+            >
+              {tab.label}
+              {tab.badge && (
+                <span style={{
+                  background: "#fee2e2",
+                  color: "#dc2626",
+                  borderRadius: 999,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  padding: "2px 7px",
+                }}>
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* MAIN CONTENT */}
@@ -213,13 +245,28 @@ export default function AdminPage() {
 
         {/* Metrics Grid — 8 cards, 2 rows of 4 */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 20 }}>
-          {[...METRICS_ROW1, ...METRICS_ROW2].map((m) => (
-            <div key={m.label} style={{ background: "white", borderRadius: 12, padding: 20, border: "1px solid #e5e7eb" }}>
+          {[...METRICS_ROW1, ...METRICS_ROW2].map((m, i) => (
+            <div
+              key={m.label}
+              onMouseEnter={() => setHoveredMetric(i)}
+              onMouseLeave={() => setHoveredMetric(null)}
+              style={{
+                background: "white",
+                borderRadius: 12,
+                padding: 20,
+                border: "1px solid #e5e7eb",
+                transform: hoveredMetric === i ? "scale(1.02)" : "scale(1)",
+                boxShadow: hoveredMetric === i ? "0 8px 24px rgba(0,0,0,0.08)" : "none",
+                transition: "all 0.2s ease",
+                cursor: "default",
+              }}
+            >
               <div style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>{m.label}</div>
               <div style={{ fontSize: 36, fontWeight: 800, color: m.color || "#111827", marginTop: 6, lineHeight: 1 }}>
                 {m.value}
               </div>
               <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{m.sub}</div>
+              <div style={{ fontSize: 11, color: "#16a34a", marginTop: 6, fontWeight: 500 }}>↑ 12% esta semana</div>
             </div>
           ))}
         </div>
@@ -232,17 +279,49 @@ export default function AdminPage() {
               Crescimento de Usuários
             </div>
             <div style={{ display: "flex", alignItems: "flex-end", height: 100, gap: 0 }}>
-              {BAR_DATA.map((bar) => {
+              {BAR_DATA.map((bar, i) => {
                 const barHeight = Math.round((bar.value / MAX_BAR_VALUE) * MAX_BAR_HEIGHT);
+                const isBarHovered = hoveredBar === i;
                 return (
-                  <div key={bar.month} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginRight: 8 }}>
-                    <div style={{
-                      display: "inline-block",
-                      width: 32,
-                      height: barHeight,
-                      background: "#2563EB",
-                      borderRadius: "4px 4px 0 0",
-                    }} />
+                  <div
+                    key={bar.month}
+                    style={{ display: "flex", flexDirection: "column", alignItems: "center", marginRight: 8 }}
+                  >
+                    <div
+                      onMouseEnter={() => setHoveredBar(i)}
+                      onMouseLeave={() => setHoveredBar(null)}
+                      style={{
+                        width: 32,
+                        height: chartReady ? barHeight : 0,
+                        background: isBarHovered ? "#1d4ed8" : "#2563EB",
+                        borderRadius: "4px 4px 0 0",
+                        transition: "height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, transform 0.15s ease",
+                        transitionDelay: BAR_DELAYS[i],
+                        transform: isBarHovered ? "scaleY(1.05)" : "scaleY(1)",
+                        transformOrigin: "bottom",
+                        cursor: "pointer",
+                        position: "relative",
+                      }}
+                    >
+                      {isBarHovered && (
+                        <div style={{
+                          position: "absolute",
+                          top: -24,
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          background: "#111827",
+                          color: "white",
+                          fontSize: 11,
+                          padding: "2px 6px",
+                          borderRadius: 4,
+                          whiteSpace: "nowrap",
+                          pointerEvents: "none",
+                          zIndex: 10,
+                        }}>
+                          {bar.value}
+                        </div>
+                      )}
+                    </div>
                     <div style={{ fontSize: 10, color: "#9ca3af", textAlign: "center", marginTop: 4 }}>
                       {bar.month}
                     </div>
@@ -288,6 +367,8 @@ export default function AdminPage() {
             ].map((action, i) => (
               <button
                 key={i}
+                onMouseEnter={() => setHoveredAction(i)}
+                onMouseLeave={() => setHoveredAction(null)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -295,13 +376,15 @@ export default function AdminPage() {
                   width: "100%",
                   padding: "10px 16px",
                   borderRadius: 8,
-                  border: "1px solid #e5e7eb",
+                  border: hoveredAction === i ? "1px solid #2563EB" : "1px solid #e5e7eb",
                   fontSize: 14,
                   color: "#374151",
                   textAlign: "left",
                   cursor: "pointer",
                   marginBottom: 8,
-                  background: "white",
+                  background: hoveredAction === i ? "#f8faff" : "white",
+                  transform: hoveredAction === i ? "translateX(4px)" : "translateX(0)",
+                  transition: "all 0.15s ease",
                 }}
               >
                 {action.icon}
@@ -347,7 +430,7 @@ export default function AdminPage() {
                     border: "none",
                     background: activeFilter === f ? "#111827" : "#f3f4f6",
                     color: activeFilter === f ? "white" : "#6b7280",
-                    transition: "background 0.15s, color 0.15s",
+                    transition: "all 0.15s ease",
                   }}
                 >
                   {f}
@@ -377,7 +460,16 @@ export default function AdminPage() {
             </thead>
             <tbody>
               {filteredRows.map((row, i) => (
-                <tr key={i}>
+                <tr
+                  key={i}
+                  onMouseEnter={() => setHoveredRow(i)}
+                  onMouseLeave={() => setHoveredRow(null)}
+                  style={{
+                    background: hoveredRow === i ? "#f8faff" : "transparent",
+                    transition: "background 0.15s ease",
+                    cursor: "pointer",
+                  }}
+                >
                   <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>
                     {row.solution}
                   </td>
@@ -402,15 +494,21 @@ export default function AdminPage() {
                     {row.date}
                   </td>
                   <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
-                    <button style={{
-                      color: "#2563EB",
-                      fontSize: 13,
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                    }}>
+                    <button
+                      onMouseEnter={() => setHoveredActionLink(i)}
+                      onMouseLeave={() => setHoveredActionLink(null)}
+                      style={{
+                        color: hoveredActionLink === i ? "#1d4ed8" : "#2563EB",
+                        fontSize: 13,
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        textDecoration: hoveredActionLink === i ? "underline" : "none",
+                        transition: "color 0.15s ease",
+                      }}
+                    >
                       {row.action}
                     </button>
                   </td>
