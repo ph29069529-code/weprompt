@@ -1393,12 +1393,16 @@ export default function Home() {
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
-                    {["🏠 Home", "💬 Novo Chat", "🔧 Ferramentas"].map(l => (
-                      <div key={l} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2 }}>{l}</div>
+                    {[
+                      { key: "home", label: "Home", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg> },
+                      { key: "novo-chat", label: "Novo Chat", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> },
+                      { key: "ferramentas", label: "Ferramentas", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
+                    ].map(item => (
+                      <div key={item.key} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}>{item.icon}{item.label}</div>
                     ))}
                     <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2 }}>💬 Chat</div>
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2 }}>🤖 Agente</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
                   </div>
                   <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
                     <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
@@ -1419,12 +1423,13 @@ export default function Home() {
                       </div>
                       <div style={{ fontSize: 12, color: "#2563EB", marginTop: 4, marginBottom: 12 }}>Problemas de cobrança estão causando a maioria dos tickets.</div>
                       {[{ label: "Cobrança", pct: 85, n: 34 }, { label: "Login", pct: 52, n: 21 }, { label: "Entrega", pct: 28, n: 11 }].map(b => (
-                        <div key={b.label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                          <span style={{ fontSize: 12, color: "#6b7280", width: 60, flexShrink: 0 }}>{b.label}</span>
-                          <div style={{ flex: 1, height: 8, borderRadius: 4, background: "#e5e7eb", overflow: "hidden" }}>
-                            <div style={{ width: `${b.pct}%`, height: "100%", background: "#2563EB", borderRadius: 4 }} />
+                        <div key={b.label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                          <span style={{ fontSize: 12, color: "#6b7280", width: 70, flexShrink: 0, textAlign: "right" }}>{b.label}</span>
+                          <div style={{ flex: 1, height: 24, background: "#e5e7eb", borderRadius: 4, overflow: "hidden", position: "relative" }}>
+                            <div style={{ width: `${b.pct}%`, height: "100%", background: "#2563EB", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 8 }}>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: "white" }}>{b.n}</span>
+                            </div>
                           </div>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: "#374151", width: 20, textAlign: "right" }}>{b.n}</span>
                         </div>
                       ))}
                     </div>
@@ -1441,12 +1446,16 @@ export default function Home() {
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
-                    {["🏠 Home", "💬 Novo Chat", "🔧 Ferramentas"].map(l => (
-                      <div key={l} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2 }}>{l}</div>
+                    {[
+                      { key: "home", label: "Home", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg> },
+                      { key: "novo-chat", label: "Novo Chat", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> },
+                      { key: "ferramentas", label: "Ferramentas", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
+                    ].map(item => (
+                      <div key={item.key} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}>{item.icon}{item.label}</div>
                     ))}
                     <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2 }}>💬 Chat</div>
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2 }}>🤖 Agente</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
                   </div>
                   <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
                     <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
@@ -1490,12 +1499,16 @@ export default function Home() {
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
-                    {["🏠 Home", "💬 Novo Chat", "🔧 Ferramentas"].map(l => (
-                      <div key={l} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2 }}>{l}</div>
+                    {[
+                      { key: "home", label: "Home", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg> },
+                      { key: "novo-chat", label: "Novo Chat", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> },
+                      { key: "ferramentas", label: "Ferramentas", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
+                    ].map(item => (
+                      <div key={item.key} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}>{item.icon}{item.label}</div>
                     ))}
                     <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2 }}>💬 Chat</div>
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2 }}>🤖 Agente</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
                   </div>
                   <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
                     <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
@@ -1530,12 +1543,16 @@ export default function Home() {
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
-                    {["🏠 Home", "💬 Novo Chat", "🔧 Ferramentas"].map(l => (
-                      <div key={l} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2 }}>{l}</div>
+                    {[
+                      { key: "home", label: "Home", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg> },
+                      { key: "novo-chat", label: "Novo Chat", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> },
+                      { key: "ferramentas", label: "Ferramentas", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
+                    ].map(item => (
+                      <div key={item.key} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}>{item.icon}{item.label}</div>
                     ))}
                     <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2 }}>💬 Chat</div>
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2 }}>🤖 Agente</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
+                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
                   </div>
                   <div style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
                     <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
