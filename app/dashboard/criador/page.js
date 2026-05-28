@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const RANGES = ["7d", "30d", "90d"];
 
@@ -72,7 +73,12 @@ const METRICS = [
   },
 ];
 
+const CRIADOR_TABS = ["Dashboard", "Minhas Soluções", "Vendas", "Configurações"];
+
 export default function CriadorPage() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState(0);
+  const [hoveredTab, setHoveredTab] = useState(null);
   const [activeRange, setActiveRange] = useState("30d");
   const [chartReady, setChartReady] = useState(false);
   const [hoveredBar, setHoveredBar] = useState(null);
@@ -147,6 +153,46 @@ export default function CriadorPage() {
           }}>C</div>
         </div>
       </nav>
+
+      {/* TABS ROW */}
+      <div style={{
+        background: "white",
+        borderBottom: "1px solid #e5e7eb",
+        padding: "0 32px",
+        display: "flex",
+        gap: 0,
+      }}>
+        {CRIADOR_TABS.map((tab, i) => (
+          <button
+            key={tab}
+            onClick={() => {
+              if (i === 1) { router.push("/dashboard/criador/solucoes"); return; }
+              setActiveTab(i);
+            }}
+            onMouseEnter={() => setHoveredTab(i)}
+            onMouseLeave={() => setHoveredTab(null)}
+            style={{
+              fontSize: 14,
+              padding: "14px 20px 14px 0",
+              marginRight: 8,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              border: "none",
+              borderBottom: activeTab === i ? "2px solid #111827" : "2px solid transparent",
+              background: "transparent",
+              color: activeTab === i ? "#111827" : hoveredTab === i ? "#374151" : "#6b7280",
+              fontWeight: activeTab === i ? 600 : 400,
+              marginBottom: -1,
+              transition: "color 0.15s ease",
+              fontFamily: "inherit",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
       {/* STRIPE BANNER */}
       <div style={{
