@@ -878,18 +878,30 @@ export default function Home() {
               </div>
               <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 16, padding: "20px" }}>
                 {[
-                  { icon: "📥", label: "Novo Lead Recebido",         color: "#3b82f6", status: "Gatilho"      },
-                  { icon: "🤖", label: "IA Classifica e Pontua",     color: "#8b5cf6", status: "Processando"  },
-                  { icon: "📧", label: "E-mail Personalizado Enviado", color: "#10b981", status: "Concluído"   },
-                  { icon: "📊", label: "CRM Atualizado",             color: "#f59e0b", status: "Sincronizado" },
+                  {
+                    svg: (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>),
+                    label: "Novo Lead Recebido", color: "#3b82f6", status: "Gatilho",
+                  },
+                  {
+                    svg: (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>),
+                    label: "IA Classifica e Pontua", color: "#8b5cf6", status: "Processando",
+                  },
+                  {
+                    svg: (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>),
+                    label: "E-mail Personalizado Enviado", color: "#10b981", status: "Concluído",
+                  },
+                  {
+                    svg: (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg>),
+                    label: "CRM Atualizado", color: "#f59e0b", status: "Sincronizado",
+                  },
                 ].map((node, i) => (
                   <div key={node.label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: i < 3 ? 12 : 0 }}>
                     <div style={{
                       width: 36, height: 36, borderRadius: 10,
                       background: node.color + "22", border: `1px solid ${node.color}44`,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 16, flexShrink: 0,
-                    }}>{node.icon}</div>
+                      flexShrink: 0, color: node.color,
+                    }}>{node.svg}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: WHITE, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{node.label}</div>
                     </div>
@@ -926,9 +938,14 @@ export default function Home() {
               </div>
               <div style={{ background: "rgba(255,255,255,0.12)", borderRadius: 16, padding: "20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
-                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🤖</div>
+                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/>
+                    </svg>
+                  </div>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: WHITE }}>Assistente WePrompt</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: WHITE }}>ChatBot Pro</div>
+                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", marginBottom: 3 }}>por João Silva</div>
                     <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                       <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#34d399" }} />
                       <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>Online agora</span>
@@ -937,9 +954,9 @@ export default function Home() {
                 </div>
                 {[
                   { from: "user", text: "Olá! Quanto custa a solução de WhatsApp?" },
-                  { from: "bot",  text: "Oi! Temos planos a partir de R$97/mês 🎉 Posso te mostrar?" },
+                  { from: "bot",  text: "Oi! Temos planos a partir de R$97/mês. Posso te mostrar?" },
                   { from: "user", text: "Sim, quero ver!" },
-                  { from: "bot",  text: "Perfeito! Vou te encaminhar para o plano ideal ✅" },
+                  { from: "bot",  text: "Perfeito! Vou te encaminhar para o plano ideal." },
                 ].map((msg, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: msg.from === "user" ? "flex-end" : "flex-start", marginBottom: 8 }}>
                     <div style={{
@@ -995,7 +1012,11 @@ export default function Home() {
           }}>
             {/* Card 1 — Finances */}
             <div style={{ background: WHITE, borderRadius: 24, border: `1px solid ${BORDER}`, padding: "32px", overflow: "hidden" }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#EFF6FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }}>💰</div>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#EFF6FF", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/>
+                </svg>
+              </div>
               <div style={{ fontSize: 18, fontWeight: 800, color: DARK, marginBottom: 6, letterSpacing: "-0.02em" }}>Financeiro</div>
               <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginBottom: 20 }}>
                 Dashboard de fluxo de caixa, conciliação e previsões automáticas com IA.
@@ -1022,20 +1043,24 @@ export default function Home() {
 
             {/* Card 2 — Campaigns */}
             <div style={{ background: WHITE, borderRadius: 24, border: `1px solid ${BORDER}`, padding: "32px", overflow: "hidden" }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }}>📣</div>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 11l19-9-9 19-2-8-8-2z"/>
+                </svg>
+              </div>
               <div style={{ fontSize: 18, fontWeight: 800, color: DARK, marginBottom: 6, letterSpacing: "-0.02em" }}>Campanhas</div>
               <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginBottom: 20 }}>
                 Crie e otimize campanhas de marketing com IA que escreve, segmenta e analisa.
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {[
-                  { label: "Alcance",    value: "12.4K", icon: "👁️", color: "#EFF6FF", tcolor: BLUE       },
-                  { label: "Cliques",    value: "3.2K",  icon: "🖱️", color: "#F0FDF4", tcolor: "#10b981"  },
-                  { label: "Conversão",  value: "8.7%",  icon: "🎯", color: "#FFF7ED", tcolor: "#f97316"  },
-                  { label: "ROI",        value: "340%",  icon: "📈", color: "#FDF4FF", tcolor: "#9333ea"  },
+                  { label: "Alcance",   value: "12.4K", color: "#EFF6FF", tcolor: BLUE      },
+                  { label: "Cliques",   value: "3.2K",  color: "#F0FDF4", tcolor: "#10b981" },
+                  { label: "Conversão", value: "8.7%",  color: "#FFF7ED", tcolor: "#f97316" },
+                  { label: "ROI",       value: "340%",  color: "#FDF4FF", tcolor: "#9333ea" },
                 ].map((m) => (
                   <div key={m.label} style={{ background: m.color, borderRadius: 10, padding: "12px 14px" }}>
-                    <div style={{ fontSize: 16, marginBottom: 4 }}>{m.icon}</div>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: m.tcolor, marginBottom: 8 }} />
                     <div style={{ fontSize: 17, fontWeight: 800, color: m.tcolor, marginBottom: 2 }}>{m.value}</div>
                     <div style={{ fontSize: 11, color: MUTED, fontWeight: 500 }}>{m.label}</div>
                   </div>
@@ -1046,7 +1071,11 @@ export default function Home() {
 
             {/* Card 3 — Leads pipeline */}
             <div style={{ background: WHITE, borderRadius: 24, border: `1px solid ${BORDER}`, padding: "32px", overflow: "hidden" }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }}>🎯</div>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
               <div style={{ fontSize: 18, fontWeight: 800, color: DARK, marginBottom: 6, letterSpacing: "-0.02em" }}>Geração de Leads</div>
               <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginBottom: 20 }}>
                 Pipeline de vendas com qualificação automática e follow-ups por IA.
@@ -1111,12 +1140,17 @@ export default function Home() {
                 Marketplace curado, suporte em português, pagamentos em reais — a plataforma de IA feita para o Brasil.
               </p>
               {[
-                "✅ Soluções testadas e aprovadas",
-                "⚡ Implementação no mesmo dia",
-                "🇧🇷 Suporte 100% em português",
-                "💳 Pagamentos via PIX e cartão",
+                "Soluções testadas e aprovadas",
+                "Implementação no mesmo dia",
+                "Suporte 100% em português",
+                "Pagamentos via PIX e cartão",
               ].map((item) => (
-                <div key={item} style={{ fontSize: 15, fontWeight: 600, color: "rgba(255,255,255,0.9)", marginBottom: 12 }}>
+                <div key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 15, fontWeight: 600, color: "rgba(255,255,255,0.9)", marginBottom: 12 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="2 6 5 9 10 3"/>
+                    </svg>
+                  </div>
                   {item}
                 </div>
               ))}
@@ -1144,38 +1178,58 @@ export default function Home() {
               </div>
               {/* Sidebar + content */}
               <div style={{ display: "flex", height: isMobile ? 280 : 320 }}>
-                <div style={{ width: 60, background: "#f8fafc", borderRight: `1px solid ${BORDER}`, padding: "16px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-                  {["🏠", "⚡", "💬", "📊", "🎯"].map((icon, i) => (
-                    <div key={i} style={{
-                      width: 36, height: 36, borderRadius: 10,
-                      background: i === 0 ? BLUE : "transparent",
-                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16,
-                    }}>{icon}</div>
+                {/* Category sidebar */}
+                <div style={{ width: 92, background: "#f8fafc", borderRight: `1px solid ${BORDER}`, padding: "12px 0", display: "flex", flexDirection: "column", flexShrink: 0, overflowY: "hidden" }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: MUTED, textTransform: "uppercase", letterSpacing: "0.08em", padding: "0 10px", marginBottom: 6 }}>Categorias</div>
+                  {[
+                    { label: "Todos",     active: true  },
+                    { label: "Chatbots"               },
+                    { label: "Automação"              },
+                    { label: "Marketing"              },
+                    { label: "Finanças"               },
+                    { label: "WhatsApp"               },
+                  ].map((cat) => (
+                    <div key={cat.label} style={{
+                      padding: "6px 10px",
+                      background: cat.active ? "#EFF6FF" : "transparent",
+                      color: cat.active ? BLUE : "#4b5563",
+                      fontSize: 11, fontWeight: cat.active ? 700 : 500,
+                      cursor: "pointer", whiteSpace: "nowrap",
+                    }}>{cat.label}</div>
                   ))}
                 </div>
-                <div style={{ flex: 1, padding: "20px", overflowY: "hidden" }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: DARK, marginBottom: 14 }}>Soluções Recomendadas</div>
+                {/* Creator cards */}
+                <div style={{ flex: 1, padding: "14px", overflowY: "hidden" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: DARK, marginBottom: 10 }}>Soluções em Destaque</div>
                   {[
-                    { name: "WhatsApp Vendas IA",     tag: "WhatsApp", price: "R$97/mês",  color: "#10b981", emoji: "💬" },
-                    { name: "Agente de Prospecção",   tag: "Agentes",  price: "R$147/mês", color: BLUE,      emoji: "🤖" },
-                    { name: "Social Media Autopilot", tag: "Marketing",price: "R$79/mês",  color: "#8b5cf6", emoji: "📱" },
-                    { name: "Dashboard Financeiro",   tag: "Finanças", price: "R$59/mês",  color: "#f59e0b", emoji: "💰" },
+                    { name: "ChatBot Pro",         creator: "João Silva",    price: "R$97/mês",  rating: 4.9, color: "#10b981" },
+                    { name: "Agente Vendas IA",    creator: "Ana Lima",      price: "R$147/mês", rating: 4.8, color: BLUE      },
+                    { name: "AutoPost Social",     creator: "Carlos Mendes", price: "R$79/mês",  rating: 4.7, color: "#8b5cf6" },
+                    { name: "Leads Qualificador",  creator: "Sofia Rocha",   price: "R$59/mês",  rating: 4.6, color: "#f59e0b" },
                   ].map((sol, i) => (
                     <div key={sol.name} style={{
-                      display: "flex", alignItems: "center", gap: 10,
-                      padding: "10px 0", borderBottom: i < 3 ? `1px solid ${BORDER}` : "none",
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "8px 0", borderBottom: i < 3 ? `1px solid ${BORDER}` : "none",
                     }}>
                       <div style={{
-                        width: 32, height: 32, borderRadius: 8,
+                        width: 30, height: 30, borderRadius: 8,
                         background: sol.color + "18",
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0, fontSize: 14,
-                      }}>{sol.emoji}</div>
+                        flexShrink: 0, fontSize: 11, fontWeight: 800, color: sol.color,
+                      }}>{sol.name.charAt(0)}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: DARK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sol.name}</div>
-                        <span style={{ fontSize: 10, fontWeight: 600, color: sol.color, background: sol.color + "18", borderRadius: 999, padding: "1px 7px" }}>{sol.tag}</span>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: DARK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sol.name}</div>
+                        <div style={{ fontSize: 9, color: MUTED }}>por {sol.creator}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 1, marginTop: 2 }}>
+                          {[1,2,3,4,5].map(star => (
+                            <svg key={star} width="7" height="7" viewBox="0 0 24 24" fill={star <= Math.floor(sol.rating) ? "#f59e0b" : "#e5e7eb"} stroke="none">
+                              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                          ))}
+                          <span style={{ fontSize: 8, color: MUTED, marginLeft: 2 }}>{sol.rating}</span>
+                        </div>
                       </div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: DARK, flexShrink: 0 }}>{sol.price}</div>
+                      <div style={{ fontSize: 10, fontWeight: 700, color: BLUE, flexShrink: 0 }}>{sol.price}</div>
                     </div>
                   ))}
                 </div>
