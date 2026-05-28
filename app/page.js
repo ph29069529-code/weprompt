@@ -1715,12 +1715,11 @@ export default function Home() {
       ════════════════════════════════════ */}
       <div style={{ position: "relative" }}>
         {/* Rounded bottom of white content area */}
-        <div style={{ height: 80, background: "white", borderRadius: "0 0 48px 48px", position: "relative", zIndex: 1 }} />
+        <div style={{ background: "white", borderRadius: "0 0 48px 48px", height: 80, position: "relative", zIndex: 2 }} />
         <footer style={{
           background: "#0a0a0a",
           paddingTop: 80, paddingBottom: 60,
           paddingLeft: isMobile ? 24 : 48, paddingRight: isMobile ? 24 : 48,
-          borderRadius: "48px 48px 0 0",
           marginTop: -40,
           position: "relative",
         }}>
@@ -1728,7 +1727,7 @@ export default function Home() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
             {/* Left: brand */}
             <div style={{ maxWidth: 320 }}>
-              <img src="/logo-icon.png" style={{ height: 56, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
+              <img src="/logo-icon.png" style={{ height: 224, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
               <p style={{ color: "#9ca3af", fontSize: 16, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
                 O 1º marketplace de soluções de IA da América Latina.
               </p>
