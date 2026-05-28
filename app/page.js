@@ -1700,6 +1700,11 @@ export default function Home() {
                   )}
                 </div>
               ))}
+              {/* FAQ footer row */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 32, marginTop: 8 }}>
+                <a href="/faq" style={{ fontSize: 15, fontWeight: 600, color: "#111827", textDecoration: "none", cursor: "pointer" }}>Ver todos os FAQs →</a>
+                <span style={{ fontSize: 15, color: "#6b7280" }}>Ainda tem dúvidas? <a href="/contato" style={{ fontSize: 15, fontWeight: 600, color: "#111827", textDecoration: "none", cursor: "pointer" }}>Falar com suporte</a></span>
+              </div>
             </div>
           </div>
         </div>
@@ -1750,106 +1755,59 @@ export default function Home() {
       {/* ════════════════════════════════════
           SECTION 7 — FOOTER
       ════════════════════════════════════ */}
-      <footer style={{ background: DARK }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "56px 24px 40px" : "64px 48px 48px" }}>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr 1fr 1fr",
-            gap: isMobile ? 40 : 40,
-          }}>
-            {/* Col 1: Brand */}
-            <div>
-              <a href="/" style={{ textDecoration: "none", display: "block", marginBottom: 16 }}>
-                <img src="/logo-dark.png" height={36} style={{ height: 36, width: "auto", maxWidth: 160, objectFit: "contain", display: "block" }} alt="WePrompt" />
-              </a>
-              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, margin: "0 0 16px", maxWidth: 240 }}>
+      <div style={{ position: "relative" }}>
+        {/* Rounded bottom of white content area */}
+        <div style={{ height: 60, background: "white", borderRadius: "0 0 40px 40px", position: "relative", zIndex: 1, marginBottom: -1 }} />
+        <footer style={{
+          background: "#0a0a0a",
+          paddingTop: 64, paddingBottom: 40,
+          paddingLeft: isMobile ? 24 : 48, paddingRight: isMobile ? 24 : 48,
+          borderRadius: "40px 40px 0 0",
+          marginTop: -40,
+          position: "relative",
+        }}>
+          {/* Top row */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
+            {/* Left: brand */}
+            <div style={{ maxWidth: 320 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <img src="/logo-icon.png" style={{ height: 40, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
+                <span style={{ color: "white", fontSize: 20, fontWeight: 700 }}>WePrompt</span>
+              </div>
+              <p style={{ color: "#9ca3af", fontSize: 14, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
                 O 1º marketplace de soluções de IA da América Latina.
               </p>
-              <a href="mailto:contato@weprompt.app.br" style={{ fontSize: 13, color: ACCENT, textDecoration: "none" }}>
-                contato@weprompt.app.br
-              </a>
-              {/* Social icons */}
-              <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-                {[
-                  { label: "Instagram", href: "https://instagram.com/weprompt", icon: (
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                      <circle cx="12" cy="12" r="4"/>
-                      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-                    </svg>
-                  )},
-                  { label: "LinkedIn", href: "https://linkedin.com/company/weprompt", icon: (
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-                      <rect x="2" y="9" width="4" height="12"/>
-                      <circle cx="4" cy="4" r="2"/>
-                    </svg>
-                  )},
-                ].map(({ label, href, icon }) => (
-                  <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                    style={{
-                      width: 34, height: 34, borderRadius: 8,
-                      background: "rgba(255,255,255,0.08)",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      color: "rgba(255,255,255,0.5)", textDecoration: "none",
-                      transition: "background 0.15s, color 0.15s",
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.16)"; e.currentTarget.style.color = WHITE; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.5)"; }}
-                  >
-                    {icon}
-                  </a>
+            </div>
+            {/* Right: link columns */}
+            <div style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
+              <div>
+                <div style={{ color: "#6b7280", fontSize: 11, fontWeight: 700, letterSpacing: 1, marginBottom: 16, textTransform: "uppercase" }}>Seguir</div>
+                {[{ label: "Instagram", href: "https://instagram.com" }, { label: "LinkedIn", href: "https://linkedin.com" }, { label: "Twitter/X", href: "https://x.com" }].map(l => (
+                  <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: "white", fontSize: 14, display: "block", marginBottom: 10, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
+                ))}
+              </div>
+              <div>
+                <div style={{ color: "#6b7280", fontSize: 11, fontWeight: 700, letterSpacing: 1, marginBottom: 16, textTransform: "uppercase" }}>Recursos</div>
+                <a href="/blog" style={{ color: "white", fontSize: 14, display: "block", marginBottom: 10, textDecoration: "none", cursor: "pointer" }}>Blog</a>
+              </div>
+              <div>
+                <div style={{ color: "#6b7280", fontSize: 11, fontWeight: 700, letterSpacing: 1, marginBottom: 16, textTransform: "uppercase" }}>Empresa</div>
+                {[{ label: "Sobre nós", href: "/sobre" }, { label: "FAQ", href: "/faq" }, { label: "Contato", href: "/contato" }].map(l => (
+                  <a key={l.label} href={l.href} style={{ color: "white", fontSize: 14, display: "block", marginBottom: 10, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
                 ))}
               </div>
             </div>
-
-            {/* Col 2: Plataforma */}
-            <div>
-              <h4 style={{ fontSize: 12, fontWeight: 700, color: WHITE, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 16px" }}>
-                Plataforma
-              </h4>
-              <FooterLink href="/solucoes">Explorar</FooterLink>
-              <FooterLink href="/precos">Preços</FooterLink>
-              <FooterLink href="/#como-funciona">Como Funciona</FooterLink>
-              <FooterLink href="/criadores">Para Criadores</FooterLink>
-              <FooterLink href="/cadastro">Cadastrar</FooterLink>
-            </div>
-
-            {/* Col 3: Criadores */}
-            <div>
-              <h4 style={{ fontSize: 12, fontWeight: 700, color: WHITE, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 16px" }}>
-                Criadores
-              </h4>
-              <FooterLink href="/dashboard/criador">Publicar Solução</FooterLink>
-              <FooterLink href="/precos">Planos</FooterLink>
-              <FooterLink href="/criadores">Fundadores</FooterLink>
-              <FooterLink href="/dashboard/criador">Dashboard</FooterLink>
-              <FooterLink href="/para-criadores/termos">Termos</FooterLink>
-            </div>
-
-            {/* Col 4: Ajuda */}
-            <div>
-              <h4 style={{ fontSize: 12, fontWeight: 700, color: WHITE, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 16px" }}>
-                Ajuda
-              </h4>
-              <FooterLink href="/ajuda">Central de Ajuda</FooterLink>
-              <FooterLink href="/ajuda#faq">FAQ</FooterLink>
-              <FooterLink href="/privacidade">Privacidade</FooterLink>
-              <FooterLink href="mailto:contato@weprompt.app.br">Contato</FooterLink>
+          </div>
+          {/* Bottom row */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1f2937", paddingTop: 24, marginTop: 24, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 0 }}>
+            <span style={{ color: "#6b7280", fontSize: 13 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
+            <div style={{ display: "flex", gap: 24 }}>
+              <a href="/privacidade" style={{ color: "#6b7280", fontSize: 13, textDecoration: "none", cursor: "pointer" }}>Privacidade</a>
+              <a href="/para-empresas/termos" style={{ color: "#6b7280", fontSize: 13, textDecoration: "none", cursor: "pointer" }}>Termos</a>
             </div>
           </div>
-
-          {/* Bottom bar */}
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", marginTop: 48, paddingTop: 24, display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", gap: 8 }}>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", margin: 0 }}>
-              © 2026 WePrompt — O 1º marketplace de soluções de IA da América Latina.
-            </p>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", margin: 0 }}>
-              Todos os direitos reservados.
-            </p>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }
