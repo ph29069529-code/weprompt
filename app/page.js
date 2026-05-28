@@ -1388,9 +1388,8 @@ export default function Home() {
               {activeTab === 0 && (
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "white" }}>W</div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
+                    <div style={{ marginBottom: 12 }}>
+                      <img src="/logo-light.png" style={{ height: 28, width: "auto", objectFit: "contain" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1441,9 +1440,8 @@ export default function Home() {
               {activeTab === 1 && (
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "white" }}>W</div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
+                    <div style={{ marginBottom: 12 }}>
+                      <img src="/logo-light.png" style={{ height: 28, width: "auto", objectFit: "contain" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1494,9 +1492,8 @@ export default function Home() {
               {activeTab === 2 && (
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "white" }}>W</div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
+                    <div style={{ marginBottom: 12 }}>
+                      <img src="/logo-light.png" style={{ height: 28, width: "auto", objectFit: "contain" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1538,9 +1535,8 @@ export default function Home() {
               {activeTab === 3 && (
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "white" }}>W</div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>WePrompt</span>
+                    <div style={{ marginBottom: 12 }}>
+                      <img src="/logo-light.png" style={{ height: 28, width: "auto", objectFit: "contain" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
