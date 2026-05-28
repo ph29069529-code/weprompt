@@ -539,8 +539,26 @@ function HeroSidePanel({ side, isMobile }) {
 }
 
 /* ─── Category card ─────────────────────────────────────────────── */
+const CAT_ICONS = {
+  "Agentes de IA":    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>,
+  "Análise de Dados": <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>,
+  "Automação":        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>,
+  "Chatbots":         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>,
+  "Marketing IA":     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>,
+  "WhatsApp IA":      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>,
+};
+const CAT_DESCS = {
+  "Agentes de IA":    "Automatize tarefas complexas com agentes inteligentes",
+  "Análise de Dados": "Transforme dados em decisões estratégicas",
+  "Automação":        "Elimine tarefas repetitivas e ganhe tempo",
+  "Chatbots":         "Atendimento 24h sem equipe dedicada",
+  "Marketing IA":     "Campanhas e conteúdo gerados por IA",
+  "WhatsApp IA":      "Conecte seus sistemas favoritos com IA",
+};
 function CategoryCard({ name, icon, color, count, slug }) {
   const [hov, setHov] = useState(false);
+  const svgIcon = CAT_ICONS[name];
+  const desc = CAT_DESCS[name];
   return (
     <a
       href={`/solucoes?categoria=${slug || name}`}
@@ -564,14 +582,14 @@ function CategoryCard({ name, icon, color, count, slug }) {
           display: "flex", alignItems: "center", justifyContent: "center",
           flexDirection: "column", gap: 8,
         }}>
-          <span style={{ fontSize: 48 }}>{icon}</span>
+          {svgIcon || <span style={{ fontSize: 48 }}>{icon}</span>}
           <span style={{ fontSize: 16, fontWeight: 700, color: WHITE }}>{name}</span>
         </div>
         {/* Bottom */}
         <div style={{ padding: "16px 20px" }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{name}</div>
           <div style={{ fontSize: 13, color: MUTED, marginBottom: 12 }}>
-            {count === null ? "Em breve" : count === 0 ? "Nenhuma solução ainda" : count === 1 ? "1 solução disponível" : `${count} soluções disponíveis`}
+            {count > 1 ? `${count} soluções disponíveis` : count === 1 ? "1 solução disponível" : (desc || "Em breve")}
           </div>
           <span style={{ fontSize: 13, fontWeight: 600, color: BLUE }}>Explorar →</span>
         </div>
