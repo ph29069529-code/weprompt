@@ -1715,12 +1715,12 @@ export default function Home() {
       ════════════════════════════════════ */}
       <div style={{ position: "relative" }}>
         {/* Rounded bottom of white content area */}
-        <div style={{ height: 60, background: "white", borderRadius: "0 0 40px 40px", position: "relative", zIndex: 1, marginBottom: -1 }} />
+        <div style={{ height: 80, background: "white", borderRadius: "0 0 48px 48px", position: "relative", zIndex: 1 }} />
         <footer style={{
           background: "#0a0a0a",
-          paddingTop: 64, paddingBottom: 40,
+          paddingTop: 80, paddingBottom: 60,
           paddingLeft: isMobile ? 24 : 48, paddingRight: isMobile ? 24 : 48,
-          borderRadius: "40px 40px 0 0",
+          borderRadius: "48px 48px 0 0",
           marginTop: -40,
           position: "relative",
         }}>
@@ -1728,40 +1728,37 @@ export default function Home() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
             {/* Left: brand */}
             <div style={{ maxWidth: 320 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <img src="/logo-icon.png" style={{ height: 40, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
-                <span style={{ color: "white", fontSize: 20, fontWeight: 700 }}>WePrompt</span>
-              </div>
-              <p style={{ color: "#9ca3af", fontSize: 14, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
+              <img src="/logo-icon.png" style={{ height: 56, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
+              <p style={{ color: "#9ca3af", fontSize: 16, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
                 O 1º marketplace de soluções de IA da América Latina.
               </p>
             </div>
             {/* Right: link columns */}
             <div style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
               <div>
-                <div style={{ color: "#6b7280", fontSize: 11, fontWeight: 700, letterSpacing: 1, marginBottom: 16, textTransform: "uppercase" }}>Seguir</div>
+                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Seguir</div>
                 {[{ label: "Instagram", href: "https://instagram.com" }, { label: "LinkedIn", href: "https://linkedin.com" }, { label: "Twitter/X", href: "https://x.com" }].map(l => (
-                  <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: "white", fontSize: 14, display: "block", marginBottom: 10, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
+                  <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
                 ))}
               </div>
               <div>
-                <div style={{ color: "#6b7280", fontSize: 11, fontWeight: 700, letterSpacing: 1, marginBottom: 16, textTransform: "uppercase" }}>Recursos</div>
-                <a href="/blog" style={{ color: "white", fontSize: 14, display: "block", marginBottom: 10, textDecoration: "none", cursor: "pointer" }}>Blog</a>
+                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Recursos</div>
+                <a href="/blog" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>Blog</a>
               </div>
               <div>
-                <div style={{ color: "#6b7280", fontSize: 11, fontWeight: 700, letterSpacing: 1, marginBottom: 16, textTransform: "uppercase" }}>Empresa</div>
+                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Empresa</div>
                 {[{ label: "Sobre nós", href: "/sobre" }, { label: "FAQ", href: "/faq" }, { label: "Contato", href: "/contato" }].map(l => (
-                  <a key={l.label} href={l.href} style={{ color: "white", fontSize: 14, display: "block", marginBottom: 10, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
+                  <a key={l.label} href={l.href} style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
                 ))}
               </div>
             </div>
           </div>
           {/* Bottom row */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1f2937", paddingTop: 24, marginTop: 24, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 0 }}>
-            <span style={{ color: "#6b7280", fontSize: 13 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
+            <span style={{ color: "#6b7280", fontSize: 14 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
             <div style={{ display: "flex", gap: 24 }}>
-              <a href="/privacidade" style={{ color: "#6b7280", fontSize: 13, textDecoration: "none", cursor: "pointer" }}>Privacidade</a>
-              <a href="/para-empresas/termos" style={{ color: "#6b7280", fontSize: 13, textDecoration: "none", cursor: "pointer" }}>Termos</a>
+              <a href="/privacidade" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none", cursor: "pointer" }}>Privacidade</a>
+              <a href="/para-empresas/termos" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none", cursor: "pointer" }}>Termos</a>
             </div>
           </div>
         </footer>
