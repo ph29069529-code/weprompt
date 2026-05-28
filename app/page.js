@@ -1555,10 +1555,10 @@ export default function Home() {
           <div style={{ display: "flex", alignItems: "center", gap: 80, flexDirection: isMobile ? "column" : "row" }}>
             {/* Left */}
             <div style={{ flex: 0.8, paddingLeft: isMobile ? 0 : 48 }}>
-              <h2 style={{ fontSize: isMobile ? 32 : 44, fontWeight: 800, color: "#111827", lineHeight: 1.1, margin: 0 }}>
+              <h2 style={{ fontSize: isMobile ? 32 : 52, fontWeight: 800, color: "#111827", lineHeight: 1.1, margin: 0 }}>
                 Funciona com as Ferramentas que Você Já Usa
               </h2>
-              <p style={{ fontSize: 18, color: "#6b7280", marginTop: 16, maxWidth: 500, lineHeight: 1.6, marginBottom: 0 }}>
+              <p style={{ fontSize: 20, color: "#6b7280", marginTop: 16, maxWidth: 480, lineHeight: 1.6, marginBottom: 0 }}>
                 As soluções da WePrompt se integram com as plataformas que o seu negócio já usa — de ferramentas de produtividade e CRMs a apps de comunicação.
               </p>
               <a href="/solucoes" style={{ display: "inline-block", border: "1.5px solid #e5e7eb", borderRadius: 999, padding: "12px 28px", fontSize: 14, fontWeight: 600, color: "#111827", marginTop: 24, textDecoration: "none", cursor: "pointer" }}>
