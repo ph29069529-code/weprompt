@@ -39,19 +39,26 @@ const icons = {
   logout:  "M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9",
   check:   "M20 6L9 17l-5-5",
   users:   "M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",
-  chevron: "M6 9l6 6 6-6",
   search:  "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
   plus:    "M12 5v14M5 12h14",
 };
 
 /* ── KPI card ── */
 function KpiCard({ iconD, label, value, sub }) {
+  const [hovered, setHovered] = useState(false);
   return (
-    <div style={{
-      background: "#fff", borderRadius: 20,
-      boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-      padding: "24px", flex: 1, minWidth: 0,
-    }}>
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "#fff", borderRadius: 20,
+        boxShadow: hovered ? "0 8px 24px rgba(0,0,0,0.08)" : "0 2px 12px rgba(0,0,0,0.06)",
+        padding: "24px", flex: 1, minWidth: 0,
+        transform: hovered ? "scale(1.02)" : "scale(1)",
+        transition: "all 0.2s ease",
+        cursor: "default",
+      }}
+    >
       <div style={{
         width: 40, height: 40, borderRadius: 12,
         background: "#e0f2fe", color: BLUE,
@@ -83,41 +90,6 @@ function Toggle({ checked, onChange }) {
         background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
         transition: "left 0.2s",
       }} />
-    </button>
-  );
-}
-
-/* ── Sidebar nav item ── */
-function NavItem({ iconD, label, active, onClick, href }) {
-  const style = {
-    width: "100%", display: "flex", alignItems: "center", gap: 12,
-    padding: "10px 16px", borderRadius: 12, border: "none",
-    background: active ? "#e0f2fe" : "transparent",
-    color: active ? BLUE : GRAY_TEXT,
-    fontSize: 14, fontWeight: active ? 600 : 500,
-    cursor: "pointer", fontFamily: "inherit", textAlign: "left",
-    transition: "background 0.15s, color 0.15s", textDecoration: "none",
-  };
-  const inner = (
-    <>
-      <span style={{ opacity: active ? 1 : 0.55, flexShrink: 0 }}><Icon d={iconD} size={16} /></span>
-      {label}
-    </>
-  );
-  if (href) {
-    return (
-      <a href={href} style={style}
-        onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
-        onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}>
-        {inner}
-      </a>
-    );
-  }
-  return (
-    <button onClick={onClick} style={style}
-      onMouseEnter={e => { if (!active) e.currentTarget.style.background = "rgba(0,0,0,0.04)"; }}
-      onMouseLeave={e => { if (!active) e.currentTarget.style.background = "transparent"; }}>
-      {inner}
     </button>
   );
 }
@@ -189,7 +161,6 @@ function AcquiredCard({ sub, onCancel, isMobile }) {
       onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 28px rgba(3,105,161,0.1)"; }}
       onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)"; }}
     >
-      {/* Thumbnail */}
       <div style={{ height: 120, position: "relative", flexShrink: 0 }}>
         {solution?.cover_url ? (
           <img src={solution.cover_url} alt={solution.titulo}
@@ -202,7 +173,6 @@ function AcquiredCard({ sub, onCancel, isMobile }) {
             fontSize: 32, color: BLUE, opacity: 0.6,
           }}>✦</div>
         )}
-        {/* Status badge */}
         <div style={{
           position: "absolute", top: 10, right: 10,
           background: isActive ? "rgba(22,163,74,0.9)" : "rgba(220,38,38,0.9)",
@@ -212,8 +182,6 @@ function AcquiredCard({ sub, onCancel, isMobile }) {
           {isActive ? "Ativa" : "Cancelada"}
         </div>
       </div>
-
-      {/* Content */}
       <div style={{ padding: "18px 20px", flex: 1, display: "flex", flexDirection: "column" }}>
         {solution?.categoria && (
           <span style={{
@@ -336,12 +304,8 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
 
   return (
     <form onSubmit={handleSubmit}>
-
-      {/* Perfil da Empresa */}
       <div style={cardStyle}>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Perfil da empresa</h3>
-
-        {/* Logo */}
         <div style={{ marginBottom: 24 }}>
           <label style={lbl}>Logo da empresa</label>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -362,7 +326,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
             <input ref={logoInputRef} type="file" accept="image/jpeg,image/png,image/webp" style={{ display: "none" }} onChange={handleLogoChange} />
           </div>
         </div>
-
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 0 }}>
           <div>
             <label style={lbl}>Nome da empresa</label>
@@ -396,7 +359,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
         </div>
       </div>
 
-      {/* Usuários da conta */}
       <div style={cardStyle}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, margin: 0 }}>Usuários da conta</h3>
@@ -413,7 +375,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
             <Icon d={icons.plus} size={14} /> Convidar usuário
           </button>
         </div>
-        {/* Current user row */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 0", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{
             width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
@@ -434,7 +395,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
         </p>
       </div>
 
-      {/* Plano Atual */}
       <div style={cardStyle}>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Plano atual</h3>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
@@ -474,7 +434,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
         </div>
       </div>
 
-      {/* Segurança */}
       <div style={cardStyle}>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Segurança</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -493,7 +452,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
         </div>
       </div>
 
-      {/* Notificações */}
       <div style={cardStyle}>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Notificações</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -513,7 +471,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
         </div>
       </div>
 
-      {/* Ajuda */}
       <div style={cardStyle}>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 20 }}>Ajuda</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -538,7 +495,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
         </div>
       </div>
 
-      {/* Termos */}
       <div style={cardStyle}>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 16 }}>Termos e Políticas</h3>
         <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
@@ -554,7 +510,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
         </div>
       </div>
 
-      {/* Feedback + Save */}
       {saveError && <div style={{ background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.18)", borderRadius: 10, padding: "12px 16px", fontSize: 13, color: "#B91C1C", marginBottom: 16 }}>{saveError}</div>}
       {saveMsg && <div style={{ background: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.18)", borderRadius: 10, padding: "12px 16px", fontSize: 13, color: "#15803D", marginBottom: 16 }}>{saveMsg}</div>}
 
@@ -577,7 +532,6 @@ function SettingsEmpresa({ user, profile, isMobile, onProfileUpdate }) {
 const MONTHS_PT_E = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 const CAT_COLORS_E = ["#0369A1", "#7C3AED", "#059669", "#D97706", "#DC2626", "#0891B2"];
 
-/* ── SimpleBarChart ── */
 function SimpleBarChart({ data, labels }) {
   const W = 400, H = 140, PL = 44, PB = 26, PT = 8, PR = 8;
   const cW = W - PL - PR, cH = H - PT - PB;
@@ -611,7 +565,6 @@ function SimpleBarChart({ data, labels }) {
   );
 }
 
-/* ── DonutChart ── */
 function DonutChartE({ data, size = 140 }) {
   const total = data.reduce((s, d) => s + d.value, 0);
   if (!total) return null;
@@ -641,7 +594,6 @@ function DonutChartE({ data, size = 140 }) {
   );
 }
 
-/* ── ANALYTICS EMPRESA TAB ── */
 function AnalyticsEmpresaTab({ subscriptions, isMobile }) {
   const [period, setPeriod] = useState("30d");
 
@@ -684,8 +636,6 @@ function AnalyticsEmpresaTab({ subscriptions, isMobile }) {
         <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Analytics</h1>
         <p style={{ fontSize: 14, color: GRAY_TEXT }}>Análise de investimentos em soluções de IA.</p>
       </div>
-
-      {/* Date filter */}
       <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
         {periodOptions.map(opt => (
           <button key={opt.key} onClick={() => setPeriod(opt.key)} style={{
@@ -697,8 +647,6 @@ function AnalyticsEmpresaTab({ subscriptions, isMobile }) {
           }}>{opt.label}</button>
         ))}
       </div>
-
-      {/* Overview cards */}
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
         {[
           { label: "Total Investido em Soluções", value: `R$ ${totalInvested.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: `${filteredSubs.length} transações no período` },
@@ -712,8 +660,6 @@ function AnalyticsEmpresaTab({ subscriptions, isMobile }) {
           </div>
         ))}
       </div>
-
-      {/* Charts */}
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 18, marginBottom: 24 }}>
         <div style={card}>
           <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Gastos por mês</div>
@@ -741,8 +687,6 @@ function AnalyticsEmpresaTab({ subscriptions, isMobile }) {
             )}
         </div>
       </div>
-
-      {/* ROI table */}
       <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
         <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, fontSize: 15, fontWeight: 700, color: NEAR_BLACK }}>ROI por Solução</div>
         {subscriptions.length === 0 ? (
@@ -759,7 +703,10 @@ function AnalyticsEmpresaTab({ subscriptions, isMobile }) {
               </thead>
               <tbody>
                 {subscriptions.map((sub) => (
-                  <tr key={sub.id} style={{ borderTop: `1px solid ${BORDER}` }}>
+                  <tr key={sub.id} style={{ borderTop: `1px solid ${BORDER}` }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#f8faff"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
                     <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>{sub.solutions?.titulo || "—"}</td>
                     <td style={{ padding: "12px 16px" }}>
                       <span style={{ background: "#e0f2fe", color: BLUE, fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 99 }}>
@@ -793,6 +740,15 @@ function AnalyticsEmpresaTab({ subscriptions, isMobile }) {
   );
 }
 
+const NAV_TABS = [
+  { key: "inicio",        label: "Início" },
+  { key: "solucoes",      label: "Soluções Adquiridas" },
+  { key: "explorar",      label: "Explorar Catálogo" },
+  { key: "historico",     label: "Histórico de Compras" },
+  { key: "analytics",     label: "Analytics" },
+  { key: "configuracoes", label: "Configurações" },
+];
+
 /* ══════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════ */
@@ -804,9 +760,10 @@ export default function EmpresaDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeNav, setActiveNav] = useState("inicio");
   const [cancelTarget, setCancelTarget] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategoria, setFilterCategoria] = useState("all");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [hoveredTab, setHoveredTab] = useState(null);
   const width = useWindowSize();
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
@@ -860,11 +817,9 @@ export default function EmpresaDashboard() {
   const displayName = profile?.nome || user?.user_metadata?.nome || user?.email?.split("@")[0] || "Empresa";
   const activeSubs = subscriptions.filter(s => s.status === "active");
   const monthlySpend = activeSubs.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
-
   const planName = profile?.plan === "business" ? "Business" : profile?.plan === "enterprise" ? "Enterprise" : "Free";
   const planDiscount = planName === "Enterprise" ? 0.2 : planName === "Business" ? 0.1 : 0;
   const savings = monthlySpend * planDiscount;
-
   const allCategories = [...new Set(subscriptions.map(s => s.solutions?.categoria).filter(Boolean))];
 
   const filteredSubs = subscriptions.filter(s => {
@@ -875,16 +830,6 @@ export default function EmpresaDashboard() {
     return matchSearch && matchCat;
   });
 
-  const navItems = [
-    { key: "inicio",        iconD: icons.home,     label: "Início" },
-    { key: "solucoes",      iconD: icons.grid,     label: "Soluções Adquiridas" },
-    { key: "explorar",      iconD: icons.explore,  label: "Explorar Catálogo", href: "/solucoes" },
-    { key: "historico",     iconD: icons.history,  label: "Histórico de Compras" },
-    { key: "analytics",     iconD: icons.chart,    label: "Analytics" },
-    { key: "configuracoes", iconD: icons.settings, label: "Configurações" },
-  ];
-
-  /* Reusable acquired solutions grid */
   function SolucoesGrid({ subs, showEmpty = true }) {
     const sorted = [...subs].sort((a, b) => a.status === b.status ? 0 : a.status === "active" ? -1 : 1);
     if (sorted.length === 0 && showEmpty) {
@@ -923,396 +868,421 @@ export default function EmpresaDashboard() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: NEAR_BLACK, background: BG_GRAY }}>
+    <div style={{ minHeight: "100vh", fontFamily: "'DM Sans', sans-serif", color: NEAR_BLACK, background: "#f9fafb" }}>
 
-      {/* Mobile backdrop */}
-      {isMobile && sidebarOpen && (
-        <div onClick={() => setSidebarOpen(false)}
-          style={{ position: "fixed", inset: 0, zIndex: 49, background: "rgba(0,0,0,0.4)" }} />
-      )}
-
-      {/* ── SIDEBAR ── */}
-      <aside style={{
-        width: 240, flexShrink: 0,
-        background: "#fff",
-        borderRight: `1px solid ${BORDER}`,
-        display: "flex", flexDirection: "column",
-        position: "fixed", top: 0, bottom: 0,
-        left: isMobile && !sidebarOpen ? -240 : 0,
-        zIndex: 50, transition: "left 0.25s ease",
-        overflowY: "auto",
+      {/* ── TOP NAVBAR ── */}
+      <nav style={{
+        background: "white",
+        borderBottom: `1px solid ${BORDER}`,
+        padding: "0 32px",
+        height: 60,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
       }}>
-        <div style={{ padding: "22px 20px 18px" }}>
-          <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="empresa-sidebar" dark />
-          </a>
+        {/* Left: Logo */}
+        <img src="/logo-icon.png" alt="WePrompt" style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center" }} />
+
+        {/* Center: Search */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          background: searchFocused ? "white" : "#f3f4f6",
+          borderRadius: 8,
+          padding: "8px 16px",
+          width: 360,
+          gap: 8,
+          border: searchFocused ? `1px solid ${BLUE}` : "1px solid transparent",
+          boxShadow: searchFocused ? "0 0 0 3px rgba(3,105,161,0.1)" : "none",
+          transition: "all 0.2s ease",
+        }}>
+          <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            placeholder="Buscar soluções..."
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            style={{ fontSize: 14, border: "none", background: "transparent", outline: "none", flex: 1, color: NEAR_BLACK }}
+          />
         </div>
-        <div style={{ height: 1, background: BORDER, margin: "0 16px 16px" }} />
-        <nav style={{ flex: 1, padding: "0 12px", display: "flex", flexDirection: "column", gap: 2 }}>
-          {navItems.map(item => (
-            <NavItem key={item.key} iconD={item.iconD} label={item.label}
-              active={activeNav === item.key}
-              onClick={item.href ? undefined : () => { setActiveNav(item.key); if (isMobile) setSidebarOpen(false); }}
-              href={item.href} />
-          ))}
-        </nav>
-        <div style={{ padding: "16px 12px", borderTop: `1px solid ${BORDER}` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", marginBottom: 6 }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-              background: "#e0f2fe",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 15, fontWeight: 700, color: BLUE,
-            }}>
-              {displayName.charAt(0).toUpperCase()}
-            </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {displayName}
-              </div>
-              <div style={{ fontSize: 11, color: GRAY_TEXT }}>Empresa</div>
-            </div>
-          </div>
-          <button onClick={handleSignOut} style={{
-            width: "100%", display: "flex", alignItems: "center", gap: 10,
-            padding: "10px 16px", borderRadius: 12, border: "none",
-            background: "transparent", color: "#DC2626",
-            fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left",
-            transition: "background 0.15s",
-          }}
-            onMouseEnter={e => e.currentTarget.style.background = "rgba(220,38,38,0.07)"}
-            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-          >
-            <Icon d={icons.logout} size={14} /> Sair
+
+        {/* Right */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <button style={{ fontSize: 14, fontWeight: 500, color: NEAR_BLACK, cursor: "pointer", background: "none", border: "none", padding: 0 }}>Marketplace ▾</button>
+          <button style={{ fontSize: 14, fontWeight: 500, color: NEAR_BLACK, cursor: "pointer", background: "none", border: "none", padding: 0 }}>Explorar</button>
+          <div style={{ width: 1, height: 20, background: BORDER }} />
+          <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
+            <svg width="20" height="20" fill="none" stroke={NEAR_BLACK} strokeWidth="1.75" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
+            </svg>
           </button>
-        </div>
-      </aside>
-
-      {/* ── MAIN ── */}
-      <main style={{ flex: 1, marginLeft: isMobile ? 0 : 240, minWidth: 0 }}>
-
-        {isMobile && (
+          <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", position: "relative", display: "flex", alignItems: "center" }}>
+            <svg width="20" height="20" fill="none" stroke={NEAR_BLACK} strokeWidth="1.75" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            </svg>
+            <span style={{ width: 8, height: 8, background: "#ef4444", borderRadius: 999, position: "absolute", top: -2, right: -2 }} />
+          </button>
           <div style={{
-            position: "sticky", top: 0, zIndex: 40,
-            background: "rgba(255,255,255,0.95)",
-            backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-            borderBottom: `1px solid ${BORDER}`,
-            padding: "0 16px", height: 56,
-            display: "flex", alignItems: "center", justifyContent: "space-between",
+            width: 32, height: 32, background: BLUE, borderRadius: 999,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer",
           }}>
-            <a href="/" style={{ textDecoration: "none" }}>
-              <WePromptLogo id="empresa-mobile" dark />
-            </a>
-            <button onClick={() => setSidebarOpen(o => !o)} style={{
-              background: "none", border: "none", cursor: "pointer",
-              fontSize: 22, color: NEAR_BLACK, padding: "4px 8px", display: "flex", alignItems: "center",
-            }}>
-              {sidebarOpen ? "✕" : "☰"}
+            {displayName.charAt(0).toUpperCase()}
+          </div>
+        </div>
+      </nav>
+
+      {/* ── TABS ROW ── */}
+      <div style={{
+        background: "white",
+        borderBottom: `1px solid ${BORDER}`,
+        padding: "0 32px",
+        display: "flex",
+        gap: 0,
+        overflowX: "auto",
+      }}>
+        {NAV_TABS.map((tab, i) => {
+          const isActive = activeNav === tab.key;
+          const isHovered = hoveredTab === i;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveNav(tab.key)}
+              onMouseEnter={() => setHoveredTab(i)}
+              onMouseLeave={() => setHoveredTab(null)}
+              style={{
+                fontSize: 14,
+                padding: "14px 0",
+                paddingRight: 20,
+                marginRight: 4,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                border: "none",
+                borderBottom: isActive ? `2px solid ${NEAR_BLACK}` : "2px solid transparent",
+                background: "transparent",
+                color: isActive ? NEAR_BLACK : isHovered ? "#374151" : GRAY_TEXT,
+                fontWeight: isActive ? 600 : 400,
+                marginBottom: -1,
+                transition: "color 0.15s ease",
+                whiteSpace: "nowrap",
+                fontFamily: "inherit",
+              }}
+            >
+              {tab.label}
             </button>
+          );
+        })}
+      </div>
+
+      {/* ── MAIN CONTENT ── */}
+      <main style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "24px 16px 48px" : "40px 32px 48px" }}>
+
+        {/* ── TAB: INÍCIO ── */}
+        {activeNav === "inicio" && (
+          <>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 32 }}>
+              <div>
+                <h1 style={{ fontSize: 28, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.8px", marginBottom: 6 }}>
+                  Olá, {displayName} 👋
+                </h1>
+                <p style={{ fontSize: 15, color: GRAY_TEXT }}>Aqui está o resumo das suas soluções de IA.</p>
+              </div>
+              <NotificationBell />
+            </div>
+
+            {/* KPIs */}
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16, marginBottom: 28 }}>
+              <KpiCard iconD={icons.grid}    label="Soluções Adquiridas" value={subscriptions.length} sub={`${activeSubs.length} ativas`} />
+              <KpiCard iconD={icons.history} label="Créditos Restantes"  value={planName === "Free" ? "Free" : "—"} sub={`Plano ${planName}`} />
+              <KpiCard iconD={icons.explore} label="Economia Estimada"   value={savings > 0 ? `R$ ${savings.toFixed(0)}` : "—"} sub={planDiscount > 0 ? `${planDiscount * 100}% de desconto` : "Upgrade para economizar"} />
+              <KpiCard iconD={icons.check}   label="Soluções Ativas"     value={activeSubs.length} sub={monthlySpend > 0 ? `R$ ${monthlySpend.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês` : "Sem gasto recorrente"} />
+            </div>
+
+            {/* Acquired solutions */}
+            <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "24px", marginBottom: 28 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK }}>Soluções Adquiridas</div>
+                <button onClick={() => setActiveNav("solucoes")} style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  fontSize: 13, color: BLUE, fontWeight: 600, fontFamily: "inherit",
+                }}>Ver todas →</button>
+              </div>
+              <SolucoesGrid subs={subscriptions.slice(0, 4)} />
+            </div>
+
+            {/* Current plan */}
+            <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "24px", marginBottom: 28 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 12 }}>Plano atual</div>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <span style={{
+                      background: planName === "Free" ? BG_GRAY : BLUE,
+                      color: planName === "Free" ? NEAR_BLACK : "#fff",
+                      fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 999,
+                    }}>{planName}</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {(planName === "Free"
+                      ? ["Acesso ao catálogo completo", "Compra avulsa de soluções", "Suporte via e-mail"]
+                      : ["10% de desconto em todas as soluções", "Suporte prioritário em PT-BR", "Curadoria personalizada mensal"]
+                    ).map(f => (
+                      <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: GRAY_TEXT }}>
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                          <circle cx="8" cy="8" r="7" fill="rgba(3,105,161,0.1)" />
+                          <path d="M5 8l2 2 4-4" stroke={BLUE} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        {f}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {planName === "Free" && (
+                  <a href="/precos" style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    background: BLUE, color: "#fff", borderRadius: 12, padding: "10px 20px",
+                    fontSize: 14, fontWeight: 600, textDecoration: "none", transition: "background 0.15s",
+                    flexShrink: 0,
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+                    onMouseLeave={e => e.currentTarget.style.background = BLUE}
+                  >
+                    Fazer upgrade →
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Recent purchases table */}
+            <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+              <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK }}>Compras recentes</div>
+                <button onClick={() => setActiveNav("historico")} style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  fontSize: 13, color: BLUE, fontWeight: 600, fontFamily: "inherit",
+                }}>Ver histórico →</button>
+              </div>
+              {subscriptions.length === 0 ? (
+                <div style={{ padding: "40px 24px", textAlign: "center", color: GRAY_TEXT, fontSize: 14 }}>
+                  Nenhuma compra registrada ainda.
+                </div>
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: BG_GRAY }}>
+                        {["Data", "Solução", "Valor", "Status"].map(h => (
+                          <th key={h} style={{ padding: "12px 16px", fontSize: 12, fontWeight: 600, color: GRAY_TEXT, textAlign: "left", whiteSpace: "nowrap" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {subscriptions.slice(0, 5).map((sub, i) => (
+                        <tr key={sub.id}
+                          style={{ borderTop: `1px solid ${BORDER}`, cursor: "pointer", transition: "background 0.15s ease" }}
+                          onMouseEnter={e => e.currentTarget.style.background = "#f8faff"}
+                          onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#fafafa"}
+                        >
+                          <td style={{ padding: "14px 16px", fontSize: 13, color: GRAY_TEXT, whiteSpace: "nowrap" }}>
+                            {new Date(sub.created_at).toLocaleDateString("pt-BR")}
+                          </td>
+                          <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: NEAR_BLACK }}>
+                            {sub.solutions?.titulo || "—"}
+                          </td>
+                          <td style={{ padding: "14px 16px", fontSize: 14, color: NEAR_BLACK, whiteSpace: "nowrap" }}>
+                            {sub.solutions?.preco != null
+                              ? `R$ ${Number(sub.solutions.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                              : "Grátis"}
+                          </td>
+                          <td style={{ padding: "14px 16px" }}>
+                            <span style={{
+                              display: "inline-block",
+                              background: sub.status === "active" ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
+                              border: `1px solid ${sub.status === "active" ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
+                              color: sub.status === "active" ? "#15803D" : "#B91C1C",
+                              fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
+                            }}>
+                              {sub.status === "active" ? "Pago" : "Cancelado"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ── TAB: SOLUÇÕES ADQUIRIDAS ── */}
+        {activeNav === "solucoes" && (
+          <>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Soluções Adquiridas</h1>
+              <p style={{ fontSize: 14, color: GRAY_TEXT }}>Todas as soluções de IA que sua empresa utiliza.</p>
+            </div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
+              <div style={{ position: "relative", flex: 1, minWidth: 200 }}>
+                <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: GRAY_TEXT, pointerEvents: "none" }}>
+                  <Icon d={icons.search} size={16} />
+                </div>
+                <input
+                  type="text" placeholder="Buscar soluções…"
+                  value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%", padding: "11px 14px 11px 40px", borderRadius: 12,
+                    border: `1px solid ${BORDER}`, fontSize: 14, color: NEAR_BLACK,
+                    background: "#fff", outline: "none", boxSizing: "border-box",
+                    fontFamily: "inherit", transition: "border-color 0.15s",
+                  }}
+                  onFocus={e => { e.target.style.borderColor = BLUE; e.target.style.boxShadow = "0 0 0 3px rgba(3,105,161,0.1)"; }}
+                  onBlur={e => { e.target.style.borderColor = BORDER; e.target.style.boxShadow = "none"; }}
+                />
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {["all", ...allCategories].map(cat => (
+                  <button key={cat} onClick={() => setFilterCategoria(cat)} style={{
+                    padding: "10px 18px", borderRadius: 999, border: "none",
+                    background: filterCategoria === cat ? BLUE : "#fff",
+                    color: filterCategoria === cat ? "#fff" : GRAY_TEXT,
+                    fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                    transition: "background 0.15s, color 0.15s",
+                  }}>
+                    {cat === "all" ? "Todas" : cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <SolucoesGrid subs={filteredSubs} />
+          </>
+        )}
+
+        {/* ── TAB: EXPLORAR CATÁLOGO ── */}
+        {activeNav === "explorar" && (
+          <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "64px 32px", textAlign: "center" }}>
+            <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.2 }}>🔍</div>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 12 }}>Explorar Catálogo</h2>
+            <p style={{ fontSize: 15, color: GRAY_TEXT, maxWidth: 440, margin: "0 auto 28px", lineHeight: 1.65 }}>
+              Descubra centenas de soluções de IA prontas para transformar os processos da sua empresa.
+            </p>
+            <a href="/solucoes" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              background: BLUE, color: "#fff", borderRadius: 12,
+              padding: "14px 32px", fontSize: 15, fontWeight: 700, textDecoration: "none",
+              transition: "background 0.15s",
+            }}
+              onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
+              onMouseLeave={e => e.currentTarget.style.background = BLUE}
+            >
+              Ir para o catálogo →
+            </a>
           </div>
         )}
 
-        <div style={{ maxWidth: 1000, margin: "0 auto", padding: isMobile ? "24px 16px 48px" : "40px 32px 48px" }}>
-
-          {/* ── TAB: INÍCIO ── */}
-          {activeNav === "inicio" && (
-            <>
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 32 }}>
-                <div>
-                  <h1 style={{ fontSize: 28, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.8px", marginBottom: 6 }}>
-                    Olá, {displayName} 👋
-                  </h1>
-                  <p style={{ fontSize: 15, color: GRAY_TEXT }}>Aqui está o resumo das suas soluções de IA.</p>
-                </div>
-                <NotificationBell />
-              </div>
-
-              {/* KPIs */}
-              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16, marginBottom: 28 }}>
-                <KpiCard iconD={icons.grid}    label="Soluções Adquiridas" value={subscriptions.length} sub={`${activeSubs.length} ativas`} />
-                <KpiCard iconD={icons.history} label="Créditos Restantes"  value={planName === "Free" ? "Free" : "—"} sub={`Plano ${planName}`} />
-                <KpiCard iconD={icons.explore} label="Economia Estimada"   value={savings > 0 ? `R$ ${savings.toFixed(0)}` : "—"} sub={planDiscount > 0 ? `${planDiscount * 100}% de desconto` : "Upgrade para economizar"} />
-                <KpiCard iconD={icons.check}   label="Soluções Ativas"     value={activeSubs.length} sub={monthlySpend > 0 ? `R$ ${monthlySpend.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês` : "Sem gasto recorrente"} />
-              </div>
-
-              {/* Acquired solutions */}
-              <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "24px", marginBottom: 28 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK }}>Soluções Adquiridas</div>
-                  <button onClick={() => setActiveNav("solucoes")} style={{
-                    background: "none", border: "none", cursor: "pointer",
-                    fontSize: 13, color: BLUE, fontWeight: 600, fontFamily: "inherit",
-                  }}>Ver todas →</button>
-                </div>
-                <SolucoesGrid subs={subscriptions.slice(0, 4)} />
-              </div>
-
-              {/* Current plan */}
-              <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "24px", marginBottom: 28 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
-                  <div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 12 }}>Plano atual</div>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                      <span style={{
-                        background: planName === "Free" ? BG_GRAY : BLUE,
-                        color: planName === "Free" ? NEAR_BLACK : "#fff",
-                        fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 999,
-                      }}>{planName}</span>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                      {(planName === "Free"
-                        ? ["Acesso ao catálogo completo", "Compra avulsa de soluções", "Suporte via e-mail"]
-                        : ["10% de desconto em todas as soluções", "Suporte prioritário em PT-BR", "Curadoria personalizada mensal"]
-                      ).map(f => (
-                        <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: GRAY_TEXT }}>
-                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                            <circle cx="8" cy="8" r="7" fill="rgba(3,105,161,0.1)" />
-                            <path d="M5 8l2 2 4-4" stroke={BLUE} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                          {f}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {planName === "Free" && (
-                    <a href="/precos" style={{
-                      display: "inline-flex", alignItems: "center", gap: 6,
-                      background: BLUE, color: "#fff", borderRadius: 12, padding: "10px 20px",
-                      fontSize: 14, fontWeight: 600, textDecoration: "none", transition: "background 0.15s",
-                      flexShrink: 0,
-                    }}
-                      onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                      onMouseLeave={e => e.currentTarget.style.background = BLUE}
-                    >
-                      Fazer upgrade →
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              {/* Recent purchases table */}
-              <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
-                <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK }}>Compras recentes</div>
-                  <button onClick={() => setActiveNav("historico")} style={{
-                    background: "none", border: "none", cursor: "pointer",
-                    fontSize: 13, color: BLUE, fontWeight: 600, fontFamily: "inherit",
-                  }}>Ver histórico →</button>
-                </div>
-                {subscriptions.length === 0 ? (
-                  <div style={{ padding: "40px 24px", textAlign: "center", color: GRAY_TEXT, fontSize: 14 }}>
-                    Nenhuma compra registrada ainda.
-                  </div>
-                ) : (
-                  <div style={{ overflowX: "auto" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                      <thead>
-                        <tr style={{ background: BG_GRAY }}>
-                          {["Data", "Solução", "Valor", "Status"].map(h => (
-                            <th key={h} style={{ padding: "12px 16px", fontSize: 12, fontWeight: 600, color: GRAY_TEXT, textAlign: "left", whiteSpace: "nowrap" }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {subscriptions.slice(0, 5).map((sub, i) => (
-                          <tr key={sub.id} style={{ borderTop: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                            <td style={{ padding: "14px 16px", fontSize: 13, color: GRAY_TEXT, whiteSpace: "nowrap" }}>
-                              {new Date(sub.created_at).toLocaleDateString("pt-BR")}
-                            </td>
-                            <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: NEAR_BLACK }}>
-                              {sub.solutions?.titulo || "—"}
-                            </td>
-                            <td style={{ padding: "14px 16px", fontSize: 14, color: NEAR_BLACK, whiteSpace: "nowrap" }}>
-                              {sub.solutions?.preco != null
-                                ? `R$ ${Number(sub.solutions.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-                                : "Grátis"}
-                            </td>
-                            <td style={{ padding: "14px 16px" }}>
-                              <span style={{
-                                display: "inline-block",
-                                background: sub.status === "active" ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
-                                border: `1px solid ${sub.status === "active" ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
-                                color: sub.status === "active" ? "#15803D" : "#B91C1C",
-                                fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
-                              }}>
-                                {sub.status === "active" ? "Pago" : "Cancelado"}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-
-          {/* ── TAB: SOLUÇÕES ADQUIRIDAS ── */}
-          {activeNav === "solucoes" && (
-            <>
-              <div style={{ marginBottom: 24 }}>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Soluções Adquiridas</h1>
-                <p style={{ fontSize: 14, color: GRAY_TEXT }}>Todas as soluções de IA que sua empresa utiliza.</p>
-              </div>
-
-              {/* Search + filter */}
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
-                <div style={{ position: "relative", flex: 1, minWidth: 200 }}>
-                  <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: GRAY_TEXT, pointerEvents: "none" }}>
-                    <Icon d={icons.search} size={16} />
-                  </div>
-                  <input
-                    type="text" placeholder="Buscar soluções…"
-                    value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                    style={{
-                      width: "100%", padding: "11px 14px 11px 40px", borderRadius: 12,
-                      border: `1px solid ${BORDER}`, fontSize: 14, color: NEAR_BLACK,
-                      background: "#fff", outline: "none", boxSizing: "border-box",
-                      fontFamily: "inherit", transition: "border-color 0.15s",
-                    }}
-                    onFocus={e => { e.target.style.borderColor = BLUE; e.target.style.boxShadow = "0 0 0 3px rgba(3,105,161,0.1)"; }}
-                    onBlur={e => { e.target.style.borderColor = BORDER; e.target.style.boxShadow = "none"; }}
-                  />
-                </div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {["all", ...allCategories].map(cat => (
-                    <button key={cat} onClick={() => setFilterCategoria(cat)} style={{
-                      padding: "10px 18px", borderRadius: 999, border: "none",
-                      background: filterCategoria === cat ? BLUE : "#fff",
-                      color: filterCategoria === cat ? "#fff" : GRAY_TEXT,
-                      fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-                      transition: "background 0.15s, color 0.15s",
-                    }}>
-                      {cat === "all" ? "Todas" : cat}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <SolucoesGrid subs={filteredSubs} />
-            </>
-          )}
-
-          {/* ── TAB: EXPLORAR CATÁLOGO ── */}
-          {activeNav === "explorar" && (
-            <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "64px 32px", textAlign: "center" }}>
-              <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.2 }}>🔍</div>
-              <h2 style={{ fontSize: 22, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 12 }}>Explorar Catálogo</h2>
-              <p style={{ fontSize: 15, color: GRAY_TEXT, maxWidth: 440, margin: "0 auto 28px", lineHeight: 1.65 }}>
-                Descubra centenas de soluções de IA prontas para transformar os processos da sua empresa.
-              </p>
-              <a href="/solucoes" style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                background: BLUE, color: "#fff", borderRadius: 12,
-                padding: "14px 32px", fontSize: 15, fontWeight: 700, textDecoration: "none",
-                transition: "background 0.15s",
-              }}
-                onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                onMouseLeave={e => e.currentTarget.style.background = BLUE}
-              >
-                Ir para o catálogo →
-              </a>
+        {/* ── TAB: HISTÓRICO DE COMPRAS ── */}
+        {activeNav === "historico" && (
+          <>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Histórico de Compras</h1>
+              <p style={{ fontSize: 14, color: GRAY_TEXT }}>Todas as transações da sua conta empresa.</p>
             </div>
-          )}
-
-          {/* ── TAB: HISTÓRICO DE COMPRAS ── */}
-          {activeNav === "historico" && (
-            <>
-              <div style={{ marginBottom: 24 }}>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Histórico de Compras</h1>
-                <p style={{ fontSize: 14, color: GRAY_TEXT }}>Todas as transações da sua conta empresa.</p>
-              </div>
-
-              <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden", marginBottom: 20 }}>
-                {subscriptions.length === 0 ? (
-                  <div style={{ padding: "60px 32px", textAlign: "center" }}>
-                    <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.2 }}>📋</div>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6 }}>Nenhuma compra ainda</div>
-                    <div style={{ fontSize: 14, color: GRAY_TEXT }}>Suas compras aparecerão aqui após adquirir soluções.</div>
-                  </div>
-                ) : (
-                  <div style={{ overflowX: "auto" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                      <thead>
-                        <tr style={{ background: BG_GRAY }}>
-                          {["Data", "Solução", "Criador", "Valor", "Status"].map(h => (
-                            <th key={h} style={{ padding: "14px 16px", fontSize: 12, fontWeight: 600, color: GRAY_TEXT, textAlign: "left", whiteSpace: "nowrap" }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {subscriptions.map((sub, i) => (
-                          <tr key={sub.id} style={{ borderTop: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
-                            <td style={{ padding: "14px 16px", fontSize: 13, color: GRAY_TEXT, whiteSpace: "nowrap" }}>
-                              {new Date(sub.created_at).toLocaleDateString("pt-BR")}
-                            </td>
-                            <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: NEAR_BLACK, maxWidth: 200 }}>
-                              <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                {sub.solutions?.titulo || "—"}
-                              </div>
-                            </td>
-                            <td style={{ padding: "14px 16px", fontSize: 13, color: GRAY_TEXT }}>
-                              {sub.solutions?.creator_id ? "Criador" : "—"}
-                            </td>
-                            <td style={{ padding: "14px 16px", fontSize: 14, color: NEAR_BLACK, whiteSpace: "nowrap" }}>
-                              {sub.solutions?.preco != null
-                                ? `R$ ${Number(sub.solutions.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-                                : "Grátis"}
-                            </td>
-                            <td style={{ padding: "14px 16px" }}>
-                              <span style={{
-                                display: "inline-block",
-                                background: sub.status === "active" ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
-                                border: `1px solid ${sub.status === "active" ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
-                                color: sub.status === "active" ? "#15803D" : "#B91C1C",
-                                fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
-                              }}>
-                                {sub.status === "active" ? "Pago" : "Cancelado"}
-                              </span>
-                            </td>
-                          </tr>
+            <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden", marginBottom: 20 }}>
+              {subscriptions.length === 0 ? (
+                <div style={{ padding: "60px 32px", textAlign: "center" }}>
+                  <div style={{ fontSize: 32, marginBottom: 12, opacity: 0.2 }}>📋</div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6 }}>Nenhuma compra ainda</div>
+                  <div style={{ fontSize: 14, color: GRAY_TEXT }}>Suas compras aparecerão aqui após adquirir soluções.</div>
+                </div>
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: BG_GRAY }}>
+                        {["Data", "Solução", "Criador", "Valor", "Status"].map(h => (
+                          <th key={h} style={{ padding: "14px 16px", fontSize: 12, fontWeight: 600, color: GRAY_TEXT, textAlign: "left", whiteSpace: "nowrap" }}>{h}</th>
                         ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-
-              {/* Summary */}
-              {subscriptions.length > 0 && (
-                <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "20px 24px" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_TEXT }}>Total investido (assinaturas ativas)</div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: BLUE }}>
-                      {monthlySpend > 0
-                        ? `R$ ${monthlySpend.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês`
-                        : "R$ 0,00"}
-                    </div>
-                  </div>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {subscriptions.map((sub, i) => (
+                        <tr key={sub.id}
+                          style={{ borderTop: `1px solid ${BORDER}`, cursor: "pointer", transition: "background 0.15s ease" }}
+                          onMouseEnter={e => e.currentTarget.style.background = "#f8faff"}
+                          onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#fafafa"}
+                        >
+                          <td style={{ padding: "14px 16px", fontSize: 13, color: GRAY_TEXT, whiteSpace: "nowrap" }}>
+                            {new Date(sub.created_at).toLocaleDateString("pt-BR")}
+                          </td>
+                          <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: NEAR_BLACK, maxWidth: 200 }}>
+                            <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {sub.solutions?.titulo || "—"}
+                            </div>
+                          </td>
+                          <td style={{ padding: "14px 16px", fontSize: 13, color: GRAY_TEXT }}>
+                            {sub.solutions?.creator_id ? "Criador" : "—"}
+                          </td>
+                          <td style={{ padding: "14px 16px", fontSize: 14, color: NEAR_BLACK, whiteSpace: "nowrap" }}>
+                            {sub.solutions?.preco != null
+                              ? `R$ ${Number(sub.solutions.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                              : "Grátis"}
+                          </td>
+                          <td style={{ padding: "14px 16px" }}>
+                            <span style={{
+                              display: "inline-block",
+                              background: sub.status === "active" ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)",
+                              border: `1px solid ${sub.status === "active" ? "rgba(22,163,74,0.25)" : "rgba(220,38,38,0.25)"}`,
+                              color: sub.status === "active" ? "#15803D" : "#B91C1C",
+                              fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99,
+                            }}>
+                              {sub.status === "active" ? "Pago" : "Cancelado"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
-            </>
-          )}
-
-          {/* ── TAB: ANALYTICS ── */}
-          {activeNav === "analytics" && (
-            <AnalyticsEmpresaTab subscriptions={subscriptions} isMobile={isMobile} />
-          )}
-
-          {/* ── TAB: CONFIGURAÇÕES ── */}
-          {activeNav === "configuracoes" && (
-            <>
-              <div style={{ marginBottom: 28 }}>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Configurações</h1>
-                <p style={{ fontSize: 14, color: GRAY_TEXT }}>Gerencie o perfil, plano e preferências da sua empresa.</p>
+            </div>
+            {subscriptions.length > 0 && (
+              <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "20px 24px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: GRAY_TEXT }}>Total investido (assinaturas ativas)</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: BLUE }}>
+                    {monthlySpend > 0
+                      ? `R$ ${monthlySpend.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês`
+                      : "R$ 0,00"}
+                  </div>
+                </div>
               </div>
-              <SettingsEmpresa user={user} profile={profile} isMobile={isMobile} onProfileUpdate={setProfile} />
-            </>
-          )}
+            )}
+          </>
+        )}
 
-        </div>
+        {/* ── TAB: ANALYTICS ── */}
+        {activeNav === "analytics" && (
+          <AnalyticsEmpresaTab subscriptions={subscriptions} isMobile={isMobile} />
+        )}
+
+        {/* ── TAB: CONFIGURAÇÕES ── */}
+        {activeNav === "configuracoes" && (
+          <>
+            <div style={{ marginBottom: 28 }}>
+              <h1 style={{ fontSize: 26, fontWeight: 800, color: NEAR_BLACK, letterSpacing: "-0.5px", marginBottom: 4 }}>Configurações</h1>
+              <p style={{ fontSize: 14, color: GRAY_TEXT }}>Gerencie o perfil, plano e preferências da sua empresa.</p>
+            </div>
+            <SettingsEmpresa user={user} profile={profile} isMobile={isMobile} onProfileUpdate={setProfile} />
+          </>
+        )}
+
       </main>
 
       {cancelTarget && (
