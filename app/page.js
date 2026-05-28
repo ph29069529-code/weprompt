@@ -1389,7 +1389,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="8" fill="#2563EB"/><path d="M12 28L20 12L28 28H22L20 24L18 28H12Z" fill="white"/></svg>
+                      <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1441,7 +1441,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="8" fill="#2563EB"/><path d="M12 28L20 12L28 28H22L20 24L18 28H12Z" fill="white"/></svg>
+                      <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1493,7 +1493,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="8" fill="#2563EB"/><path d="M12 28L20 12L28 28H22L20 24L18 28H12Z" fill="white"/></svg>
+                      <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
@@ -1536,7 +1536,7 @@ export default function Home() {
                 <div style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
                   <div style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
                     <div style={{ marginBottom: 12 }}>
-                      <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="8" fill="#2563EB"/><path d="M12 28L20 12L28 28H22L20 24L18 28H12Z" fill="white"/></svg>
+                      <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0" }} alt="WePrompt" />
                     </div>
                     <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
                     {[
