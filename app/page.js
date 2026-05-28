@@ -681,6 +681,7 @@ export default function Home() {
   const [hov4, setHov4] = useState(false);
   const [hov5, setHov5] = useState(false);
   const [hov6, setHov6] = useState(false);
+  const [openFaq, setOpenFaq] = useState(null);
 
   // Bar chart intersection animation
   const chartRef = useRef(null);
@@ -1755,6 +1756,48 @@ export default function Home() {
               >
                 Fazer parte da história →
               </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════
+          SECTION 5b — FAQ
+      ════════════════════════════════════ */}
+      <section style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+          <div style={{ display: "flex", gap: 80, alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
+            {/* Left */}
+            <div style={{ width: isMobile ? "100%" : 300, flexShrink: 0 }}>
+              <div style={{ display: "inline-block", background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "6px 14px", fontSize: 13, fontWeight: 600 }}>
+                FAQ&apos;s
+              </div>
+              <h2 style={{ fontSize: isMobile ? 40 : 52, fontWeight: 800, color: "#111827", marginTop: 16, lineHeight: 1.1, marginBottom: 0 }}>
+                WePrompt<br />FAQ
+              </h2>
+            </div>
+            {/* Right */}
+            <div style={{ flex: 1 }}>
+              {[
+                { q: "O que é a WePrompt?", a: "A WePrompt é o primeiro marketplace de soluções de IA do Brasil. Conectamos criadores talentosos que desenvolvem ferramentas de IA com empresas que precisam automatizar tarefas e crescer com eficiência." },
+                { q: "Para quem é a WePrompt?", a: "Para empresas de qualquer tamanho que querem usar IA no dia a dia, sem precisar contratar desenvolvedores ou entender de tecnologia. E para criadores e desenvolvedores que querem monetizar suas soluções de IA." },
+                { q: "Que tipo de tarefas posso automatizar?", a: "Atendimento ao cliente, gestão de e-mails, criação de conteúdo, análise de dados, vendas e prospecção, gestão financeira, automação de processos internos e muito mais." },
+                { q: "As soluções são prontas ou personalizadas?", a: "As soluções são desenvolvidas por criadores independentes e já vêm prontas para uso. Cada uma passou por curadoria e testes antes de chegar à plataforma. Alguns criadores também oferecem customizações." },
+                { q: "Como sei qual solução é certa para o meu negócio?", a: "Você pode explorar por categoria, ler as descrições detalhadas e ver avaliações de outros usuários. Se precisar de ajuda, nossa equipe de suporte está disponível para orientar sua escolha." },
+                { q: "Quanto tempo leva para implementar?", a: "A maioria das soluções pode ser configurada em menos de 1 hora. Todas incluem documentação em português e suporte do criador para garantir uma implementação tranquila." },
+                { q: "Com quais ferramentas a WePrompt se integra?", a: "As soluções disponíveis se integram com WhatsApp, Gmail, Slack, Notion, HubSpot, Zapier, Shopify, Instagram, Google Sheets e dezenas de outras plataformas que seu negócio já usa." },
+                { q: "Preciso de conhecimento técnico?", a: "Não. As soluções da WePrompt são projetadas para serem usadas por qualquer pessoa, sem necessidade de programação ou conhecimento técnico avançado." },
+              ].map((item, i) => (
+                <div key={i} style={{ borderBottom: "1px solid #e5e7eb", padding: "20px 0", cursor: "pointer" }} onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: 16, color: "#111827", fontWeight: 400 }}>{item.q}</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" style={{ flexShrink: 0, marginLeft: 16, transform: openFaq === i ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }}><path d="M6 9l6 6 6-6"/></svg>
+                  </div>
+                  {openFaq === i && (
+                    <div style={{ fontSize: 15, color: "#6b7280", marginTop: 12, lineHeight: 1.6, paddingRight: 40 }}>{item.a}</div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
