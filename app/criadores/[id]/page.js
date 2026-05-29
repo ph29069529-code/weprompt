@@ -12,12 +12,12 @@ const GRADIENTS = {
 };
 
 const SOLUTIONS = [
-  { name: "Assistente de E-mails Pro", category: "Automação", price: "R$ 97,00",  sales: 34, rating: 4.9, reviews: 89,  badge: "🏆 Top Seller" },
-  { name: "ChatBot WhatsApp",          category: "Chatbots",  price: "R$ 147,00", sales: 28, rating: 4.8, reviews: 67,  badge: "🏆 Top Seller" },
-  { name: "Gerador de Conteúdo IA",    category: "Marketing", price: "R$ 67,00",  sales: 21, rating: 4.7, reviews: 43,  badge: null },
-  { name: "CRM Inteligente",           category: "Vendas",    price: "R$ 197,00", sales: 15, rating: 4.9, reviews: 31,  badge: "🏆 Top Seller" },
-  { name: "Bot de Prospecção",         category: "Vendas",    price: "R$ 87,00",  sales: 12, rating: 4.6, reviews: 24,  badge: null },
-  { name: "Analytics Dashboard",       category: "Automação", price: "R$ 127,00", sales: 9,  rating: 4.8, reviews: 18,  badge: null },
+  { id: "assistente-emails-pro", name: "Assistente de E-mails Pro", category: "Automação", price: "R$ 97,00",  sales: 34, rating: 4.9, reviews: 89,  badge: "🏆 Top Seller" },
+  { id: "chatbot-whatsapp",      name: "ChatBot WhatsApp",          category: "Chatbots",  price: "R$ 147,00", sales: 28, rating: 4.8, reviews: 67,  badge: "🏆 Top Seller" },
+  { id: "gerador-conteudo-ia",   name: "Gerador de Conteúdo IA",    category: "Marketing", price: "R$ 67,00",  sales: 21, rating: 4.7, reviews: 43,  badge: null },
+  { id: "crm-inteligente",       name: "CRM Inteligente",           category: "Vendas",    price: "R$ 197,00", sales: 15, rating: 4.9, reviews: 31,  badge: "🏆 Top Seller" },
+  { id: "bot-prospeccao",        name: "Bot de Prospecção",         category: "Vendas",    price: "R$ 87,00",  sales: 12, rating: 4.6, reviews: 24,  badge: null },
+  { id: "analytics-dashboard",   name: "Analytics Dashboard",       category: "Automação", price: "R$ 127,00", sales: 9,  rating: 4.8, reviews: 18,  badge: null },
 ];
 
 const REVIEWS = [
@@ -53,6 +53,10 @@ const TABS = ["Soluções 40", "Avaliações 157", "Sobre"];
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
+function parsePrice(str) {
+  return parseFloat(str.replace("R$ ", "").replace(/\./g, "").replace(",", "."));
+}
+
 function Stars({ rating, size = 16 }) {
   const full = Math.floor(rating);
   return (
@@ -70,6 +74,7 @@ function Stars({ rating, size = 16 }) {
 // ─── SOLUTION CARD ────────────────────────────────────────────────────────────
 
 function SolutionCard({ sol }) {
+  const router = useRouter();
   const [hovered, setHovered] = useState(false);
   const [btnHovered, setBtnHovered] = useState(false);
   return (
@@ -113,6 +118,7 @@ function SolutionCard({ sol }) {
         <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{sol.sales} vendas</div>
         <div style={{ fontSize: 20, fontWeight: 800, color: "#111827", marginTop: 10 }}>{sol.price}</div>
         <button
+          onClick={() => router.push("/solucoes/" + sol.id)}
           onMouseEnter={() => setBtnHovered(true)}
           onMouseLeave={() => setBtnHovered(false)}
           style={{
@@ -131,7 +137,7 @@ function SolutionCard({ sol }) {
 
 // ─── REVIEW CARD ─────────────────────────────────────────────────────────────
 
-function ReviewCard({ rev }) {
+function ReviewCard({ rev, idx, helpfulCounts, setHelpfulCounts }) {
   return (
     <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 20 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -156,11 +162,14 @@ function ReviewCard({ rev }) {
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12 }}>
         <span style={{ fontSize: 12, color: "#9ca3af" }}>Útil?</span>
-        <button style={{
-          border: "1px solid #e5e7eb", borderRadius: 999, padding: "3px 10px",
-          fontSize: 12, color: "#6b7280", cursor: "pointer", background: "none", fontFamily: "inherit",
-        }}>
-          👍 Sim ({rev.helpful})
+        <button
+          onClick={() => setHelpfulCounts(prev => ({ ...prev, [idx]: (prev[idx] ?? rev.helpful) + 1 }))}
+          style={{
+            border: "1px solid #e5e7eb", borderRadius: 999, padding: "3px 10px",
+            fontSize: 12, color: "#6b7280", cursor: "pointer", background: "none", fontFamily: "inherit",
+          }}
+        >
+          👍 Sim ({helpfulCounts[idx] ?? rev.helpful})
         </button>
       </div>
     </div>
@@ -175,10 +184,33 @@ export default function CriadorProfilePage() {
   const [activeTab, setActiveTab] = useState(0);
   const [hoveredTab, setHoveredTab] = useState(null);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [showToast, setShowToast] = useState(false);
+  const [sortBy, setSortBy] = useState("sales");
+  const [helpfulCounts, setHelpfulCounts] = useState({});
 
-  const filteredSolutions = activeCategory === "all"
-    ? SOLUTIONS
-    : SOLUTIONS.filter(s => s.category === activeCategory);
+  async function handleShare() {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Carlos Mendes - WePrompt", url: window.location.href });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2000);
+      }
+    } catch {
+      await navigator.clipboard.writeText(window.location.href);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    }
+  }
+
+  const filtered = activeCategory === "all" ? SOLUTIONS : SOLUTIONS.filter(s => s.category === activeCategory);
+  const filteredSolutions = [...filtered].sort((a, b) => {
+    if (sortBy === "price") return parsePrice(a.price) - parsePrice(b.price);
+    if (sortBy === "rating") return b.rating - a.rating;
+    if (sortBy === "recent") return SOLUTIONS.indexOf(b) - SOLUTIONS.indexOf(a);
+    return b.sales - a.sales;
+  });
 
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
@@ -190,7 +222,12 @@ export default function CriadorProfilePage() {
         alignItems: "center", justifyContent: "space-between",
         position: "sticky", top: 0, zIndex: 50,
       }}>
-        <img src="/logo-icon.png" alt="WePrompt" style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center" }} />
+        <img
+          src="/logo-icon.png"
+          alt="WePrompt"
+          onClick={() => router.push("/")}
+          style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center", cursor: "pointer" }}
+        />
         <div style={{
           display: "flex", alignItems: "center",
           background: searchFocused ? "white" : "#f3f4f6",
@@ -209,7 +246,7 @@ export default function CriadorProfilePage() {
           <button onClick={() => router.push("/solucoes")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0 }}>Marketplace ▾</button>
           <button onClick={() => router.push("/para-criadores")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0 }}>Vender ▾</button>
           <div style={{ width: 1, height: 20, background: "#e5e7eb" }} />
-          <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
+          <button onClick={() => router.push("/checkout")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
             <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
             </svg>
@@ -235,13 +272,22 @@ export default function CriadorProfilePage() {
       }}>
         {/* Edit + Share */}
         <div style={{ position: "absolute", top: 48, right: 48, display: "flex", gap: 12 }}>
-          {["✏ Editar Perfil", "Compartilhar ↗"].map(label => (
-            <button key={label} style={{
+          <button
+            onClick={() => router.push("/dashboard/criador/configuracoes")}
+            style={{
               background: "rgba(255,255,255,0.15)", color: "white",
               border: "1px solid rgba(255,255,255,0.3)", borderRadius: 8,
               padding: "8px 16px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
-            }}>{label}</button>
-          ))}
+            }}
+          >✏ Editar Perfil</button>
+          <button
+            onClick={handleShare}
+            style={{
+              background: "rgba(255,255,255,0.15)", color: "white",
+              border: "1px solid rgba(255,255,255,0.3)", borderRadius: 8,
+              padding: "8px 16px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+            }}
+          >Compartilhar ↗</button>
         </div>
 
         <div style={{ display: "flex", alignItems: "flex-end", gap: 28 }}>
@@ -341,13 +387,18 @@ export default function CriadorProfilePage() {
                   }}>{c.label}</button>
                 ))}
               </div>
-              <select style={{
-                border: "1px solid #e5e7eb", borderRadius: 8, padding: "7px 14px",
-                fontSize: 13, color: "#374151", background: "white", cursor: "pointer", fontFamily: "inherit",
-              }}>
-                <option>Mais Vendidos ▾</option>
-                <option>Melhor Avaliados</option>
-                <option>Mais Recentes</option>
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
+                style={{
+                  border: "1px solid #e5e7eb", borderRadius: 8, padding: "7px 14px",
+                  fontSize: 13, color: "#374151", background: "white", cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                <option value="sales">Mais Vendidos</option>
+                <option value="price">Menor Preço</option>
+                <option value="rating">Maior Avaliação</option>
+                <option value="recent">Mais Recentes</option>
               </select>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
@@ -385,7 +436,15 @@ export default function CriadorProfilePage() {
             </div>
             {/* Reviews */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {REVIEWS.map((rev, i) => <ReviewCard key={i} rev={rev} />)}
+              {REVIEWS.map((rev, i) => (
+                <ReviewCard
+                  key={i}
+                  rev={rev}
+                  idx={i}
+                  helpfulCounts={helpfulCounts}
+                  setHelpfulCounts={setHelpfulCounts}
+                />
+              ))}
             </div>
           </div>
         )}
@@ -442,6 +501,18 @@ export default function CriadorProfilePage() {
         )}
 
       </div>
+
+      {/* ── TOAST ─────────────────────────────────────────────────────── */}
+      {showToast && (
+        <div style={{
+          position: "fixed", bottom: 24, right: 24,
+          background: "#111827", color: "white",
+          padding: "12px 20px", borderRadius: 8,
+          fontSize: 14, zIndex: 100,
+        }}>
+          ✓ Link copiado!
+        </div>
+      )}
     </div>
   );
 }
