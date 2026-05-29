@@ -138,8 +138,8 @@ function Navbar() {
         background: "white", zIndex: 101,
         boxShadow: "-8px 0 32px rgba(0,0,0,0.12)",
         display: "flex", flexDirection: "column",
-        transition: "transform 0.3s ease",
-        transform: cartOpen ? "translateX(0)" : "translateX(100%)",
+        transition: "all 0.3s ease",
+        transform: cartOpen ? "translateX(0)" : "translateX(110%)",
       }}>
         {/* Header */}
         <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -193,8 +193,8 @@ function Navbar() {
         background: "white", zIndex: 101,
         boxShadow: "-8px 0 32px rgba(0,0,0,0.12)",
         display: "flex", flexDirection: "column",
-        transition: "transform 0.3s ease",
-        transform: notifOpen ? "translateX(0)" : "translateX(100%)",
+        transition: "all 0.3s ease",
+        transform: notifOpen ? "translateX(0)" : "translateX(110%)",
       }}>
         {/* Header */}
         <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
