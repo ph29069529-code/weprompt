@@ -25,10 +25,10 @@ export default function GlobalDrawers() {
   ];
 
   const notifications = [
-    { icon: "✓", bg: "#dcfce7", title: "Compra confirmada", desc: "Pack de Prompts WhatsApp adquirido.", time: "Agora mesmo", unread: true },
-    { icon: "🔔", bg: "#dbeafe", title: "Nova avaliação", desc: "Sua solução recebeu uma avaliação 5★", time: "2h atrás", unread: true },
-    { icon: "📦", bg: "#ffedd5", title: "Solução aprovada", desc: "Agente de Atendimento foi aprovado.", time: "Ontem", unread: false },
-    { icon: "ℹ", bg: "#f3f4f6", title: "Bem-vindo à WePrompt", desc: "Complete seu perfil para começar.", time: "3 dias atrás", unread: false },
+    { icon: <svg width="16" height="16" fill="none" stroke="#16a34a" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>, bg: "#dcfce7", title: "Compra confirmada", desc: "Pack de Prompts WhatsApp adquirido.", time: "Agora mesmo", unread: true },
+    { icon: <svg width="16" height="16" fill="none" stroke="#2563EB" strokeWidth="1.75" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>, bg: "#dbeafe", title: "Nova avaliação", desc: "Sua solução recebeu uma avaliação 5★", time: "2h atrás", unread: true },
+    { icon: <svg width="16" height="16" fill="none" stroke="#f97316" strokeWidth="1.75" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>, bg: "#ffedd5", title: "Solução aprovada", desc: "Agente de Atendimento foi aprovado.", time: "Ontem", unread: false },
+    { icon: <svg width="16" height="16" fill="none" stroke="#6b7280" strokeWidth="1.75" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-4m0-4h.01"/></svg>, bg: "#f3f4f6", title: "Bem-vindo à WePrompt", desc: "Complete seu perfil para começar.", time: "3 dias atrás", unread: false },
   ];
 
   return (
