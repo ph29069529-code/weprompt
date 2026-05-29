@@ -40,7 +40,6 @@ export default function ConfiguracoesPage() {
   const [bio, setBio] = useState("Especialista em automações e IA para pequenas empresas.");
   const [handle, setHandle] = useState("carlosmendes");
   const [saving, setSaving] = useState(false);
-  const [saveMsg, setSaveMsg] = useState("");
 
   const [notifVenda, setNotifVenda] = useState(true);
   const [notifAvaliacao, setNotifAvaliacao] = useState(true);
@@ -50,16 +49,28 @@ export default function ConfiguracoesPage() {
   const [newPwd, setNewPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
 
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+
   const fi = e => { e.target.style.borderColor = "#2563EB"; e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)"; };
   const fb = e => { e.target.style.borderColor = "#e5e7eb"; e.target.style.boxShadow = "none"; };
+
+  function triggerToast(msg) {
+    setToastMsg(msg);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+  }
 
   async function handleSave(e) {
     e.preventDefault();
     setSaving(true);
     await new Promise(r => setTimeout(r, 800));
-    setSaveMsg("Alterações salvas com sucesso!");
     setSaving(false);
-    setTimeout(() => setSaveMsg(""), 3000);
+    triggerToast("Perfil salvo com sucesso!");
+  }
+
+  function handleAlterarSenha() {
+    triggerToast("Email de redefinição enviado!");
   }
 
   return (
@@ -72,7 +83,12 @@ export default function ConfiguracoesPage() {
         alignItems: "center", justifyContent: "space-between",
         position: "sticky", top: 0, zIndex: 50,
       }}>
-        <img src="/logo-icon.png" alt="WePrompt" style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center" }} />
+        <img
+          src="/logo-icon.png"
+          alt="WePrompt"
+          onClick={() => router.push("/")}
+          style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center", cursor: "pointer" }}
+        />
         <div style={{
           display: "flex", alignItems: "center",
           background: searchFocused ? "white" : "#f3f4f6",
@@ -88,21 +104,24 @@ export default function ConfiguracoesPage() {
             style={{ fontSize: 14, border: "none", background: "transparent", outline: "none", flex: 1, color: "#374151" }} />
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <button style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0 }}>Marketplace ▾</button>
-          <button style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0 }}>Vender ▾</button>
+          <button onClick={() => router.push("/solucoes")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0 }}>Marketplace ▾</button>
+          <button onClick={() => router.push("/para-criadores")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0 }}>Vender ▾</button>
           <div style={{ width: 1, height: 20, background: "#e5e7eb" }} />
-          <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
+          <button onClick={() => router.push("/checkout")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
             <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
             </svg>
           </button>
-          <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", position: "relative", display: "flex", alignItems: "center" }}>
+          <button onClick={() => router.push("/dashboard/criador")} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", position: "relative", display: "flex", alignItems: "center" }}>
             <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
             </svg>
             <span style={{ width: 8, height: 8, background: "#ef4444", borderRadius: 999, position: "absolute", top: -2, right: -2 }} />
           </button>
-          <div style={{ width: 32, height: 32, background: "#7c3aed", borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>C</div>
+          <div
+            onClick={() => router.push("/criadores/00000000-0000-0000-0000-000000000001")}
+            style={{ width: 32, height: 32, background: "#7c3aed", borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+          >C</div>
         </div>
       </nav>
 
@@ -239,14 +258,20 @@ export default function ConfiguracoesPage() {
                 <label style={lbl}>Confirmar nova senha</label>
                 <input type="password" value={confirmPwd} onChange={e => setConfirmPwd(e.target.value)} placeholder="Repita a nova senha" style={inp} onFocus={fi} onBlur={fb} />
               </div>
+              <button
+                type="button"
+                onClick={handleAlterarSenha}
+                style={{
+                  alignSelf: "flex-start", padding: "10px 20px", borderRadius: 8,
+                  border: "1px solid #e5e7eb", background: "white",
+                  fontSize: 14, fontWeight: 500, color: "#374151",
+                  cursor: "pointer", fontFamily: "inherit",
+                }}
+              >
+                Alterar Senha
+              </button>
             </div>
           </div>
-
-          {saveMsg && (
-            <div style={{ background: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.2)", borderRadius: 10, padding: "12px 16px", fontSize: 13, color: "#15803d", marginBottom: 16 }}>
-              {saveMsg}
-            </div>
-          )}
 
           <button type="submit" disabled={saving} style={{
             padding: "12px 28px", borderRadius: 8,
@@ -259,6 +284,18 @@ export default function ConfiguracoesPage() {
 
         </form>
       </div>
+
+      {/* TOAST */}
+      {showToast && (
+        <div style={{
+          position: "fixed", bottom: 24, right: 24,
+          background: "#16a34a", color: "white",
+          padding: "12px 20px", borderRadius: 8,
+          fontSize: 14, zIndex: 100,
+        }}>
+          {toastMsg}
+        </div>
+      )}
     </div>
   );
 }
