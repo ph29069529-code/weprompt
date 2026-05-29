@@ -338,22 +338,22 @@ function NavPlainLink({ href, children, chevron }) {
 
 /* ─── Hero side panel (swap-animated circle grid) ───────────────── */
 const LEFT_ICONS = [
-  { src: "https://cdn.simpleicons.org/slack" },
-  { src: "https://cdn.simpleicons.org/gmail" },
-  { src: "https://cdn.simpleicons.org/googlecalendar" },
-  { src: "https://cdn.simpleicons.org/microsoftteams" },
-  { src: "https://cdn.simpleicons.org/microsoftexcel" },
-  { src: "https://cdn.simpleicons.org/notion" },
-  { src: "https://cdn.simpleicons.org/whatsapp" },
-  { src: "https://cdn.simpleicons.org/googledrive" },
-  { src: "https://cdn.simpleicons.org/telegram" },
-  { src: "https://cdn.simpleicons.org/stripe" },
-  { src: "https://cdn.simpleicons.org/zoom" },
-  { src: "https://cdn.simpleicons.org/trello" },
-  { src: "https://cdn.simpleicons.org/hubspot" },
-  { src: "https://cdn.simpleicons.org/mailchimp" },
-  { src: "https://cdn.simpleicons.org/zapier" },
-  { src: "https://cdn.simpleicons.org/salesforce" },
+  { src: "https://www.google.com/s2/favicons?domain=gmail.com&sz=64", alt: "Gmail" },
+  { src: "https://www.google.com/s2/favicons?domain=telegram.org&sz=64", alt: "Telegram" },
+  { src: "https://www.google.com/s2/favicons?domain=notion.so&sz=64", alt: "Notion" },
+  { src: "https://www.google.com/s2/favicons?domain=slack.com&sz=64", alt: "Slack" },
+  { src: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64", alt: "Salesforce" },
+  { src: "https://www.google.com/s2/favicons?domain=zapier.com&sz=64", alt: "Zapier" },
+  { src: "https://www.google.com/s2/favicons?domain=zoom.us&sz=64", alt: "Zoom" },
+  { src: "https://www.google.com/s2/favicons?domain=whatsapp.com&sz=64", alt: "WhatsApp" },
+  { src: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64", alt: "HubSpot" },
+  { src: "https://www.google.com/s2/favicons?domain=trello.com&sz=64", alt: "Trello" },
+  { src: "https://www.google.com/s2/favicons?domain=drive.google.com&sz=64", alt: "Google Drive" },
+  { src: "https://www.google.com/s2/favicons?domain=calendar.google.com&sz=64", alt: "Google Calendar" },
+  { src: "https://www.google.com/s2/favicons?domain=stripe.com&sz=64", alt: "Stripe" },
+  { src: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64", alt: "Mailchimp" },
+  { src: "https://www.google.com/s2/favicons?domain=airtable.com&sz=64", alt: "Airtable" },
+  { src: "https://www.google.com/s2/favicons?domain=teams.microsoft.com&sz=64", alt: "Teams" },
 ];
 
 const RIGHT_ICONS = [
