@@ -339,7 +339,7 @@ export default function SolucoesPage() {
                   padding: "7px 18px", borderRadius: 999,
                   fontFamily: "inherit", fontSize: 14, fontWeight: 600,
                   cursor: "pointer", border: isActive ? "none" : "1px solid #e5e7eb",
-                  background: isActive ? "#0369A1" : "#fff",
+                  background: isActive ? "#111827" : "#fff",
                   color: isActive ? "#fff" : "#374151",
                   transition: "all 0.15s",
                 }}
