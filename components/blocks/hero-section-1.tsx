@@ -251,6 +251,16 @@ const menuItems = [
 const HeroHeader = () => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
+    const [openDropdown, setOpenDropdown] = React.useState<string | null>(null)
+    const ddTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+    function openDd(key: string) {
+        if (ddTimerRef.current) { clearTimeout(ddTimerRef.current); ddTimerRef.current = null; }
+        setOpenDropdown(key)
+    }
+    function closeDd() {
+        ddTimerRef.current = setTimeout(() => setOpenDropdown(null), 150)
+    }
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -288,17 +298,65 @@ const HeroHeader = () => {
                         </div>
 
                         <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-                            <ul className="flex gap-8 text-sm">
-                                {menuItems.map((item, index) => (
-                                    <li key={index}>
-                                        <Link
-                                            href={item.href}
-                                            className="text-muted-foreground hover:text-accent-foreground block duration-150"
-                                            style={{ color: 'rgba(255,255,255,0.7)' }}>
-                                            <span>{item.name}</span>
-                                        </Link>
-                                    </li>
-                                ))}
+                            <ul className="flex gap-8 text-sm" style={{ alignItems: 'center' }}>
+                                <li>
+                                    <Link href="/solucoes" className="text-muted-foreground hover:text-accent-foreground block duration-150" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                                        <span>Explorar</span>
+                                    </Link>
+                                </li>
+                                <li style={{ position: 'relative' }} onMouseEnter={() => openDd('solucoes')} onMouseLeave={closeDd}>
+                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 14, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                        Soluções ▾
+                                    </button>
+                                    {openDropdown === 'solucoes' && (
+                                        <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 50, border: '1px solid #e5e7eb' }}>
+                                            {[
+                                                { label: 'Todas as Soluções', href: '/solucoes' },
+                                                { label: 'Agentes de IA',      href: '/solucoes?categoria=agentes' },
+                                                { label: 'Automação',          href: '/solucoes?categoria=automacao' },
+                                                { label: 'Chatbots',           href: '/solucoes?categoria=chatbots' },
+                                            ].map(it => (
+                                                <a key={it.href} href={it.href} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, fontSize: 14, color: '#374151', cursor: 'pointer', textDecoration: 'none' }}
+                                                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f9fafb' }}
+                                                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                                    {it.label}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    )}
+                                </li>
+                                <li>
+                                    <Link href="/precos" className="text-muted-foreground hover:text-accent-foreground block duration-150" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                                        <span>Preços</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/criadores" className="text-muted-foreground hover:text-accent-foreground block duration-150" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                                        <span>Para Criadores</span>
+                                    </Link>
+                                </li>
+                                <li style={{ position: 'relative' }} onMouseEnter={() => openDd('empresa')} onMouseLeave={closeDd}>
+                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 14, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                        Empresa ▾
+                                    </button>
+                                    {openDropdown === 'empresa' && (
+                                        <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 50, border: '1px solid #e5e7eb' }}>
+                                            {[
+                                                { label: 'Sobre nós', href: '/sobre'   },
+                                                { label: 'Blog',      href: '/blog'    },
+                                                { label: 'Contato',   href: '/contato' },
+                                            ].map(it => (
+                                                <a key={it.href} href={it.href} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, fontSize: 14, color: '#374151', cursor: 'pointer', textDecoration: 'none' }}
+                                                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f9fafb' }}
+                                                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                                    {it.label}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    )}
+                                </li>
                             </ul>
                         </div>
 
