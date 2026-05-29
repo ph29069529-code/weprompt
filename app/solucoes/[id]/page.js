@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import CartNotifDrawers from "@/components/drawers/CartNotifDrawers";
 
 const CATEGORY_GRADIENTS = {
   "Agentes de IA":    "linear-gradient(135deg, #1e3a5f, #2563EB)",
@@ -45,31 +46,12 @@ function CheckSVG({ size = 14, color = "#16a34a" }) {
 }
 
 /* ── Navbar ── */
-function Navbar() {
+function Navbar({ cartOpen, setCartOpen, notifOpen, setNotifOpen }) {
   const router = useRouter();
   const [searchFocused, setSearchFocused] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-
-  const cartItems = [
-    { name: "Pack de Prompts WhatsApp", category: "Agentes de IA", price: "R$ 47,00", gradient: "linear-gradient(135deg, #14532d, #25D366)", initials: "WA" },
-    { name: "Agente de Atendimento", category: "Agentes de IA", price: "R$ 197,00", gradient: "linear-gradient(135deg, #1e3a5f, #2563EB)", initials: "AA" },
-  ];
-
-  const notifications = [
-    { iconBg: "#dcfce7", iconColor: "#16a34a", title: "Compra confirmada", body: "Pack de Prompts WhatsApp adquirido com sucesso.", time: "Agora mesmo", unread: true,
-      icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg> },
-    { iconBg: "#dbeafe", iconColor: "#2563EB", title: "Nova avaliação", body: "Sua solução recebeu uma avaliação 5★", time: "2h atrás", unread: true,
-      icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg> },
-    { iconBg: "#ffedd5", iconColor: "#f97316", title: "Solução aprovada", body: "Agente de Atendimento foi aprovado.", time: "Ontem", unread: false,
-      icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg> },
-    { iconBg: "#f3f4f6", iconColor: "#6b7280", title: "Bem-vindo à WePrompt", body: "Complete seu perfil para começar.", time: "3 dias atrás", unread: false,
-      icon: <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg> },
-  ];
 
   return (
-    <>
-      <nav style={{
+    <nav style={{
         background: "#fff",
         borderBottom: "1px solid #e5e7eb",
         padding: "0 32px",
@@ -128,106 +110,6 @@ function Navbar() {
             }}>W</div>
         </div>
       </nav>
-
-      {/* ── Cart Drawer ── */}
-      {cartOpen && (
-        <div onClick={() => setCartOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 100 }} />
-      )}
-      <div style={{
-        position: "fixed", top: 0, right: 0, height: "100vh", width: 420,
-        background: "white", zIndex: 101,
-        boxShadow: "-8px 0 32px rgba(0,0,0,0.12)",
-        display: "flex", flexDirection: "column",
-        transition: "all 0.3s ease",
-        transform: cartOpen ? "translateX(0)" : "translateX(110%)",
-      }}>
-        {/* Header */}
-        <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 18, fontWeight: 700, color: "#111827" }}>Carrinho</span>
-          <button onClick={() => setCartOpen(false)} style={{ fontSize: 20, color: "#6b7280", cursor: "pointer", background: "none", border: "none" }}>✕</button>
-        </div>
-        {/* Content */}
-        <div style={{ flex: 1, padding: "24px", overflowY: "auto" }}>
-          {cartItems.length > 0 ? cartItems.map((item, i) => (
-            <div key={i} style={{ display: "flex", gap: 12, padding: "16px 0", borderBottom: "1px solid #f3f4f6" }}>
-              <div style={{ width: 56, height: 56, borderRadius: 8, background: item.gradient, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 10, fontWeight: 700, textAlign: "center", padding: 4, flexShrink: 0 }}>
-                {item.initials}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{item.name}</div>
-                <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{item.category}</div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", marginTop: 6 }}>{item.price}</div>
-              </div>
-              <button style={{ marginLeft: "auto", color: "#9ca3af", fontSize: 18, cursor: "pointer", background: "none", border: "none", alignSelf: "flex-start" }}>×</button>
-            </div>
-          )) : (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%" }}>
-              <svg width="48" height="48" fill="none" stroke="#d1d5db" strokeWidth="1.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
-              </svg>
-              <div style={{ fontSize: 14, color: "#9ca3af", marginTop: 12 }}>Seu carrinho está vazio</div>
-            </div>
-          )}
-        </div>
-        {/* Footer */}
-        <div style={{ padding: "20px 24px", borderTop: "1px solid #e5e7eb" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-            <span style={{ fontSize: 14, color: "#6b7280" }}>Total</span>
-            <span style={{ fontSize: 20, fontWeight: 800, color: "#111827" }}>R$ 244,00</span>
-          </div>
-          <button onClick={() => router.push("/checkout")} style={{ width: "100%", background: "#111827", color: "white", borderRadius: 10, padding: "14px", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none" }}>
-            Finalizar compra →
-          </button>
-          <span onClick={() => setCartOpen(false)} style={{ textAlign: "center", display: "block", marginTop: 10, fontSize: 13, color: "#6b7280", cursor: "pointer" }}>
-            Continuar comprando
-          </span>
-        </div>
-      </div>
-
-      {/* ── Notifications Drawer ── */}
-      {notifOpen && (
-        <div onClick={() => setNotifOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 100 }} />
-      )}
-      <div style={{
-        position: "fixed", top: 0, right: 0, height: "100vh", width: 380,
-        background: "white", zIndex: 101,
-        boxShadow: "-8px 0 32px rgba(0,0,0,0.12)",
-        display: "flex", flexDirection: "column",
-        transition: "all 0.3s ease",
-        transform: notifOpen ? "translateX(0)" : "translateX(110%)",
-      }}>
-        {/* Header */}
-        <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 18, fontWeight: 700, color: "#111827" }}>Notificações</span>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <span style={{ fontSize: 12, color: "#0369A1", cursor: "pointer" }}>Marcar todas como lidas</span>
-            <button onClick={() => setNotifOpen(false)} style={{ fontSize: 20, color: "#6b7280", cursor: "pointer", background: "none", border: "none" }}>✕</button>
-          </div>
-        </div>
-        {/* Content */}
-        <div style={{ flex: 1, padding: "16px 24px", overflowY: "auto" }}>
-          {notifications.map((n, i) => (
-            <div key={i} style={{ display: "flex", gap: 12, padding: "14px 0", borderBottom: "1px solid #f3f4f6", cursor: "pointer", position: "relative" }}>
-              <div style={{ width: 36, height: 36, borderRadius: 999, background: n.iconBg, color: n.iconColor, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                {n.icon}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{n.title}</div>
-                <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{n.body}</div>
-                <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>{n.time}</div>
-              </div>
-              {n.unread && (
-                <span style={{ width: 8, height: 8, borderRadius: 999, background: "#2563EB", position: "absolute", right: 0, top: "50%" }} />
-              )}
-            </div>
-          ))}
-        </div>
-        {/* Footer */}
-        <div style={{ padding: "16px 0", textAlign: "center", borderTop: "1px solid #e5e7eb" }}>
-          <span style={{ color: "#0369A1", fontSize: 13, cursor: "pointer" }}>Ver todas as notificações →</span>
-        </div>
-      </div>
-    </>
   );
 }
 
@@ -903,13 +785,17 @@ function SolutionDetail() {
 }
 
 export default function SolutionPage() {
+  const [cartOpen, setCartOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+
   return (
     <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
       <style>{`@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.45} }`}</style>
-      <Navbar />
+      <Navbar cartOpen={cartOpen} setCartOpen={setCartOpen} notifOpen={notifOpen} setNotifOpen={setNotifOpen} />
       <Suspense fallback={<Skeleton />}>
         <SolutionDetail />
       </Suspense>
+      <CartNotifDrawers cartOpen={cartOpen} setCartOpen={setCartOpen} notifOpen={notifOpen} setNotifOpen={setNotifOpen} />
     </div>
   );
 }
