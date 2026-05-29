@@ -157,7 +157,7 @@ export default function CriadorPage() {
             onMouseLeave={() => setHoveredAvatar(false)}
           >
             <div
-              onClick={() => router.push("/criadores/user_test")}
+              onClick={() => router.push("/criadores/00000000-0000-0000-0000-000000000001")}
               style={{
                 width: 32, height: 32, background: "#7c3aed", borderRadius: 999,
                 display: "flex", alignItems: "center", justifyContent: "center",

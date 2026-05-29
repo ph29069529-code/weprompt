@@ -266,7 +266,7 @@ export default function CriadorProfilePage() {
       const { data: creatorData, error: creatorError } = await supabase
         .from("profiles")
         .select("*")
-        .eq("slug", id)
+        .eq("id", id)
         .single();
 
       if (creatorError || !creatorData) {
