@@ -390,12 +390,12 @@ export default function SolucoesPage() {
               <button
                 onClick={() => { setActiveCategory("Todos"); setSearchQuery(""); }}
                 style={{
-                  background: BLUE, color: "#fff", border: "none",
+                  background: "#111827", color: "#fff", border: "none",
                   borderRadius: 8, padding: "10px 24px",
                   fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = "#0284c7"}
-                onMouseLeave={e => e.currentTarget.style.background = BLUE}
+                onMouseEnter={e => e.currentTarget.style.background = "#374151"}
+                onMouseLeave={e => e.currentTarget.style.background = "#111827"}
               >
                 Ver todas as soluções
               </button>
