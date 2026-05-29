@@ -1,30 +1,19 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
-const NEAR_BLACK = "#1D1D1F";
-const GRAY_TEXT  = "#6E6E73";
-const BG_GRAY    = "#F5F5F7";
-const BLUE       = "#0369A1";
-const BORDER     = "#e5e7eb";
-
-function useWindowSize() {
-  const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
-  useEffect(() => {
-    function onResize() { setWidth(window.innerWidth); }
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-  return width;
-}
-
-const Arrow = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ display: "inline-block", flexShrink: 0 }}>
-    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+const CATEGORY_GRADIENTS = {
+  "Agentes de IA":    "linear-gradient(135deg, #1e3a5f, #2563EB)",
+  "Marketing IA":     "linear-gradient(135deg, #1e1b4b, #7c3aed)",
+  "Automação":        "linear-gradient(135deg, #14532d, #16a34a)",
+  "Chatbots":         "linear-gradient(135deg, #1a1a2e, #0891b2)",
+  "Análise de Dados": "linear-gradient(135deg, #1e1b4b, #4f46e5)",
+  "Copywriting IA":   "linear-gradient(135deg, #1c1917, #b45309)",
+  "Integrações":      "linear-gradient(135deg, #1e3a5f, #0369A1)",
+  "WhatsApp IA":      "linear-gradient(135deg, #14532d, #25D366)",
+};
 
 function initials(nome) {
   if (!nome) return "?";
@@ -39,7 +28,7 @@ function Stars({ rating = 5, size = 13 }) {
     <div style={{ display: "flex", gap: 2 }}>
       {[1, 2, 3, 4, 5].map(n => (
         <svg key={n} width={size} height={size} viewBox="0 0 24 24"
-          fill={n <= Math.round(rating) ? "#F59E0B" : "#e5e7eb"}>
+          fill={n <= Math.round(rating) ? "#f59e0b" : "#e5e7eb"}>
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
       ))}
@@ -47,240 +36,82 @@ function Stars({ rating = 5, size = 13 }) {
   );
 }
 
-function CheckIcon({ color = "#059669" }) {
+function CheckSVG({ size = 14, color = "#16a34a" }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
-      <circle cx="12" cy="12" r="11" fill={color + "22"} />
-      <path d="M7 12l3 3 7-7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M20 6L9 17l-5-5" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-/* ── Purchase Card ── */
-function PurchaseCard({ solution, user, alreadyOwned, onCheckout, checkoutLoading, checkoutError, creator, isMobile }) {
-  const [shared, setShared] = useState(false);
-  const [fav, setFav] = useState(false);
-
-  const priceLabel = solution.preco != null
-    ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-    : "Gratuito";
-  const isOneTime = solution.payment_type === "one_time";
-
-  function handleShare() {
-    if (navigator.share) {
-      navigator.share({ title: solution.titulo, url: window.location.href }).catch(() => {});
-    } else {
-      navigator.clipboard?.writeText(window.location.href);
-      setShared(true);
-      setTimeout(() => setShared(false), 2000);
-    }
-  }
+/* ── Navbar ── */
+function Navbar() {
+  const router = useRouter();
+  const [searchFocused, setSearchFocused] = useState(false);
 
   return (
-    <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 20px rgba(0,0,0,0.09)", padding: "26px", position: isMobile ? "static" : "sticky", top: 88, marginBottom: 20 }}>
+    <nav style={{
+      background: "#fff",
+      borderBottom: "1px solid #e5e7eb",
+      padding: "0 32px",
+      height: 60,
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      position: "sticky", top: 0, zIndex: 50,
+    }}>
+      <img
+        src="/logo-icon.png"
+        alt="WePrompt"
+        onClick={() => router.push("/")}
+        style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center", cursor: "pointer" }}
+      />
 
-      {/* Price */}
-      <div style={{ marginBottom: 18 }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-          <span style={{ fontSize: 38, fontWeight: 900, color: BLUE, letterSpacing: "-1.5px", lineHeight: 1 }}>
-            {priceLabel}
-          </span>
-          {solution.preco != null && (
-            <span style={{ fontSize: 13, color: GRAY_TEXT, fontWeight: 500 }}>
-              {isOneTime ? "pagamento único" : "por mês"}
-            </span>
-          )}
-        </div>
-        {solution.preco == null && (
-          <div style={{ fontSize: 13, color: "#059669", fontWeight: 600, marginTop: 4 }}>Disponível gratuitamente</div>
-        )}
+      <div style={{
+        display: "flex", alignItems: "center",
+        background: searchFocused ? "#fff" : "#f3f4f6",
+        borderRadius: 8, padding: "8px 16px",
+        width: 360, gap: 8,
+        border: searchFocused ? "1px solid #2563EB" : "1px solid transparent",
+        boxShadow: searchFocused ? "0 0 0 3px rgba(37,99,235,0.1)" : "none",
+        transition: "all 0.2s ease",
+      }}>
+        <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
+        </svg>
+        <input
+          placeholder="Buscar soluções..."
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+          style={{ fontSize: 14, border: "none", background: "transparent", outline: "none", flex: 1, color: "#374151" }}
+        />
       </div>
 
-      {/* CTA */}
-      {alreadyOwned ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", background: "rgba(5,150,105,0.07)", border: "1px solid rgba(5,150,105,0.2)", borderRadius: 12, marginBottom: 14 }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="11" fill="rgba(5,150,105,0.15)" />
-            <path d="M7 12l3 3 7-7" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <button onClick={() => router.push("/solucoes")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0, fontFamily: "inherit" }}>Marketplace</button>
+        <button onClick={() => router.push("/para-criadores")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0, fontFamily: "inherit" }}>Vender</button>
+        <div style={{ width: 1, height: 20, background: "#e5e7eb" }} />
+        <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
+          <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
           </svg>
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#059669" }}>Você já possui esta solução ✓</span>
-        </div>
-      ) : (
-        <button onClick={onCheckout} disabled={checkoutLoading} style={{
-          width: "100%", height: 52, borderRadius: 12, border: "none",
-          background: checkoutLoading ? "rgba(3,105,161,0.5)" : BLUE,
-          color: "#fff", fontSize: 16, fontWeight: 700,
-          cursor: checkoutLoading ? "not-allowed" : "pointer", fontFamily: "inherit",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-          marginBottom: 12, transition: "background 0.15s",
-        }}
-          onMouseEnter={e => { if (!checkoutLoading) e.currentTarget.style.background = "#0284C7"; }}
-          onMouseLeave={e => { if (!checkoutLoading) e.currentTarget.style.background = BLUE; }}
-        >
-          {checkoutLoading ? "Redirecionando…" : solution.preco != null ? "Adquirir solução" : "Começar gratuitamente"}
-          {!checkoutLoading && <Arrow />}
         </button>
-      )}
-
-      {/* Secondary actions */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-        <button onClick={handleShare} style={{ flex: 1, padding: "9px", borderRadius: 10, border: `1.5px solid ${BORDER}`, background: "transparent", color: shared ? BLUE : GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, transition: "border-color 0.15s, color 0.15s" }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = BLUE; e.currentTarget.style.color = BLUE; }}
-          onMouseLeave={e => { if (!shared) { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = GRAY_TEXT; } }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" />
+        <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", position: "relative", display: "flex", alignItems: "center" }}>
+          <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
           </svg>
-          {shared ? "Copiado!" : "Compartilhar"}
+          <span style={{ width: 8, height: 8, background: "#ef4444", borderRadius: 999, position: "absolute", top: -2, right: -2 }} />
         </button>
-        <button onClick={() => setFav(f => !f)} style={{ flex: 1, padding: "9px", borderRadius: 10, border: `1.5px solid ${fav ? "#f43f5e" : BORDER}`, background: fav ? "rgba(244,63,94,0.06)" : "transparent", color: fav ? "#f43f5e" : GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, transition: "all 0.15s" }}
-          onMouseEnter={e => { if (!fav) { e.currentTarget.style.borderColor = "#f43f5e"; e.currentTarget.style.color = "#f43f5e"; } }}
-          onMouseLeave={e => { if (!fav) { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.color = GRAY_TEXT; } }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill={fav ? "#f43f5e" : "none"} stroke={fav ? "#f43f5e" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-          </svg>
-          {fav ? "Favoritado" : "Favoritar"}
-        </button>
+        <div style={{
+          width: 32, height: 32, background: "#0369A1", borderRadius: 999,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
+        }}>W</div>
       </div>
-
-      {checkoutError && (
-        <div style={{ background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#B91C1C", marginBottom: 16 }}>
-          {checkoutError}
-        </div>
-      )}
-
-      <div style={{ height: 1, background: BORDER, marginBottom: 16 }} />
-
-      {/* Included */}
-      <div style={{ marginBottom: 14 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: NEAR_BLACK, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 10 }}>Incluso</div>
-        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-          {["Acesso imediato após pagamento", "Suporte em português", "Atualizações incluídas", "Reembolso em 7 dias"].map(item => (
-            <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-              <CheckIcon color="#059669" />
-              <span style={{ fontSize: 13, color: GRAY_TEXT }}>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Trust badges */}
-      <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 18 }}>
-        {[
-          { label: "Suporte em português", icon: "M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z", bg: "#e0f2fe", color: BLUE },
-          { label: "Reembolso em 7 dias", icon: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z", bg: "rgba(5,150,105,0.1)", color: "#059669" },
-        ].map(b => (
-          <span key={b.label} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: b.bg, color: b.color, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d={b.icon} />
-            </svg>
-            {b.label}
-          </span>
-        ))}
-      </div>
-
-      <div style={{ height: 1, background: BORDER, marginBottom: 16 }} />
-
-      {/* Creator mini-profile */}
-      {creator && (
-        <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: NEAR_BLACK, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 10 }}>Criador</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
-              {initials(creator.nome)}
-            </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: NEAR_BLACK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{creator.nome}</div>
-              <div style={{ fontSize: 12, color: GRAY_TEXT }}>{creator.solution_count || 1} soluções publicadas</div>
-            </div>
-          </div>
-          {creator.id && (
-            <a href={`/criadores/${creator.id}`} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, color: BLUE, textDecoration: "none", fontWeight: 600 }}
-              onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"} onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}>
-              Ver perfil do criador <Arrow />
-            </a>
-          )}
-        </div>
-      )}
-    </div>
+    </nav>
   );
 }
 
-/* ── Related Solutions ── */
-function RelatedSolutions({ categoria, currentId }) {
-  const [related, setRelated] = useState([]);
-
-  useEffect(() => {
-    if (!categoria) return;
-    supabase
-      .from("solutions")
-      .select("id, titulo, preco, categoria, cover_url, payment_type")
-      .eq("status", "approved")
-      .eq("ativo", true)
-      .eq("categoria", categoria)
-      .neq("id", currentId)
-      .limit(2)
-      .then(({ data }) => { if (data) setRelated(data); });
-  }, [categoria, currentId]);
-
-  if (related.length === 0) return null;
-
-  return (
-    <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "22px 24px" }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: NEAR_BLACK, marginBottom: 14 }}>Soluções relacionadas</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {related.map(r => (
-          <a key={r.id} href={`/solucoes/${r.id}`} style={{ display: "flex", gap: 12, textDecoration: "none", borderRadius: 12, padding: "10px", border: `1px solid ${BORDER}`, transition: "background 0.15s, border-color 0.15s" }}
-            onMouseEnter={e => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.borderColor = BLUE; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = BORDER; }}>
-            <div style={{ width: 52, height: 52, borderRadius: 10, overflow: "hidden", flexShrink: 0, background: "linear-gradient(135deg, #e0f2fe, #bae6fd)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {r.cover_url
-                ? <img src={r.cover_url} alt={r.titulo} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : <span style={{ color: BLUE, opacity: 0.35, fontSize: 20 }}>✦</span>}
-            </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: NEAR_BLACK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 5 }}>{r.titulo}</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, background: "#e0f2fe", color: BLUE, padding: "2px 7px", borderRadius: 99 }}>{r.categoria}</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: NEAR_BLACK }}>
-                  {r.preco != null ? `R$ ${Number(r.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Grátis"}
-                </span>
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ── Skeleton ── */
-function Skeleton({ isMobile }) {
-  return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: isMobile ? "88px 16px 60px" : "96px 32px 80px" }}>
-      <style>{`@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.45} }`}</style>
-      <div style={{ display: "flex", gap: 28, animation: "shimmer 1.5s ease-in-out infinite" }}>
-        <div style={{ flex: isMobile ? "1" : "0 0 65%" }}>
-          <div style={{ width: 180, height: 12, borderRadius: 4, background: "#ddd", marginBottom: 26 }} />
-          <div style={{ width: 80, height: 22, borderRadius: 99, background: "#e5e7eb", marginBottom: 12 }} />
-          <div style={{ width: "75%", height: 42, borderRadius: 10, background: "#e5e7eb", marginBottom: 14 }} />
-          <div style={{ width: "55%", height: 14, borderRadius: 4, background: "#ddd", marginBottom: 18 }} />
-          <div style={{ width: "100%", height: 340, borderRadius: 20, background: "#e5e7eb", marginBottom: 24 }} />
-          <div style={{ width: "100%", height: 14, borderRadius: 4, background: "#e5e7eb", marginBottom: 8 }} />
-          <div style={{ width: "88%", height: 14, borderRadius: 4, background: "#e5e7eb", marginBottom: 8 }} />
-          <div style={{ width: "70%", height: 14, borderRadius: 4, background: "#e5e7eb" }} />
-        </div>
-        {!isMobile && (
-          <div style={{ flex: "0 0 35%" }}>
-            <div style={{ width: "100%", height: 420, borderRadius: 20, background: "#e5e7eb" }} />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ── Reviews Tab ── */
-function ReviewsTab({ solutionId, user, alreadyOwned, isMobile }) {
+/* ── Reviews Tab ── (all Supabase queries preserved exactly) */
+function ReviewsTab({ solutionId, user, alreadyOwned }) {
   const [reviews,    setReviews]    = useState([]);
   const [loaded,     setLoaded]     = useState(false);
   const [hoverStar,  setHoverStar]  = useState(0);
@@ -299,11 +130,9 @@ function ReviewsTab({ solutionId, user, alreadyOwned, isMobile }) {
   }, [solutionId]);
 
   const hasReviewed = user ? reviews.some(r => r.user_id === user.id) : false;
-
   const avg = reviews.length > 0
     ? reviews.reduce((a, r) => a + (r.rating || 5), 0) / reviews.length
     : 0;
-
   const ratingCounts = [5, 4, 3, 2, 1].map(n => ({
     n, count: reviews.filter(r => Math.round(r.rating) === n).length,
   }));
@@ -315,151 +144,108 @@ function ReviewsTab({ solutionId, user, alreadyOwned, isMobile }) {
     const { data: { session } } = await supabase.auth.getSession();
     const res = await fetch("/api/reviews", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${session?.access_token}`,
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${session?.access_token}` },
       body: JSON.stringify({ solution_id: solutionId, rating: selStar, comment }),
     });
     const json = await res.json();
-    if (!res.ok) {
-      setFormError(json.error || "Erro ao publicar avaliação.");
-      setSubmitting(false);
-      return;
-    }
+    if (!res.ok) { setFormError(json.error || "Erro ao publicar avaliação."); setSubmitting(false); return; }
     setSuccess(true);
     if (json.review) setReviews(prev => [json.review, ...prev]);
     setSubmitting(false);
   }
 
-  if (!loaded) {
-    return (
-      <div style={{ textAlign: "center", padding: "40px 0", color: GRAY_TEXT, fontSize: 14 }}>
-        Carregando avaliações…
-      </div>
-    );
-  }
+  if (!loaded) return <div style={{ textAlign: "center", padding: 40, color: "#6b7280", fontSize: 14 }}>Carregando avaliações…</div>;
 
   return (
     <div>
-      {/* Rating summary */}
-      {reviews.length > 0 && (
-        <div style={{ display: "flex", gap: 28, marginBottom: 28, padding: "20px 24px", background: BG_GRAY, borderRadius: 16, flexWrap: "wrap" }}>
-          <div style={{ textAlign: "center", minWidth: 80 }}>
-            <div style={{ fontSize: 64, fontWeight: 800, color: BLUE, lineHeight: 1, letterSpacing: "-2px" }}>
-              {avg.toFixed(1)}
-            </div>
-            <div style={{ marginTop: 8 }}><Stars rating={avg} size={16} /></div>
-            <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 4 }}>{reviews.length} avaliações</div>
-          </div>
-          <div style={{ flex: 1, minWidth: 160, display: "flex", flexDirection: "column", justifyContent: "center", gap: 7 }}>
-            {ratingCounts.map(({ n, count }) => (
-              <div key={n} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 12, color: GRAY_TEXT, fontWeight: 600, width: 10, flexShrink: 0 }}>{n}</span>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="#FBBF24" style={{ flexShrink: 0 }}>
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-                <div style={{ flex: 1, height: 6, background: "#e5e7eb", borderRadius: 999, overflow: "hidden" }}>
-                  <div style={{ width: `${reviews.length > 0 ? (count / reviews.length) * 100 : 0}%`, height: "100%", background: BLUE, borderRadius: 999 }} />
+      {reviews.length > 0 ? (
+        <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: 24, marginBottom: 24 }}>
+          {/* Rating summary */}
+          <div style={{ background: "#f9fafb", borderRadius: 12, padding: 20, textAlign: "center" }}>
+            <div style={{ fontSize: 56, fontWeight: 900, color: "#111827", lineHeight: 1 }}>{avg.toFixed(1)}</div>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}><Stars rating={avg} size={16} /></div>
+            <div style={{ fontSize: 13, color: "#6b7280", marginTop: 6 }}>{reviews.length} avaliações</div>
+            <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+              {ratingCounts.map(({ n, count }) => (
+                <div key={n} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 600, width: 8, flexShrink: 0 }}>{n}</span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                  <div style={{ flex: 1, height: 5, background: "#e5e7eb", borderRadius: 999, overflow: "hidden" }}>
+                    <div style={{ width: `${reviews.length > 0 ? (count / reviews.length) * 100 : 0}%`, height: "100%", background: "#111827", borderRadius: 999 }} />
+                  </div>
+                  <span style={{ fontSize: 11, color: "#6b7280", width: 16, textAlign: "right", flexShrink: 0 }}>{count}</span>
                 </div>
-                <span style={{ fontSize: 12, color: GRAY_TEXT, width: 18, textAlign: "right", flexShrink: 0 }}>{count}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Reviews list */}
+          <div>
+            {reviews.map((r, i) => (
+              <div key={r.id || i} style={{ background: "#f9fafb", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 999, background: "#e5e7eb", color: "#374151", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      {initials(r.reviewer_name || "U")}
+                    </div>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{r.reviewer_name || "Usuário verificado"}</span>
+                  </div>
+                  <span style={{ fontSize: 12, color: "#6b7280" }}>
+                    {new Date(r.created_at).toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
+                </div>
+                <div style={{ marginTop: 8 }}><Stars rating={r.rating || 5} size={13} /></div>
+                {r.comment && <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.6, margin: "8px 0 0" }}>{r.comment}</p>}
               </div>
             ))}
           </div>
         </div>
-      )}
-
-      {/* Review cards */}
-      {reviews.length > 0 ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
-          {reviews.map((r, i) => (
-            <div key={r.id || i} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 16, padding: 20 }}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: r.comment ? 10 : 0 }}>
-                <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
-                  {initials(r.reviewer_name || "U")}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 4, marginBottom: 4 }}>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: NEAR_BLACK }}>{r.reviewer_name || "Usuário verificado"}</span>
-                    <span style={{ fontSize: 12, color: GRAY_TEXT }}>
-                      {new Date(r.created_at).toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" })}
-                    </span>
-                  </div>
-                  <Stars rating={r.rating || 5} size={13} />
-                </div>
-              </div>
-              {r.comment && (
-                <p style={{ fontSize: 14, color: NEAR_BLACK, lineHeight: 1.6, margin: 0 }}>{r.comment}</p>
-              )}
-            </div>
-          ))}
-        </div>
       ) : (
-        <div style={{ textAlign: "center", padding: "48px 0 32px" }}>
-          <div style={{ fontSize: 36, opacity: 0.18, marginBottom: 14 }}>⭐</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6 }}>
-            Seja o primeiro a avaliar esta solução
-          </div>
-          <div style={{ fontSize: 13, color: GRAY_TEXT }}>Avaliações aparecem após a aquisição.</div>
+        <div style={{ textAlign: "center", padding: "40px 0", color: "#6b7280", fontSize: 13 }}>
+          Ainda não há avaliações para esta solução.
         </div>
       )}
 
-      {/* Write review */}
-      <div style={{ borderTop: reviews.length > 0 ? `1px solid ${BORDER}` : "none", paddingTop: reviews.length > 0 ? 24 : 0 }}>
+      {/* Review form */}
+      <div style={{ borderTop: reviews.length > 0 ? "1px solid #e5e7eb" : "none", paddingTop: reviews.length > 0 ? 24 : 0 }}>
         {!user ? (
           <div style={{ textAlign: "center", padding: "16px 0" }}>
-            <div style={{ fontSize: 14, color: GRAY_TEXT, marginBottom: 10 }}>Faça login para avaliar esta solução.</div>
-            <a href={`/login?redirect=/solucoes/${solutionId}`} style={{ color: BLUE, fontWeight: 600, fontSize: 14, textDecoration: "none" }}
-              onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
-              onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}>
-              Entrar →
-            </a>
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 10 }}>Faça login para avaliar esta solução.</div>
+            <a href={`/login?redirect=/solucoes/${solutionId}`} style={{ color: "#0369A1", fontWeight: 600, fontSize: 14, textDecoration: "none" }}>Entrar →</a>
           </div>
         ) : !alreadyOwned ? (
-          <div style={{ textAlign: "center", padding: "16px 0", fontSize: 14, color: GRAY_TEXT }}>
+          <div style={{ textAlign: "center", padding: "16px 0", fontSize: 14, color: "#6b7280" }}>
             Adquira esta solução para deixar uma avaliação.
           </div>
         ) : hasReviewed || success ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "14px 16px", background: "rgba(5,150,105,0.07)", border: "1px solid rgba(5,150,105,0.2)", borderRadius: 12 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="11" fill="rgba(5,150,105,0.2)" />
-              <path d="M7 12l3 3 7-7" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="rgba(5,150,105,0.2)" /><path d="M7 12l3 3 7-7" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             <span style={{ fontSize: 14, fontWeight: 600, color: "#059669" }}>Você já avaliou esta solução ✓</span>
           </div>
         ) : (
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 14 }}>Deixe sua avaliação</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 14 }}>Deixe sua avaliação</div>
             <div style={{ display: "flex", gap: 2, marginBottom: 14 }}>
               {[1, 2, 3, 4, 5].map(n => (
                 <button key={n}
                   onClick={() => setSelStar(n)}
                   onMouseEnter={() => setHoverStar(n)}
                   onMouseLeave={() => setHoverStar(0)}
-                  style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 3px", fontSize: 32, lineHeight: 1, color: n <= (hoverStar || selStar) ? "#FBBF24" : "#e5e7eb", transition: "color 0.1s" }}>
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 3px", fontSize: 32, lineHeight: 1, color: n <= (hoverStar || selStar) ? "#f59e0b" : "#e5e7eb", transition: "color 0.1s" }}>
                   ★
                 </button>
               ))}
             </div>
-            <textarea
-              rows={4}
-              value={comment}
-              onChange={e => setComment(e.target.value)}
+            <textarea rows={4} value={comment} onChange={e => setComment(e.target.value)}
               placeholder="Conte sua experiência com esta solução..."
-              style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${BORDER}`, fontSize: 14, color: NEAR_BLACK, background: "#fff", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, outline: "none", transition: "border-color 0.15s" }}
-              onFocus={e => e.target.style.borderColor = BLUE}
-              onBlur={e => e.target.style.borderColor = BORDER}
-            />
-            {formError && (
-              <div style={{ fontSize: 13, color: "#dc2626", marginTop: 8 }}>{formError}</div>
-            )}
-            <button
-              onClick={handleSubmit}
-              disabled={submitting}
-              style={{ marginTop: 12, height: 44, padding: "0 24px", borderRadius: 12, border: "none", background: submitting ? "rgba(3,105,161,0.5)" : BLUE, color: "#fff", fontSize: 14, fontWeight: 700, cursor: submitting ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
-              onMouseEnter={e => { if (!submitting) e.currentTarget.style.background = "#0284C7"; }}
-              onMouseLeave={e => { if (!submitting) e.currentTarget.style.background = BLUE; }}
-            >
+              style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", borderRadius: 10, border: "1.5px solid #e5e7eb", fontSize: 14, color: "#111827", background: "#fff", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, outline: "none" }}
+              onFocus={e => e.target.style.borderColor = "#111827"}
+              onBlur={e => e.target.style.borderColor = "#e5e7eb"} />
+            {formError && <div style={{ fontSize: 13, color: "#dc2626", marginTop: 8 }}>{formError}</div>}
+            <button onClick={handleSubmit} disabled={submitting}
+              style={{ marginTop: 12, height: 44, padding: "0 24px", borderRadius: 10, border: "none", background: submitting ? "rgba(17,24,39,0.5)" : "#111827", color: "#fff", fontSize: 14, fontWeight: 700, cursor: submitting ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
+              onMouseEnter={e => { if (!submitting) e.currentTarget.style.background = "#374151"; }}
+              onMouseLeave={e => { if (!submitting) e.currentTarget.style.background = "#111827"; }}>
               {submitting ? "Publicando…" : "Publicar avaliação"}
             </button>
           </div>
@@ -469,18 +255,158 @@ function ReviewsTab({ solutionId, user, alreadyOwned, isMobile }) {
   );
 }
 
+/* ── Related Solutions ── (Supabase query preserved exactly) */
+function RelatedSolutions({ categoria, currentId }) {
+  const router = useRouter();
+  const [related, setRelated] = useState([]);
+
+  useEffect(() => {
+    if (!categoria) return;
+    supabase
+      .from("solutions")
+      .select("id, titulo, preco, categoria, cover_url, payment_type")
+      .eq("status", "approved")
+      .eq("ativo", true)
+      .eq("categoria", categoria)
+      .neq("id", currentId)
+      .limit(3)
+      .then(({ data }) => { if (data) setRelated(data); });
+  }, [categoria, currentId]);
+
+  if (related.length === 0) return null;
+
+  return (
+    <div style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", letterSpacing: 1, textTransform: "uppercase" }}>SOLUÇÕES RELACIONADAS</div>
+      <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8 }}>
+        {related.map(r => (
+          <div key={r.id} onClick={() => router.push(`/solucoes/${r.id}`)}
+            style={{ background: "#f9fafb", borderRadius: 10, padding: 12, display: "flex", gap: 10, cursor: "pointer", transition: "background 0.15s" }}
+            onMouseEnter={e => e.currentTarget.style.background = "#f3f4f6"}
+            onMouseLeave={e => e.currentTarget.style.background = "#f9fafb"}>
+            <div style={{ width: 48, height: 48, borderRadius: 8, overflow: "hidden", flexShrink: 0, background: CATEGORY_GRADIENTS[r.categoria] || "linear-gradient(135deg, #1e3a5f, #2563EB)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {r.cover_url
+                ? <img src={r.cover_url} alt={r.titulo} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : <span style={{ color: "#fff", fontSize: 9, fontWeight: 700, textAlign: "center", padding: 4, lineHeight: 1.2 }}>{r.titulo.slice(0, 20)}</span>}
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.titulo}</div>
+              <div style={{ fontSize: 13, color: "#374151", marginTop: 2 }}>
+                {r.preco != null ? `R$ ${Number(r.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Grátis"}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Skeleton ── */
+function Skeleton() {
+  return (
+    <div style={{ padding: "24px 48px", animation: "shimmer 1.5s ease-in-out infinite" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 420px", gap: 32 }}>
+        <div>
+          <div style={{ width: 220, height: 12, borderRadius: 4, background: "#e5e7eb", marginBottom: 20 }} />
+          <div style={{ width: 90, height: 22, borderRadius: 99, background: "#e5e7eb", marginBottom: 14 }} />
+          <div style={{ width: "75%", height: 44, borderRadius: 8, background: "#e5e7eb", marginBottom: 14 }} />
+          <div style={{ width: "50%", height: 14, borderRadius: 4, background: "#e5e7eb", marginBottom: 20 }} />
+          <div style={{ width: "100%", height: 460, borderRadius: 16, background: "#e5e7eb" }} />
+        </div>
+        <div>
+          <div style={{ width: "100%", height: 520, borderRadius: 16, background: "#e5e7eb" }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── FAQ ── */
+const FAQ_ITEMS = [
+  { q: "Como acesso a solução após a compra?",     a: "Você recebe acesso imediato por email após a confirmação do pagamento." },
+  { q: "Posso pedir reembolso?",                   a: "Sim, oferecemos garantia de 7 dias. Se não ficar satisfeito, devolvemos 100% do valor." },
+  { q: "Preciso de conhecimento técnico?",         a: "Não. Todas as soluções são documentadas e prontas para usar." },
+  { q: "Como funciona o suporte?",                 a: "O criador oferece suporte direto via plataforma em português." },
+  { q: "Posso usar em múltiplos projetos?",        a: "Depende da licença de cada solução. Verifique os detalhes na aba 'O que está incluso'." },
+];
+
+function FAQSection() {
+  const [openFaq, setOpenFaq] = useState(null);
+  return (
+    <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb", padding: 32, margin: "32px 48px 0" }}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 20 }}>Perguntas frequentes</div>
+      {FAQ_ITEMS.map((item, i) => (
+        <div key={i}
+          onClick={() => setOpenFaq(openFaq === i ? null : i)}
+          style={{ borderBottom: "1px solid #f3f4f6", padding: "16px 0", cursor: "pointer" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: "#111827" }}>{item.q}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"
+              style={{ flexShrink: 0, marginLeft: 12, transform: openFaq === i ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+          {openFaq === i && (
+            <div style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.7, marginTop: 10 }}>{item.a}</div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── Footer ── */
+function Footer() {
+  return (
+    <footer style={{ background: "#111827", borderRadius: "20px 20px 0 0", margin: "32px 0 0", padding: "48px 48px 32px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 32, marginBottom: 40 }}>
+        <div>
+          <div style={{ color: "#fff", fontWeight: 800, fontSize: 22, letterSpacing: "-0.5px", marginBottom: 12 }}>WePrompt</div>
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, maxWidth: 280, margin: 0 }}>
+            O primeiro marketplace de soluções de IA do Brasil. Ferramentas testadas e aprovadas, em português.
+          </p>
+        </div>
+        {[
+          { title: "Plataforma", links: ["Explorar Soluções", "Para Criadores", "Preços", "Blog"] },
+          { title: "Empresa",   links: ["Sobre nós", "Contato", "Privacidade", "Termos"] },
+          { title: "Redes",     links: ["Instagram", "LinkedIn", "Twitter / X", "YouTube"] },
+        ].map(col => (
+          <div key={col.title}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 14 }}>{col.title}</div>
+            {col.links.map(l => (
+              <a key={l} href="#" style={{ display: "block", fontSize: 14, color: "rgba(255,255,255,0.7)", textDecoration: "none", marginBottom: 10 }}
+                onMouseEnter={e => e.currentTarget.style.color = "#fff"}
+                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.7)"}>
+                {l}
+              </a>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24, fontSize: 13, color: "rgba(255,255,255,0.4)", textAlign: "center" }}>
+        © 2026 WePrompt. Todos os direitos reservados.
+      </div>
+    </footer>
+  );
+}
+
 /* ══════════════════════════════════════════
-   SOLUTION DETAIL
+   SOLUTION DETAIL — all Supabase queries preserved exactly
 ══════════════════════════════════════════ */
-function SolutionDetail({ isMobile }) {
+function SolutionDetail() {
   const { id } = useParams();
-  const [solution, setSolution]     = useState(null);
-  const [creator, setCreator]       = useState(null);
+  const router = useRouter();
+  const [solution,     setSolution]     = useState(null);
+  const [creator,      setCreator]      = useState(null);
   const [alreadyOwned, setAlreadyOwned] = useState(false);
-  const [loading, setLoading]       = useState(true);
-  const [notFound, setNotFound]     = useState(false);
-  const [user, setUser]             = useState(null);
-  const [activeTab, setActiveTab]   = useState("descricao");
+  const [loading,      setLoading]      = useState(true);
+  const [notFound,     setNotFound]     = useState(false);
+  const [user,         setUser]         = useState(null);
+  const [activeTab,    setActiveTab]    = useState(0);
+  const [shared,       setShared]       = useState(false);
+  const [fav,          setFav]          = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -519,7 +445,6 @@ function SolutionDetail({ isMobile }) {
       }
 
       if (ownedRes.data?.length > 0) setAlreadyOwned(true);
-
       setLoading(false);
     }
     init();
@@ -530,246 +455,313 @@ function SolutionDetail({ isMobile }) {
     window.location.href = `/checkout/${id}`;
   }
 
-  if (loading) return <Skeleton isMobile={isMobile} />;
+  function handleShare() {
+    if (navigator.share) {
+      navigator.share({ title: solution.titulo, url: window.location.href }).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(window.location.href);
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    }
+  }
+
+  if (loading) return <Skeleton />;
 
   if (notFound) {
     return (
-      <div style={{ maxWidth: 560, margin: "120px auto", padding: "0 24px", textAlign: "center" }}>
-        <div style={{ fontSize: 48, color: BLUE, opacity: 0.18, marginBottom: 16 }}>✦</div>
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: NEAR_BLACK, marginBottom: 8 }}>Solução não encontrada</h1>
-        <p style={{ fontSize: 15, color: GRAY_TEXT, marginBottom: 24 }}>Esta solução pode ter sido removida ou ainda não está disponível.</p>
-        <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: BLUE, color: "#fff", padding: "12px 24px", borderRadius: 12, fontSize: 14, fontWeight: 700, textDecoration: "none", transition: "background 0.15s" }}
-          onMouseEnter={e => e.currentTarget.style.background = "#0284C7"} onMouseLeave={e => e.currentTarget.style.background = BLUE}>
+      <div style={{ maxWidth: 480, margin: "80px auto", padding: "0 24px", textAlign: "center" }}>
+        <div style={{ fontSize: 40, color: "#111827", opacity: 0.15, marginBottom: 16 }}>✦</div>
+        <h1 style={{ fontSize: 24, fontWeight: 800, color: "#111827", marginBottom: 8 }}>Solução não encontrada</h1>
+        <p style={{ fontSize: 15, color: "#6b7280", marginBottom: 24 }}>Esta solução pode ter sido removida ou ainda não está disponível.</p>
+        <button onClick={() => router.push("/solucoes")}
+          style={{ background: "#111827", color: "#fff", border: "none", padding: "12px 24px", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
           ← Voltar para soluções
-        </a>
+        </button>
       </div>
     );
   }
 
   if (!solution) return null;
 
+  const gradient  = CATEGORY_GRADIENTS[solution.categoria] || "linear-gradient(135deg, #1e3a5f, #2563EB)";
+  const isOneTime = solution.payment_type === "one_time";
+  const priceLabel = solution.preco != null
+    ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+    : "Gratuito";
+
   const tabs = [
-    { key: "descricao",  label: "Descrição" },
-    { key: "como-usar",  label: "Como usar" },
-    { key: "incluso",    label: "O que está incluso" },
-    { key: "avaliacoes", label: `Avaliações${(solution.review_count || 0) > 0 ? ` (${solution.review_count})` : ""}` },
+    "Descrição",
+    "Como usar",
+    "O que está incluso",
+    `Avaliações${(solution.review_count || 0) > 0 ? ` (${solution.review_count})` : ""}`,
   ];
 
-  const purchaseCard = (
-    <PurchaseCard
-      solution={solution}
-      user={user}
-      alreadyOwned={alreadyOwned}
-      onCheckout={handleCheckout}
-      checkoutLoading={false}
-      checkoutError=""
-      creator={creator}
-      isMobile={isMobile}
-    />
-  );
-
   return (
-    <div style={{ background: BG_GRAY, minHeight: "100vh" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: isMobile ? "88px 16px 60px" : "96px 32px 80px" }}>
+    <div>
+      {/* Breadcrumb */}
+      <div style={{ padding: "16px 48px", fontSize: 13, color: "#6b7280", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <span onClick={() => router.push("/solucoes")} style={{ color: "#6b7280", cursor: "pointer" }}
+          onMouseEnter={e => e.currentTarget.style.color = "#111827"}
+          onMouseLeave={e => e.currentTarget.style.color = "#6b7280"}>
+          Soluções
+        </span>
+        <span style={{ color: "#d1d5db" }}>→</span>
+        <span onClick={() => router.push(`/solucoes?categoria=${encodeURIComponent(solution.categoria || "")}`)}
+          style={{ color: "#6b7280", cursor: "pointer" }}
+          onMouseEnter={e => e.currentTarget.style.color = "#111827"}
+          onMouseLeave={e => e.currentTarget.style.color = "#6b7280"}>
+          {solution.categoria}
+        </span>
+        <span style={{ color: "#d1d5db" }}>→</span>
+        <span style={{ color: "#111827", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 300 }}>{solution.titulo}</span>
+      </div>
 
-        {/* Purchase card on top on mobile */}
-        {isMobile && purchaseCard}
+      {/* Two-column layout */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 420px", gap: 32, padding: "0 48px", alignItems: "flex-start" }}>
 
-        <div style={{ display: "flex", gap: 28, alignItems: "flex-start" }}>
+        {/* ── LEFT COLUMN ── */}
+        <div>
+          {/* Category badge */}
+          <span style={{ display: "inline-block", background: "#f3f4f6", color: "#374151", borderRadius: 999, fontSize: 12, fontWeight: 600, padding: "3px 10px" }}>
+            {solution.categoria}
+          </span>
 
-          {/* ── LEFT COLUMN ── */}
-          <div style={{ flex: isMobile ? "1" : "0 0 calc(65% - 14px)", minWidth: 0 }}>
+          {/* Title */}
+          <h1 style={{ fontSize: 36, fontWeight: 800, color: "#111827", marginTop: 12, lineHeight: 1.2, margin: "12px 0 0" }}>
+            {solution.titulo}
+          </h1>
 
-            {/* Breadcrumb */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
-              <a href="/solucoes" style={{ fontSize: 13, color: GRAY_TEXT, textDecoration: "none", transition: "color 0.15s" }}
-                onMouseEnter={e => e.currentTarget.style.color = BLUE} onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}>
-                Soluções
-              </a>
-              <span style={{ fontSize: 13, color: GRAY_TEXT }}>→</span>
-              <a href={`/solucoes?categoria=${encodeURIComponent(solution.categoria || "")}`} style={{ fontSize: 13, color: GRAY_TEXT, textDecoration: "none", transition: "color 0.15s" }}
-                onMouseEnter={e => e.currentTarget.style.color = BLUE} onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}>
-                {solution.categoria}
-              </a>
-              <span style={{ fontSize: 13, color: GRAY_TEXT }}>→</span>
-              <span style={{ fontSize: 13, color: NEAR_BLACK, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200 }}>{solution.titulo}</span>
+          {/* Creator row */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
+            <div style={{ width: 32, height: 32, borderRadius: 999, background: "#f3f4f6", color: "#374151", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              {creator ? initials(creator.nome) : "?"}
             </div>
-
-            {/* Category pill */}
-            <span style={{ display: "inline-block", background: "#e0f2fe", color: BLUE, fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 999 }}>
-              {solution.categoria}
+            <span style={{ fontSize: 14, color: "#374151", fontWeight: 500 }}>
+              Por {creator?.nome || solution.criador_nome || "—"}
             </span>
-
-            {/* Title */}
-            <h1 style={{ fontSize: isMobile ? 28 : 36, fontWeight: 800, color: NEAR_BLACK, margin: "12px 0 14px", letterSpacing: "-0.5px", lineHeight: 1.15 }}>
-              {solution.titulo}
-            </h1>
-
-            {/* Creator row */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22, flexWrap: "wrap" }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
-                {creator ? initials(creator.nome) : "?"}
+            <span style={{ background: "#f0fdf4", color: "#16a34a", borderRadius: 999, fontSize: 12, fontWeight: 600, padding: "2px 10px" }}>
+              ✓ Criador Verificado
+            </span>
+            {(solution.review_count || 0) > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <Stars rating={solution.avg_rating || 5} size={13} />
+                <span style={{ fontSize: 12, color: "#6b7280" }}>({solution.review_count})</span>
               </div>
-              <span style={{ fontSize: 14, color: GRAY_TEXT }}>
-                Por <strong style={{ color: NEAR_BLACK }}>{creator?.nome || solution.criador_nome || "—"}</strong>
-              </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "rgba(5,150,105,0.1)", color: "#059669", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 99 }}>
-                ✓ Criador Verificado
-              </span>
-              {(solution.review_count || 0) > 0 && (
-                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <Stars rating={solution.avg_rating || 5} size={13} />
-                  <span style={{ fontSize: 12, color: GRAY_TEXT }}>({solution.review_count})</span>
-                </div>
-              )}
-            </div>
+            )}
+          </div>
 
-            {/* Hero image */}
-            <div style={{ width: "100%", borderRadius: 20, overflow: "hidden", marginBottom: 24, background: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)" }}>
-              {solution.cover_url ? (
-                <img src={solution.cover_url} alt={solution.titulo} style={{ width: "100%", maxHeight: 400, objectFit: "cover", display: "block" }} />
+          {/* Cover image */}
+          <div style={{ borderRadius: 16, overflow: "hidden", marginTop: 20, height: 460, width: "100%" }}>
+            {solution.cover_url ? (
+              <img src={solution.cover_url} alt={solution.titulo} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            ) : (
+              <div style={{ width: "100%", height: "100%", background: gradient, display: "flex", alignItems: "center", justifyContent: "center", padding: 40, boxSizing: "border-box" }}>
+                <span style={{ fontSize: 22, fontWeight: 700, color: "#fff", textAlign: "center", lineHeight: 1.4 }}>{solution.titulo}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Tabs row */}
+          <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #e5e7eb", marginTop: 28, background: "#fff", borderRadius: "12px 12px 0 0", padding: "0 24px" }}>
+            {tabs.map((tab, i) => (
+              <button key={i} onClick={() => setActiveTab(i)} style={{
+                fontSize: 14,
+                padding: "14px 16px 14px 0",
+                marginRight: 8,
+                cursor: "pointer",
+                border: "none",
+                borderBottom: activeTab === i ? "2px solid #111827" : "2px solid transparent",
+                background: "transparent",
+                color: activeTab === i ? "#111827" : "#6b7280",
+                fontWeight: activeTab === i ? 600 : 400,
+                marginBottom: -1,
+                fontFamily: "inherit",
+                whiteSpace: "nowrap",
+                transition: "color 0.15s",
+              }}>
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab content */}
+          <div style={{ background: "#fff", borderRadius: "0 0 12px 12px", border: "1px solid #e5e7eb", borderTop: "none", padding: 28 }}>
+
+            {/* Tab 0 — Descrição */}
+            {activeTab === 0 && (
+              <div>
+                <p style={{ fontSize: 15, color: "#374151", lineHeight: 1.8, margin: 0, whiteSpace: "pre-line" }}>{solution.descricao}</p>
+                <div style={{ marginTop: 24 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", marginBottom: 10 }}>Ideal para</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {["Pequenas e médias empresas", "Equipes de marketing", "Empreendedores", "Startups"].map(tag => (
+                      <span key={tag} style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "5px 14px", fontSize: 13, display: "inline-block", marginBottom: 4 }}>{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab 1 — Como usar */}
+            {activeTab === 1 && (
+              solution.delivery_instructions ? (
+                <p style={{ fontSize: 15, color: "#374151", lineHeight: 1.8, margin: 0, whiteSpace: "pre-line" }}>{solution.delivery_instructions}</p>
               ) : (
-                <div style={{ padding: "80px 40px", textAlign: "center" }}>
-                  <div style={{ fontSize: 52, color: BLUE, opacity: 0.2, marginBottom: 12 }}>✦</div>
-                  <div style={{ fontSize: 16, color: BLUE, opacity: 0.45, fontWeight: 700 }}>{solution.titulo}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  {[
+                    "Após a compra, você recebe acesso imediato por e-mail com todas as instruções.",
+                    "Faça o download dos arquivos ou acesse os links disponibilizados pelo criador.",
+                    "Siga a documentação incluída para configurar a solução no seu ambiente.",
+                    "Em caso de dúvidas, acesse o suporte direto com o criador pela plataforma.",
+                  ].map((step, i) => (
+                    <div key={i} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 999, background: "#111827", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        {i + 1}
+                      </div>
+                      <span style={{ fontSize: 14, color: "#374151", lineHeight: 1.6, paddingTop: 4 }}>{step}</span>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
+              )
+            )}
 
-            {/* Tabs */}
-            <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
-              {/* Tab bar */}
-              <div style={{ display: "flex", borderBottom: `1px solid ${BORDER}`, overflowX: "auto" }}>
-                {tabs.map(t => (
-                  <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
-                    padding: "15px 20px", border: "none", background: "transparent",
-                    fontSize: 14, fontWeight: activeTab === t.key ? 700 : 500,
-                    color: activeTab === t.key ? BLUE : GRAY_TEXT,
-                    borderBottom: `2px solid ${activeTab === t.key ? BLUE : "transparent"}`,
-                    cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
-                    transition: "color 0.15s", marginBottom: -1,
-                  }}>
-                    {t.label}
-                  </button>
+            {/* Tab 2 — O que está incluso */}
+            {activeTab === 2 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {[
+                  "Acesso imediato após pagamento",
+                  solution.delivery_files?.length > 0 ? `${solution.delivery_files.length} arquivo(s) de entrega` : null,
+                  solution.delivery_links?.length > 0 ? `${solution.delivery_links.length} link(s) de acesso` : null,
+                  "Suporte em português com o criador",
+                  "Atualizações futuras da solução",
+                  "Reembolso em 7 dias se não funcionar conforme descrito",
+                ].filter(Boolean).map(item => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <CheckSVG size={16} color="#16a34a" />
+                    <span style={{ fontSize: 14, color: "#374151" }}>{item}</span>
+                  </div>
                 ))}
               </div>
+            )}
 
-              {/* Tab content */}
-              <div style={{ padding: isMobile ? "24px 20px" : "28px 32px" }}>
-
-                {/* DESCRIÇÃO */}
-                {activeTab === "descricao" && (
-                  <div>
-                    <p style={{ fontSize: 15, color: GRAY_TEXT, lineHeight: 1.8, margin: "0 0 28px", whiteSpace: "pre-line" }}>
-                      {solution.descricao}
-                    </p>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: NEAR_BLACK, marginBottom: 10 }}>Ideal para</div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                        {["Pequenas e médias empresas", "Equipes de marketing", "Empreendedores", "Startups"].map(tag => (
-                          <span key={tag} style={{ background: "#e0f2fe", color: BLUE, fontSize: 13, fontWeight: 600, padding: "6px 14px", borderRadius: 99 }}>
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* COMO USAR */}
-                {activeTab === "como-usar" && (
-                  solution.delivery_instructions ? (
-                    <p style={{ fontSize: 15, color: GRAY_TEXT, lineHeight: 1.8, margin: 0, whiteSpace: "pre-line" }}>
-                      {solution.delivery_instructions}
-                    </p>
-                  ) : (
-                    <div style={{ textAlign: "center", padding: "48px 0" }}>
-                      <div style={{ fontSize: 36, opacity: 0.18, marginBottom: 14 }}>📋</div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6 }}>
-                        O criador ainda não adicionou instruções de uso.
-                      </div>
-                      <div style={{ fontSize: 13, color: GRAY_TEXT }}>As instruções completas são enviadas após a aquisição.</div>
-                    </div>
-                  )
-                )}
-
-                {/* O QUE ESTÁ INCLUSO */}
-                {activeTab === "incluso" && (
-                  <div>
-                    <ul style={{ listStyle: "none", margin: "0 0 24px", padding: 0, display: "flex", flexDirection: "column", gap: 12 }}>
-                      {[
-                        "Acesso imediato após pagamento",
-                        solution.delivery_files?.length > 0
-                          ? `${solution.delivery_files.length} arquivo(s) de entrega`
-                          : null,
-                        solution.delivery_links?.length > 0
-                          ? `${solution.delivery_links.length} link(s) de acesso`
-                          : null,
-                        "Suporte em português com o criador",
-                        "Atualizações futuras da solução",
-                        "Reembolso em 7 dias se não funcionar conforme descrito",
-                      ].filter(Boolean).map(item => (
-                        <li key={item} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                          <CheckIcon color="#059669" />
-                          <span style={{ fontSize: 15, color: GRAY_TEXT, lineHeight: 1.6 }}>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#e0f2fe", borderRadius: 10, padding: "11px 16px" }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={BLUE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                      </svg>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: BLUE }}>
-                        {solution.delivery_files?.length > 0
-                          ? "Entrega digital imediata"
-                          : "Configuração assistida pelo criador"}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* AVALIAÇÕES */}
-                {activeTab === "avaliacoes" && (
-                  <ReviewsTab
-                    solutionId={id}
-                    user={user}
-                    alreadyOwned={alreadyOwned}
-                    isMobile={isMobile}
-                  />
-                )}
-
-              </div>
-            </div>
+            {/* Tab 3 — Avaliações */}
+            {activeTab === 3 && (
+              <ReviewsTab solutionId={id} user={user} alreadyOwned={alreadyOwned} />
+            )}
           </div>
-
-          {/* ── RIGHT COLUMN ── */}
-          {!isMobile && (
-            <div style={{ flex: "0 0 calc(35% - 14px)", minWidth: 0 }}>
-              {purchaseCard}
-              <RelatedSolutions categoria={solution.categoria} currentId={id} />
-            </div>
-          )}
         </div>
 
-        {/* Related on mobile */}
-        {isMobile && (
-          <div style={{ marginTop: 20 }}>
+        {/* ── RIGHT COLUMN ── */}
+        <div style={{ position: "sticky", top: 80 }}>
+          <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb", padding: 28, boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
+
+            {/* Price */}
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 42, fontWeight: 900, color: "#111827", letterSpacing: "-1.5px", lineHeight: 1 }}>{priceLabel}</span>
+              {solution.preco != null && (
+                <span style={{ fontSize: 14, color: "#6b7280", marginLeft: 8 }}>{isOneTime ? "pagamento único" : "por mês"}</span>
+              )}
+            </div>
+
+            {/* CTA */}
+            {alreadyOwned ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "14px", background: "rgba(5,150,105,0.07)", border: "1px solid rgba(5,150,105,0.2)", borderRadius: 10, marginTop: 16 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="rgba(5,150,105,0.2)" /><path d="M7 12l3 3 7-7" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#059669" }}>Você já possui esta solução ✓</span>
+              </div>
+            ) : (
+              <button onClick={handleCheckout} disabled={checkoutLoading}
+                style={{ width: "100%", background: checkoutLoading ? "rgba(17,24,39,0.5)" : "#111827", color: "#fff", borderRadius: 10, padding: "14px", fontSize: 16, fontWeight: 700, marginTop: 16, border: "none", cursor: checkoutLoading ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
+                onMouseEnter={e => { if (!checkoutLoading) e.currentTarget.style.background = "#374151"; }}
+                onMouseLeave={e => { if (!checkoutLoading) e.currentTarget.style.background = "#111827"; }}>
+                {checkoutLoading ? "Redirecionando…" : solution.preco != null ? "Adquirir solução →" : "Começar gratuitamente →"}
+              </button>
+            )}
+
+            {/* Secondary buttons */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
+              <button onClick={handleShare}
+                style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px", fontSize: 13, color: "#374151", cursor: "pointer", background: "#fff", fontFamily: "inherit" }}
+                onMouseEnter={e => e.currentTarget.style.background = "#f9fafb"}
+                onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
+                {shared ? "✓ Copiado!" : "↑ Compartilhar"}
+              </button>
+              <button onClick={() => setFav(f => !f)}
+                style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px", fontSize: 13, color: fav ? "#f43f5e" : "#374151", cursor: "pointer", background: "#fff", fontFamily: "inherit" }}
+                onMouseEnter={e => e.currentTarget.style.background = "#f9fafb"}
+                onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
+                {fav ? "♥ Favoritado" : "♡ Favoritar"}
+              </button>
+            </div>
+
+            <div style={{ height: 1, background: "#e5e7eb", margin: "24px 0 0" }} />
+
+            {/* Included */}
+            <div style={{ marginTop: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", letterSpacing: 1 }}>INCLUSO</div>
+              <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+                {["Acesso imediato após pagamento", "Suporte em português", "Atualizações incluídas", "Reembolso em 7 dias"].map(item => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <CheckSVG size={14} color="#16a34a" />
+                    <span style={{ fontSize: 13, color: "#374151" }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Trust badges */}
+            <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
+              {["💬 Suporte em português", "🛡 Reembolso em 7 dias"].map(b => (
+                <span key={b} style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "5px 12px", fontSize: 12 }}>{b}</span>
+              ))}
+            </div>
+
+            <div style={{ height: 1, background: "#e5e7eb", margin: "24px 0 0" }} />
+
+            {/* Creator */}
+            {creator && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#9ca3af", letterSpacing: 1 }}>CRIADOR</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10, padding: "12px 0" }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 999, background: "#f3f4f6", color: "#374151", fontSize: 14, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {initials(creator.nome)}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{creator.nome}</div>
+                    <div style={{ fontSize: 12, color: "#6b7280" }}>{creator.solution_count || 1} soluções publicadas</div>
+                  </div>
+                </div>
+                {solution.creator_id && (
+                  <span onClick={() => router.push(`/criadores/${solution.creator_id}`)}
+                    style={{ display: "block", marginTop: 10, fontSize: 13, fontWeight: 600, color: "#111827", cursor: "pointer", textDecoration: "underline" }}>
+                    Ver perfil do criador →
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Related solutions */}
             <RelatedSolutions categoria={solution.categoria} currentId={id} />
           </div>
-        )}
+        </div>
       </div>
+
+      {/* FAQ */}
+      <FAQSection />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
 
 export default function SolutionPage() {
-  const width    = useWindowSize();
-  const isMobile = width < 768;
-
   return (
-    <div style={{ minHeight: "100vh", fontFamily: "'DM Sans', sans-serif", color: NEAR_BLACK }}>
-      <Suspense fallback={<div style={{ background: BG_GRAY, minHeight: "100vh" }}><Skeleton isMobile={isMobile} /></div>}>
-        <SolutionDetail isMobile={isMobile} />
+    <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
+      <style>{`@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.45} }`}</style>
+      <Navbar />
+      <Suspense fallback={<Skeleton />}>
+        <SolutionDetail />
       </Suspense>
     </div>
   );
