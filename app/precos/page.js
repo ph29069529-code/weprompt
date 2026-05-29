@@ -1,818 +1,464 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import WePromptLogo from "../components/WePromptLogo";
-const NEAR_BLACK = "#1D1D1F";
-const GRAY_TEXT  = "#6E6E73";
-const BG_GRAY    = "#F5F5F7";
-const BLUE       = "#0369A1";
+import { useRouter } from "next/navigation";
 
-function useWindowSize() {
-  const [width, setWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
+function CheckIcon({ color = "#16a34a" }) {
+  return (
+    <svg width="16" height="16" fill="none" stroke={color} strokeWidth="2.5" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
   );
-  useEffect(() => {
-    function onResize() { setWidth(window.innerWidth); }
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-  return width;
 }
 
-const Arrow = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ display: "inline-block", flexShrink: 0 }}>
-    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const ChevronDown = ({ open }) => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-    style={{ flexShrink: 0, transition: "transform 0.25s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>
-    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const Check = ({ dark }) => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
-    <circle cx="8" cy="8" r="7"
-      fill={dark ? "rgba(255,255,255,0.18)" : "rgba(3,105,161,0.12)"} />
-    <path d="M5 8l2 2 4-4"
-      stroke={dark ? "#fff" : BLUE}
-      strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const CRIADOR_PLANS = [
+const CRIADORES_PLANS = (billing) => [
   {
-    key: "free", name: "Free",
-    monthly: 0, annualMonthly: 0, annualTotal: 0,
-    commission: "20%",
-    tagline: "Para começar a publicar soluções sem custo algum.",
+    name: "Free",
+    commission: "20% de comissão",
+    price: "Grátis",
+    priceSuffix: null,
+    description: "Ideal para começar a vender suas soluções de IA.",
+    cta: "Começar grátis",
+    ctaRoute: "/cadastro",
+    ctaStyle: "outline",
+    popular: false,
     features: [
-      "Até 3 soluções publicadas",
-      "Analytics básico",
-      "Curadoria e aprovação WePrompt",
-      "Badge de perfil de criador",
-      "Suporte via e-mail",
+      "Publique até 3 soluções",
+      "20% de comissão por venda",
+      "Pagamentos via Stripe",
+      "Suporte por email",
     ],
-    cta: "Começar grátis", ctaHref: "/cadastro?role=criador",
-    dark: false, popular: false, founder: false, premium: false,
   },
   {
-    key: "pro", name: "Pro",
-    monthly: 97, annualMonthly: 77, annualTotal: 924,
-    commission: "15%",
-    tagline: "Para criadores que querem crescer e profissionalizar sua presença.",
+    name: "Pro",
+    commission: "15% de comissão",
+    price: billing === "mensal" ? "R$ 97" : "R$ 77",
+    priceSuffix: "/mês",
+    description: "Para criadores sérios que querem escalar suas vendas.",
+    cta: "Assinar Pro",
+    ctaRoute: "/cadastro",
+    ctaStyle: "dark",
+    popular: true,
     features: [
       "Soluções ilimitadas",
-      "Destaque na categoria",
-      "Analytics completo com métricas",
-      'Badge "Criador Verificado" ✦',
+      "15% de comissão por venda",
+      "Analytics avançado",
+      "Destaque no marketplace",
       "Suporte prioritário",
     ],
-    cta: "Começar Pro", ctaHref: "/cadastro?role=criador",
-    dark: true, popular: true, founder: true, premium: false,
   },
   {
-    key: "premium", name: "Premium",
-    monthly: 297, annualMonthly: 237, annualTotal: 2844,
-    commission: "10%",
-    tagline: "Para criadores que querem o máximo de visibilidade e receita.",
+    name: "Premium",
+    commission: "10% de comissão",
+    price: billing === "mensal" ? "R$ 297" : "R$ 237",
+    priceSuffix: "/mês",
+    description: "Para criadores top com volume alto de vendas.",
+    cta: "Assinar Premium",
+    ctaRoute: "/cadastro",
+    ctaStyle: "dark",
+    popular: false,
     features: [
-      "Tudo do plano Pro",
-      "Topo da categoria (destaque máximo)",
-      "Destaque na homepage da WePrompt",
-      "Suporte prioritário dedicado",
-      "Gestão de afiliados",
+      "Tudo do Pro",
+      "10% de comissão por venda",
+      "Badge de criador verificado",
+      "Posição privilegiada nas buscas",
+      "Gerente de conta dedicado",
     ],
-    cta: "Começar Premium", ctaHref: "/cadastro?role=criador",
-    dark: false, popular: false, founder: true, premium: true,
   },
 ];
 
-const EMPRESA_PLANS = [
+const EMPRESAS_PLANS = (billing) => [
   {
-    key: "free", name: "Free",
-    monthly: 0, annualMonthly: 0, annualTotal: 0,
+    name: "Starter",
     commission: null,
-    tagline: "Explore o marketplace e descubra soluções de IA sem compromisso.",
+    price: "Grátis",
+    priceSuffix: null,
+    description: "Acesso ao catálogo completo de soluções.",
+    cta: "Começar grátis",
+    ctaRoute: "/cadastro",
+    ctaStyle: "outline",
+    popular: false,
     features: [
-      "Acesso ao catálogo completo",
-      "Compra e assinatura de soluções",
-      "Filtros e busca avançada",
-      "Avaliações verificadas",
-      "Suporte via e-mail",
+      "Acesso ao catálogo",
+      "Compras avulsas",
+      "Suporte email",
     ],
-    cta: "Começar grátis", ctaHref: "/cadastro",
-    dark: false, popular: false, founder: false, premium: false,
   },
   {
-    key: "business", name: "Business",
-    monthly: 197, annualMonthly: 157, annualTotal: 1884,
+    name: "Business",
     commission: null,
-    tagline: "Para equipes que querem as melhores soluções de IA com economia.",
+    price: billing === "mensal" ? "R$ 197" : "R$ 157",
+    priceSuffix: "/mês",
+    description: "Para times que precisam de múltiplas soluções.",
+    cta: "Assinar Business",
+    ctaRoute: "/cadastro",
+    ctaStyle: "dark",
+    popular: true,
     features: [
-      "10% de desconto em todas as soluções",
-      "Suporte prioritário em PT-BR",
-      "Curadoria personalizada mensal",
-      "Até 3 usuários na conta",
-      "Onboarding guiado",
-      "Acesso a soluções em pré-lançamento",
+      "Até 10 soluções ativas",
+      "Desconto 10% nas compras",
+      "Suporte prioritário",
     ],
-    cta: "Começar Business", ctaHref: "/cadastro",
-    dark: true, popular: true, founder: false, premium: false,
   },
   {
-    key: "enterprise", name: "Enterprise",
-    monthly: 497, annualMonthly: 397, annualTotal: 4764,
+    name: "Enterprise",
     commission: null,
-    tagline: "Para grandes empresas com alto volume e necessidades dedicadas.",
+    price: billing === "mensal" ? "R$ 597" : "R$ 477",
+    priceSuffix: "/mês",
+    description: "Para empresas com alto volume de uso.",
+    cta: "Falar com vendas",
+    ctaRoute: "/contato",
+    ctaStyle: "dark",
+    popular: false,
     features: [
-      "20% de desconto em todas as soluções",
-      "Suporte dedicado via WhatsApp",
-      "Curadoria personalizada semanal",
-      "Usuários ilimitados",
-      "Onboarding completo da equipe",
-      "Relatório de ROI mensal",
+      "Soluções ilimitadas",
+      "Desconto 20% nas compras",
+      "API access",
+      "Gerente dedicado",
     ],
-    cta: "Falar com a equipe", ctaHref: "mailto:contato@weprompt.app.br",
-    dark: false, popular: false, founder: false, premium: true,
   },
-];
-
-const EMPRESA_COMPARE = [
-  { feature: "Acesso ao catálogo",      free: "✓",     business: "✓",              enterprise: "✓" },
-  { feature: "Desconto nas soluções",   free: "–",     business: "10%",            enterprise: "20%" },
-  { feature: "Suporte",                 free: "E-mail", business: "Prioritário PT-BR", enterprise: "WhatsApp dedicado" },
-  { feature: "Curadoria personalizada", free: "–",     business: "Mensal",         enterprise: "Semanal" },
-  { feature: "Usuários na conta",       free: "1",     business: "Até 3",          enterprise: "Ilimitados" },
-  { feature: "Onboarding",              free: "–",     business: "Guiado",         enterprise: "Completo" },
-  { feature: "Relatório de ROI",        free: "–",     business: "–",              enterprise: "Mensal" },
 ];
 
 const FAQ_ITEMS = [
-  {
-    q: "Posso mudar de plano a qualquer momento?",
-    a: "Sim. Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. A cobrança é ajustada proporcionalmente ao tempo restante do período.",
-  },
-  {
-    q: "O que acontece se eu cancelar?",
-    a: "Ao cancelar, você retorna ao plano Free automaticamente. Suas soluções publicadas permanecem ativas, mas sujeitas às regras do plano Free (até 3 soluções para criadores).",
-  },
-  {
-    q: "Há cobrança de taxa de setup ou taxas escondidas?",
-    a: "Não. Nenhum plano possui taxa de setup ou cobranças adicionais surpresa. Você paga apenas a mensalidade do plano escolhido.",
-  },
-  {
-    q: "Quais formas de pagamento são aceitas?",
-    a: "Aceitamos cartão de crédito, boleto bancário e PIX para os planos mensais e anuais. O repasse para criadores é feito exclusivamente via PIX.",
-  },
-  {
-    q: "Quando os criadores recebem o repasse das vendas?",
-    a: "O repasse é realizado via PIX em até 30 dias após a confirmação da venda. O valor mínimo para saque é R$ 50. Abaixo disso, o saldo fica acumulado para o próximo ciclo.",
-  },
+  { q: "Posso mudar de plano?", a: "Sim, você pode fazer upgrade ou downgrade a qualquer momento." },
+  { q: "Como funciona o período de teste?", a: "O plano Free é gratuito para sempre. Os planos pagos têm 14 dias de teste grátis." },
+  { q: "Como recebo meus pagamentos?", a: "Através do Stripe, direto na sua conta bancária, com depósitos semanais." },
+  { q: "A comissão é sobre o valor bruto?", a: "Sim, a comissão é calculada sobre o valor total da venda antes de impostos." },
+  { q: "Posso cancelar quando quiser?", a: "Sim, sem multa ou fidelidade. Cancele a qualquer momento pelo dashboard." },
 ];
 
-function PricingCard({ plan, billing, isMobile }) {
-  const isFree  = plan.monthly === 0;
-  const price   = billing === "annual" ? plan.annualMonthly : plan.monthly;
-
-  const cardBg      = plan.dark ? BLUE : "#fff";
-  const cardBorder  = plan.premium ? `2px solid ${BLUE}` : plan.dark ? "none" : "1px solid rgba(0,0,0,0.07)";
-  const cardShadow  = plan.dark
-    ? "0 24px 60px rgba(3,105,161,0.3)"
-    : plan.premium
-    ? "0 4px 24px rgba(3,105,161,0.1)"
-    : "0 2px 12px rgba(0,0,0,0.06)";
-
-  const textPrimary   = plan.dark ? "#fff"                         : NEAR_BLACK;
-  const textSecondary = plan.dark ? "rgba(255,255,255,0.6)"        : GRAY_TEXT;
-  const textMuted     = plan.dark ? "rgba(255,255,255,0.4)"        : "rgba(0,0,0,0.35)";
-
+function PlanCard({ plan, router }) {
+  const [hovered, setHovered] = useState(false);
   return (
-    <div style={{
-      background: cardBg, borderRadius: 20,
-      padding: isMobile ? "28px 24px" : "36px 28px",
-      border: cardBorder,
-      boxShadow: cardShadow,
-      display: "flex", flexDirection: "column",
-      position: "relative", overflow: "hidden",
-    }}>
-
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "white",
+        borderRadius: 16,
+        border: plan.popular ? "2px solid #111827" : "1px solid #e5e7eb",
+        padding: 32,
+        position: "relative",
+        boxShadow: plan.popular
+          ? "0 8px 32px rgba(0,0,0,0.1)"
+          : hovered ? "0 8px 24px rgba(0,0,0,0.08)" : "none",
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition: "all 0.2s ease",
+      }}
+    >
       {plan.popular && (
         <div style={{
-          position: "absolute", top: 20, right: 20,
-          background: plan.dark ? "rgba(255,255,255,0.2)" : BLUE,
-          color: "#fff",
-          fontSize: 10, fontWeight: 800, padding: "4px 12px",
-          borderRadius: 999, letterSpacing: "0.08em",
-        }}>
-          POPULAR
-        </div>
+          position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
+          background: "#111827", color: "white", borderRadius: 999,
+          padding: "4px 16px", fontSize: 12, fontWeight: 700, whiteSpace: "nowrap",
+        }}>POPULAR</div>
       )}
 
-      {plan.founder && !plan.premium && (
-        <div style={{
-          background: "#fef3c7", color: "#92400e",
-          fontSize: 12, fontWeight: 700, padding: "4px 12px",
-          borderRadius: 999, marginBottom: 8, alignSelf: "flex-start",
-          display: "inline-block",
-        }}>
-          🏅 Criador Fundador — 1º mês grátis
-        </div>
-      )}
+      <div style={{ fontSize: 22, fontWeight: 800, color: "#111827" }}>{plan.name}</div>
 
-      {/* Plan name */}
-      <div style={{
-        fontSize: 12, fontWeight: 700, letterSpacing: "0.1em",
-        textTransform: "uppercase", color: textSecondary, marginBottom: 8,
-      }}>
-        {plan.name}
-      </div>
-
-      {/* Commission badge (creators only) */}
       {plan.commission && (
-        <div style={{
-          display: "inline-flex", alignItems: "center", gap: 6,
-          marginBottom: 16, alignSelf: "flex-start",
-        }}>
-          <span style={{
-            fontSize: 22, fontWeight: 800,
-            color: plan.dark ? "#fff" : BLUE,
-          }}>
-            {plan.commission}
-          </span>
-          <span style={{ fontSize: 12, color: textSecondary }}>de comissão</span>
+        <div style={{ background: "#f0fdf4", color: "#16a34a", borderRadius: 999, fontSize: 12, fontWeight: 600, padding: "4px 12px", marginTop: 8, display: "inline-block" }}>
+          {plan.commission}
         </div>
       )}
 
-      {/* Price */}
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginBottom: 6 }}>
-        {isFree ? (
-          <span style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-1.5px", color: textPrimary, lineHeight: 1 }}>
-            Grátis
-          </span>
-        ) : (
-          <>
-            <span style={{ fontSize: 18, fontWeight: 700, color: textSecondary, paddingBottom: 7 }}>R$</span>
-            <span style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-2px", color: textPrimary, lineHeight: 1 }}>
-              {price.toLocaleString("pt-BR")}
-            </span>
-            <span style={{ fontSize: 13, color: textMuted, paddingBottom: 9 }}>/mês</span>
-          </>
-        )}
+      <div style={{ marginTop: 16, display: "flex", alignItems: "baseline", gap: 4 }}>
+        <span style={{ fontSize: 48, fontWeight: 900, color: "#111827", lineHeight: 1 }}>{plan.price}</span>
+        {plan.priceSuffix && <span style={{ fontSize: 16, color: "#6b7280" }}>{plan.priceSuffix}</span>}
       </div>
 
-      {/* Founder Pro free month note */}
-      {plan.founder && !plan.premium && (
-        <div style={{ fontSize: 13, color: "#059669", fontWeight: 600, marginBottom: 4 }}>
-          Primeiro mês gratuito para os 100 primeiros criadores
-        </div>
-      )}
+      <div style={{ fontSize: 14, color: "#6b7280", marginTop: 8 }}>{plan.description}</div>
 
-      {/* Annual note / savings prompt */}
-      {!isFree && (
-        <div style={{ marginBottom: 4, minHeight: 20 }}>
-          {billing === "annual" ? (
-            <span style={{ fontSize: 12, color: textSecondary }}>
-              Cobrado anualmente · R$ {plan.annualTotal.toLocaleString("pt-BR")}/ano
-            </span>
-          ) : (
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 5,
-              background: plan.dark ? "rgba(255,255,255,0.12)" : "rgba(22,163,74,0.1)",
-              color: plan.dark ? "#fff" : "#15803D",
-              fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999,
-            }}>
-              Economize 20% no anual
-            </span>
-          )}
-        </div>
-      )}
+      <button
+        onClick={() => router.push(plan.ctaRoute)}
+        style={{
+          width: "100%", padding: "14px", borderRadius: 10, fontSize: 15, fontWeight: 600,
+          marginTop: 24, cursor: "pointer",
+          background: plan.ctaStyle === "dark" ? "#111827" : "white",
+          color: plan.ctaStyle === "dark" ? "white" : "#374151",
+          border: plan.ctaStyle === "dark" ? "none" : "1.5px solid #e5e7eb",
+          fontFamily: "inherit",
+        }}
+      >{plan.cta}</button>
 
-      {/* Tagline */}
-      <p style={{
-        fontSize: 13, lineHeight: 1.65, color: textSecondary,
-        margin: "16px 0 22px",
-      }}>
-        {plan.tagline}
-      </p>
-
-      {/* Divider */}
-      <div style={{
-        height: 1,
-        background: plan.dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.07)",
-        marginBottom: 22,
-      }} />
-
-      {/* Features */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1, marginBottom: 28 }}>
+      <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
         {plan.features.map(f => (
-          <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-            <Check dark={plan.dark} />
-            <span style={{ fontSize: 13, lineHeight: 1.5, color: plan.dark ? "rgba(255,255,255,0.85)" : "#374151" }}>
-              {f}
-            </span>
+          <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <CheckIcon />
+            <span style={{ fontSize: 14, color: "#374151" }}>{f}</span>
           </div>
         ))}
       </div>
+    </div>
+  );
+}
 
-      {/* CTA */}
-      <a
-        href={plan.ctaHref}
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-          borderRadius: 12, padding: "14px 20px",
-          fontSize: 14, fontWeight: 700, textDecoration: "none",
-          transition: "background 0.15s, opacity 0.15s",
-          ...(plan.dark
-            ? { background: "rgba(255,255,255,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.3)" }
-            : isFree
-            ? { border: `2px solid ${BLUE}`, color: BLUE, background: "transparent" }
-            : { background: BLUE, color: "#fff" }
-          ),
-        }}
-        onMouseEnter={e => {
-          if (plan.dark) e.currentTarget.style.background = "rgba(255,255,255,0.26)";
-          else if (isFree) e.currentTarget.style.background = "rgba(3,105,161,0.06)";
-          else e.currentTarget.style.background = "#0284C7";
-        }}
-        onMouseLeave={e => {
-          if (plan.dark) e.currentTarget.style.background = "rgba(255,255,255,0.18)";
-          else if (isFree) e.currentTarget.style.background = "transparent";
-          else e.currentTarget.style.background = BLUE;
-        }}
-      >
-        {plan.cta} <Arrow />
-      </a>
+function FAQAccordion() {
+  const [open, setOpen] = useState(null);
+  return (
+    <div style={{ background: "white", borderRadius: 16, border: "1px solid #e5e7eb", padding: 32, marginBottom: 48 }}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 20 }}>Perguntas frequentes</div>
+      {FAQ_ITEMS.map((item, i) => (
+        <div key={i} style={{ borderTop: i === 0 ? "none" : "1px solid #f3f4f6" }}>
+          <button
+            onClick={() => setOpen(open === i ? null : i)}
+            style={{
+              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "16px 0", background: "none", border: "none", cursor: "pointer", textAlign: "left",
+              fontFamily: "inherit",
+            }}
+          >
+            <span style={{ fontSize: 15, fontWeight: 600, color: "#111827" }}>{item.q}</span>
+            <svg width="20" height="20" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24"
+              style={{ flexShrink: 0, transition: "transform 0.2s", transform: open === i ? "rotate(180deg)" : "rotate(0deg)" }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {open === i && (
+            <div style={{ fontSize: 14, color: "#6b7280", paddingBottom: 16, lineHeight: 1.7 }}>{item.a}</div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
 
 export default function PrecosPage() {
-  const [audience,  setAudience]  = useState("criadores");
-  const [billing,   setBilling]   = useState("monthly");
-  const [faqOpen,   setFaqOpen]   = useState(null);
-  const width      = useWindowSize();
-  const isMobile   = width < 768;
+  const router = useRouter();
+  const [activeAudience, setActiveAudience] = useState("criadores");
+  const [billing, setBilling] = useState("mensal");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const plans = audience === "criadores" ? CRIADOR_PLANS : EMPRESA_PLANS;
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const plans = activeAudience === "criadores" ? CRIADORES_PLANS(billing) : EMPRESAS_PLANS(billing);
 
   return (
-    <div style={{ minHeight: "100vh", color: NEAR_BLACK, background: "#fff", fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
 
-      <main>
-
-        {/* ── HEADER + TOGGLES ── */}
-        <section style={{
-          background: "#fff",
-          paddingTop: isMobile ? 104 : 128,
-          paddingBottom: isMobile ? 56 : 72,
-          paddingLeft: 24, paddingRight: 24,
-          textAlign: "center",
-        }}>
-          <div style={{ maxWidth: 680, margin: "0 auto" }}>
-            <div style={{
-              fontSize: 12, fontWeight: 700, color: BLUE,
-              letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 20,
-            }}>
-              Planos e Preços
-            </div>
-            <h1 style={{
-              fontSize: isMobile ? "clamp(34px, 8vw, 48px)" : "clamp(48px, 6vw, 68px)",
-              fontWeight: 800, color: NEAR_BLACK,
-              letterSpacing: isMobile ? "-1px" : "-2px",
-              lineHeight: 1.06, marginBottom: 18,
-            }}>
-              Simples e transparente
-            </h1>
-            <p style={{ fontSize: isMobile ? 16 : 19, color: GRAY_TEXT, lineHeight: 1.65, margin: "0 0 48px" }}>
-              Comece gratuitamente. Escale quando precisar.
-            </p>
-
-            {/* Toggles */}
-            <div style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              alignItems: "center", justifyContent: "center",
-              gap: 16,
-            }}>
-              {/* Audience toggle */}
-              <div style={{
-                display: "inline-flex",
-                background: BG_GRAY, borderRadius: 12, padding: 4,
-                border: "1px solid rgba(0,0,0,0.07)",
-              }}>
-                {[["criadores", "Criadores"], ["empresas", "Empresas"]].map(([key, label]) => (
-                  <button key={key} onClick={() => setAudience(key)} style={{
-                    padding: "9px 22px", borderRadius: 9, border: "none",
-                    background: audience === key ? BLUE : "transparent",
-                    color: audience === key ? "#fff" : GRAY_TEXT,
-                    fontSize: 14, fontWeight: 600,
-                    cursor: "pointer", fontFamily: "inherit", transition: "all 0.18s",
-                  }}>
-                    {label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Billing toggle */}
-              <div style={{
-                display: "inline-flex",
-                background: BG_GRAY, borderRadius: 12, padding: 4,
-                border: "1px solid rgba(0,0,0,0.07)",
-                alignItems: "center",
-              }}>
-                {[["monthly", "Mensal"], ["annual", "Anual"]].map(([key, label]) => (
-                  <button key={key} onClick={() => setBilling(key)} style={{
-                    padding: "9px 22px", borderRadius: 9, border: "none",
-                    background: billing === key ? BLUE : "transparent",
-                    color: billing === key ? "#fff" : GRAY_TEXT,
-                    fontSize: 14, fontWeight: 600,
-                    cursor: "pointer", fontFamily: "inherit", transition: "all 0.18s",
-                    display: "flex", alignItems: "center", gap: 6,
-                  }}>
-                    {label}
-                    {key === "annual" && (
-                      <span style={{
-                        fontSize: 10, fontWeight: 800, letterSpacing: "0.04em",
-                        background: billing === "annual" ? "rgba(255,255,255,0.2)" : "rgba(22,163,74,0.12)",
-                        color: billing === "annual" ? "#fff" : "#15803D",
-                        padding: "2px 7px", borderRadius: 99,
-                      }}>
-                        −20%
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── PRICING CARDS ── */}
-        <section style={{
-          background: BG_GRAY,
-          padding: isMobile ? "48px 24px 72px" : "64px 48px 96px",
-        }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-              gap: isMobile ? 20 : 24,
-              alignItems: "start",
-            }}>
-              {plans.map(plan => (
-                <PricingCard key={plan.key} plan={plan} billing={billing} isMobile={isMobile} />
-              ))}
-            </div>
-
-            {audience === "criadores" && (
-              <div style={{
-                marginTop: 32, padding: "16px 24px",
-                background: "rgba(3,105,161,0.05)",
-                border: "1px solid rgba(3,105,161,0.15)",
-                borderRadius: 14, textAlign: "center",
-                fontSize: 13, color: GRAY_TEXT, lineHeight: 1.8,
-              }}>
-                <strong style={{ color: BLUE }}>🏅 Oferta de Criadores Fundadores:</strong>{" "}
-                Os primeiros 100 criadores ganham 1 mês grátis no plano Pro.
-                Aplicado automaticamente no cadastro. Sem cartão de crédito no primeiro mês.
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* ── COMMISSION TABLE (Criadores) ── */}
-        {audience === "criadores" && (
-          <section style={{
-            background: "#fff",
-            padding: isMobile ? "64px 24px" : "96px 48px",
-          }}>
-            <div style={{ maxWidth: 860, margin: "0 auto" }}>
-              <div style={{ textAlign: "center", marginBottom: 48 }}>
-                <div style={{
-                  fontSize: 12, fontWeight: 700, color: BLUE,
-                  letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16,
-                }}>
-                  Comissões
-                </div>
-                <h2 style={{
-                  fontSize: isMobile ? "clamp(28px, 6vw, 40px)" : "clamp(32px, 4vw, 48px)",
-                  fontWeight: 800, color: NEAR_BLACK,
-                  letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 14,
-                }}>
-                  Como funciona a comissão?
-                </h2>
-                <p style={{ fontSize: 16, color: GRAY_TEXT, lineHeight: 1.65, maxWidth: 520, margin: "0 auto" }}>
-                  A WePrompt retém uma comissão sobre cada venda. O valor varia conforme o seu plano.
-                </p>
-              </div>
-
-              {/* Table */}
-              <div style={{
-                background: "#fff", borderRadius: 20,
-                border: "1px solid rgba(0,0,0,0.07)",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-                overflow: "hidden",
-              }}>
-                {/* Header */}
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: isMobile ? "1fr 1fr" : "1.2fr 100px 1fr 1fr",
-                  padding: "14px 28px",
-                  background: BG_GRAY,
-                  borderBottom: "1px solid rgba(0,0,0,0.07)",
-                }}>
-                  {["Plano", "Comissão", ...(isMobile ? [] : ["Exemplo (R$ 100)", "Você recebe"])].map(h => (
-                    <div key={h} style={{
-                      fontSize: 11, fontWeight: 700, color: GRAY_TEXT,
-                      textTransform: "uppercase", letterSpacing: "0.08em",
-                      textAlign: h === "Comissão" ? "center" : "left",
-                    }}>
-                      {h}
-                    </div>
-                  ))}
-                </div>
-
-                {[
-                  { plan: "Free",    commission: "20%", example: "R$ 100,00", youGet: "R$ 80,00" },
-                  { plan: "Pro",     commission: "15%", example: "R$ 100,00", youGet: "R$ 85,00" },
-                  { plan: "Premium", commission: "10%", example: "R$ 100,00", youGet: "R$ 90,00" },
-                ].map((row, i) => (
-                  <div key={row.plan} style={{
-                    display: "grid",
-                    gridTemplateColumns: isMobile ? "1fr 1fr" : "1.2fr 100px 1fr 1fr",
-                    alignItems: "center",
-                    padding: isMobile ? "18px 24px" : "20px 28px",
-                    background: i % 2 === 1 ? BG_GRAY : "#fff",
-                    borderTop: i > 0 ? "1px solid rgba(0,0,0,0.06)" : "none",
-                  }}>
-                    <div style={{ fontWeight: 700, fontSize: 15, color: NEAR_BLACK }}>
-                      Plano {row.plan}
-                    </div>
-                    <div style={{
-                      fontSize: isMobile ? 24 : 28, fontWeight: 800, color: BLUE,
-                      textAlign: "center",
-                    }}>
-                      {row.commission}
-                    </div>
-                    {!isMobile && (
-                      <>
-                        <div style={{ fontSize: 14, color: GRAY_TEXT }}>{row.example}</div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: "#15803D" }}>{row.youGet}</div>
-                      </>
-                    )}
-                    {isMobile && (
-                      <div style={{
-                        gridColumn: "1 / -1", marginTop: 6,
-                        fontSize: 13, color: GRAY_TEXT,
-                      }}>
-                        Em {row.example} → você recebe{" "}
-                        <strong style={{ color: "#15803D" }}>{row.youGet}</strong>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <p style={{
-                textAlign: "center", fontSize: 13, color: GRAY_TEXT,
-                marginTop: 16, lineHeight: 1.7,
-              }}>
-                Repasse via PIX em até 30 dias após venda confirmada. Saque mínimo de R$ 50.
-              </p>
-            </div>
-          </section>
-        )}
-
-        {/* ── COMPARISON TABLE (Empresas) ── */}
-        {audience === "empresas" && (
-          <section style={{
-            background: "#fff",
-            padding: isMobile ? "64px 24px" : "96px 48px",
-          }}>
-            <div style={{ maxWidth: 860, margin: "0 auto" }}>
-              <div style={{ textAlign: "center", marginBottom: 48 }}>
-                <div style={{
-                  fontSize: 12, fontWeight: 700, color: BLUE,
-                  letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16,
-                }}>
-                  Comparação
-                </div>
-                <h2 style={{
-                  fontSize: isMobile ? "clamp(28px, 6vw, 40px)" : "clamp(32px, 4vw, 48px)",
-                  fontWeight: 800, color: NEAR_BLACK,
-                  letterSpacing: "-1px", lineHeight: 1.1, marginBottom: 14,
-                }}>
-                  Compare os planos
-                </h2>
-                <p style={{ fontSize: 16, color: GRAY_TEXT, lineHeight: 1.65, maxWidth: 480, margin: "0 auto" }}>
-                  Escolha o plano ideal para o tamanho e necessidades da sua empresa.
-                </p>
-              </div>
-
-              <div style={{
-                background: "#fff", borderRadius: 20,
-                border: "1px solid rgba(0,0,0,0.07)",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-                overflow: "hidden",
-              }}>
-                {/* Header */}
-                <div style={{
-                  display: "grid", gridTemplateColumns: "2fr 1fr 1.5fr 1.5fr",
-                  padding: "14px 24px",
-                  background: BG_GRAY,
-                  borderBottom: "1px solid rgba(0,0,0,0.07)",
-                }}>
-                  {["Funcionalidade", "Free", "Business", "Enterprise"].map((h, i) => (
-                    <div key={h} style={{
-                      fontSize: 11, fontWeight: 700,
-                      color: h === "Business" ? BLUE : GRAY_TEXT,
-                      textTransform: "uppercase", letterSpacing: "0.08em",
-                      textAlign: i === 0 ? "left" : "center",
-                    }}>
-                      {h}
-                    </div>
-                  ))}
-                </div>
-
-                {EMPRESA_COMPARE.map((row, i) => (
-                  <div key={row.feature} style={{
-                    display: "grid", gridTemplateColumns: "2fr 1fr 1.5fr 1.5fr",
-                    alignItems: "center",
-                    padding: isMobile ? "12px 16px" : "16px 24px",
-                    background: i % 2 === 1 ? BG_GRAY : "#fff",
-                    borderTop: i > 0 ? "1px solid rgba(0,0,0,0.06)" : "none",
-                  }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: NEAR_BLACK }}>{row.feature}</div>
-                    {[row.free, row.business, row.enterprise].map((val, idx) => (
-                      <div key={idx} style={{
-                        fontSize: 13, textAlign: "center",
-                        fontWeight: val !== "–" && val !== "✓" ? 600 : 400,
-                        color: val === "–" ? "rgba(0,0,0,0.2)" : val === "✓" ? "#15803D" : NEAR_BLACK,
-                      }}>
-                        {val}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ── FAQ ── */}
-        <section style={{
-          background: BG_GRAY,
-          padding: isMobile ? "64px 24px" : "96px 48px",
-        }}>
-          <div style={{ maxWidth: 720, margin: "0 auto" }}>
-            <div style={{ textAlign: "center", marginBottom: 48 }}>
-              <div style={{
-                fontSize: 12, fontWeight: 700, color: BLUE,
-                letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 16,
-              }}>
-                FAQ
-              </div>
-              <h2 style={{
-                fontSize: isMobile ? "clamp(28px, 6vw, 40px)" : "clamp(32px, 4vw, 48px)",
-                fontWeight: 800, color: NEAR_BLACK,
-                letterSpacing: "-1px", lineHeight: 1.1,
-              }}>
-                Perguntas frequentes
-              </h2>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {FAQ_ITEMS.map(({ q, a }, i) => (
-                <div key={i} style={{
-                  background: "#fff", borderRadius: 16,
-                  border: `1px solid ${faqOpen === i ? "rgba(3,105,161,0.2)" : "rgba(0,0,0,0.07)"}`,
-                  boxShadow: faqOpen === i ? "0 4px 20px rgba(3,105,161,0.08)" : "0 1px 4px rgba(0,0,0,0.04)",
-                  overflow: "hidden",
-                  transition: "box-shadow 0.2s, border-color 0.2s",
-                }}>
-                  <button
-                    onClick={() => setFaqOpen(prev => prev === i ? null : i)}
-                    style={{
-                      width: "100%", padding: "20px 24px",
-                      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
-                      background: "none", border: "none", cursor: "pointer",
-                      fontFamily: "inherit", textAlign: "left",
-                    }}
-                  >
-                    <span style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, lineHeight: 1.4 }}>
-                      {q}
-                    </span>
-                    <span style={{ color: faqOpen === i ? BLUE : GRAY_TEXT, flexShrink: 0 }}>
-                      <ChevronDown open={faqOpen === i} />
-                    </span>
-                  </button>
-                  {faqOpen === i && (
-                    <div style={{
-                      padding: "0 24px 20px",
-                      fontSize: 14, color: GRAY_TEXT, lineHeight: 1.75,
-                      borderTop: "1px solid rgba(0,0,0,0.06)",
-                      paddingTop: 16,
-                    }}>
-                      {a}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── FOOTER CTA ── */}
-        <section style={{
-          background: "#fff",
-          padding: isMobile ? "64px 24px" : "96px 48px",
-          textAlign: "center",
-        }}>
-          <div style={{ maxWidth: 560, margin: "0 auto" }}>
-            <h2 style={{
-              fontSize: isMobile ? 26 : 36, fontWeight: 800, color: NEAR_BLACK,
-              letterSpacing: "-0.5px", lineHeight: 1.1, marginBottom: 14,
-            }}>
-              Ainda tem dúvidas?
-            </h2>
-            <p style={{ fontSize: 16, color: GRAY_TEXT, lineHeight: 1.65, marginBottom: 32 }}>
-              Nossa equipe está pronta para ajudar você a escolher o melhor plano.
-            </p>
-            <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-              <a
-                href={audience === "criadores" ? "/cadastro?role=criador" : "/cadastro"}
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  borderRadius: 12, padding: "14px 28px",
-                  background: BLUE, color: "#fff",
-                  fontSize: 15, fontWeight: 700, textDecoration: "none",
-                  transition: "background 0.15s",
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = "#0284C7"}
-                onMouseLeave={e => e.currentTarget.style.background = BLUE}
-              >
-                Começar grátis <Arrow />
-              </a>
-              <a
-                href="mailto:contato@weprompt.app.br"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  borderRadius: 12, padding: "14px 28px",
-                  border: "2px solid " + BLUE, color: BLUE,
-                  background: "transparent",
-                  fontSize: 15, fontWeight: 600, textDecoration: "none",
-                  transition: "background 0.15s",
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"}
-                onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-              >
-                Falar com a equipe
-              </a>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* ── FOOTER ── */}
-      <footer style={{
-        background: "#fff",
-        borderTop: "1px solid rgba(0,0,0,0.07)",
-        padding: "44px 32px",
+      {/* ── NAVBAR ── */}
+      <nav style={{
+        background: "white", borderBottom: "1px solid #e5e7eb",
+        padding: "0 32px", height: 60,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        position: "sticky", top: 0, zIndex: 50,
       }}>
+        <img
+          src="/logo-icon.png" alt="WePrompt"
+          onClick={() => router.push("/")}
+          style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center", cursor: "pointer" }}
+        />
         <div style={{
-          maxWidth: 1200, margin: "0 auto",
-          display: "flex", flexDirection: isMobile ? "column" : "row",
-          alignItems: "center", justifyContent: "space-between",
-          gap: 20, textAlign: isMobile ? "center" : "left",
+          display: "flex", alignItems: "center",
+          background: searchFocused ? "white" : "#f3f4f6",
+          borderRadius: 8, padding: "8px 16px", width: 360, gap: 8,
+          border: searchFocused ? "1px solid #2563EB" : "1px solid transparent",
+          boxShadow: searchFocused ? "0 0 0 3px rgba(37,99,235,0.1)" : "none",
+          transition: "all 0.2s ease",
         }}>
-          <a href="/" style={{ textDecoration: "none" }}>
-            <WePromptLogo id="precos-footer" textColor={NEAR_BLACK} />
-          </a>
-          <p style={{ fontSize: 13, color: GRAY_TEXT, margin: 0 }}>
-            © 2026 WePrompt. O 1º marketplace de IA da América Latina.
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 24 }}>
-            {[
-              ["Termos para Criadores", "/para-criadores/termos"],
-              ["Termos para Empresas",  "/para-empresas/termos"],
-              ["Contato", "mailto:contato@weprompt.app.br"],
-            ].map(([label, href]) => (
-              <a key={label} href={href} style={{
-                fontSize: 13, color: GRAY_TEXT, textDecoration: "none",
-                transition: "color 0.15s",
-              }}
-                onMouseEnter={e => e.currentTarget.style.color = NEAR_BLACK}
-                onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}
-              >
-                {label}
-              </a>
+          <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
+          </svg>
+          <input
+            placeholder="Buscar soluções..."
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            style={{ fontSize: 14, border: "none", background: "transparent", outline: "none", flex: 1, color: "#374151" }}
+          />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <button onClick={() => router.push("/solucoes")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0, fontFamily: "inherit" }}>Marketplace</button>
+          <button onClick={() => router.push("/para-criadores")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0, fontFamily: "inherit" }}>Vender</button>
+          <div style={{ width: 1, height: 20, background: "#e5e7eb" }} />
+          <button onClick={() => window.__openCart?.()} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
+            <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
+            </svg>
+          </button>
+          <button onClick={() => window.__openNotif?.()} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", position: "relative", display: "flex", alignItems: "center" }}>
+            <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            </svg>
+            <span style={{ width: 8, height: 8, background: "#ef4444", borderRadius: 999, position: "absolute", top: -2, right: -2 }} />
+          </button>
+          <div
+            onClick={() => router.push("/dashboard")}
+            style={{ width: 32, height: 32, background: "#0369A1", borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+          >W</div>
+        </div>
+      </nav>
+
+      {/* ── MAIN CONTENT ── */}
+      <div style={{ padding: "40px 48px", maxWidth: 1200, margin: "0 auto" }}>
+
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "6px 16px", fontSize: 13, fontWeight: 600, display: "inline-block" }}>
+            PLANOS E PREÇOS
+          </div>
+          <h1 style={{ fontSize: 48, fontWeight: 800, color: "#111827", marginTop: 16, marginBottom: 0 }}>Simples e transparente</h1>
+          <p style={{ fontSize: 18, color: "#6b7280", marginTop: 12, marginBottom: 0 }}>Comece gratuitamente. Escale quando precisar.</p>
+        </div>
+
+        {/* Audience toggle */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+          <div style={{ background: "#f3f4f6", borderRadius: 999, padding: 4, display: "inline-flex" }}>
+            {[{ key: "criadores", label: "Para Criadores" }, { key: "empresas", label: "Para Empresas" }].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setActiveAudience(key)}
+                style={{
+                  padding: "8px 24px", fontSize: 14, fontWeight: activeAudience === key ? 600 : 400,
+                  color: activeAudience === key ? "#111827" : "#6b7280",
+                  background: activeAudience === key ? "white" : "transparent",
+                  borderRadius: 999, border: "none", cursor: "pointer",
+                  boxShadow: activeAudience === key ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                  transition: "all 0.15s ease",
+                  fontFamily: "inherit",
+                }}
+              >{label}</button>
             ))}
           </div>
         </div>
-      </footer>
+
+        {/* Billing toggle */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 48 }}>
+          <div style={{ background: "#f3f4f6", borderRadius: 999, padding: 4, display: "inline-flex", alignItems: "center" }}>
+            {[{ key: "mensal", label: "Mensal" }, { key: "anual", label: "Anual" }].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setBilling(key)}
+                style={{
+                  padding: "8px 24px", fontSize: 14, fontWeight: billing === key ? 600 : 400,
+                  color: billing === key ? "#111827" : "#6b7280",
+                  background: billing === key ? "white" : "transparent",
+                  borderRadius: 999, border: "none", cursor: "pointer",
+                  boxShadow: billing === key ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                  transition: "all 0.15s ease",
+                  fontFamily: "inherit",
+                  display: "flex", alignItems: "center", gap: 6,
+                }}
+              >
+                {label}
+                {key === "anual" && (
+                  <span style={{ background: "#dcfce7", color: "#16a34a", borderRadius: 999, fontSize: 11, fontWeight: 700, padding: "2px 6px" }}>-20%</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Pricing grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 64 }}>
+          {plans.map(plan => (
+            <PlanCard key={plan.name} plan={plan} router={router} />
+          ))}
+        </div>
+
+        {/* Commission table — criadores only */}
+        {activeAudience === "criadores" && (
+          <div style={{ background: "white", borderRadius: 16, border: "1px solid #e5e7eb", marginBottom: 48, overflow: "hidden" }}>
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb", fontSize: 16, fontWeight: 700, color: "#111827" }}>
+              Como funciona a comissão?
+            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  {["PLANO", "COMISSÃO", "EXEMPLO R$100", "VOCÊ RECEBE"].map(h => (
+                    <th key={h} style={{ padding: "12px 24px", fontSize: 12, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", background: "#f9fafb" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { plan: "Free", commission: "20%", example: "R$ 20,00", receive: "R$ 80,00" },
+                  { plan: "Pro", commission: "15%", example: "R$ 15,00", receive: "R$ 85,00" },
+                  { plan: "Premium", commission: "10%", example: "R$ 10,00", receive: "R$ 90,00" },
+                ].map(row => (
+                  <tr key={row.plan}>
+                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151", borderBottom: "1px solid #f9fafb", fontWeight: 600 }}>{row.plan}</td>
+                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{row.commission}</td>
+                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{row.example}</td>
+                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#16a34a", borderBottom: "1px solid #f9fafb", fontWeight: 700 }}>{row.receive}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* FAQ */}
+        <FAQAccordion />
+
+        {/* Bottom CTA */}
+        <div style={{ background: "#111827", borderRadius: 16, padding: 48, textAlign: "center", marginBottom: 48 }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: "white" }}>Pronto para começar?</div>
+          <div style={{ fontSize: 16, color: "rgba(255,255,255,0.7)", marginTop: 8 }}>
+            Junte-se a centenas de criadores que já vendem na WePrompt.
+          </div>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 24, flexWrap: "wrap" }}>
+            <button
+              onClick={() => router.push("/cadastro")}
+              style={{ background: "white", color: "#111827", borderRadius: 10, padding: "12px 28px", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none", fontFamily: "inherit" }}
+            >Criar conta grátis</button>
+            <button
+              onClick={() => router.push("/contato")}
+              style={{ border: "1.5px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 10, padding: "12px 28px", fontSize: 15, fontWeight: 600, cursor: "pointer", background: "transparent", fontFamily: "inherit" }}
+            >Falar com a equipe</button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── FOOTER (same as homepage) ── */}
+      <div style={{ position: "relative" }}>
+        <div style={{ background: "#f9fafb", borderRadius: "0 0 48px 48px", height: 80, position: "relative", zIndex: 2 }} />
+        <footer style={{
+          background: "#0a0a0a",
+          paddingTop: 80, paddingBottom: 60,
+          paddingLeft: isMobile ? 24 : 48, paddingRight: isMobile ? 24 : 48,
+          marginTop: -40, position: "relative",
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
+            <div style={{ maxWidth: 320 }}>
+              <img src="/logo-icon.png" style={{ height: 224, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
+              <p style={{ color: "#9ca3af", fontSize: 16, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
+                O 1º marketplace de soluções de IA da América Latina.
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
+              <div>
+                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Seguir</div>
+                {[{ label: "Instagram", href: "https://instagram.com" }, { label: "LinkedIn", href: "https://linkedin.com" }, { label: "Twitter/X", href: "https://x.com" }].map(l => (
+                  <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none" }}>{l.label}</a>
+                ))}
+              </div>
+              <div>
+                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Recursos</div>
+                <a href="/blog" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none" }}>Blog</a>
+              </div>
+              <div>
+                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Empresa</div>
+                {[{ label: "Sobre nós", href: "/sobre" }, { label: "FAQ", href: "/faq" }, { label: "Contato", href: "/contato" }].map(l => (
+                  <a key={l.label} href={l.href} style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none" }}>{l.label}</a>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1f2937", paddingTop: 24, marginTop: 24, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 0 }}>
+            <span style={{ color: "#6b7280", fontSize: 14 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
+            <div style={{ display: "flex", gap: 24 }}>
+              <a href="/privacidade" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none" }}>Privacidade</a>
+              <a href="/para-empresas/termos" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none" }}>Termos</a>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
