@@ -297,7 +297,7 @@ const HeroHeader = () => {
                             </button>
                         </div>
 
-                        <div className="absolute inset-0 m-auto hidden size-fit lg:block" style={{ overflow: 'visible' }}>
+                        <div className="absolute inset-0 m-auto hidden size-fit lg:block" style={{ overflow: 'visible', position: 'relative' }}>
                             <ul className="flex gap-8 text-sm" style={{ alignItems: 'center', overflow: 'visible' }}>
                                 <li>
                                     <Link href="/solucoes" className="text-muted-foreground hover:text-accent-foreground block duration-150" style={{ color: 'rgba(255,255,255,0.7)' }}>
