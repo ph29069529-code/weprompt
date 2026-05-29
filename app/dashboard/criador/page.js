@@ -89,6 +89,7 @@ export default function CriadorPage() {
   const [hoveredRow, setHoveredRow] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [hoveredMetric, setHoveredMetric] = useState(null);
+  const [hoveredAvatar, setHoveredAvatar] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setChartReady(true), 400);
@@ -150,11 +151,30 @@ export default function CriadorPage() {
             </svg>
             <span style={{ width: 8, height: 8, background: "#ef4444", borderRadius: 999, position: "absolute", top: -2, right: -2 }} />
           </button>
-          <div style={{
-            width: 32, height: 32, background: "#7c3aed", borderRadius: 999,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer",
-          }}>C</div>
+          <div
+            style={{ position: "relative" }}
+            onMouseEnter={() => setHoveredAvatar(true)}
+            onMouseLeave={() => setHoveredAvatar(false)}
+          >
+            <div
+              onClick={() => router.push("/criadores/user_test")}
+              style={{
+                width: 32, height: 32, background: "#7c3aed", borderRadius: 999,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer",
+              }}
+            >C</div>
+            {hoveredAvatar && (
+              <div style={{
+                position: "absolute", top: 44, right: 0,
+                background: "#111827", color: "white",
+                fontSize: 12, padding: "6px 12px",
+                borderRadius: 8, whiteSpace: "nowrap", zIndex: 50,
+              }}>
+                Ver meu perfil
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
