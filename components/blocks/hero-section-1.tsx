@@ -279,7 +279,7 @@ const HeroHeader = () => {
                 <div
                     className={cn('mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12', isScrolled && 'max-w-4xl rounded-2xl lg:px-5')}
                     style={isScrolled ? { backgroundColor: 'rgba(9,9,11,0.8)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)' } : { backgroundColor: 'transparent' }}>
-                    <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
+                    <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4" style={{ overflow: 'visible' }}>
                         <div className="flex w-full justify-between lg:w-auto">
                             <Link
                                 href="/"
@@ -297,8 +297,8 @@ const HeroHeader = () => {
                             </button>
                         </div>
 
-                        <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-                            <ul className="flex gap-8 text-sm" style={{ alignItems: 'center' }}>
+                        <div className="absolute inset-0 m-auto hidden size-fit lg:block" style={{ overflow: 'visible' }}>
+                            <ul className="flex gap-8 text-sm" style={{ alignItems: 'center', overflow: 'visible' }}>
                                 <li>
                                     <Link href="/solucoes" className="text-muted-foreground hover:text-accent-foreground block duration-150" style={{ color: 'rgba(255,255,255,0.7)' }}>
                                         <span>Explorar</span>
@@ -309,7 +309,7 @@ const HeroHeader = () => {
                                         Soluções ▾
                                     </button>
                                     {openDropdown === 'solucoes' && (
-                                        <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 50, border: '1px solid #e5e7eb' }}>
+                                        <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 100, border: '1px solid #e5e7eb' }}>
                                             {[
                                                 { label: 'Todas as Soluções', href: '/solucoes' },
                                                 { label: 'Agentes de IA',      href: '/solucoes?categoria=agentes' },
@@ -341,7 +341,7 @@ const HeroHeader = () => {
                                         Empresa ▾
                                     </button>
                                     {openDropdown === 'empresa' && (
-                                        <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 50, border: '1px solid #e5e7eb' }}>
+                                        <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 100, border: '1px solid #e5e7eb' }}>
                                             {[
                                                 { label: 'Sobre nós', href: '/sobre'   },
                                                 { label: 'Blog',      href: '/blog'    },
