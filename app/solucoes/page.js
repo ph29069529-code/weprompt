@@ -181,13 +181,13 @@ function SolutionCard({ solution }) {
           href={`/solucoes/${solution.id}`}
           style={{
             display: "block", width: "100%", boxSizing: "border-box",
-            background: "#0369A1", color: "#fff",
+            background: "#111827", color: "#fff",
             borderRadius: 8, padding: "10px",
             fontSize: 14, fontWeight: 600, textDecoration: "none",
             textAlign: "center", transition: "background 0.15s", cursor: "pointer",
           }}
-          onMouseEnter={e => e.currentTarget.style.background = "#0284c7"}
-          onMouseLeave={e => e.currentTarget.style.background = "#0369A1"}
+          onMouseEnter={e => e.currentTarget.style.background = "#374151"}
+          onMouseLeave={e => e.currentTarget.style.background = "#111827"}
         >
           Ver solução →
         </a>
