@@ -13,11 +13,7 @@ export async function generateMetadata({ params }) {
     .eq("id", id)
     .single();
 
-  if (!data) {
-    return {
-      title: "Criador não encontrado — WePrompt",
-    };
-  }
+  if (!data) return { title: "Criador não encontrado — WePrompt" };
 
   const title = `${data.nome} — Criador no WePrompt`;
   const description = data.bio?.slice(0, 160) || `Confira as soluções de IA de ${data.nome} no WePrompt.`;
@@ -27,21 +23,14 @@ export async function generateMetadata({ params }) {
     title,
     description,
     openGraph: {
-      title,
-      description,
+      title, description,
       images: [{ url: image, width: 1200, height: 630, alt: data.nome }],
-      type: "profile",
-      siteName: "WePrompt",
+      type: "profile", siteName: "WePrompt",
     },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [image],
-    },
+    twitter: { card: "summary_large_image", title, description, images: [image] },
   };
 }
 
-export default function CriadorLayout({ children }) {
-  return children;
+export default function Layout({ children }) {
+  return <>{children}</>;
 }
