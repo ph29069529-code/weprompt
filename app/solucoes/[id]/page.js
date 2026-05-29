@@ -358,36 +358,62 @@ function FAQSection() {
 
 /* ── Footer ── */
 function Footer() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   return (
-    <footer style={{ background: "#111827", borderRadius: "20px 20px 0 0", margin: "32px 0 0", padding: "48px 48px 32px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 32, marginBottom: 40 }}>
-        <div>
-          <div style={{ color: "#fff", fontWeight: 800, fontSize: 22, letterSpacing: "-0.5px", marginBottom: 12 }}>WePrompt</div>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, maxWidth: 280, margin: 0 }}>
-            O primeiro marketplace de soluções de IA do Brasil. Ferramentas testadas e aprovadas, em português.
-          </p>
-        </div>
-        {[
-          { title: "Plataforma", links: ["Explorar Soluções", "Para Criadores", "Preços", "Blog"] },
-          { title: "Empresa",   links: ["Sobre nós", "Contato", "Privacidade", "Termos"] },
-          { title: "Redes",     links: ["Instagram", "LinkedIn", "Twitter / X", "YouTube"] },
-        ].map(col => (
-          <div key={col.title}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 14 }}>{col.title}</div>
-            {col.links.map(l => (
-              <a key={l} href="#" style={{ display: "block", fontSize: 14, color: "rgba(255,255,255,0.7)", textDecoration: "none", marginBottom: 10 }}
-                onMouseEnter={e => e.currentTarget.style.color = "#fff"}
-                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.7)"}>
-                {l}
-              </a>
-            ))}
+    <div style={{ position: "relative" }}>
+      <div style={{ background: "white", borderRadius: "0 0 48px 48px", height: 80, position: "relative", zIndex: 2 }} />
+      <footer style={{
+        background: "#0a0a0a",
+        paddingTop: 80, paddingBottom: 60,
+        paddingLeft: isMobile ? 24 : 48, paddingRight: isMobile ? 24 : 48,
+        marginTop: -40,
+        position: "relative",
+      }}>
+        {/* Top row */}
+        <div className="section-footer-top" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
+          {/* Left: brand */}
+          <div style={{ maxWidth: 320 }}>
+            <img src="/logo-icon.png" style={{ height: 224, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
+            <p style={{ color: "#9ca3af", fontSize: 16, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
+              O 1º marketplace de soluções de IA da América Latina.
+            </p>
           </div>
-        ))}
-      </div>
-      <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24, fontSize: 13, color: "rgba(255,255,255,0.4)", textAlign: "center" }}>
-        © 2026 WePrompt. Todos os direitos reservados.
-      </div>
-    </footer>
+          {/* Right: link columns */}
+          <div className="footer-links-row" style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
+            <div>
+              <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Seguir</div>
+              {[{ label: "Instagram", href: "https://instagram.com" }, { label: "LinkedIn", href: "https://linkedin.com" }, { label: "Twitter/X", href: "https://x.com" }].map(l => (
+                <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
+              ))}
+            </div>
+            <div>
+              <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Recursos</div>
+              <a href="/blog" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>Blog</a>
+            </div>
+            <div>
+              <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Empresa</div>
+              {[{ label: "Sobre nós", href: "/sobre" }, { label: "FAQ", href: "/faq" }, { label: "Contato", href: "/contato" }].map(l => (
+                <a key={l.label} href={l.href} style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
+              ))}
+            </div>
+          </div>
+        </div>
+        {/* Bottom row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1f2937", paddingTop: 24, marginTop: 24, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 0 }}>
+          <span style={{ color: "#6b7280", fontSize: 14 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
+          <div style={{ display: "flex", gap: 24 }}>
+            <a href="/privacidade" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none", cursor: "pointer" }}>Privacidade</a>
+            <a href="/para-empresas/termos" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none", cursor: "pointer" }}>Termos</a>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
 
