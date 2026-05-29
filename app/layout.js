@@ -2,6 +2,7 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import NavbarController from "./components/NavbarController";
+import GlobalDrawers from "@/components/GlobalDrawers";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -51,6 +52,7 @@ export default function RootLayout({ children }) {
         <NavbarController />
         {children}
         <PWAInstallPrompt />
+        <GlobalDrawers />
       </body>
     </html>
   );
