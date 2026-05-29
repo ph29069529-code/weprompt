@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { ArrowRight, ChevronRight, Menu, X } from 'lucide-react'
 import { type Variants } from 'framer-motion'
@@ -252,11 +253,24 @@ const HeroHeader = () => {
     const [menuState, setMenuState] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
     const [openDropdown, setOpenDropdown] = React.useState<string | null>(null)
+    const [dropdownPos, setDropdownPos] = React.useState({ top: 0, left: 0 })
+    const [mounted, setMounted] = React.useState(false)
     const ddTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+    const solucoesButtonRef = React.useRef<HTMLButtonElement>(null)
+    const empresaButtonRef = React.useRef<HTMLButtonElement>(null)
 
-    function openDd(key: string) {
+    React.useEffect(() => { setMounted(true) }, [])
+
+    function openDd(key: string, ref: React.RefObject<HTMLButtonElement>) {
         if (ddTimerRef.current) { clearTimeout(ddTimerRef.current); ddTimerRef.current = null; }
+        if (ref.current) {
+            const rect = ref.current.getBoundingClientRect()
+            setDropdownPos({ top: rect.bottom + 8, left: rect.left })
+        }
         setOpenDropdown(key)
+    }
+    function keepOpen() {
+        if (ddTimerRef.current) { clearTimeout(ddTimerRef.current); ddTimerRef.current = null; }
     }
     function closeDd() {
         ddTimerRef.current = setTimeout(() => setOpenDropdown(null), 150)
@@ -274,7 +288,7 @@ const HeroHeader = () => {
         <header>
             <nav
                 data-state={menuState && 'active'}
-                className="fixed z-20 w-full px-2 group"
+                className="fixed z-50 w-full px-2 group"
                 style={{ backgroundColor: 'transparent' }}>
                 <div
                     className={cn('mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12', isScrolled && 'max-w-4xl rounded-2xl lg:px-5')}
@@ -304,12 +318,12 @@ const HeroHeader = () => {
                                         <span>Explorar</span>
                                     </Link>
                                 </li>
-                                <li style={{ position: 'relative' }} onMouseEnter={() => openDd('solucoes')} onMouseLeave={closeDd}>
-                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 14, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                <li onMouseEnter={() => openDd('solucoes', solucoesButtonRef)} onMouseLeave={closeDd}>
+                                    <button ref={solucoesButtonRef} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 14, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}>
                                         Soluções ▾
                                     </button>
-                                    {openDropdown === 'solucoes' && (
-                                        <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 100, border: '1px solid #e5e7eb' }}>
+                                    {mounted && openDropdown === 'solucoes' && createPortal(
+                                        <div onMouseEnter={keepOpen} onMouseLeave={closeDd} style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 9999, border: '1px solid #e5e7eb' }}>
                                             {[
                                                 { label: 'Todas as Soluções', href: '/solucoes' },
                                                 { label: 'Agentes de IA',      href: '/solucoes?categoria=agentes' },
@@ -323,7 +337,8 @@ const HeroHeader = () => {
                                                     {it.label}
                                                 </a>
                                             ))}
-                                        </div>
+                                        </div>,
+                                        document.body
                                     )}
                                 </li>
                                 <li>
@@ -336,12 +351,12 @@ const HeroHeader = () => {
                                         <span>Para Criadores</span>
                                     </Link>
                                 </li>
-                                <li style={{ position: 'relative' }} onMouseEnter={() => openDd('empresa')} onMouseLeave={closeDd}>
-                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 14, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                <li onMouseEnter={() => openDd('empresa', empresaButtonRef)} onMouseLeave={closeDd}>
+                                    <button ref={empresaButtonRef} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.7)', fontSize: 14, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 4 }}>
                                         Empresa ▾
                                     </button>
-                                    {openDropdown === 'empresa' && (
-                                        <div style={{ position: 'absolute', top: '100%', left: 0, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 100, border: '1px solid #e5e7eb' }}>
+                                    {mounted && openDropdown === 'empresa' && createPortal(
+                                        <div onMouseEnter={keepOpen} onMouseLeave={closeDd} style={{ position: 'fixed', top: dropdownPos.top, left: dropdownPos.left, background: 'white', borderRadius: 12, boxShadow: '0 8px 32px rgba(0,0,0,0.12)', padding: '8px', minWidth: 200, zIndex: 9999, border: '1px solid #e5e7eb' }}>
                                             {[
                                                 { label: 'Sobre nós', href: '/sobre'   },
                                                 { label: 'Blog',      href: '/blog'    },
@@ -354,7 +369,8 @@ const HeroHeader = () => {
                                                     {it.label}
                                                 </a>
                                             ))}
-                                        </div>
+                                        </div>,
+                                        document.body
                                     )}
                                 </li>
                             </ul>
