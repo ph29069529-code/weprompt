@@ -11,11 +11,6 @@ export default function PWAInstallPrompt() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Register service worker
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
-    }
-
     // Only show on mobile
     if (window.innerWidth >= 768) return;
 
