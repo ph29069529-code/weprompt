@@ -18,9 +18,9 @@ const CATEGORY_GRADIENTS = {
 };
 
 const PAYMENT_BADGE = {
-  "Único":  { bg: "rgba(22,163,74,0.12)",  color: "#15803D" },
-  "Mensal": { bg: "rgba(3,105,161,0.12)",  color: "#0369A1" },
-  "Anual":  { bg: "rgba(124,58,237,0.12)", color: "#6d28d9" },
+  "Único":  { bg: "#f3f4f6", color: "#374151" },
+  "Mensal": { bg: "#f3f4f6", color: "#374151" },
+  "Anual":  { bg: "#f3f4f6", color: "#374151" },
 };
 
 function paymentLabel(payment_type) {
@@ -119,7 +119,7 @@ function SolutionCard({ solution }) {
         <div>
           <span style={{
             display: "inline-block",
-            background: "#eff6ff", color: "#0369A1",
+            background: "#f3f4f6", color: "#374151",
             borderRadius: 999, fontSize: 11, fontWeight: 600, padding: "3px 10px",
           }}>
             {solution.categoria}
@@ -164,7 +164,7 @@ function SolutionCard({ solution }) {
 
         {/* Price + stars */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 }}>
-          <span style={{ fontSize: 20, fontWeight: 800, color: "#0369A1" }}>
+          <span style={{ fontSize: 20, fontWeight: 800, color: "#111827" }}>
             {solution.preco != null
               ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
               : "Gratuito"}
