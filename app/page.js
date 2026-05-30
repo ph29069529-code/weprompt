@@ -1,1789 +1,971 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { supabase } from "./lib/supabase";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  ShieldCheck,
+  MessageCircle,
+  Users,
+  MessageSquare,
+  Mail,
+  TrendingUp,
+  BarChart2,
+  Smartphone,
+  Megaphone,
+  CheckCircle,
+  Send,
+  Globe,
+  Link,
+  Share2,
+  Menu,
+  X,
+} from "lucide-react";
 
-/* ─── Design tokens ──────────────────────────────────────────────── */
-const BLUE      = "#2563EB";
-const DARK      = "#0F172A";
-const TEXT      = "#1E293B";
-const MUTED     = "#64748B";
-const BG        = "#F8FAFC";
-const WHITE     = "#FFFFFF";
-const ACCENT    = "#3B82F6";
-const BORDER    = "#e2e8f0";
-const CARD_R    = 20;
-const SHADOW    = "0 4px 24px rgba(0,0,0,0.08)";
-
-/* ─── Hooks ──────────────────────────────────────────────────────── */
-function useWindowSize() {
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    setWidth(window.innerWidth);
-    function onResize() { setWidth(window.innerWidth); }
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-  return width;
-}
-
-/* ─── Tiny helpers ───────────────────────────────────────────────── */
-const FooterLink = ({ href, children }) => {
-  const [hov, setHov] = useState(false);
-  return (
-    <a
-      href={href}
-      style={{ fontSize: 14, color: hov ? WHITE : "rgba(255,255,255,0.5)", textDecoration: "none", transition: "color 0.15s", display: "block", marginBottom: 10 }}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-    >
-      {children}
-    </a>
-  );
-};
-
-/* ─── Floating pill navbar ───────────────────────────────────────── */
-const SOLUCOES_ITEMS = [
-  { icon: "🤖", label: "Agentes de IA",    desc: "Automatize processos",   href: "/solucoes?categoria=agentes-de-ia"  },
-  { icon: "⚡", label: "Automação",         desc: "Make, n8n e mais",       href: "/solucoes?categoria=automacao"      },
-  { icon: "💬", label: "Chatbots",          desc: "Atendimento 24h",        href: "/solucoes?categoria=chatbots"       },
-  { icon: "📣", label: "Marketing IA",      desc: "Copies e campanhas",     href: "/solucoes?categoria=marketing-ia"   },
-  { icon: "📊", label: "Análise de Dados",  desc: "Insights rápidos",       href: "/solucoes?categoria=analise-de-dados" },
-  { icon: "📱", label: "WhatsApp IA",       desc: "Vendas no WhatsApp",     href: "/solucoes?categoria=whatsapp-ia"   },
-];
-
-const EMPRESA_ITEMS = [
-  { icon: "🏢", label: "Para Empresas",  desc: "Encontre soluções testadas", href: "/#como-funciona" },
-  { icon: "💰", label: "Preços",         desc: "Planos e valores",           href: "/precos"         },
-  { icon: "❓", label: "Como funciona",  desc: "Entenda a plataforma",       href: "/#como-funciona" },
-];
-
-function DropdownMenu({ items, seeAllHref, onMouseEnter, onMouseLeave }) {
-  const [hovIdx, setHovIdx] = useState(null);
-  return (
-    <div
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      style={{
-        position: "absolute", top: "calc(100% + 12px)", left: 0,
-        background: "#fff", borderRadius: 16,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-        padding: 16, minWidth: 220, zIndex: 100,
-        animation: "dropIn 0.15s ease forwards",
-      }}
-    >
-      {items.map((item, i) => (
-        <a key={item.label} href={item.href}
-          style={{
-            display: "flex", alignItems: "center", gap: 12,
-            padding: "8px 10px", borderRadius: 10, textDecoration: "none",
-            background: hovIdx === i ? "#f8fafc" : "transparent",
-            transition: "background 0.12s",
-          }}
-          onMouseEnter={() => setHovIdx(i)}
-          onMouseLeave={() => setHovIdx(null)}
-        >
-          <div style={{
-            width: 32, height: 32, borderRadius: 8,
-            background: "#f1f5f9",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 16, flexShrink: 0,
-          }}>{item.icon}</div>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", lineHeight: 1.3 }}>{item.label}</div>
-            <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.3 }}>{item.desc}</div>
-          </div>
-        </a>
-      ))}
-      {seeAllHref && (
-        <a href={seeAllHref} style={{
-          display: "block", marginTop: 8,
-          background: "#f8fafc", borderRadius: 10, padding: "9px 12px",
-          fontSize: 13, fontWeight: 600, color: "#2563EB",
-          textDecoration: "none",
-        }}>
-          Ver todas as soluções →
-        </a>
-      )}
-    </div>
-  );
-}
-
-function PageNavbar({ session, isMobile }) {
+/* ─── Navbar ─────────────────────────────────────────────────────── */
+function Navbar() {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null);
-  const leaveTimer = useRef(null);
+  const [hovLink, setHovLink] = useState(null);
 
-  const dashboardUrl = session?.user?.user_metadata?.tipo === "criador"
-    ? "/dashboard/criador"
-    : session?.user?.user_metadata?.tipo === "empresa"
-    ? "/dashboard/empresa"
-    : "/dashboard/admin";
-
-  function openDropdown(key) {
-    if (leaveTimer.current) clearTimeout(leaveTimer.current);
-    setActiveDropdown(key);
-  }
-  function closeDropdown() {
-    leaveTimer.current = setTimeout(() => setActiveDropdown(null), 150);
-  }
-
-  const linkStyle = (hov) => ({
-    fontSize: 14, fontWeight: 500,
-    color: hov ? "#111827" : "#374151",
-    textDecoration: "none", whiteSpace: "nowrap",
-    transition: "color 0.15s", cursor: "pointer",
-    background: "none", border: "none", padding: 0,
-    fontFamily: "inherit",
-  });
+  const navLinks = [
+    { label: "Soluções", href: "/solucoes" },
+    { label: "Preços", href: "/precos" },
+    { label: "Para Criadores", href: "/criadores" },
+    { label: "Como Funciona", href: "/#como-funciona" },
+  ];
 
   return (
     <>
       <style>{`
-        @keyframes dropIn {
-          from { opacity: 0; transform: translateY(-4px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-10px); }
+        }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-4px); }
+        }
+        .nav-center-links { display: flex; }
+        .nav-right-desktop { display: flex; }
+        .nav-hamburger { display: none; }
+        @media (max-width: 768px) {
+          .nav-center-links { display: none !important; }
+          .nav-right-desktop { display: none !important; }
+          .nav-hamburger { display: flex !important; }
+          .hero-inner { flex-direction: column !important; padding: 48px 24px 64px !important; }
+          .hero-left { flex: none !important; width: 100% !important; }
+          .hero-right { flex: none !important; width: 100% !important; margin-top: 48px; }
+          .trust-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+          .steps-grid { grid-template-columns: 1fr !important; }
+          .cats-grid { grid-template-columns: 1fr !important; }
+          .companies-inner { flex-direction: column !important; gap: 40px !important; padding: 64px 24px !important; }
+          .companies-left, .companies-right { flex: none !important; width: 100% !important; }
+          .creators-inner { flex-direction: column-reverse !important; gap: 40px !important; padding: 64px 24px !important; }
+          .creators-left, .creators-right { flex: none !important; width: 100% !important; }
+          .final-cta-card { padding: 48px 24px !important; }
+          .footer-grid { grid-template-columns: 1fr 1fr !important; }
+          .footer-bottom { flex-direction: column !important; gap: 8px !important; text-align: center; }
+        }
+        @media (max-width: 1024px) and (min-width: 769px) {
+          .cats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 480px) {
+          .footer-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
 
-      {/* ── Floating pill (desktop only) ── */}
-      {!isMobile && (
-        <nav style={{
-          position: "fixed", top: 12, left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 50,
-          background: "#fff",
-          borderRadius: 999,
-          height: 68,
-          overflow: "hidden",
-          padding: "0 32px",
-          boxShadow: "0 2px 24px rgba(0,0,0,0.08)",
-          border: "1px solid #f0f0f0",
-          display: "flex", alignItems: "center", gap: 0,
-          width: "calc(100% - 80px)", maxWidth: 1400,
+      <nav style={{
+        position: "sticky", top: 0, zIndex: 50,
+        background: "rgba(10,22,40,0.95)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderBottom: "1px solid #1E3550",
+        height: 64,
+      }}>
+        <div style={{
+          maxWidth: 1200, margin: "0 auto",
+          padding: "0 48px", height: "100%",
+          display: "flex", alignItems: "center",
           justifyContent: "space-between",
         }}>
           {/* Logo */}
-          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <img src="/logo-light.png" style={{ height: 160, width: "auto", objectFit: "contain", display: "block", margin: "auto 0" }} alt="WePrompt" />
+          <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{
+              width: 32, height: 32,
+              background: "#00D4AA",
+              borderRadius: 8,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 16, lineHeight: 1 }}>W</span>
+            </div>
+            <span style={{ color: "#fff", fontWeight: 700, fontSize: 20 }}>WePrompt</span>
           </a>
 
-          {/* Center nav links */}
-          <div style={{ display: "flex", alignItems: "center", gap: 36 }}>
-
-            {/* Explorar */}
-            <NavPlainLink href="/solucoes">Explorar</NavPlainLink>
-
-            {/* Soluções ▾ */}
-            <div style={{ position: "relative" }}
-              onMouseEnter={() => openDropdown("solucoes")}
-              onMouseLeave={closeDropdown}
-            >
-              <NavPlainLink href="/solucoes" chevron>Soluções</NavPlainLink>
-              {activeDropdown === "solucoes" && (
-                <DropdownMenu
-                  items={SOLUCOES_ITEMS}
-                  seeAllHref="/solucoes"
-                  onMouseEnter={() => openDropdown("solucoes")}
-                  onMouseLeave={closeDropdown}
-                />
-              )}
-            </div>
-
-            {/* Empresa ▾ */}
-            <div style={{ position: "relative" }}
-              onMouseEnter={() => openDropdown("empresa")}
-              onMouseLeave={closeDropdown}
-            >
-              <NavPlainLink href="/para-empresas/termos" chevron>Empresa</NavPlainLink>
-              {activeDropdown === "empresa" && (
-                <DropdownMenu
-                  items={EMPRESA_ITEMS}
-                  onMouseEnter={() => openDropdown("empresa")}
-                  onMouseLeave={closeDropdown}
-                />
-              )}
-            </div>
-
-            {/* Para Criadores */}
-            <NavPlainLink href="/criadores">Para Criadores</NavPlainLink>
-          </div>
-
-          {/* Right actions */}
-          <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
-            {session ? (
-              <a href={dashboardUrl} style={{
-                background: "#111827", color: "#fff", borderRadius: 999,
-                padding: "10px 24px", fontSize: 15, fontWeight: 600,
-                textDecoration: "none", whiteSpace: "nowrap",
-              }}>
-                Meu Dashboard →
+          {/* Center links — desktop */}
+          <div className="nav-center-links" style={{ alignItems: "center", gap: 32 }}>
+            {navLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onMouseEnter={() => setHovLink(link.label)}
+                onMouseLeave={() => setHovLink(null)}
+                style={{
+                  color: hovLink === link.label ? "#FFFFFF" : "#A8B8CC",
+                  fontSize: 14,
+                  textDecoration: "none",
+                  transition: "color 0.15s",
+                }}
+              >
+                {link.label}
               </a>
-            ) : (
-              <>
-                <a href="/login" style={{ fontSize: 15, color: "#374151", textDecoration: "none", whiteSpace: "nowrap" }}>
-                  Falar conosco
-                </a>
-                <a href="/cadastro" style={{
-                  background: "#111827", color: "#fff", borderRadius: 999,
-                  padding: "10px 24px", fontSize: 15, fontWeight: 600,
-                  textDecoration: "none", whiteSpace: "nowrap",
-                }}>
-                  Começar grátis
-                </a>
-              </>
-            )}
+            ))}
           </div>
-        </nav>
-      )}
 
-      {/* ── Mobile: hamburger button only ── */}
-      {isMobile && (
-        <button
-          onClick={() => setMenuOpen(true)}
-          style={{
-            position: "fixed", top: 16, right: 16, zIndex: 50,
-            background: "#fff", border: "1px solid #f1f5f9",
-            borderRadius: 999, width: 44, height: 44,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-          }}
-          aria-label="Abrir menu"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            <line x1="3" y1="12" x2="21" y2="12"/>
-            <line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
-      )}
-
-      {/* ── Mobile full-screen overlay ── */}
-      {menuOpen && (
-        <div style={{
-          position: "fixed", inset: 0, zIndex: 100, background: "#fff",
-          display: "flex", flexDirection: "column", padding: "0 24px",
-        }}>
-          <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <a href="/" style={{ textDecoration: "none" }}>
-              <img src="/logo-light.png" style={{ height: 28, width: "auto", objectFit: "contain", display: "block" }} alt="WePrompt" />
+          {/* Right — desktop */}
+          <div className="nav-right-desktop" style={{ alignItems: "center", gap: 16 }}>
+            <a href="/login" style={{ color: "#A8B8CC", fontSize: 14, textDecoration: "none" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#A8B8CC")}>
+              Entrar
             </a>
-            <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
+            <button
+              onClick={() => router.push("/cadastro")}
+              style={{
+                background: "#00D4AA", color: "#0A1628",
+                border: "none", borderRadius: 8,
+                padding: "10px 20px", fontSize: 14, fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Começar grátis →
             </button>
           </div>
-          <nav style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 24 }}>
-            {[
-              { label: "Explorar",       href: "/solucoes"             },
-              { label: "Soluções",       href: "/solucoes"             },
-              { label: "Para Empresas",  href: "/para-empresas/termos" },
-              { label: "Para Criadores", href: "/criadores"            },
-              { label: "Preços",         href: "/precos"               },
-            ].map(({ label, href }) => (
-              <a key={label} href={href} onClick={() => setMenuOpen(false)} style={{
-                fontSize: 18, fontWeight: 600, color: "#111827", textDecoration: "none",
-                padding: "14px 0", borderBottom: "1px solid #f1f5f9",
-              }}>{label}</a>
-            ))}
-          </nav>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 32 }}>
-            {session ? (
-              <a href={dashboardUrl} style={{
-                background: "#111827", color: "#fff", borderRadius: 12,
-                padding: "14px 24px", fontSize: 15, fontWeight: 700,
-                textDecoration: "none", textAlign: "center",
-              }}>Meu Dashboard →</a>
-            ) : (
-              <>
-                <a href="/login" style={{
-                  border: "1.5px solid #e5e7eb", color: "#374151", borderRadius: 12,
-                  padding: "14px 24px", fontSize: 15, fontWeight: 600,
-                  textDecoration: "none", textAlign: "center",
-                }}>Falar conosco</a>
-                <a href="/cadastro" style={{
-                  background: "#111827", color: "#fff", borderRadius: 12,
-                  padding: "14px 24px", fontSize: 15, fontWeight: 700,
-                  textDecoration: "none", textAlign: "center",
-                }}>Começar grátis</a>
-              </>
-            )}
-          </div>
+
+          {/* Hamburger — mobile */}
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="nav-hamburger"
+            style={{
+              background: "none", border: "none",
+              color: "#A8B8CC", cursor: "pointer", padding: 4,
+            }}
+          >
+            <Menu size={22} />
+          </button>
         </div>
-      )}
+
+        {/* Mobile drawer */}
+        {menuOpen && (
+          <div style={{
+            position: "fixed", inset: 0, zIndex: 100,
+            background: "#0A1628",
+            display: "flex", flexDirection: "column",
+            padding: "0 24px",
+          }}>
+            <div style={{
+              height: 64, display: "flex",
+              alignItems: "center", justifyContent: "space-between",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 28, height: 28, background: "#00D4AA", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>W</span>
+                </div>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>WePrompt</span>
+              </div>
+              <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", color: "#A8B8CC", cursor: "pointer" }}>
+                <X size={22} />
+              </button>
+            </div>
+            <nav style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 24 }}>
+              {navLinks.map((link) => (
+                <a key={link.label} href={link.href} onClick={() => setMenuOpen(false)}
+                  style={{
+                    fontSize: 18, fontWeight: 600, color: "#fff",
+                    textDecoration: "none", padding: "14px 0",
+                    borderBottom: "1px solid #1E3550",
+                  }}>
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 32 }}>
+              <a href="/login" style={{ border: "1.5px solid #1E3550", color: "#fff", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
+                Entrar
+              </a>
+              <a href="/cadastro" style={{ background: "#00D4AA", color: "#0A1628", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>
+                Começar grátis →
+              </a>
+            </div>
+          </div>
+        )}
+      </nav>
     </>
   );
 }
 
-function NavPlainLink({ href, children, chevron }) {
-  const [hov, setHov] = useState(false);
+/* ─── Hero ───────────────────────────────────────────────────────── */
+function Hero() {
+  const router = useRouter();
+
   return (
-    <a href={href} style={{
-      display: "inline-flex", alignItems: "center", gap: 3,
-      fontSize: 15, fontWeight: 500,
-      color: hov ? "#111827" : "#374151",
-      textDecoration: "none", whiteSpace: "nowrap",
-      transition: "color 0.15s",
-    }}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-    >
-      {children}
-      {chevron && <span style={{ fontSize: 10, opacity: 0.6 }}>▾</span>}
-    </a>
-  );
-}
-
-/* ─── Hero side panel (swap-animated circle grid) ───────────────── */
-const LEFT_ICONS = [
-  { src: "https://www.google.com/s2/favicons?domain=gmail.com&sz=64", alt: "Gmail" },
-  { src: "https://www.google.com/s2/favicons?domain=telegram.org&sz=64", alt: "Telegram" },
-  { src: "https://www.google.com/s2/favicons?domain=notion.so&sz=64", alt: "Notion" },
-  { src: "https://www.google.com/s2/favicons?domain=slack.com&sz=64", alt: "Slack" },
-  { src: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64", alt: "Salesforce" },
-  { src: "https://www.google.com/s2/favicons?domain=zapier.com&sz=64", alt: "Zapier" },
-  { src: "https://www.google.com/s2/favicons?domain=zoom.us&sz=64", alt: "Zoom" },
-  { src: "https://www.google.com/s2/favicons?domain=whatsapp.com&sz=64", alt: "WhatsApp" },
-  { src: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64", alt: "HubSpot" },
-  { src: "https://www.google.com/s2/favicons?domain=trello.com&sz=64", alt: "Trello" },
-  { src: "https://www.google.com/s2/favicons?domain=drive.google.com&sz=64", alt: "Google Drive" },
-  { src: "https://www.google.com/s2/favicons?domain=calendar.google.com&sz=64", alt: "Google Calendar" },
-  { src: "https://www.google.com/s2/favicons?domain=stripe.com&sz=64", alt: "Stripe" },
-  { src: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64", alt: "Mailchimp" },
-  { src: "https://www.google.com/s2/favicons?domain=airtable.com&sz=64", alt: "Airtable" },
-  { src: "https://www.google.com/s2/favicons?domain=teams.microsoft.com&sz=64", alt: "Teams" },
-];
-
-const RIGHT_ICONS = [
-  { type: "avatar", color: "#f97316", initials: "E", label: "Empresa"     },
-  { type: "avatar", color: "#8b5cf6", initials: "C", label: "Criador"     },
-  { type: "avatar", color: "#10b981", initials: "F", label: "Fundador"    },
-  { type: "avatar", color: "#3b82f6", initials: "P", label: "Empresa PME" },
-  { type: "avatar", color: "#ef4444", initials: "A", label: "Agência"     },
-  { type: "avatar", color: "#f59e0b", initials: "S", label: "SaaS"        },
-  { type: "avatar", color: "#06b6d4", initials: "M", label: "Marketing"   },
-  { type: "avatar", color: "#6366f1", initials: "D", label: "Dev"         },
-];
-
-const TOTAL_CIRCLES = 25;
-
-function makeInitialPositions(iconCount) {
-  const arr = Array(TOTAL_CIRCLES).fill(null);
-  const slots = [...Array(TOTAL_CIRCLES).keys()]
-    .sort(() => Math.random() - 0.5)
-    .slice(0, iconCount);
-  slots.forEach((slot, i) => { arr[slot] = i; });
-  return arr;
-}
-
-/* Left panel cell: app logo image */
-function LogoCircle({ icon }) {
-  const [errored, setErrored] = useState(false);
-  return (
-    <div style={{
-      width: 52, height: 52, borderRadius: "50%",
-      background: "#fff",
-      boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      overflow: "hidden",
-      animation: "iconPop 0.4s ease forwards",
+    <section style={{
+      background: "radial-gradient(ellipse at 70% -10%, rgba(0,212,170,0.07) 0%, transparent 60%), #0A1628",
+      minHeight: "90vh",
+      display: "flex", alignItems: "center",
     }}>
-      {!errored ? (
-        <img
-          src={icon.src}
-          alt=""
-          style={{ width: 30, height: 30, objectFit: "contain", display: "block" }}
-          onError={() => setErrored(true)}
-        />
-      ) : (
-        <div style={{
-          width: 30, height: 30, borderRadius: "50%",
-          background: "#e5e7eb",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 13, fontWeight: 700, color: "#374151",
-        }}>
-          {icon.src.replace("https://", "").charAt(0).toUpperCase()}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* Right panel cell: colored avatar with label */
-function AvatarCircle({ icon }) {
-  return (
-    <div style={{ position: "relative", paddingTop: 24 }}>
-      {/* Label above */}
-      <span style={{
-        position: "absolute", top: 2, left: "50%",
-        fontSize: 11, fontWeight: 700, color: "#374151",
-        whiteSpace: "nowrap",
-        background: "#fff", borderRadius: 6, padding: "2px 8px",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-        animation: "labelPop 0.4s ease forwards",
-        zIndex: 5,
+      <div className="hero-inner" style={{
+        maxWidth: 1200, margin: "0 auto",
+        padding: "80px 48px",
+        display: "flex", alignItems: "center",
+        gap: 64, width: "100%",
       }}>
-        {icon.label}
-      </span>
-      {/* Avatar */}
-      <div style={{
-        width: 52, height: 52, borderRadius: "50%",
-        background: icon.color,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-        animation: "iconPop 0.4s ease forwards",
-      }}>
-        <span style={{ fontSize: 18, fontWeight: 800, color: "#fff", lineHeight: 1 }}>
-          {icon.initials}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function HeroSidePanel({ side, isMobile }) {
-  const icons = side === "right" ? RIGHT_ICONS : LEFT_ICONS;
-  const [positions, setPositions] = useState(() => makeInitialPositions(icons.length));
-  const isRight = side === "right";
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPositions(prev => {
-        const next = [...prev];
-        const filled = next.map((v, i) => v !== null ? i : -1).filter(i => i >= 0);
-        const empty  = next.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
-        if (!filled.length || !empty.length) return next;
-        const from = filled[Math.floor(Math.random() * filled.length)];
-        const to   = empty[Math.floor(Math.random() * empty.length)];
-        next[to]   = next[from];
-        next[from] = null;
-        return next;
-      });
-    }, 1500);
-    return () => clearInterval(interval);
-  }, []);
-
-  if (isMobile) return null;
-
-  return (
-    <div style={{
-      position: "absolute", top: 0, bottom: 0,
-      [side]: 0, width: 280,
-      overflow: "hidden", pointerEvents: "none",
-    }}>
-      <style>{`
-        @keyframes iconPop {
-          0%   { opacity: 0; transform: scale(0.5); }
-          70%  { opacity: 1; transform: scale(1.08); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes labelPop {
-          0%   { opacity: 0; transform: translateX(-50%) scale(0.8); }
-          70%  { opacity: 1; transform: translateX(-50%) scale(1.05); }
-          100% { opacity: 1; transform: translateX(-50%) scale(1); }
-        }
-      `}</style>
-
-      {/* Fade toward center */}
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-        background: isRight
-          ? "linear-gradient(to left,  transparent 55%, #fff 100%)"
-          : "linear-gradient(to right, transparent 55%, #fff 100%)",
-      }} />
-      {/* Top + bottom fade */}
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-        background: "linear-gradient(to bottom, #fff 0%, transparent 14%, transparent 86%, #fff 100%)",
-      }} />
-
-      {/* Circle grid */}
-      <div style={{
-        position: "absolute", top: "50%", left: "50%",
-        transform: "translate(-50%, -50%)",
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 56px)",
-        gap: "16px",
-        rowGap: isRight ? "40px" : "16px",
-      }}>
-        {positions.map((iconIdx, i) => {
-          const icon = iconIdx !== null ? icons[iconIdx] : null;
-          return isRight ? (
-            /* Right panel cell — extra paddingTop baked into AvatarCircle */
-            <div key={i} style={{ width: 52 }}>
-              {icon ? (
-                <AvatarCircle key={`${iconIdx}-${i}`} icon={icon} />
-              ) : (
-                <div style={{ paddingTop: 24 }}>
-                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#f1f5f9" }} />
-                </div>
-              )}
-            </div>
-          ) : (
-            /* Left panel cell */
-            <div key={i} style={{
-              width: 52, height: 52, borderRadius: "50%",
-              background: icon ? "transparent" : "#f1f5f9",
-              transition: "background 0.4s ease",
-            }}>
-              {icon && <LogoCircle key={`${iconIdx}-${i}`} icon={icon} />}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Category card ─────────────────────────────────────────────── */
-const CAT_ICONS = {
-  "Agentes de IA":    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>,
-  "Análise de Dados": <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>,
-  "Automação":        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>,
-  "Chatbots":         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>,
-  "Marketing IA":     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>,
-  "WhatsApp IA":      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>,
-};
-const CAT_DESCS = {
-  "Agentes de IA":    "Automatize tarefas complexas com agentes inteligentes",
-  "Análise de Dados": "Transforme dados em decisões estratégicas",
-  "Automação":        "Elimine tarefas repetitivas e ganhe tempo",
-  "Chatbots":         "Atendimento 24h sem equipe dedicada",
-  "Marketing IA":     "Campanhas e conteúdo gerados por IA",
-  "WhatsApp IA":      "Conecte seus sistemas favoritos com IA",
-};
-function CategoryCard({ name, icon, color, count, slug }) {
-  const [hov, setHov] = useState(false);
-  const svgIcon = CAT_ICONS[name];
-  const desc = CAT_DESCS[name];
-  return (
-    <a
-      href={`/solucoes?categoria=${slug || name}`}
-      style={{ textDecoration: "none" }}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-    >
-      <div style={{
-        background: WHITE,
-        borderRadius: CARD_R,
-        overflow: "hidden",
-        cursor: "pointer",
-        transform: hov ? "scale(1.02)" : "scale(1)",
-        boxShadow: hov ? "0 12px 40px rgba(0,0,0,0.14)" : SHADOW,
-        transition: "transform 0.2s, box-shadow 0.2s",
-      }}>
-        {/* Top gradient */}
-        <div style={{
-          height: 140,
-          background: `linear-gradient(135deg, ${color}dd, ${color}88)`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          flexDirection: "column", gap: 8,
-        }}>
-          {svgIcon || <span style={{ fontSize: 48 }}>{icon}</span>}
-          <span style={{ fontSize: 16, fontWeight: 700, color: WHITE }}>{name}</span>
-        </div>
-        {/* Bottom */}
-        <div style={{ padding: "16px 20px" }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{name}</div>
-          <div style={{ fontSize: 13, color: MUTED, marginBottom: 12 }}>
-            {count > 1 ? `${count} soluções disponíveis` : count === 1 ? "1 solução disponível" : (desc || "Em breve")}
+        {/* Left */}
+        <div className="hero-left" style={{ flex: "0 0 52%" }}>
+          {/* Badge */}
+          <div style={{
+            display: "inline-block",
+            background: "rgba(0,212,170,0.1)",
+            color: "#00D4AA",
+            border: "1px solid rgba(0,212,170,0.25)",
+            borderRadius: 999,
+            padding: "6px 16px",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+          }}>
+            ✦ O 1º MARKETPLACE DE IA DO BRASIL
           </div>
-          <span style={{ fontSize: 13, fontWeight: 600, color: BLUE }}>Explorar →</span>
-        </div>
-      </div>
-    </a>
-  );
-}
 
-/* ─── Step card ─────────────────────────────────────────────────── */
-function StepCard({ num, icon, title, desc }) {
-  return (
-    <div style={{
-      background: WHITE,
-      borderRadius: CARD_R,
-      padding: 32,
-      border: `1px solid ${BORDER}`,
-      position: "relative",
-      overflow: "hidden",
-    }}>
-      <div style={{
-        position: "absolute", top: 16, right: 20,
-        fontSize: 56, fontWeight: 900, color: "#EFF6FF",
-        lineHeight: 1, userSelect: "none",
-      }}>{num}</div>
-      <div style={{
-        width: 48, height: 48, borderRadius: 12,
-        background: BLUE,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 22, marginBottom: 20,
-      }}>{icon}</div>
-      <div style={{ fontSize: 18, fontWeight: 700, color: TEXT, marginBottom: 8 }}>{title}</div>
-      <div style={{ fontSize: 14, color: MUTED, lineHeight: 1.7 }}>{desc}</div>
-    </div>
-  );
-}
-
-/* ─── Main page ─────────────────────────────────────────────────── */
-export default function Home() {
-  const width = useWindowSize();
-  const isMobile = width < 768;
-  const isTablet = width < 1024;
-
-  const [session, setSession] = useState(null);
-  const [categories, setCategories] = useState(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data?.session ?? null));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    async function loadCategories() {
-      const { data: cats } = await supabase.from("categories").select("*").order("nome");
-      if (!cats || cats.length === 0) { setCategories([]); return; }
-      const withCounts = await Promise.all(cats.map(async (cat) => {
-        const { count } = await supabase
-          .from("solutions")
-          .select("id", { count: "exact", head: true })
-          .eq("categoria", cat.nome)
-          .eq("status", "ativo");
-        return { ...cat, count: count ?? 0 };
-      }));
-      setCategories(withCounts);
-    }
-    loadCategories();
-  }, []);
-
-  const PLACEHOLDER_CATS = [
-    { nome: "Agentes de IA",    icone: "🤖", cor: "#2563EB", slug: "agentes-ia",     count: null },
-    { nome: "Automação",        icone: "⚡", cor: "#7C3AED", slug: "automacao",       count: null },
-    { nome: "Chatbots",         icone: "💬", cor: "#059669", slug: "chatbots",        count: null },
-    { nome: "Marketing IA",     icone: "📈", cor: "#D97706", slug: "marketing-ia",    count: null },
-    { nome: "Análise de Dados", icone: "📊", cor: "#DC2626", slug: "analise-dados",   count: null },
-    { nome: "WhatsApp IA",      icone: "📱", cor: "#0891B2", slug: "whatsapp-ia",     count: null },
-  ];
-
-  const displayCats = (categories && categories.length > 0) ? categories : PLACEHOLDER_CATS;
-
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Tabbed showcase
-  const [activeTab, setActiveTab] = useState(0);
-
-  // Card hover states
-  const [hov1, setHov1] = useState(false);
-  const [hov2, setHov2] = useState(false);
-  const [hov3, setHov3] = useState(false);
-  const [hov4, setHov4] = useState(false);
-  const [hov5, setHov5] = useState(false);
-  const [hov6, setHov6] = useState(false);
-  const [openFaq, setOpenFaq] = useState(null);
-
-  // Bar chart intersection animation
-  const chartRef = useRef(null);
-  const [chartAnimated, setChartAnimated] = useState(false);
-  useEffect(() => {
-    const el = chartRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setChartAnimated(true); },
-      { threshold: 0.3 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  // Typewriter loop for chat messages
-  const [visibleMsgs, setVisibleMsgs] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => {
-      setVisibleMsgs(prev => (prev >= 4 ? 0 : prev + 1));
-    }, 1200);
-    return () => clearInterval(id);
-  }, []);
-
-  function handleSearch(e) {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      window.location.href = `/solucoes?busca=${encodeURIComponent(searchQuery.trim())}`;
-    }
-  }
-
-  const HERO_TAGS = [
-    "Atendimento IA", "Automação de E-mails", "Redes Sociais",
-    "Geração de Leads", "Análise de Dados", "WhatsApp IA", "Chatbots",
-  ];
-
-  return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", color: TEXT, background: WHITE }}>
-      <style>{`
-        @media (max-width: 768px) {
-          .hero-speech-bubble { max-width: 60vw !important; font-size: 28px !important; }
-          .section-two-cards { flex-direction: column !important; padding: 24px 16px !important; gap: 16px !important; }
-          .section-two-cards > * { width: 100% !important; min-height: auto !important; }
-          .section-three-cards { grid-template-columns: 1fr !important; padding: 24px 16px !important; }
-          .section-blue-dashboard { flex-direction: column !important; padding: 32px 20px !important; margin: 0 12px 24px !important; border-radius: 20px !important; }
-          .section-blue-dashboard > * { width: 100% !important; }
-          .section-tabbed { padding: 32px 16px !important; }
-          .tabbed-big-card { padding: 20px !important; }
-          .tabbed-mockup { flex-direction: column !important; height: auto !important; }
-          .tabbed-sidebar { display: none !important; }
-          .tabbed-right-content { padding: 16px !important; }
-          .section-integrations { flex-direction: column !important; padding: 40px 20px !important; }
-          .section-integrations-right { display: none !important; }
-          .section-faq { flex-direction: column !important; padding: 40px 16px !important; }
-          .faq-left { width: 100% !important; }
-          .section-footer-top { flex-direction: column !important; gap: 32px !important; }
-          .footer-links-row { flex-wrap: wrap !important; gap: 24px !important; }
-          .section-h2 { font-size: 28px !important; line-height: 1.2 !important; }
-        }
-      `}</style>
-
-      {/* ════════════════════════════════════
-          SECTION 1 — NAVBAR
-      ════════════════════════════════════ */}
-      <PageNavbar session={session} isMobile={isMobile} />
-
-      {/* ════════════════════════════════════
-          SECTION 2 — HERO
-      ════════════════════════════════════ */}
-      <section style={{
-        position: "relative", background: "#fff",
-        minHeight: "100vh", overflow: "hidden",
-        display: "flex", flexDirection: "column",
-      }}>
-        {/* Side panels */}
-        <HeroSidePanel side="left" isMobile={isMobile} />
-        <HeroSidePanel side="right" isMobile={isMobile} />
-
-        {/* Center content */}
-        <div style={{
-          position: "relative", zIndex: 10,
-          flex: 1, display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center",
-          textAlign: "center",
-          padding: isMobile ? "72px 24px 64px" : "100px 32px 80px",
-          maxWidth: 760, margin: "0 auto", width: "100%",
-        }}>
           {/* H1 */}
           <h1 style={{
-            fontSize: isMobile ? 40 : 64,
-            fontWeight: 700, color: "#111827",
-            lineHeight: 1.15, letterSpacing: "-1.5px",
-            margin: "0 0 28px", textAlign: "center",
+            fontSize: "clamp(36px, 4.5vw, 64px)",
+            fontWeight: 800,
+            color: "#FFFFFF",
+            letterSpacing: "-0.03em",
+            lineHeight: 1.05,
+            marginTop: 20,
+            marginBottom: 0,
           }}>
-            <span style={{ display: "block", marginBottom: 10 }}>Gerencie Seu Negócio</span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
-              <span>com&nbsp;</span>
-              <span style={{
-                display: "inline-flex", alignItems: "center",
-                position: "relative",
-              }}>
-                {/* Main pill */}
-                <span className="hero-speech-bubble" style={{
-                  background: "linear-gradient(to right, #f97316, #f43f5e)",
-                  borderRadius: "24px 24px 24px 6px",
-                  padding: isMobile ? "8px 22px" : "10px 32px",
-                  color: "#fff",
-                  fontSize: isMobile ? 40 : 64,
-                  fontWeight: 700,
-                  letterSpacing: "-1.5px",
-                  lineHeight: 1.15,
-                  display: "inline-block",
-                }}>
-                  IA Curada
-                </span>
-                {/* Triangle tail — flush against bottom-left corner */}
-                <span style={{
-                  position: "absolute", bottom: -11, left: 18,
-                  width: 0, height: 0,
-                  borderLeft: "0px solid transparent",
-                  borderRight: "16px solid transparent",
-                  borderTop: "12px solid #f97316",
-                  display: "block",
-                }} />
-              </span>
-            </span>
+            Tudo que seu negócio<br />
+            precisa de IA.<br />
+            <span style={{ color: "#00D4AA" }}>Em um lugar só.</span>
           </h1>
 
           {/* Subtitle */}
           <p style={{
-            fontSize: isMobile ? 16 : 18,
-            color: "#6b7280", lineHeight: 1.7,
-            margin: "0 0 52px", maxWidth: 520,
-            fontWeight: 400,
+            fontSize: 18,
+            color: "#A8B8CC",
+            lineHeight: 1.7,
+            marginTop: 24,
+            maxWidth: 460,
           }}>
-            Cada solução foi testada e aprovada antes de chegar até você. Implemente com confiança, suporte em português.
+            Agentes de IA curados, testados e prontos para trabalhar
+            pelo seu negócio — com suporte em português.
           </p>
 
-          {/* Search bar */}
-          <form onSubmit={handleSearch} style={{
-            width: "100%", maxWidth: 640, margin: "0 auto 28px",
-          }}>
-            <div style={{
-              background: "#fff",
-              border: "1.5px solid #e2e8f0",
-              borderRadius: 999,
-              padding: "8px 8px 8px 24px",
-              display: "flex", alignItems: "center", gap: 12,
-              boxShadow: "0 2px 16px rgba(0,0,0,0.07), 0 0 0 4px rgba(37,99,235,0.04)",
-            }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Buscar soluções de IA para o seu negócio..."
-                style={{
-                  flex: 1, border: "none", outline: "none",
-                  fontSize: 15, color: "#111827",
-                  background: "transparent",
-                  fontFamily: "'DM Sans', sans-serif",
-                  minWidth: 0,
-                }}
-              />
-              <button type="submit" style={{
-                background: "#111827", color: "#fff",
-                borderRadius: 999, padding: "11px 22px",
-                border: "none", cursor: "pointer",
-                fontSize: 14, fontWeight: 600, flexShrink: 0,
-                display: "flex", alignItems: "center", gap: 6,
-                fontFamily: "'DM Sans', sans-serif",
-                letterSpacing: "-0.2px",
-                whiteSpace: "nowrap",
-              }}>
-                Buscar
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </button>
-            </div>
-          </form>
+          {/* CTAs */}
+          <div style={{ marginTop: 36, display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <button
+              onClick={() => router.push("/solucoes")}
+              style={{
+                background: "#00D4AA", color: "#0A1628",
+                border: "none", borderRadius: 10,
+                padding: "16px 32px", fontSize: 15, fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 20px rgba(0,212,170,0.35)",
+              }}
+            >
+              Explorar soluções
+            </button>
+            <button
+              onClick={() => router.push("/cadastro")}
+              style={{
+                background: "transparent", color: "#FFFFFF",
+                border: "1.5px solid #1E3550",
+                borderRadius: 10, padding: "15px 28px",
+                fontSize: 15, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              Sou criador de IA →
+            </button>
+          </div>
 
-          {/* Category tags */}
+          {/* Social proof */}
+          <div style={{ marginTop: 40, display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ display: "flex" }}>
+              {[
+                { bg: "#00D4AA", initial: "A" },
+                { bg: "#3B82F6", initial: "B" },
+                { bg: "#F59E0B", initial: "C" },
+                { bg: "#EF4444", initial: "D" },
+                { bg: "#8B5CF6", initial: "E" },
+              ].map((av, i) => (
+                <div key={i} style={{
+                  width: 28, height: 28, borderRadius: "50%",
+                  background: av.bg,
+                  border: "2px solid #0A1628",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  marginLeft: i === 0 ? 0 : -8,
+                  fontSize: 11, fontWeight: 700, color: "#fff",
+                  flexShrink: 0,
+                }}>
+                  {av.initial}
+                </div>
+              ))}
+            </div>
+            <span style={{ fontSize: 13, color: "#5A7A99" }}>
+              Mais de 200 empresas já na lista de espera
+            </span>
+          </div>
+        </div>
+
+        {/* Right — workspace mockup */}
+        <div className="hero-right" style={{ flex: "0 0 48%", position: "relative", display: "flex", justifyContent: "center" }}>
+          {/* Chip 1 */}
           <div style={{
-            display: "flex", flexWrap: "wrap", gap: 8,
-            justifyContent: "center",
+            position: "absolute", top: -16, left: -16,
+            background: "#0F1E30", border: "1px solid #1E3550",
+            borderRadius: 12, padding: "8px 14px",
+            display: "flex", alignItems: "center", gap: 8,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+            zIndex: 2,
           }}>
-            {HERO_TAGS.map(tag => (
-              <a
-                key={tag}
-                href={`/solucoes?busca=${encodeURIComponent(tag)}`}
-                style={{
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 999,
-                  padding: "7px 16px",
-                  fontSize: 13, fontWeight: 500, color: "#4b5563",
-                  background: "#fff",
-                  cursor: "pointer",
-                  textDecoration: "none",
-                  transition: "background 0.15s, border-color 0.15s, color 0.15s",
-                  whiteSpace: "nowrap",
-                  letterSpacing: "-0.1px",
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = "#f1f5f9";
-                  e.currentTarget.style.borderColor = "#94a3b8";
-                  e.currentTarget.style.color = "#111827";
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = "#fff";
-                  e.currentTarget.style.borderColor = "#e5e7eb";
-                  e.currentTarget.style.color = "#4b5563";
-                }}
-              >
-                {tag}
-              </a>
+            <CheckCircle size={14} color="#00D4AA" />
+            <span style={{ color: "#A8B8CC", fontSize: 12 }}>Curadoria aprovada</span>
+          </div>
+
+          {/* Main card */}
+          <div style={{
+            background: "#0F1E30",
+            border: "1px solid #1E3550",
+            borderRadius: 20,
+            padding: 24,
+            width: "100%", maxWidth: 380,
+            boxShadow: "0 32px 64px rgba(0,0,0,0.5)",
+            animation: "float 4s ease-in-out infinite",
+          }}>
+            {/* Card top */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div style={{
+                background: "rgba(0,212,170,0.1)", color: "#00D4AA",
+                fontSize: 10, fontWeight: 700, borderRadius: 999,
+                padding: "2px 8px",
+              }}>
+                WORKSPACE
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{
+                  width: 8, height: 8, borderRadius: "50%",
+                  background: "#00D4AA",
+                  boxShadow: "0 0 8px #00D4AA",
+                }} />
+                <span style={{ color: "#A8B8CC", fontSize: 12 }}>Online</span>
+              </div>
+            </div>
+
+            <div style={{ color: "#fff", fontWeight: 700, fontSize: 15, marginBottom: 16 }}>
+              Agente de Atendimento
+            </div>
+
+            {/* Messages */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{
+                alignSelf: "flex-end",
+                background: "#00D4AA", color: "#0A1628",
+                borderRadius: "12px 12px 4px 12px",
+                padding: "10px 14px", fontSize: 13, maxWidth: 220, fontWeight: 500,
+              }}>
+                Quantos pedidos estão em aberto?
+              </div>
+
+              <div style={{
+                alignSelf: "flex-start",
+                background: "#132438", color: "#fff",
+                borderRadius: "12px 12px 12px 4px",
+                padding: "10px 14px", fontSize: 13, maxWidth: 240, lineHeight: 1.5,
+              }}>
+                Encontrei 12 pedidos em aberto. 3 precisam de atenção urgente.
+              </div>
+
+              <div style={{
+                alignSelf: "flex-start",
+                background: "#132438", color: "#fff",
+                borderRadius: "12px 12px 12px 4px",
+                padding: "10px 14px", fontSize: 13, maxWidth: 240, lineHeight: 1.5,
+              }}>
+                Deseja que eu envie um resumo para sua equipe agora?
+              </div>
+
+              {/* Typing indicator */}
+              <div style={{
+                alignSelf: "flex-start",
+                background: "#132438", borderRadius: 12,
+                padding: "10px 14px",
+                display: "flex", gap: 5, alignItems: "center",
+              }}>
+                {[0, 0.15, 0.3].map((delay, i) => (
+                  <div key={i} style={{
+                    width: 6, height: 6, borderRadius: "50%",
+                    background: "#00D4AA",
+                    opacity: i === 0 ? 0.6 : i === 1 ? 0.8 : 1,
+                    animation: "bounce 1s ease-in-out infinite",
+                    animationDelay: `${delay}s`,
+                  }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Input row */}
+            <div style={{
+              marginTop: 12, background: "#112840",
+              borderRadius: 8, padding: "10px 14px",
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+            }}>
+              <span style={{ color: "#5A7A99", fontSize: 12 }}>Digite sua mensagem...</span>
+              <Send size={14} color="#00D4AA" />
+            </div>
+          </div>
+
+          {/* Chip 2 */}
+          <div style={{
+            position: "absolute", bottom: -16, right: -16,
+            background: "#0F1E30", border: "1px solid #1E3550",
+            borderRadius: 12, padding: "8px 14px",
+            display: "flex", alignItems: "center", gap: 8,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+            zIndex: 2,
+          }}>
+            <span style={{ color: "#A8B8CC", fontSize: 12 }}>🇧🇷 Suporte em português</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Trust bar ──────────────────────────────────────────────────── */
+function TrustBar() {
+  const items = [
+    {
+      icon: <ShieldCheck size={22} color="#00D4AA" />,
+      title: "Curadoria especializada",
+      desc: "Toda solução é testada antes de entrar na plataforma.",
+    },
+    {
+      icon: <MessageCircle size={22} color="#00D4AA" />,
+      title: "Suporte em português",
+      desc: "Time real, em português, pronto para ajudar.",
+    },
+    {
+      icon: <Users size={22} color="#00D4AA" />,
+      title: "Comunidade exclusiva",
+      desc: "Criadores e empresas que levam IA a sério.",
+    },
+  ];
+
+  return (
+    <section style={{
+      background: "#070F1A",
+      borderTop: "1px solid #1E3550",
+      borderBottom: "1px solid #1E3550",
+      padding: "56px 48px",
+    }}>
+      <div className="trust-grid" style={{
+        maxWidth: 1200, margin: "0 auto",
+        display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+        gap: 40,
+      }}>
+        {items.map((item) => (
+          <div key={item.title} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+            <div style={{
+              width: 44, height: 44, flexShrink: 0,
+              background: "rgba(0,212,170,0.1)",
+              border: "1px solid rgba(0,212,170,0.15)",
+              borderRadius: 12,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              {item.icon}
+            </div>
+            <div>
+              <div style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>{item.title}</div>
+              <div style={{ color: "#A8B8CC", fontSize: 14, lineHeight: 1.6, marginTop: 4 }}>{item.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── How it works ───────────────────────────────────────────────── */
+function HowItWorks() {
+  const steps = [
+    { num: "01", title: "Encontre a solução certa", desc: "Navegue pelo catálogo por categoria ou desafio do negócio." },
+    { num: "02", title: "Ative em minutos", desc: "Sem instalação, sem configuração técnica complexa." },
+    { num: "03", title: "Use dentro da WePrompt", desc: "Histórico, suporte e atualizações em um só lugar." },
+  ];
+
+  return (
+    <section id="como-funciona" style={{ padding: "96px 48px", background: "#0A1628" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 64 }}>
+          <div style={{
+            display: "inline-block",
+            background: "rgba(0,212,170,0.1)", color: "#00D4AA",
+            border: "1px solid rgba(0,212,170,0.25)",
+            borderRadius: 999, padding: "6px 16px",
+            fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+          }}>
+            COMO FUNCIONA
+          </div>
+          <h2 style={{
+            fontSize: "clamp(28px, 3vw, 40px)", fontWeight: 800,
+            color: "#fff", marginTop: 16, marginBottom: 0,
+          }}>
+            Simples assim.
+          </h2>
+          <p style={{ color: "#A8B8CC", fontSize: 16, marginTop: 12 }}>
+            Sem curva de aprendizado. Sem precisar de TI.
+          </p>
+        </div>
+
+        <div className="steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+          {steps.map((step) => (
+            <div key={step.num} style={{
+              background: "#0F1E30",
+              border: "1px solid #1E3550",
+              borderRadius: 16, padding: 32,
+            }}>
+              <div style={{
+                width: 40, height: 40,
+                background: "rgba(0,212,170,0.1)",
+                border: "1px solid rgba(0,212,170,0.2)",
+                borderRadius: 10, color: "#00D4AA",
+                fontSize: 18, fontWeight: 800,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {step.num}
+              </div>
+              <div style={{ color: "#fff", fontSize: 17, fontWeight: 700, marginTop: 20 }}>{step.title}</div>
+              <div style={{ color: "#A8B8CC", fontSize: 14, lineHeight: 1.6, marginTop: 8 }}>{step.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Categories ─────────────────────────────────────────────────── */
+function Categories() {
+  const router = useRouter();
+  const [hov, setHov] = useState(null);
+
+  const cats = [
+    { icon: <MessageSquare size={22} color="#00D4AA" />, name: "Atendimento ao Cliente", desc: "Chatbots e agentes para suporte 24/7", slug: "atendimento" },
+    { icon: <Mail size={22} color="#00D4AA" />, name: "Automação de E-mails", desc: "Respostas automáticas e campanhas", slug: "automacao-emails" },
+    { icon: <TrendingUp size={22} color="#00D4AA" />, name: "Vendas e Prospecção", desc: "Geração de leads automatizada", slug: "vendas" },
+    { icon: <BarChart2 size={22} color="#00D4AA" />, name: "Análise de Dados", desc: "Relatórios e insights em segundos", slug: "analise-dados" },
+    { icon: <Smartphone size={22} color="#00D4AA" />, name: "WhatsApp IA", desc: "Atendimento e vendas pelo WhatsApp", slug: "whatsapp-ia" },
+    { icon: <Megaphone size={22} color="#00D4AA" />, name: "Marketing e Conteúdo", desc: "Criação e distribuição automatizada", slug: "marketing" },
+  ];
+
+  return (
+    <section style={{ padding: "96px 48px", background: "#070F1A", borderTop: "1px solid #1E3550" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <h2 style={{ fontSize: "clamp(28px, 3vw, 40px)", fontWeight: 800, color: "#fff", margin: 0 }}>
+            Uma solução para cada desafio.
+          </h2>
+          <p style={{ color: "#A8B8CC", fontSize: 16, marginTop: 12 }}>
+            Categorias curadas para o mercado brasileiro.
+          </p>
+        </div>
+
+        <div className="cats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+          {cats.map((cat, i) => (
+            <div
+              key={cat.slug}
+              onClick={() => router.push(`/solucoes?categoria=${cat.slug}`)}
+              onMouseEnter={() => setHov(i)}
+              onMouseLeave={() => setHov(null)}
+              style={{
+                background: "#0F1E30",
+                border: `1px solid ${hov === i ? "rgba(0,212,170,0.35)" : "#1E3550"}`,
+                borderRadius: 16, padding: 28,
+                cursor: "pointer",
+                transform: hov === i ? "translateY(-2px)" : "translateY(0)",
+                transition: "border-color 0.2s, transform 0.2s",
+              }}
+            >
+              <div style={{
+                width: 44, height: 44,
+                background: "rgba(0,212,170,0.08)",
+                borderRadius: 12,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {cat.icon}
+              </div>
+              <div style={{ color: "#fff", fontSize: 16, fontWeight: 700, marginTop: 14 }}>{cat.name}</div>
+              <div style={{ color: "#A8B8CC", fontSize: 13, marginTop: 6 }}>{cat.desc}</div>
+              <div style={{ color: "#00D4AA", fontSize: 13, fontWeight: 600, marginTop: 18 }}>Ver soluções →</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── For Companies ──────────────────────────────────────────────── */
+function ForCompanies() {
+  const router = useRouter();
+  const solutions = ["Agente de Atendimento", "ChatBot WhatsApp", "Gerador de E-mails"];
+
+  return (
+    <section style={{ padding: "96px 48px", background: "#0A1628", borderTop: "1px solid #1E3550" }}>
+      <div className="companies-inner" style={{ maxWidth: 1200, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
+        {/* Left — mockup */}
+        <div className="companies-left" style={{ flex: "0 0 50%" }}>
+          <div style={{ background: "#0F1E30", border: "1px solid #1E3550", borderRadius: 20, padding: 28 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>Meu Painel</span>
+              <div style={{ background: "rgba(0,212,170,0.1)", color: "#00D4AA", borderRadius: 999, padding: "3px 10px", fontSize: 11 }}>
+                Empresa
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 20 }}>
+              {[
+                { val: "3", label: "Soluções ativas" },
+                { val: "R$291", label: "Este mês" },
+                { val: "24h", label: "Suporte" },
+              ].map((m) => (
+                <div key={m.label} style={{ background: "#132438", borderRadius: 10, padding: 14 }}>
+                  <div style={{ color: "#fff", fontSize: 18, fontWeight: 800 }}>{m.val}</div>
+                  <div style={{ color: "#A8B8CC", fontSize: 12, marginTop: 2 }}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: 20, display: "flex", flexDirection: "column" }}>
+              {solutions.map((name, i) => (
+                <div key={name} style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "12px 0",
+                  borderBottom: i < solutions.length - 1 ? "1px solid #1E3550" : "none",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#00D4AA", flexShrink: 0 }} />
+                    <span style={{ color: "#fff", fontSize: 14 }}>{name}</span>
+                  </div>
+                  <div style={{ background: "rgba(0,212,170,0.1)", color: "#00D4AA", fontSize: 11, fontWeight: 600, borderRadius: 999, padding: "2px 8px" }}>
+                    Ativo
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right — text */}
+        <div className="companies-right" style={{ flex: "0 0 50%" }}>
+          <div style={{
+            display: "inline-block",
+            background: "rgba(0,212,170,0.1)", color: "#00D4AA",
+            border: "1px solid rgba(0,212,170,0.25)",
+            borderRadius: 999, padding: "6px 16px",
+            fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+          }}>
+            PARA EMPRESAS
+          </div>
+
+          <h2 style={{
+            fontSize: "clamp(28px, 3vw, 40px)", fontWeight: 800, color: "#fff",
+            marginTop: 16, marginBottom: 0, lineHeight: 1.15,
+          }}>
+            IA que trabalha pelo seu negócio. Em português.
+          </h2>
+
+          <p style={{ color: "#A8B8CC", fontSize: 16, lineHeight: 1.7, marginTop: 16 }}>
+            Encontre, ative e use soluções de IA — tudo dentro da WePrompt,
+            sem precisar de equipe técnica.
+          </p>
+
+          <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 14 }}>
+            {[
+              "Soluções testadas e aprovadas pela nossa equipe",
+              "Ative sem precisar de TI",
+              "Suporte em português incluído",
+              "Cancele quando quiser",
+            ].map((b) => (
+              <div key={b} style={{ display: "flex", gap: 12 }}>
+                <CheckCircle size={18} color="#00D4AA" style={{ flexShrink: 0, marginTop: 2 }} />
+                <span style={{ color: "#fff", fontSize: 15 }}>{b}</span>
+              </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* ════════════════════════════════════
-          SECTION 1 — DOIS CARDS GRANDES
-      ════════════════════════════════════ */}
-      <section style={{ background: WHITE }}>
-        <div className="section-two-cards" style={{
-          maxWidth: 1280, margin: "0 auto",
-          padding: isMobile ? "32px 20px" : 48,
-          display: "flex", flexDirection: isMobile ? "column" : "row", gap: 16,
-        }}>
-
-          {/* LEFT CARD */}
-          <div
-            onMouseEnter={() => setHov1(true)}
-            onMouseLeave={() => setHov1(false)}
+          <button
+            onClick={() => router.push("/solucoes")}
             style={{
-              flex: isMobile ? "none" : "1.2",
-              background: WHITE, border: "1px solid #f0f0f0", borderRadius: 24,
-              padding: 40, minHeight: isMobile ? "auto" : 520,
-              position: "relative", overflow: "hidden",
-              transform: hov1 ? "scale(1.02)" : "scale(1)",
-              boxShadow: hov1 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
-              transition: "all 0.3s ease",
-            }}>
-            <div style={{ background: "#EFF6FF", borderRadius: 12, padding: "8px 16px", display: "inline-block" }}>
-              <em style={{ color: "#2563EB", fontSize: 14 }}>"Quero economizar tempo com automação"</em>
-            </div>
-            <h3 style={{
-              fontSize: isMobile ? 24 : 32, fontWeight: 800, color: "#111827",
-              marginTop: 20, marginBottom: 0, maxWidth: 320, lineHeight: 1.2, letterSpacing: "-0.02em",
-            }}>
-              Automatize as Tarefas do Seu Negócio
-            </h3>
-            <a href="/solucoes" style={{
-              border: "1.5px solid #e5e7eb", borderRadius: 999, padding: "12px 28px",
-              fontSize: 14, fontWeight: 600, color: "#111827",
-              marginTop: isMobile ? 24 : 280,
-              display: "inline-block", textDecoration: "none",
-            }}>
-              Explorar soluções →
-            </a>
-            {/* Dark email mockup */}
-            {!isMobile && (
-              <div style={{
-                position: "absolute", bottom: -1, right: -1, width: "58%",
-                background: "#1a1a2e", borderRadius: "16px 0 24px 0",
-                padding: 20, boxShadow: "0 -8px 40px rgba(0,0,0,0.15)",
-              }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#3b82f6", flexShrink: 0 }} />
-                    <span style={{ color: "rgba(255,255,255,0.9)", fontSize: 12, fontWeight: 600 }}>Assistente de E-mail</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#10b981" }} />
-                    <span style={{ color: "#10b981", fontSize: 11 }}>Ativo</span>
-                  </div>
-                </div>
-                <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "12px 0" }} />
-                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 8 }}>Pronto para envio</div>
-                <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 12, marginBottom: 8 }}>
-                  <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 12, fontWeight: 600 }}>Re: Confirmação de reunião</div>
-                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 4 }}>Olá, confirmo nossa reunião para quinta às 14h. Por favor...</div>
-                </div>
-                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 8, marginTop: 12 }}>Na fila</div>
-                <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 12, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 12, fontWeight: 600 }}>Follow-up: Proposta #1042</div>
-                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 4 }}>Programado 09:00</div>
-                  </div>
-                  <div style={{ background: "rgba(59,130,246,0.2)", color: "#60a5fa", padding: "3px 8px", borderRadius: 999, fontSize: 10, flexShrink: 0, marginLeft: 8 }}>Agendado</div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* RIGHT CARD */}
-          <div
-            onMouseEnter={() => setHov2(true)}
-            onMouseLeave={() => setHov2(false)}
-            style={{
-              flex: isMobile ? "none" : "1",
-              background: "linear-gradient(160deg, #a855f7 0%, #ec4899 50%, #f97316 100%)",
-              borderRadius: 24, padding: 40,
-              minHeight: isMobile ? "auto" : 520,
-              position: "relative", overflow: "hidden",
-              transform: hov2 ? "scale(1.02)" : "scale(1)",
-              boxShadow: hov2 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
-              transition: "all 0.3s ease",
-            }}>
-            <h3 style={{
-              fontSize: isMobile ? 28 : 36, fontWeight: 800, color: "white",
-              lineHeight: 1.2, maxWidth: 260, letterSpacing: "-0.02em", margin: 0,
-            }}>
-              Simplifique Suas Comunicações
-            </h3>
-            <div style={{
-              position: isMobile ? "relative" : "absolute",
-              bottom: isMobile ? "auto" : 20,
-              left: isMobile ? "auto" : 20,
-              right: isMobile ? "auto" : 20,
-              marginTop: isMobile ? 24 : 0,
-              background: "rgba(0,0,0,0.35)",
-              backdropFilter: "blur(20px)",
-              borderRadius: 16, padding: 16,
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 24, height: 24, borderRadius: "50%", background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/>
-                  </svg>
-                </div>
-                <span style={{ color: "white", fontSize: 12, fontWeight: 600 }}>ChatBot Pro</span>
-                <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
-                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#34d399" }} />
-                  <span style={{ color: "#34d399", fontSize: 10 }}>Online</span>
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                {[
-                  { from: "user", text: "Quanto custa a solução de WhatsApp?" },
-                  { from: "bot",  text: "Temos planos a partir de R$97/mês. Posso te mostrar?" },
-                  { from: "user", text: "Sim, quero ver!" },
-                  { from: "bot",  text: "Perfeito! Vou te encaminhar para o plano ideal." },
-                ].map((msg, i) => (
-                  <div key={i} style={{
-                    display: "flex",
-                    justifyContent: msg.from === "user" ? "flex-end" : "flex-start",
-                    opacity: i < visibleMsgs ? 1 : 0,
-                    transform: i < visibleMsgs ? "translateY(0)" : "translateY(8px)",
-                    transition: "opacity 0.4s ease, transform 0.4s ease",
-                  }}>
-                    <div style={{
-                      background: msg.from === "user" ? "white" : "rgba(255,255,255,0.15)",
-                      color: msg.from === "user" ? "#111827" : "white",
-                      borderRadius: msg.from === "user" ? "16px 4px 16px 16px" : "4px 16px 16px 16px",
-                      padding: "8px 14px", fontSize: 12, lineHeight: 1.4, maxWidth: "82%",
-                    }}>{msg.text}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
+              marginTop: 36,
+              background: "#00D4AA", color: "#0A1628",
+              border: "none", borderRadius: 10,
+              padding: "14px 28px", fontSize: 15, fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Explorar o catálogo →
+          </button>
         </div>
-      </section>
-
-      {/* ════════════════════════════════════
-          SECTION 2 — TRÊS CARDS IGUAIS
-      ════════════════════════════════════ */}
-      <section style={{ background: WHITE }}>
-        <div style={{
-          maxWidth: 1280, margin: "0 auto",
-          padding: isMobile ? "0 20px 40px" : "0 48px 48px",
-        }}>
-          <div className="section-three-cards" style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-            gap: 16,
-          }}>
-
-            {/* CARD 1 — Finances */}
-            <div
-              onMouseEnter={() => setHov3(true)}
-              onMouseLeave={() => setHov3(false)}
-              style={{
-                background: WHITE, border: "1px solid #f0f0f0", borderRadius: 24, padding: 32,
-                transform: hov3 ? "scale(1.02)" : "scale(1)",
-                boxShadow: hov3 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
-                transition: "all 0.3s ease",
-              }}>
-              <div style={{ background: "#EFF6FF", borderRadius: 12, padding: "8px 16px", display: "inline-block" }}>
-                <em style={{ color: "#2563EB", fontSize: 14 }}>"Quero automatizar minhas finanças"</em>
-              </div>
-              <h3 style={{ fontSize: 24, fontWeight: 800, color: "#111827", marginTop: 16, marginBottom: 0, lineHeight: 1.2, letterSpacing: "-0.02em" }}>
-                Gerencie Suas Finanças
-              </h3>
-              <div style={{ background: "#111827", borderRadius: 16, padding: 20, marginTop: 24 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ color: "white", fontSize: 12, fontWeight: 600 }}>Visão Mensal</span>
-                  <span style={{ background: "rgba(16,185,129,0.2)", color: "#10b981", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>+12.4%</span>
-                </div>
-                <div style={{ color: "white", fontSize: 28, fontWeight: 800, marginTop: 8, letterSpacing: "-0.02em" }}>R$ 48.320</div>
-                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 4 }}>Receita total este mês</div>
-                <div ref={chartRef} style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 60, marginTop: 16 }}>
-                  {[30, 40, 35, 50, 45, 55, 48, 70].map((h, i) => (
-                    <div key={i} style={{
-                      flex: 1,
-                      height: chartAnimated ? `${h}%` : "0%",
-                      borderRadius: "3px 3px 0 0",
-                      background: i === 7 ? "#1d4ed8" : "#1e3a5f",
-                      transition: `height 0.8s ease ${i * 0.08}s`,
-                    }} />
-                  ))}
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
-                  {[
-                    { label: "142 Faturas", sub: "Total"    },
-                    { label: "R$3.200",     sub: "Pendente" },
-                    { label: "R$21.380",    sub: "Pago"     },
-                  ].map((stat) => (
-                    <div key={stat.label}>
-                      <div style={{ color: "white", fontSize: 10, fontWeight: 600 }}>{stat.label}</div>
-                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10 }}>{stat.sub}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <a href="/solucoes?categoria=analise-de-dados" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 16, color: "#2563EB", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Ver soluções →</a>
-            </div>
-
-            {/* CARD 2 — Campaigns */}
-            <div
-              onMouseEnter={() => setHov4(true)}
-              onMouseLeave={() => setHov4(false)}
-              style={{
-                background: "linear-gradient(160deg, #a855f7, #ec4899, #f97316)", borderRadius: 24, padding: 32,
-                transform: hov4 ? "scale(1.02)" : "scale(1)",
-                boxShadow: hov4 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
-                transition: "all 0.3s ease",
-              }}>
-              <h3 style={{ fontSize: 24, fontWeight: 800, color: "white", marginTop: 32, marginBottom: 0, lineHeight: 1.2, letterSpacing: "-0.02em" }}>
-                Gere Suas Campanhas
-              </h3>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 24 }}>
-                {[
-                  { name: "Promoção Verão", type: "Email + SMS",       metric: "2.4k enviados",   mc: "#86efac" },
-                  { name: "Novo Produto",   type: "Instagram + Email", metric: "1.8k alcançados", mc: "#86efac" },
-                  { name: "Flash Promo",    type: "Push + SMS",        metric: "3.1k enviados",   mc: "#fde68a" },
-                  { name: "Fidelidade",     type: "Email + App",       metric: "1.2k abertos",    mc: "#fde68a" },
-                ].map((c) => (
-                  <div key={c.name} style={{ background: "rgba(0,0,0,0.25)", borderRadius: 12, padding: 14 }}>
-                    <div style={{ color: "white", fontSize: 12, fontWeight: 700 }}>{c.name}</div>
-                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, marginTop: 2 }}>{c.type}</div>
-                    <div style={{ color: c.mc, fontSize: 13, fontWeight: 800, marginTop: 8 }}>{c.metric}</div>
-                  </div>
-                ))}
-              </div>
-              <a href="/solucoes?categoria=marketing-ia" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 16, color: "rgba(255,255,255,0.9)", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Ver soluções →</a>
-            </div>
-
-            {/* CARD 3 — Leads */}
-            <div
-              onMouseEnter={() => setHov5(true)}
-              onMouseLeave={() => setHov5(false)}
-              style={{
-                background: WHITE, border: "1px solid #f0f0f0", borderRadius: 24, padding: 32,
-                transform: hov5 ? "scale(1.02)" : "scale(1)",
-                boxShadow: hov5 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
-                transition: "all 0.3s ease",
-              }}>
-              <div style={{ background: "#EFF6FF", borderRadius: 12, padding: "8px 16px", display: "inline-block" }}>
-                <em style={{ color: "#2563EB", fontSize: 14 }}>"Quero encontrar novos clientes"</em>
-              </div>
-              <h3 style={{ fontSize: 24, fontWeight: 800, color: "#111827", marginTop: 16, marginBottom: 0, lineHeight: 1.2, letterSpacing: "-0.02em" }}>
-                Alcance Clientes Locais
-              </h3>
-              <div style={{ background: "#111827", borderRadius: 16, padding: 20, marginTop: 24 }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                  <span style={{ color: "white", fontSize: 12, fontWeight: 600 }}>Pipeline de Leads</span>
-                  <span style={{ color: "#2563EB", fontSize: 11, fontWeight: 600 }}>12 novos</span>
-                </div>
-                {[
-                  { ini: "T", bg: "#2563EB", name: "Tech Solutions",    status: "Proposta", score: "92", sbg: "#fef3c7", sc: "#92400e" },
-                  { ini: "I", bg: "#7c3aed", name: "Inova Varejo",      status: "Reunião",  score: "78", sbg: "#ede9fe", sc: "#6d28d9" },
-                  { ini: "B", bg: "#059669", name: "Bem Estar Clinic",  status: "Contato",  score: "65", sbg: "#dcfce7", sc: "#166534" },
-                  { ini: "C", bg: "#9ca3af", name: "Construtora Alpha", status: "Novo",     score: "44", sbg: "#f3f4f6", sc: "#374151" },
-                ].map((lead, i) => (
-                  <div key={lead.name} style={{
-                    display: "flex", alignItems: "center", gap: 10, padding: "10px 0",
-                    borderBottom: i < 3 ? "1px solid rgba(255,255,255,0.06)" : "none",
-                  }}>
-                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: lead.bg, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 11, color: "white", flexShrink: 0 }}>{lead.ini}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ color: "white", fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{lead.name}</div>
-                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10 }}>{lead.status}</div>
-                    </div>
-                    <div style={{ background: lead.sbg, color: lead.sc, borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{lead.score}</div>
-                  </div>
-                ))}
-                <div style={{ color: "#10b981", fontSize: 12, marginTop: 12 }}>Taxa de conversão: 34.2%</div>
-              </div>
-              <a href="/solucoes?categoria=agentes-de-ia" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 16, color: "#2563EB", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Ver soluções →</a>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════
-          SECTION 3 — DASHBOARD AZUL
-      ════════════════════════════════════ */}
-      <section style={{ background: WHITE }}>
-        <div style={{
-          maxWidth: 1280, margin: "0 auto",
-          padding: isMobile ? "0 20px 48px" : "0 48px 48px",
-        }}>
-          <div
-            className="section-blue-dashboard"
-            onMouseEnter={() => setHov6(true)}
-            onMouseLeave={() => setHov6(false)}
-            style={{
-              background: "#2563EB", borderRadius: 24,
-              padding: isMobile ? "40px 24px" : 56,
-              display: "flex", flexDirection: isMobile ? "column" : "row",
-              alignItems: isMobile ? "flex-start" : "center",
-              gap: isMobile ? 32 : 48,
-              transform: hov6 ? "scale(1.02)" : "scale(1)",
-              boxShadow: hov6 ? "0 20px 40px rgba(0,0,0,0.15)" : "0 2px 8px rgba(0,0,0,0.08)",
-              transition: "all 0.3s ease",
-            }}>
-
-            {/* Left: text */}
-            <div style={{ flex: "1" }}>
-              <h2 className="section-h2" style={{ fontSize: isMobile ? 28 : 40, fontWeight: 800, color: "white", lineHeight: 1.15, letterSpacing: "-0.02em", margin: 0 }}>
-                Tudo em Um Dashboard Simples.
-              </h2>
-              <a href="/solucoes" style={{
-                background: "black", color: "white", borderRadius: 999,
-                padding: "14px 32px", fontSize: 15, fontWeight: 700,
-                marginTop: 28, display: "inline-block", textDecoration: "none",
-              }}>
-                Explorar soluções
-              </a>
-            </div>
-
-            {/* Right: browser mockup */}
-            <div style={{ flex: "1.5", width: isMobile ? "100%" : "auto" }}>
-              <div style={{ background: "white", borderRadius: 16, overflow: "hidden", boxShadow: "0 30px 60px rgba(0,0,0,0.3)" }}>
-                <div style={{ background: "#f9fafb", borderBottom: "1px solid #e5e7eb", padding: "10px 16px", display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ display: "flex", gap: 5 }}>
-                    {["#ef4444", "#f59e0b", "#10b981"].map((c, i) => (
-                      <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
-                    ))}
-                  </div>
-                  <div style={{ flex: 1, background: "#f3f4f6", borderRadius: 6, padding: "4px 12px", fontSize: 11, color: "#9ca3af", marginLeft: 12 }}>
-                    weprompt.app.br/solucoes
-                  </div>
-                </div>
-                <div style={{ display: "flex", height: isMobile ? 260 : 300 }}>
-                  {/* Sidebar */}
-                  <div style={{ width: 160, background: "#f9fafb", borderRight: "1px solid #e5e7eb", padding: 12, flexShrink: 0 }}>
-                    {[
-                      { label: "Todas",    active: true },
-                      { label: "Chatbots"              },
-                      { label: "Automação"             },
-                      { label: "Marketing"             },
-                      { label: "Finanças"              },
-                      { label: "WhatsApp"              },
-                    ].map((item) => (
-                      <div key={item.label} style={{
-                        padding: "8px 12px", borderRadius: 8, fontSize: 12, marginBottom: 2,
-                        background: item.active ? "#eff6ff" : "transparent",
-                        color: item.active ? "#2563EB" : "#6b7280",
-                        fontWeight: item.active ? 700 : 400,
-                      }}>{item.label}</div>
-                    ))}
-                  </div>
-                  {/* Main content */}
-                  <div style={{ flex: 1, padding: 16, overflowY: "hidden" }}>
-                    <div style={{
-                      background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 8,
-                      padding: "8px 12px", fontSize: 12, color: "#9ca3af", marginBottom: 12,
-                    }}>
-                      Buscar soluções...
-                    </div>
-                    {[
-                      { name: "ChatBot WhatsApp",  creator: "João Silva",     price: "R$97/mês",  color: "#7c3aed" },
-                      { name: "Agente de E-mail",  creator: "Ana Lima",       price: "R$127/mês", color: "#2563EB" },
-                      { name: "Análise de Dados",  creator: "Carlos Mendes",  price: "R$89/mês",  color: "#059669" },
-                      { name: "Auto Vendas",        creator: "Sofia Rocha",    price: "R$147/mês", color: "#f97316" },
-                      { name: "Gerador de Posts",  creator: "Bruno Ferreira", price: "R$59/mês",  color: "#ec4899" },
-                      { name: "Atendimento IA",    creator: "Luisa Santos",   price: "R$79/mês",  color: "#0891b2" },
-                    ].map((sol) => (
-                      <div key={sol.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 0", borderBottom: "1px solid #f3f4f6" }}>
-                        <div style={{
-                          width: 28, height: 28, borderRadius: "50%",
-                          background: sol.color + "18",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          flexShrink: 0, fontSize: 11, fontWeight: 800, color: sol.color,
-                        }}>{sol.name.charAt(0)}</div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 12, fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sol.name}</div>
-                          <div style={{ fontSize: 10, color: "#9ca3af" }}>por {sol.creator}</div>
-                        </div>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#2563EB", flexShrink: 0 }}>{sol.price}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════
-          SECTION 4 — COMO FUNCIONA
-      ════════════════════════════════════ */}
-      <section className="section-tabbed" style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
-        <style>{`
-          @keyframes fadeInTab {
-            from { opacity: 0; transform: translateY(4px); }
-            to   { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
-        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
-
-          {/* Top text */}
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <div style={{
-              display: "inline-block",
-              background: "#EFF6FF", color: BLUE, borderRadius: 999,
-              padding: "5px 14px", fontSize: 11, fontWeight: 700,
-              letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20,
-            }}>
-              Como Funciona
-            </div>
-            <h2 className="section-h2" style={{ fontSize: isMobile ? 28 : 44, fontWeight: 800, color: "#111827", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
-              Uma Solução Para Cada Desafio
-            </h2>
-            <p style={{ fontSize: isMobile ? 15 : 18, color: "#6b7280", maxWidth: 560, margin: "0 auto", lineHeight: 1.6 }}>
-              Explore por categoria e veja como cada solução resolve um problema real do seu negócio.
-            </p>
-          </div>
-
-          {/* Big gradient card */}
-          <div className="tabbed-big-card" style={{
-            background: "linear-gradient(135deg, #a855f7 0%, #ec4899 40%, #f97316 100%)",
-            borderRadius: 24, overflow: "hidden", padding: isMobile ? 20 : 32,
-          }}>
-
-            {/* Tab pills */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 32, flexWrap: "wrap" }}>
-              {["Atendimento ao Cliente", "Vendas e Prospecção", "Marketing e Conteúdo", "Gestão Financeira"].map((tab, i) => (
-                <button key={tab} onClick={() => setActiveTab(i)} style={{
-                  background: activeTab === i ? "white" : "rgba(255,255,255,0.15)",
-                  color: activeTab === i ? "#111827" : "white",
-                  borderRadius: 999, padding: "10px 20px",
-                  fontSize: isMobile ? 12 : 14,
-                  fontWeight: activeTab === i ? 600 : 500,
-                  cursor: "pointer",
-                  border: activeTab === i ? "none" : "1px solid rgba(255,255,255,0.2)",
-                  transition: "all 0.2s ease",
-                }}>{tab}</button>
-              ))}
-            </div>
-
-            {/* Mockup card — keyed so React remounts on tab change → triggers fadeInTab */}
-            <div key={activeTab} style={{
-              background: "white", borderRadius: 16, overflow: "hidden",
-              boxShadow: "0 30px 60px rgba(0,0,0,0.2)",
-              animation: "fadeInTab 0.3s ease",
-            }}>
-
-              {/* ── TAB 0: Atendimento ao Cliente ── */}
-              {activeTab === 0 && (
-                <div className="tabbed-mockup" style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
-                  <div className="tabbed-sidebar" style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
-                    <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-icon.png" style={{ height: 40, width: "160px", objectFit: "cover", objectPosition: "center" }} alt="WePrompt" />
-                    </div>
-                    <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
-                    {[
-                      { key: "home", label: "Home", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg> },
-                      { key: "novo-chat", label: "Novo Chat", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> },
-                      { key: "ferramentas", label: "Ferramentas", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
-                    ].map(item => (
-                      <div key={item.key} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}>{item.icon}{item.label}</div>
-                    ))}
-                    <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
-                  </div>
-                  <div className="tabbed-right-content" style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
-                    <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
-                      Tivemos um pico de tickets hoje. Consegue identificar o problema principal?
-                    </div>
-                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
-                      </div>
-                      <div style={{ background: "#f3f4f6", borderRadius: "4px 16px 16px 16px", padding: "12px 18px", maxWidth: "75%", fontSize: 14, color: "#374151", lineHeight: 1.5 }}>
-                        Analisando os tickets de hoje...
-                      </div>
-                    </div>
-                    <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>Análise de Tickets</span>
-                        <span style={{ fontSize: 12, color: "#6b7280" }}>76 analisados hoje</span>
-                      </div>
-                      <div style={{ fontSize: 12, color: "#2563EB", marginTop: 4, marginBottom: 12 }}>Problemas de cobrança estão causando a maioria dos tickets.</div>
-                      {[{ label: "Cobrança", pct: 85, n: 34 }, { label: "Login", pct: 52, n: 21 }, { label: "Entrega", pct: 28, n: 11 }].map(b => (
-                        <div key={b.label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-                          <span style={{ fontSize: 12, color: "#6b7280", width: 70, flexShrink: 0, textAlign: "right" }}>{b.label}</span>
-                          <div style={{ flex: 1, height: 24, background: "#e5e7eb", borderRadius: 4, overflow: "hidden", position: "relative" }}>
-                            <div style={{ width: `${b.pct}%`, height: "100%", background: "#2563EB", borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 8 }}>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: "white" }}>{b.n}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ── TAB 1: Vendas e Prospecção ── */}
-              {activeTab === 1 && (
-                <div className="tabbed-mockup" style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
-                  <div className="tabbed-sidebar" style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
-                    <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-icon.png" style={{ height: 40, width: "160px", objectFit: "cover", objectPosition: "center" }} alt="WePrompt" />
-                    </div>
-                    <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
-                    {[
-                      { key: "home", label: "Home", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg> },
-                      { key: "novo-chat", label: "Novo Chat", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> },
-                      { key: "ferramentas", label: "Ferramentas", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
-                    ].map(item => (
-                      <div key={item.key} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}>{item.icon}{item.label}</div>
-                    ))}
-                    <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
-                  </div>
-                  <div className="tabbed-right-content" style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
-                    <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
-                      Quais leads do pipeline ainda não foram contatados esta semana?
-                    </div>
-                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
-                      </div>
-                      <div style={{ background: "#f3f4f6", borderRadius: "4px 16px 16px 16px", padding: "12px 18px", maxWidth: "75%", fontSize: 14, color: "#374151", lineHeight: 1.5 }}>
-                        Encontrei 8 leads sem contato nos últimos 7 dias.
-                      </div>
-                    </div>
-                    <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 12 }}>Pipeline de Leads</div>
-                      {[
-                        { ini: "T", bg: "#2563EB", name: "Tech Solutions",  status: "Sem contato",   sbg: "#fee2e2", sc: "#991b1b", score: 92 },
-                        { ini: "M", bg: "#7c3aed", name: "Moda Express",    status: "Em negociação", sbg: "#ede9fe", sc: "#6d28d9", score: 78 },
-                        { ini: "V", bg: "#059669", name: "Varejo Central",  status: "Novo",          sbg: "#dcfce7", sc: "#166534", score: 65 },
-                      ].map((lead, idx) => (
-                        <div key={lead.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: idx < 2 ? "1px solid #f3f4f6" : "none" }}>
-                          <div style={{ width: 28, height: 28, borderRadius: "50%", background: lead.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "white", flexShrink: 0 }}>{lead.ini}</div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{lead.name}</div>
-                          </div>
-                          <span style={{ background: lead.sbg, color: lead.sc, borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600, flexShrink: 0 }}>{lead.status}</span>
-                          <span style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{lead.score}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ── TAB 2: Marketing e Conteúdo ── */}
-              {activeTab === 2 && (
-                <div className="tabbed-mockup" style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
-                  <div className="tabbed-sidebar" style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
-                    <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-icon.png" style={{ height: 40, width: "160px", objectFit: "cover", objectPosition: "center" }} alt="WePrompt" />
-                    </div>
-                    <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
-                    {[
-                      { key: "home", label: "Home", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg> },
-                      { key: "novo-chat", label: "Novo Chat", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> },
-                      { key: "ferramentas", label: "Ferramentas", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
-                    ].map(item => (
-                      <div key={item.key} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}>{item.icon}{item.label}</div>
-                    ))}
-                    <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
-                  </div>
-                  <div className="tabbed-right-content" style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
-                    <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
-                      Cria uma campanha de email para o lançamento do novo produto.
-                    </div>
-                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
-                      </div>
-                      <div style={{ background: "#f3f4f6", borderRadius: "4px 16px 16px 16px", padding: "12px 18px", maxWidth: "75%", fontSize: 14, color: "#374151", lineHeight: 1.5 }}>
-                        Campanha gerada! Aqui está o rascunho:
-                      </div>
-                    </div>
-                    <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 4 }}>Novidade que vai transformar seu negócio</div>
-                      <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.6, marginBottom: 12 }}>Olá! Temos uma novidade incrível para você. Nossa nova solução de IA vai automatizar seus processos e...</div>
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ background: "#dcfce7", color: "#166534", borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600 }}>Taxa de abertura estimada: 42%</span>
-                        <span style={{ background: "#dbeafe", color: "#1e40af", borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600 }}>Melhor horário: Terça 10h</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ── TAB 3: Gestão Financeira ── */}
-              {activeTab === 3 && (
-                <div className="tabbed-mockup" style={{ display: "flex", height: isMobile ? "auto" : 380, flexDirection: isMobile ? "column" : "row" }}>
-                  <div className="tabbed-sidebar" style={{ width: isMobile ? "100%" : 180, background: "#f9fafb", borderRight: isMobile ? "none" : "1px solid #e5e7eb", borderBottom: isMobile ? "1px solid #e5e7eb" : "none", padding: 16, flexShrink: 0 }}>
-                    <div style={{ marginBottom: 12 }}>
-                      <img src="/logo-icon.png" style={{ height: 40, width: "160px", objectFit: "cover", objectPosition: "center" }} alt="WePrompt" />
-                    </div>
-                    <div style={{ height: 1, background: "#e5e7eb", margin: "12px 0" }} />
-                    {[
-                      { key: "home", label: "Home", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg> },
-                      { key: "novo-chat", label: "Novo Chat", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> },
-                      { key: "ferramentas", label: "Ferramentas", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> },
-                    ].map(item => (
-                      <div key={item.key} style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", cursor: "pointer", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}>{item.icon}{item.label}</div>
-                    ))}
-                    <div style={{ height: 1, background: "#e5e7eb", margin: "8px 0" }} />
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#111827", background: "#f0f0f0", fontWeight: 600, marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Chat</div>
-                    <div style={{ padding: "8px 12px", borderRadius: 8, fontSize: 12, color: "#6b7280", marginBottom: 2, display: "flex", alignItems: "center", gap: 8 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Agente</div>
-                  </div>
-                  <div className="tabbed-right-content" style={{ flex: 1, padding: 24, display: "flex", flexDirection: "column", gap: 12, overflowY: "auto" }}>
-                    <div style={{ alignSelf: "flex-end", background: "#111827", color: "white", borderRadius: "16px 4px 16px 16px", padding: "12px 18px", maxWidth: "70%", fontSize: 14, lineHeight: 1.5 }}>
-                      Como está o fluxo de caixa deste mês comparado ao anterior?
-                    </div>
-                    <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0e7ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
-                      </div>
-                      <div style={{ background: "#f3f4f6", borderRadius: "4px 16px 16px 16px", padding: "12px 18px", maxWidth: "75%", fontSize: 14, color: "#374151", lineHeight: 1.5 }}>
-                        Crescimento de 23% vs mês anterior. Destaques:
-                      </div>
-                    </div>
-                    <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
-                      <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-                        <div style={{ flex: 1, background: "white", border: "1px solid #e5e7eb", borderRadius: 10, padding: "14px 16px" }}>
-                          <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>Este mês</div>
-                          <div style={{ fontSize: 22, fontWeight: 800, color: "#111827", letterSpacing: "-0.02em" }}>R$ 48.320</div>
-                          <span style={{ background: "#dcfce7", color: "#166534", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>+23%</span>
-                        </div>
-                        <div style={{ flex: 1, background: "white", border: "1px solid #e5e7eb", borderRadius: 10, padding: "14px 16px" }}>
-                          <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 4 }}>Mês anterior</div>
-                          <div style={{ fontSize: 22, fontWeight: 800, color: "#6b7280", letterSpacing: "-0.02em" }}>R$ 39.260</div>
-                          <span style={{ background: "#f3f4f6", color: "#6b7280", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 600 }}>Base</span>
-                        </div>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 40 }}>
-                        {[30, 40, 35, 50, 45, 55, 48, 70, 62, 80, 73, 85].map((h, i) => (
-                          <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: "2px 2px 0 0", background: i >= 8 ? "#2563EB" : "#dbeafe" }} />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════
-          SECTION 4b — INTEGRAÇÕES
-      ════════════════════════════════════ */}
-      <section style={{ background: "#fafafa", padding: isMobile ? "56px 24px" : "60px 48px" }}>
-        <style>{`
-          @keyframes scrollUp   { 0% { transform: translateY(0);    } 100% { transform: translateY(-50%); } }
-          @keyframes scrollDown { 0% { transform: translateY(-50%); } 100% { transform: translateY(0);    } }
-        `}</style>
-        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
-          <div className="section-integrations" style={{ display: "flex", alignItems: "center", gap: 80, flexDirection: isMobile ? "column" : "row" }}>
-            {/* Left */}
-            <div style={{ flex: 0.8, paddingLeft: isMobile ? 0 : 48 }}>
-              <h2 className="section-h2" style={{ fontSize: isMobile ? 32 : 52, fontWeight: 800, color: "#111827", lineHeight: 1.1, margin: 0 }}>
-                Funciona com as Ferramentas que Você Já Usa
-              </h2>
-              <p style={{ fontSize: 20, color: "#6b7280", marginTop: 16, maxWidth: 480, lineHeight: 1.6, marginBottom: 0 }}>
-                As soluções da WePrompt se integram com as plataformas que o seu negócio já usa — de ferramentas de produtividade e CRMs a apps de comunicação.
-              </p>
-              <a href="/solucoes" style={{ display: "inline-block", border: "1.5px solid #e5e7eb", borderRadius: 999, padding: "12px 28px", fontSize: 14, fontWeight: 600, color: "#111827", marginTop: 24, textDecoration: "none", cursor: "pointer" }}>
-                Explorar Soluções →
-              </a>
-            </div>
-            {/* Right: scrolling columns */}
-            <div className="section-integrations-right" style={{ flex: 1.5, height: 520, overflow: "hidden", position: "relative" }}>
-              <div style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center" }}>
-                {/* Column 1 — UP */}
-                <div style={{ animation: "scrollUp 25s linear infinite", width: 88 }}>
-                  {[
-                    { name: "Slack",    url: "https://www.google.com/s2/favicons?domain=slack.com&sz=64" },
-                    { name: "Notion",   url: "https://www.google.com/s2/favicons?domain=notion.so&sz=64" },
-                    { name: "Gmail",    url: "https://www.google.com/s2/favicons?domain=gmail.com&sz=64" },
-                    { name: "WhatsApp", url: "https://www.google.com/s2/favicons?domain=whatsapp.com&sz=64" },
-                    { name: "Stripe",   url: "https://www.google.com/s2/favicons?domain=stripe.com&sz=64" },
-                    { name: "Zoom",     url: "https://www.google.com/s2/favicons?domain=zoom.us&sz=64" },
-                    { name: "Slack",    url: "https://www.google.com/s2/favicons?domain=slack.com&sz=64" },
-                    { name: "Notion",   url: "https://www.google.com/s2/favicons?domain=notion.so&sz=64" },
-                    { name: "Gmail",    url: "https://www.google.com/s2/favicons?domain=gmail.com&sz=64" },
-                    { name: "WhatsApp", url: "https://www.google.com/s2/favicons?domain=whatsapp.com&sz=64" },
-                    { name: "Stripe",   url: "https://www.google.com/s2/favicons?domain=stripe.com&sz=64" },
-                    { name: "Zoom",     url: "https://www.google.com/s2/favicons?domain=zoom.us&sz=64" },
-                  ].map((ic, i) => (
-                    <div key={i} style={{ width: 80, height: 80, background: "white", borderRadius: 20, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                      <img src={ic.url} width={44} height={44} alt={ic.name} style={{ objectFit: "contain" }} />
-                    </div>
-                  ))}
-                </div>
-                {/* Column 2 — DOWN */}
-                <div style={{ animation: "scrollDown 20s linear infinite", width: 88 }}>
-                  {[
-                    { name: "Zapier",   url: "https://www.google.com/s2/favicons?domain=zapier.com&sz=64" },
-                    { name: "HubSpot",  url: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64" },
-                    { name: "Trello",   url: "https://www.google.com/s2/favicons?domain=trello.com&sz=64" },
-                    { name: "Shopify",  url: "https://www.google.com/s2/favicons?domain=shopify.com&sz=64" },
-                    { name: "Telegram", url: "https://www.google.com/s2/favicons?domain=telegram.org&sz=64" },
-                    { name: "Discord",  url: "https://www.google.com/s2/favicons?domain=discord.com&sz=64" },
-                    { name: "Zapier",   url: "https://www.google.com/s2/favicons?domain=zapier.com&sz=64" },
-                    { name: "HubSpot",  url: "https://www.google.com/s2/favicons?domain=hubspot.com&sz=64" },
-                    { name: "Trello",   url: "https://www.google.com/s2/favicons?domain=trello.com&sz=64" },
-                    { name: "Shopify",  url: "https://www.google.com/s2/favicons?domain=shopify.com&sz=64" },
-                    { name: "Telegram", url: "https://www.google.com/s2/favicons?domain=telegram.org&sz=64" },
-                    { name: "Discord",  url: "https://www.google.com/s2/favicons?domain=discord.com&sz=64" },
-                  ].map((ic, i) => (
-                    <div key={i} style={{ width: 80, height: 80, background: "white", borderRadius: 20, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                      <img src={ic.url} width={44} height={44} alt={ic.name} style={{ objectFit: "contain" }} />
-                    </div>
-                  ))}
-                </div>
-                {/* Column 3 — UP */}
-                <div style={{ animation: "scrollUp 30s linear infinite", width: 88 }}>
-                  {[
-                    { name: "Figma",     url: "https://www.google.com/s2/favicons?domain=figma.com&sz=64" },
-                    { name: "GitHub",    url: "https://www.google.com/s2/favicons?domain=github.com&sz=64" },
-                    { name: "Airtable",  url: "https://www.google.com/s2/favicons?domain=airtable.com&sz=64" },
-                    { name: "Instagram", url: "https://www.google.com/s2/favicons?domain=instagram.com&sz=64" },
-                    { name: "YouTube",   url: "https://www.google.com/s2/favicons?domain=youtube.com&sz=64" },
-                    { name: "LinkedIn",  url: "https://www.google.com/s2/favicons?domain=linkedin.com&sz=64" },
-                    { name: "Figma",     url: "https://www.google.com/s2/favicons?domain=figma.com&sz=64" },
-                    { name: "GitHub",    url: "https://www.google.com/s2/favicons?domain=github.com&sz=64" },
-                    { name: "Airtable",  url: "https://www.google.com/s2/favicons?domain=airtable.com&sz=64" },
-                    { name: "Instagram", url: "https://www.google.com/s2/favicons?domain=instagram.com&sz=64" },
-                    { name: "YouTube",   url: "https://www.google.com/s2/favicons?domain=youtube.com&sz=64" },
-                    { name: "LinkedIn",  url: "https://www.google.com/s2/favicons?domain=linkedin.com&sz=64" },
-                  ].map((ic, i) => (
-                    <div key={i} style={{ width: 80, height: 80, background: "white", borderRadius: 20, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                      <img src={ic.url} width={44} height={44} alt={ic.name} style={{ objectFit: "contain" }} />
-                    </div>
-                  ))}
-                </div>
-                {/* Column 4 — DOWN */}
-                <div style={{ animation: "scrollDown 22s linear infinite", width: 88 }}>
-                  {[
-                    { name: "Asana",      url: "https://www.google.com/s2/favicons?domain=asana.com&sz=64" },
-                    { name: "Dropbox",    url: "https://www.google.com/s2/favicons?domain=dropbox.com&sz=64" },
-                    { name: "Salesforce", url: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" },
-                    { name: "Microsoft",  url: "https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" },
-                    { name: "Mailchimp",  url: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64" },
-                    { name: "Monday",     url: "https://www.google.com/s2/favicons?domain=monday.com&sz=64" },
-                    { name: "Asana",      url: "https://www.google.com/s2/favicons?domain=asana.com&sz=64" },
-                    { name: "Dropbox",    url: "https://www.google.com/s2/favicons?domain=dropbox.com&sz=64" },
-                    { name: "Salesforce", url: "https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" },
-                    { name: "Microsoft",  url: "https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" },
-                    { name: "Mailchimp",  url: "https://www.google.com/s2/favicons?domain=mailchimp.com&sz=64" },
-                    { name: "Monday",     url: "https://www.google.com/s2/favicons?domain=monday.com&sz=64" },
-                  ].map((ic, i) => (
-                    <div key={i} style={{ width: 80, height: 80, background: "white", borderRadius: 20, boxShadow: "0 4px 16px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
-                      <img src={ic.url} width={44} height={44} alt={ic.name} style={{ objectFit: "contain" }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              {/* Top fade */}
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to bottom, #fafafa, transparent)", zIndex: 1, pointerEvents: "none" }} />
-              {/* Bottom fade */}
-              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to top, #fafafa, transparent)", zIndex: 1, pointerEvents: "none" }} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════
-          SECTION 5b — FAQ
-      ════════════════════════════════════ */}
-      <section style={{ background: WHITE, padding: isMobile ? "56px 24px" : "80px 48px" }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
-          <div className="section-faq" style={{ display: "flex", gap: 80, alignItems: "flex-start", flexDirection: isMobile ? "column" : "row" }}>
-            {/* Left */}
-            <div className="faq-left" style={{ width: isMobile ? "100%" : 300, flexShrink: 0 }}>
-              <div style={{ display: "inline-block", background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "6px 14px", fontSize: 13, fontWeight: 600 }}>
-                FAQ&apos;s
-              </div>
-              <h2 className="section-h2" style={{ fontSize: isMobile ? 40 : 52, fontWeight: 800, color: "#111827", marginTop: 16, lineHeight: 1.1, marginBottom: 0 }}>
-                WePrompt<br />FAQ
-              </h2>
-            </div>
-            {/* Right */}
-            <div style={{ flex: 1 }}>
-              {[
-                { q: "O que é a WePrompt?", a: "A WePrompt é o primeiro marketplace de soluções de IA do Brasil. Conectamos criadores talentosos que desenvolvem ferramentas de IA com empresas que precisam automatizar tarefas e crescer com eficiência." },
-                { q: "Para quem é a WePrompt?", a: "Para empresas de qualquer tamanho que querem usar IA no dia a dia, sem precisar contratar desenvolvedores ou entender de tecnologia. E para criadores e desenvolvedores que querem monetizar suas soluções de IA." },
-                { q: "Que tipo de tarefas posso automatizar?", a: "Atendimento ao cliente, gestão de e-mails, criação de conteúdo, análise de dados, vendas e prospecção, gestão financeira, automação de processos internos e muito mais." },
-                { q: "As soluções são prontas ou personalizadas?", a: "As soluções são desenvolvidas por criadores independentes e já vêm prontas para uso. Cada uma passou por curadoria e testes antes de chegar à plataforma. Alguns criadores também oferecem customizações." },
-                { q: "Como sei qual solução é certa para o meu negócio?", a: "Você pode explorar por categoria, ler as descrições detalhadas e ver avaliações de outros usuários. Se precisar de ajuda, nossa equipe de suporte está disponível para orientar sua escolha." },
-                { q: "Quanto tempo leva para implementar?", a: "A maioria das soluções pode ser configurada em menos de 1 hora. Todas incluem documentação em português e suporte do criador para garantir uma implementação tranquila." },
-                { q: "Com quais ferramentas a WePrompt se integra?", a: "As soluções disponíveis se integram com WhatsApp, Gmail, Slack, Notion, HubSpot, Zapier, Shopify, Instagram, Google Sheets e dezenas de outras plataformas que seu negócio já usa." },
-                { q: "Preciso de conhecimento técnico?", a: "Não. As soluções da WePrompt são projetadas para serem usadas por qualquer pessoa, sem necessidade de programação ou conhecimento técnico avançado." },
-              ].map((item, i) => (
-                <div key={i} style={{ borderBottom: "1px solid #e5e7eb", padding: "20px 0", cursor: "pointer" }} onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 16, color: "#111827", fontWeight: 400 }}>{item.q}</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" style={{ flexShrink: 0, marginLeft: 16, transform: openFaq === i ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s ease" }}><path d="M6 9l6 6 6-6"/></svg>
-                  </div>
-                  {openFaq === i && (
-                    <div style={{ fontSize: 15, color: "#6b7280", marginTop: 12, lineHeight: 1.6, paddingRight: 40 }}>{item.a}</div>
-                  )}
-                </div>
-              ))}
-              {/* FAQ footer row */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 32, marginTop: 8 }}>
-                <a href="/faq" style={{ fontSize: 15, fontWeight: 600, color: "#111827", textDecoration: "none", cursor: "pointer" }}>Ver todos os FAQs →</a>
-                <span style={{ fontSize: 15, color: "#6b7280" }}>Ainda tem dúvidas? <a href="/contato" style={{ fontSize: 15, fontWeight: 600, color: "#111827", textDecoration: "none", cursor: "pointer" }}>Falar com suporte</a></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════
-          SECTION 7 — FOOTER
-      ════════════════════════════════════ */}
-      <div style={{ position: "relative" }}>
-        {/* Rounded bottom of white content area */}
-        <div style={{ background: "white", borderRadius: "0 0 48px 48px", height: 80, position: "relative", zIndex: 2 }} />
-        <footer style={{
-          background: "#0a0a0a",
-          paddingTop: 80, paddingBottom: 60,
-          paddingLeft: isMobile ? 24 : 48, paddingRight: isMobile ? 24 : 48,
-          marginTop: -40,
-          position: "relative",
-        }}>
-          {/* Top row */}
-          <div className="section-footer-top" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
-            {/* Left: brand */}
-            <div style={{ maxWidth: 320 }}>
-              <img src="/logo-icon.png" style={{ height: 224, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
-              <p style={{ color: "#9ca3af", fontSize: 16, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
-                O 1º marketplace de soluções de IA da América Latina.
-              </p>
-            </div>
-            {/* Right: link columns */}
-            <div className="footer-links-row" style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
-              <div>
-                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Seguir</div>
-                {[{ label: "Instagram", href: "https://instagram.com" }, { label: "LinkedIn", href: "https://linkedin.com" }, { label: "Twitter/X", href: "https://x.com" }].map(l => (
-                  <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
-                ))}
-              </div>
-              <div>
-                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Recursos</div>
-                <a href="/blog" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>Blog</a>
-              </div>
-              <div>
-                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Empresa</div>
-                {[{ label: "Sobre nós", href: "/sobre" }, { label: "FAQ", href: "/faq" }, { label: "Contato", href: "/contato" }].map(l => (
-                  <a key={l.label} href={l.href} style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
-                ))}
-              </div>
-            </div>
-          </div>
-          {/* Bottom row */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1f2937", paddingTop: 24, marginTop: 24, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 0 }}>
-            <span style={{ color: "#6b7280", fontSize: 14 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
-            <div style={{ display: "flex", gap: 24 }}>
-              <a href="/privacidade" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none", cursor: "pointer" }}>Privacidade</a>
-              <a href="/para-empresas/termos" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none", cursor: "pointer" }}>Termos</a>
-            </div>
-          </div>
-        </footer>
       </div>
+    </section>
+  );
+}
+
+/* ─── For Creators ───────────────────────────────────────────────── */
+function ForCreators() {
+  const router = useRouter();
+
+  const sales = [
+    { name: "Agente de Atendimento", value: "R$ 97", time: "2h atrás" },
+    { name: "ChatBot WhatsApp", value: "R$ 147", time: "ontem" },
+    { name: "Gerador de Posts", value: "R$ 67", time: "3 dias atrás" },
+  ];
+
+  const bars = [20, 28, 22, 36, 48];
+
+  return (
+    <section style={{ padding: "96px 48px", background: "#070F1A", borderTop: "1px solid #1E3550" }}>
+      <div className="creators-inner" style={{ maxWidth: 1200, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
+        {/* Left — text */}
+        <div className="creators-left" style={{ flex: "0 0 50%" }}>
+          <div style={{
+            display: "inline-block",
+            background: "rgba(0,212,170,0.1)", color: "#00D4AA",
+            border: "1px solid rgba(0,212,170,0.25)",
+            borderRadius: 999, padding: "6px 16px",
+            fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+          }}>
+            PARA CRIADORES
+          </div>
+
+          <h2 style={{
+            fontSize: "clamp(28px, 3vw, 40px)", fontWeight: 800, color: "#fff",
+            marginTop: 16, marginBottom: 0, lineHeight: 1.15,
+          }}>
+            Monetize suas soluções. Alcance milhares de empresas.
+          </h2>
+
+          <p style={{ color: "#A8B8CC", fontSize: 16, lineHeight: 1.7, marginTop: 16 }}>
+            Publique, defina seu preço e comece a receber.
+            A WePrompt cuida da distribuição e dos pagamentos.
+          </p>
+
+          <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 14 }}>
+            {[
+              "Comece grátis — publique até 3 soluções",
+              "Receba via PIX em até 30 dias",
+              "Apenas 20% de comissão sobre o que você vende",
+            ].map((b) => (
+              <div key={b} style={{ display: "flex", gap: 12 }}>
+                <CheckCircle size={18} color="#00D4AA" style={{ flexShrink: 0, marginTop: 2 }} />
+                <span style={{ color: "#fff", fontSize: 15 }}>{b}</span>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => router.push("/cadastro")}
+            style={{
+              marginTop: 36,
+              background: "transparent", color: "#fff",
+              border: "1.5px solid #1E3550",
+              borderRadius: 10, padding: "14px 28px",
+              fontSize: 15, fontWeight: 600, cursor: "pointer",
+            }}
+          >
+            Quero ser um criador →
+          </button>
+        </div>
+
+        {/* Right — revenue mockup */}
+        <div className="creators-right" style={{ flex: "0 0 50%" }}>
+          <div style={{ background: "#0F1E30", border: "1px solid #1E3550", borderRadius: 20, padding: 28 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>Minha receita</span>
+              <div style={{ background: "rgba(0,212,170,0.1)", color: "#00D4AA", borderRadius: 999, padding: "3px 10px", fontSize: 11 }}>
+                Criador Pro
+              </div>
+            </div>
+
+            <div style={{ marginTop: 16 }}>
+              <div style={{ color: "#fff", fontSize: 36, fontWeight: 800 }}>R$ 2.840</div>
+              <div style={{ color: "#A8B8CC", fontSize: 13, marginTop: 4 }}>Este mês</div>
+              <div style={{ color: "#00D4AA", fontSize: 13, fontWeight: 600, marginTop: 8 }}>↑ +34% vs. mês anterior</div>
+            </div>
+
+            {/* Bar chart */}
+            <div style={{ marginTop: 20, display: "flex", gap: 6, alignItems: "flex-end", height: 48 }}>
+              {bars.map((h, i) => (
+                <div key={i} style={{
+                  width: 20, height: h,
+                  background: i === bars.length - 1 ? "#00D4AA" : "#1E3550",
+                  borderRadius: "4px 4px 0 0",
+                }} />
+              ))}
+            </div>
+
+            {/* Recent sales */}
+            <div style={{ marginTop: 20, display: "flex", flexDirection: "column" }}>
+              {sales.map((sale, i) => (
+                <div key={sale.name} style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "10px 0",
+                  borderBottom: i < sales.length - 1 ? "1px solid #1E3550" : "none",
+                }}>
+                  <span style={{ color: "#fff", fontSize: 13 }}>{sale.name}</span>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <span style={{ color: "#00D4AA", fontSize: 13, fontWeight: 600 }}>{sale.value}</span>
+                    <span style={{ color: "#5A7A99", fontSize: 12, marginLeft: 8 }}>{sale.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Final CTA ──────────────────────────────────────────────────── */
+function FinalCTA() {
+  const router = useRouter();
+
+  return (
+    <section style={{ padding: "80px 48px", background: "#0A1628", borderTop: "1px solid #1E3550" }}>
+      <div className="final-cta-card" style={{
+        maxWidth: 700, margin: "0 auto",
+        background: "linear-gradient(135deg, rgba(0,212,170,0.07) 0%, rgba(10,22,40,0) 100%)",
+        border: "1px solid rgba(0,212,170,0.18)",
+        borderRadius: 24,
+        padding: "72px 64px",
+        textAlign: "center",
+      }}>
+        <h2 style={{
+          color: "#fff",
+          fontSize: "clamp(28px, 3vw, 40px)",
+          fontWeight: 800,
+          letterSpacing: "-0.02em",
+          margin: 0,
+        }}>
+          Seu negócio não pode esperar.
+        </h2>
+        <p style={{ color: "#A8B8CC", fontSize: 17, lineHeight: 1.6, marginTop: 16 }}>
+          Comece hoje. É grátis. Suporte em português.
+        </p>
+        <button
+          onClick={() => router.push("/cadastro")}
+          style={{
+            marginTop: 36,
+            background: "#00D4AA", color: "#0A1628",
+            border: "none", borderRadius: 10,
+            padding: "18px 40px", fontSize: 16, fontWeight: 700,
+            cursor: "pointer",
+            boxShadow: "0 8px 32px rgba(0,212,170,0.3)",
+          }}
+        >
+          Começar agora, é grátis →
+        </button>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────── */
+function Footer() {
+  const cols = [
+    { title: "Plataforma", links: ["Catálogo", "Preços", "Como funciona", "Blog"] },
+    { title: "Para você", links: ["Para Empresas", "Para Criadores", "Sobre nós", "Contato"] },
+    { title: "Legal", links: ["Privacidade", "Termos Empresas", "Termos Criadores"] },
+  ];
+
+  return (
+    <footer style={{ background: "#070F1A", borderTop: "1px solid #1E3550", padding: "56px 48px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr repeat(3, 1fr)", gap: 40 }}>
+          {/* Col 1 */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{
+                width: 28, height: 28,
+                background: "#00D4AA", borderRadius: 7,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>W</span>
+              </div>
+              <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>WePrompt</span>
+            </div>
+            <p style={{ color: "#A8B8CC", fontSize: 13, lineHeight: 1.6, margin: 0 }}>
+              O 1º marketplace de soluções de IA da América Latina.
+            </p>
+            <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+              {[Globe, Link, Share2].map((Icon, i) => (
+                <a key={i} href="#" style={{ color: "#5A7A99", transition: "color 0.15s" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "#5A7A99")}>
+                  <Icon size={20} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Cols 2-4 */}
+          {cols.map((col) => (
+            <div key={col.title} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ color: "#fff", fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{col.title}</div>
+              {col.links.map((link) => (
+                <a key={link} href="#"
+                  style={{ color: "#A8B8CC", fontSize: 14, textDecoration: "none", lineHeight: 2, transition: "color 0.15s" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "#A8B8CC")}>
+                  {link}
+                </a>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="footer-bottom" style={{
+          borderTop: "1px solid #1E3550",
+          paddingTop: 32, marginTop: 40,
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+        }}>
+          <span style={{ color: "#5A7A99", fontSize: 13 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
+          <span style={{ color: "#5A7A99", fontSize: 13 }}>Feito no Brasil 🇧🇷</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ─── Page ───────────────────────────────────────────────────────── */
+export default function Home() {
+  return (
+    <div style={{ background: "#0A1628", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+      <Navbar />
+      <Hero />
+      <TrustBar />
+      <HowItWorks />
+      <Categories />
+      <ForCompanies />
+      <ForCreators />
+      <FinalCTA />
+      <Footer />
     </div>
   );
 }

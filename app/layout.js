@@ -1,13 +1,7 @@
-import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import NavbarController from "./components/NavbarController";
 import GlobalDrawers from "@/components/GlobalDrawers";
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-});
 
 export const metadata = {
   metadataBase: new URL("https://weprompt.app.br"),
@@ -17,7 +11,7 @@ export const metadata = {
   authors: [{ name: "WePrompt" }],
   robots: { index: true, follow: true },
   manifest: "/manifest.json",
-  themeColor: "#0369A1",
+  themeColor: "#00D4AA",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -48,7 +42,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
-      <body className={`${dmSans.className} min-h-full flex flex-col`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+      </head>
+      <body style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }} className="min-h-full flex flex-col">
         <NavbarController />
         {children}
         <PWAInstallPrompt />
