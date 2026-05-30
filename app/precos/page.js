@@ -3,132 +3,158 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-function CheckIcon({ color = "#16a34a" }) {
+function CheckIcon() {
   return (
-    <svg width="16" height="16" fill="none" stroke={color} strokeWidth="2.5" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
+    <svg width="16" height="16" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
   );
 }
 
-const CRIADORES_PLANS = (billing) => [
+function StarIcon() {
+  return (
+    <svg width="12" height="12" fill="#92400e" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+  );
+}
+
+const CRIADOR_PLANS = (billing) => [
   {
     name: "Free",
-    commission: "20% de comissão",
-    price: "Grátis",
-    priceSuffix: null,
-    description: "Ideal para começar a vender suas soluções de IA.",
-    cta: "Começar grátis",
-    ctaRoute: "/cadastro",
-    ctaStyle: "outline",
-    popular: false,
+    monthly: 0, annualMonthly: 0, annualTotal: 0,
+    commission: "20%",
+    tagline: "Para começar a publicar soluções sem custo algum.",
+    cta: "Começar grátis", ctaRoute: "/cadastro?role=criador",
+    popular: false, founder: false, premium: false,
     features: [
-      "Publique até 3 soluções",
-      "20% de comissão por venda",
-      "Pagamentos via Stripe",
-      "Suporte por email",
+      "Até 3 soluções publicadas",
+      "Analytics básico",
+      "Curadoria e aprovação WePrompt",
+      "Badge de perfil de criador",
+      "Suporte via e-mail",
     ],
   },
   {
     name: "Pro",
-    commission: "15% de comissão",
-    price: billing === "mensal" ? "R$ 97" : "R$ 77",
-    priceSuffix: "/mês",
-    description: "Para criadores sérios que querem escalar suas vendas.",
-    cta: "Assinar Pro",
-    ctaRoute: "/cadastro",
-    ctaStyle: "dark",
-    popular: true,
+    monthly: 97, annualMonthly: 77, annualTotal: 924,
+    commission: "15%",
+    tagline: "Para criadores que querem crescer e profissionalizar sua presença.",
+    cta: "Começar Pro", ctaRoute: "/cadastro?role=criador",
+    popular: true, founder: true, premium: false,
     features: [
       "Soluções ilimitadas",
-      "15% de comissão por venda",
-      "Analytics avançado",
-      "Destaque no marketplace",
+      "Destaque na categoria",
+      "Analytics completo com métricas",
+      'Badge "Criador Verificado" ✦',
       "Suporte prioritário",
     ],
   },
   {
     name: "Premium",
-    commission: "10% de comissão",
-    price: billing === "mensal" ? "R$ 297" : "R$ 237",
-    priceSuffix: "/mês",
-    description: "Para criadores top com volume alto de vendas.",
-    cta: "Assinar Premium",
-    ctaRoute: "/cadastro",
-    ctaStyle: "dark",
-    popular: false,
+    monthly: 297, annualMonthly: 237, annualTotal: 2844,
+    commission: "10%",
+    tagline: "Para criadores que querem o máximo de visibilidade e receita.",
+    cta: "Começar Premium", ctaRoute: "/cadastro?role=criador",
+    popular: false, founder: true, premium: true,
     features: [
-      "Tudo do Pro",
-      "10% de comissão por venda",
-      "Badge de criador verificado",
-      "Posição privilegiada nas buscas",
-      "Gerente de conta dedicado",
+      "Tudo do plano Pro",
+      "Topo da categoria (destaque máximo)",
+      "Destaque na homepage da WePrompt",
+      "Suporte prioritário dedicado",
+      "Gestão de afiliados",
     ],
   },
 ];
 
-const EMPRESAS_PLANS = (billing) => [
+const EMPRESA_PLANS = (billing) => [
   {
-    name: "Starter",
+    name: "Free",
+    monthly: 0, annualMonthly: 0, annualTotal: 0,
     commission: null,
-    price: "Grátis",
-    priceSuffix: null,
-    description: "Acesso ao catálogo completo de soluções.",
-    cta: "Começar grátis",
-    ctaRoute: "/cadastro",
-    ctaStyle: "outline",
-    popular: false,
+    tagline: "Explore o marketplace e descubra soluções de IA sem compromisso.",
+    cta: "Começar grátis", ctaRoute: "/cadastro",
+    popular: false, founder: false, premium: false,
     features: [
-      "Acesso ao catálogo",
-      "Compras avulsas",
-      "Suporte email",
+      "Acesso ao catálogo completo",
+      "Compra e assinatura de soluções",
+      "Filtros e busca avançada",
+      "Avaliações verificadas",
+      "Suporte via e-mail",
     ],
   },
   {
     name: "Business",
+    monthly: 197, annualMonthly: 157, annualTotal: 1884,
     commission: null,
-    price: billing === "mensal" ? "R$ 197" : "R$ 157",
-    priceSuffix: "/mês",
-    description: "Para times que precisam de múltiplas soluções.",
-    cta: "Assinar Business",
-    ctaRoute: "/cadastro",
-    ctaStyle: "dark",
-    popular: true,
+    tagline: "Para equipes que querem as melhores soluções de IA com economia.",
+    cta: "Começar Business", ctaRoute: "/cadastro",
+    popular: true, founder: false, premium: false,
     features: [
-      "Até 10 soluções ativas",
-      "Desconto 10% nas compras",
-      "Suporte prioritário",
+      "10% de desconto em todas as soluções",
+      "Suporte prioritário em PT-BR",
+      "Curadoria personalizada mensal",
+      "Até 3 usuários na conta",
+      "Onboarding guiado",
+      "Acesso a soluções em pré-lançamento",
     ],
   },
   {
     name: "Enterprise",
+    monthly: 497, annualMonthly: 397, annualTotal: 4764,
     commission: null,
-    price: billing === "mensal" ? "R$ 597" : "R$ 477",
-    priceSuffix: "/mês",
-    description: "Para empresas com alto volume de uso.",
-    cta: "Falar com vendas",
-    ctaRoute: "/contato",
-    ctaStyle: "dark",
-    popular: false,
+    tagline: "Para grandes empresas com alto volume e necessidades dedicadas.",
+    cta: "Falar com a equipe", ctaRoute: "/contato",
+    popular: false, founder: false, premium: true,
     features: [
-      "Soluções ilimitadas",
-      "Desconto 20% nas compras",
-      "API access",
-      "Gerente dedicado",
+      "20% de desconto em todas as soluções",
+      "Suporte dedicado via WhatsApp",
+      "Curadoria personalizada semanal",
+      "Usuários ilimitados",
+      "Onboarding completo da equipe",
+      "Relatório de ROI mensal",
     ],
   },
 ];
 
-const FAQ_ITEMS = [
-  { q: "Posso mudar de plano?", a: "Sim, você pode fazer upgrade ou downgrade a qualquer momento." },
-  { q: "Como funciona o período de teste?", a: "O plano Free é gratuito para sempre. Os planos pagos têm 14 dias de teste grátis." },
-  { q: "Como recebo meus pagamentos?", a: "Através do Stripe, direto na sua conta bancária, com depósitos semanais." },
-  { q: "A comissão é sobre o valor bruto?", a: "Sim, a comissão é calculada sobre o valor total da venda antes de impostos." },
-  { q: "Posso cancelar quando quiser?", a: "Sim, sem multa ou fidelidade. Cancele a qualquer momento pelo dashboard." },
+const EMPRESA_COMPARE = [
+  { feature: "Acesso ao catálogo",      free: "✓",      business: "✓",                   enterprise: "✓" },
+  { feature: "Desconto nas soluções",   free: "–",      business: "10%",                  enterprise: "20%" },
+  { feature: "Suporte",                 free: "E-mail", business: "Prioritário PT-BR",    enterprise: "WhatsApp dedicado" },
+  { feature: "Curadoria personalizada", free: "–",      business: "Mensal",               enterprise: "Semanal" },
+  { feature: "Usuários na conta",       free: "1",      business: "Até 3",                enterprise: "Ilimitados" },
+  { feature: "Onboarding",             free: "–",      business: "Guiado",               enterprise: "Completo" },
+  { feature: "Relatório de ROI",        free: "–",      business: "–",                   enterprise: "Mensal" },
 ];
 
-function PlanCard({ plan, router }) {
+const FAQ_ITEMS = [
+  {
+    q: "Posso mudar de plano a qualquer momento?",
+    a: "Sim. Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. A cobrança é ajustada proporcionalmente ao tempo restante do período.",
+  },
+  {
+    q: "O que acontece se eu cancelar?",
+    a: "Ao cancelar, você retorna ao plano Free automaticamente. Suas soluções publicadas permanecem ativas, mas sujeitas às regras do plano Free (até 3 soluções para criadores).",
+  },
+  {
+    q: "Há cobrança de taxa de setup ou taxas escondidas?",
+    a: "Não. Nenhum plano possui taxa de setup ou cobranças adicionais surpresa. Você paga apenas a mensalidade do plano escolhido.",
+  },
+  {
+    q: "Quais formas de pagamento são aceitas?",
+    a: "Aceitamos cartão de crédito, boleto bancário e PIX para os planos mensais e anuais. O repasse para criadores é feito exclusivamente via PIX.",
+  },
+  {
+    q: "Quando os criadores recebem o repasse das vendas?",
+    a: "O repasse é realizado via PIX em até 30 dias após a confirmação da venda. O valor mínimo para saque é R$ 50. Abaixo disso, o saldo fica acumulado para o próximo ciclo.",
+  },
+];
+
+function PlanCard({ plan, billing, router }) {
   const [hovered, setHovered] = useState(false);
+  const isFree = plan.monthly === 0;
+  const price = billing === "anual" ? plan.annualMonthly : plan.monthly;
+
   return (
     <div
       onMouseEnter={() => setHovered(true)}
@@ -144,6 +170,7 @@ function PlanCard({ plan, router }) {
           : hovered ? "0 8px 24px rgba(0,0,0,0.08)" : "none",
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
         transition: "all 0.2s ease",
+        display: "flex", flexDirection: "column",
       }}
     >
       {plan.popular && (
@@ -154,38 +181,91 @@ function PlanCard({ plan, router }) {
         }}>POPULAR</div>
       )}
 
-      <div style={{ fontSize: 22, fontWeight: 800, color: "#111827" }}>{plan.name}</div>
-
-      {plan.commission && (
-        <div style={{ background: "#f0fdf4", color: "#16a34a", borderRadius: 999, fontSize: 12, fontWeight: 600, padding: "4px 12px", marginTop: 8, display: "inline-block" }}>
-          {plan.commission}
+      {/* Founder badge */}
+      {plan.founder && (
+        <div style={{
+          background: "#fef3c7", color: "#92400e", fontSize: 12, fontWeight: 700,
+          borderRadius: 999, padding: "4px 12px", display: "inline-flex",
+          alignItems: "center", gap: 5, marginBottom: 8, alignSelf: "flex-start",
+        }}>
+          <StarIcon />
+          Criador Fundador — 1º mês grátis
         </div>
       )}
 
-      <div style={{ marginTop: 16, display: "flex", alignItems: "baseline", gap: 4 }}>
-        <span style={{ fontSize: 48, fontWeight: 900, color: "#111827", lineHeight: 1 }}>{plan.price}</span>
-        {plan.priceSuffix && <span style={{ fontSize: 16, color: "#6b7280" }}>{plan.priceSuffix}</span>}
+      {/* Plan name + tagline */}
+      <div style={{ fontSize: 22, fontWeight: 800, color: "#111827" }}>{plan.name}</div>
+      <div style={{ fontSize: 13, color: "#6b7280", marginTop: 4, marginBottom: 16, lineHeight: 1.5 }}>{plan.tagline}</div>
+
+      {/* Commission (criadores only) */}
+      {plan.commission && (
+        <div style={{ display: "inline-flex", alignItems: "baseline", gap: 4, marginBottom: 12 }}>
+          <span style={{ fontSize: 22, fontWeight: 800, color: "#0369A1" }}>{plan.commission}</span>
+          <span style={{ fontSize: 12, color: "#6b7280" }}>de comissão</span>
+        </div>
+      )}
+
+      {/* Price */}
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 4, marginBottom: 4 }}>
+        {isFree ? (
+          <span style={{ fontSize: 48, fontWeight: 900, color: "#111827", lineHeight: 1 }}>Grátis</span>
+        ) : (
+          <>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#6b7280", paddingBottom: 7 }}>R$</span>
+            <span style={{ fontSize: 48, fontWeight: 900, color: "#111827", lineHeight: 1 }}>{price.toLocaleString("pt-BR")}</span>
+            <span style={{ fontSize: 14, color: "#6b7280", paddingBottom: 9 }}>/mês</span>
+          </>
+        )}
       </div>
 
-      <div style={{ fontSize: 14, color: "#6b7280", marginTop: 8 }}>{plan.description}</div>
+      {/* Founder Pro note */}
+      {plan.founder && !plan.premium && (
+        <div style={{ fontSize: 13, color: "#059669", fontWeight: 600, marginBottom: 4 }}>
+          Primeiro mês gratuito para os 100 primeiros criadores
+        </div>
+      )}
 
+      {/* Annual note */}
+      {!isFree && (
+        <div style={{ marginBottom: 16, minHeight: 20 }}>
+          {billing === "anual" ? (
+            <span style={{ fontSize: 12, color: "#6b7280" }}>
+              Cobrado anualmente · R$ {plan.annualTotal.toLocaleString("pt-BR")}/ano
+            </span>
+          ) : (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 5,
+              background: "rgba(22,163,74,0.1)", color: "#15803D",
+              fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999,
+            }}>
+              Economize 20% no anual
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* CTA */}
       <button
         onClick={() => router.push(plan.ctaRoute)}
         style={{
           width: "100%", padding: "14px", borderRadius: 10, fontSize: 15, fontWeight: 600,
-          marginTop: 24, cursor: "pointer",
-          background: plan.ctaStyle === "dark" ? "#111827" : "white",
-          color: plan.ctaStyle === "dark" ? "white" : "#374151",
-          border: plan.ctaStyle === "dark" ? "none" : "1.5px solid #e5e7eb",
+          marginTop: 8, marginBottom: 24, cursor: "pointer",
+          background: plan.popular || (!isFree && !plan.popular) ? "#111827" : "white",
+          color: plan.popular || (!isFree && !plan.popular) ? "white" : "#374151",
+          border: isFree ? "1.5px solid #e5e7eb" : "none",
           fontFamily: "inherit",
         }}
       >{plan.cta}</button>
 
-      <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
+      {/* Divider */}
+      <div style={{ height: 1, background: "#f3f4f6", marginBottom: 20 }} />
+
+      {/* Features */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
         {plan.features.map(f => (
           <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
             <CheckIcon />
-            <span style={{ fontSize: 14, color: "#374151" }}>{f}</span>
+            <span style={{ fontSize: 14, color: "#374151", lineHeight: 1.5 }}>{f}</span>
           </div>
         ))}
       </div>
@@ -237,7 +317,7 @@ export default function PrecosPage() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const plans = activeAudience === "criadores" ? CRIADORES_PLANS(billing) : EMPRESAS_PLANS(billing);
+  const plans = activeAudience === "criadores" ? CRIADOR_PLANS(billing) : EMPRESA_PLANS(billing);
 
   return (
     <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
@@ -319,8 +399,7 @@ export default function PrecosPage() {
                   background: activeAudience === key ? "white" : "transparent",
                   borderRadius: 999, border: "none", cursor: "pointer",
                   boxShadow: activeAudience === key ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-                  transition: "all 0.15s ease",
-                  fontFamily: "inherit",
+                  transition: "all 0.15s ease", fontFamily: "inherit",
                 }}
               >{label}</button>
             ))}
@@ -340,8 +419,7 @@ export default function PrecosPage() {
                   background: billing === key ? "white" : "transparent",
                   borderRadius: 999, border: "none", cursor: "pointer",
                   boxShadow: billing === key ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-                  transition: "all 0.15s ease",
-                  fontFamily: "inherit",
+                  transition: "all 0.15s ease", fontFamily: "inherit",
                   display: "flex", alignItems: "center", gap: 6,
                 }}
               >
@@ -355,11 +433,26 @@ export default function PrecosPage() {
         </div>
 
         {/* Pricing grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 64 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 32 }}>
           {plans.map(plan => (
-            <PlanCard key={plan.name} plan={plan} router={router} />
+            <PlanCard key={plan.name} plan={plan} billing={billing} router={router} />
           ))}
         </div>
+
+        {/* Founder offer banner — criadores only */}
+        {activeAudience === "criadores" && (
+          <div style={{
+            marginBottom: 48, padding: "16px 24px",
+            background: "rgba(3,105,161,0.05)", border: "1px solid rgba(3,105,161,0.15)",
+            borderRadius: 14, textAlign: "center", fontSize: 13, color: "#6b7280", lineHeight: 1.8,
+          }}>
+            <strong style={{ color: "#0369A1" }}>
+              <StarIcon /> Oferta de Criadores Fundadores:
+            </strong>{" "}
+            Os primeiros 100 criadores ganham 1 mês grátis no plano Pro.
+            Aplicado automaticamente no cadastro. Sem cartão de crédito no primeiro mês.
+          </div>
+        )}
 
         {/* Commission table — criadores only */}
         {activeAudience === "criadores" && (
@@ -367,25 +460,70 @@ export default function PrecosPage() {
             <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb", fontSize: 16, fontWeight: 700, color: "#111827" }}>
               Como funciona a comissão?
             </div>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <p style={{ padding: "12px 24px 0", fontSize: 14, color: "#6b7280", margin: 0 }}>
+              A WePrompt retém uma comissão sobre cada venda. O valor varia conforme o seu plano.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 8 }}>
               <thead>
                 <tr>
-                  {["PLANO", "COMISSÃO", "EXEMPLO R$100", "VOCÊ RECEBE"].map(h => (
+                  {["PLANO", "COMISSÃO", "EXEMPLO R$ 100", "VOCÊ RECEBE"].map(h => (
                     <th key={h} style={{ padding: "12px 24px", fontSize: 12, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", background: "#f9fafb" }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {[
-                  { plan: "Free", commission: "20%", example: "R$ 20,00", receive: "R$ 80,00" },
-                  { plan: "Pro", commission: "15%", example: "R$ 15,00", receive: "R$ 85,00" },
-                  { plan: "Premium", commission: "10%", example: "R$ 10,00", receive: "R$ 90,00" },
-                ].map(row => (
-                  <tr key={row.plan}>
-                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151", borderBottom: "1px solid #f9fafb", fontWeight: 600 }}>{row.plan}</td>
-                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{row.commission}</td>
-                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{row.example}</td>
-                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#16a34a", borderBottom: "1px solid #f9fafb", fontWeight: 700 }}>{row.receive}</td>
+                  { plan: "Free",    commission: "20%", example: "R$ 100,00", receive: "R$ 80,00" },
+                  { plan: "Pro",     commission: "15%", example: "R$ 100,00", receive: "R$ 85,00" },
+                  { plan: "Premium", commission: "10%", example: "R$ 100,00", receive: "R$ 90,00" },
+                ].map((row, i) => (
+                  <tr key={row.plan} style={{ background: i % 2 === 1 ? "#f9fafb" : "white" }}>
+                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151", borderBottom: "1px solid #f3f4f6", fontWeight: 600 }}>Plano {row.plan}</td>
+                    <td style={{ padding: "14px 24px", fontSize: 22, color: "#0369A1", borderBottom: "1px solid #f3f4f6", fontWeight: 800 }}>{row.commission}</td>
+                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#6b7280", borderBottom: "1px solid #f3f4f6" }}>{row.example}</td>
+                    <td style={{ padding: "14px 24px", fontSize: 15, color: "#15803d", borderBottom: "1px solid #f3f4f6", fontWeight: 700 }}>{row.receive}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p style={{ padding: "12px 24px", fontSize: 13, color: "#9ca3af", margin: 0, textAlign: "center" }}>
+              Repasse via PIX em até 30 dias após venda confirmada. Saque mínimo de R$ 50.
+            </p>
+          </div>
+        )}
+
+        {/* Comparison table — empresas only */}
+        {activeAudience === "empresas" && (
+          <div style={{ background: "white", borderRadius: 16, border: "1px solid #e5e7eb", marginBottom: 48, overflow: "hidden" }}>
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb" }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111827" }}>Compare os planos</div>
+              <div style={{ fontSize: 14, color: "#6b7280", marginTop: 4 }}>Escolha o plano ideal para o tamanho e necessidades da sua empresa.</div>
+            </div>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  {["Funcionalidade", "Free", "Business", "Enterprise"].map((h, i) => (
+                    <th key={h} style={{
+                      padding: "12px 24px", fontSize: 12, fontWeight: 600, textAlign: i === 0 ? "left" : "center",
+                      borderBottom: "1px solid #f3f4f6", background: "#f9fafb",
+                      color: h === "Business" ? "#0369A1" : "#9ca3af",
+                      textTransform: "uppercase", letterSpacing: "0.05em",
+                    }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {EMPRESA_COMPARE.map((row, i) => (
+                  <tr key={row.feature} style={{ background: i % 2 === 1 ? "#f9fafb" : "white" }}>
+                    <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600, color: "#374151", borderBottom: "1px solid #f3f4f6" }}>{row.feature}</td>
+                    {[row.free, row.business, row.enterprise].map((val, idx) => (
+                      <td key={idx} style={{
+                        padding: "14px 24px", fontSize: 13, textAlign: "center",
+                        borderBottom: "1px solid #f3f4f6",
+                        fontWeight: val !== "–" && val !== "✓" ? 600 : 400,
+                        color: val === "–" ? "#d1d5db" : val === "✓" ? "#15803d" : "#374151",
+                      }}>{val}</td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
@@ -398,15 +536,15 @@ export default function PrecosPage() {
 
         {/* Bottom CTA */}
         <div style={{ background: "#111827", borderRadius: 16, padding: 48, textAlign: "center", marginBottom: 48 }}>
-          <div style={{ fontSize: 28, fontWeight: 800, color: "white" }}>Pronto para começar?</div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: "white" }}>Ainda tem dúvidas?</div>
           <div style={{ fontSize: 16, color: "rgba(255,255,255,0.7)", marginTop: 8 }}>
-            Junte-se a centenas de criadores que já vendem na WePrompt.
+            Nossa equipe está pronta para ajudar você a escolher o melhor plano.
           </div>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 24, flexWrap: "wrap" }}>
             <button
-              onClick={() => router.push("/cadastro")}
+              onClick={() => router.push(activeAudience === "criadores" ? "/cadastro?role=criador" : "/cadastro")}
               style={{ background: "white", color: "#111827", borderRadius: 10, padding: "12px 28px", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none", fontFamily: "inherit" }}
-            >Criar conta grátis</button>
+            >Começar grátis</button>
             <button
               onClick={() => router.push("/contato")}
               style={{ border: "1.5px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 10, padding: "12px 28px", fontSize: 15, fontWeight: 600, cursor: "pointer", background: "transparent", fontFamily: "inherit" }}
