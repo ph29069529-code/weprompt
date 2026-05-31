@@ -14,7 +14,6 @@ import {
   CheckCircle,
   Menu,
   X,
-  Send,
   Globe,
   Link,
   Share2,
@@ -112,15 +111,8 @@ function Navbar() {
           justifyContent: "space-between",
         }}>
           {/* Logo */}
-          <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{
-              width: 32, height: 32, background: "#0A0F1E",
-              borderRadius: 8, display: "flex", alignItems: "center",
-              justifyContent: "center", flexShrink: 0,
-            }}>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: 16, lineHeight: 1 }}>W</span>
-            </div>
-            <span style={{ color: "#0A0F1E", fontWeight: 700, fontSize: 20 }}>WePrompt</span>
+          <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <img src="/logo.png" alt="WePrompt" style={{ height: 32 }} />
           </a>
 
           {/* Center */}
@@ -151,11 +143,11 @@ function Navbar() {
               onMouseEnter={() => setHovCta(true)}
               onMouseLeave={() => setHovCta(false)}
               style={{
-                background: hovCta ? "#00D4AA" : "#0A0F1E",
-                color: hovCta ? "#0A0F1E" : "#fff",
+                background: hovCta ? "#6366F1" : "#0A0F1E",
+                color: "#fff",
                 border: "none", borderRadius: 8,
                 padding: "10px 20px", fontSize: 14, fontWeight: 600,
-                cursor: "pointer", transition: "background 0.2s, color 0.2s",
+                cursor: "pointer", transition: "background 0.2s",
               }}>
               Começar grátis →
             </button>
@@ -176,12 +168,7 @@ function Navbar() {
             background: "#fff", display: "flex", flexDirection: "column", padding: "0 24px",
           }}>
             <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 28, height: 28, background: "#0A0F1E", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>W</span>
-                </div>
-                <span style={{ color: "#0A0F1E", fontWeight: 700, fontSize: 18 }}>WePrompt</span>
-              </div>
+              <img src="/logo.png" alt="WePrompt" style={{ height: 28 }} />
               <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer" }}>
                 <X size={22} />
               </button>
@@ -216,23 +203,23 @@ function Hero() {
       position: "relative", overflow: "hidden",
       background: "#fff",
     }}>
-      {/* Animated blobs */}
+      {/* Animated blobs — subtle */}
       <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
         <div style={{
           position: "absolute", width: 600, height: 600, borderRadius: "50%",
-          background: "#00D4AA", filter: "blur(80px)", opacity: 0.12,
+          background: "#6366F1", filter: "blur(120px)", opacity: 0.05,
           top: -100, left: -100,
           animation: "blob1 8s ease-in-out infinite",
         }} />
         <div style={{
           position: "absolute", width: 500, height: 500, borderRadius: "50%",
-          background: "#3B82F6", filter: "blur(80px)", opacity: 0.12,
+          background: "#3B82F6", filter: "blur(120px)", opacity: 0.05,
           top: "50%", right: -150,
           animation: "blob2 10s ease-in-out infinite",
         }} />
         <div style={{
           position: "absolute", width: 400, height: 400, borderRadius: "50%",
-          background: "#00D4AA", filter: "blur(80px)", opacity: 0.12,
+          background: "#6366F1", filter: "blur(120px)", opacity: 0.05,
           bottom: -100, left: "40%",
           animation: "blob3 12s ease-in-out infinite",
         }} />
@@ -274,7 +261,7 @@ function Hero() {
           }}>
           Tudo que seu negócio<br />
           precisa de IA.<br />
-          <span style={{ color: "#00D4AA" }}>Em um lugar só.</span>
+          <span style={{ color: "#6366F1" }}>Em um lugar só.</span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -306,7 +293,7 @@ function Hero() {
             letterSpacing: "0.05em", textTransform: "uppercase",
           }}>Descubra como funciona</span>
           <div style={{ animation: "bounce-arrow 2s ease-in-out infinite" }}>
-            <ChevronDown size={20} color="#00D4AA" />
+            <ChevronDown size={20} color="#6366F1" />
           </div>
         </motion.div>
       </div>
@@ -315,32 +302,61 @@ function Hero() {
 }
 
 /* ─── Marquee ────────────────────────────────────────────────────── */
-const ROW1 = ["WhatsApp", "Gmail", "Notion", "Slack", "Zapier", "HubSpot", "Shopify", "Trello", "Make"];
-const ROW2 = ["ChatGPT", "Google Sheets", "Discord", "Telegram", "Stripe", "Asana", "Monday", "Mailchimp", "Pipedrive"];
+const ROW1_ITEMS = [
+  { name: "WhatsApp", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" },
+  { name: "Gmail", logo: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" },
+  { name: "Notion", logo: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" },
+  { name: "Slack", logo: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg" },
+  { name: "Zapier", logo: "https://cdn.worldvectorlogo.com/logos/zapier-1.svg" },
+  { name: "HubSpot", logo: "https://upload.wikimedia.org/wikipedia/commons/3/3f/HubSpot_Logo.svg" },
+  { name: "Shopify", logo: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg" },
+  { name: "Trello", logo: "https://upload.wikimedia.org/wikipedia/commons/7/7a/Trello-logo-blue.svg" },
+  { name: "Make", logo: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Make_%28software%29_logo.svg" },
+];
 
-function Pill({ label }) {
+const ROW2_ITEMS = [
+  { name: "Google Sheets", logo: "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" },
+  { name: "Discord", logo: "https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" },
+  { name: "Telegram", logo: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
+  { name: "Stripe", logo: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" },
+  { name: "Asana", logo: "https://upload.wikimedia.org/wikipedia/commons/3/3b/Asana_logo.svg" },
+  { name: "Monday", logo: "https://dapulse-res.cloudinary.com/image/upload/monday_com_logo.png" },
+  { name: "Mailchimp", logo: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Freddie_by_Mailchimp.svg" },
+  { name: "Pipedrive", logo: "https://upload.wikimedia.org/wikipedia/commons/5/54/Pipedrive_Logo.png" },
+  { name: "ChatGPT", logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" },
+];
+
+function IntegrationCard({ name, logo }) {
   return (
     <div style={{
-      background: "#fff", border: "1px solid #E5E7EB",
-      borderRadius: 999, padding: "8px 16px",
-      fontSize: 13, fontWeight: 500, color: "#374151",
-      whiteSpace: "nowrap", flexShrink: 0,
+      background: "white",
+      border: "1px solid #E5E7EB",
+      borderRadius: 12,
+      padding: "10px 16px",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+      flexShrink: 0,
+      whiteSpace: "nowrap",
     }}>
-      {label}
+      <img src={logo} alt={name} style={{ height: 24, width: 24, objectFit: "contain" }} />
+      <span style={{ fontSize: 13, fontWeight: 500, color: "#374151" }}>{name}</span>
     </div>
   );
 }
 
 function Marquee() {
-  const row1 = [...ROW1, ...ROW1];
-  const row2 = [...ROW2, ...ROW2];
+  const row1 = [...ROW1_ITEMS, ...ROW1_ITEMS];
+  const row2 = [...ROW2_ITEMS, ...ROW2_ITEMS];
 
   return (
     <section style={{
       background: "#F8F9FB",
       borderTop: "1px solid #E5E7EB",
       borderBottom: "1px solid #E5E7EB",
-      padding: "20px 0", overflow: "hidden",
+      padding: "32px 0",
+      overflow: "hidden",
     }}>
       {/* Row 1 — left */}
       <div style={{ display: "flex", gap: 12, marginBottom: 10 }}>
@@ -348,7 +364,7 @@ function Marquee() {
           display: "flex", gap: 12,
           animation: "marquee-left 25s linear infinite",
         }}>
-          {row1.map((l, i) => <Pill key={i} label={l} />)}
+          {row1.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
         </div>
       </div>
       {/* Row 2 — right */}
@@ -357,7 +373,7 @@ function Marquee() {
           display: "flex", gap: 12,
           animation: "marquee-right 20s linear infinite",
         }}>
-          {row2.map((l, i) => <Pill key={i} label={l} />)}
+          {row2.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
         </div>
       </div>
     </section>
@@ -374,14 +390,13 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="como-funciona" className="section-pad" style={{ background: "#fff", padding: "120px 48px" }}>
+    <section id="como-funciona" className="section-pad" style={{ background: "#fff", padding: "80px 48px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        {/* Header */}
         <motion.div
           initial="hidden" whileInView="visible" viewport={vp}
           variants={fadeUp}
           style={{ textAlign: "center", marginBottom: 80 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#00D4AA", textTransform: "uppercase" }}>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#6366F1", textTransform: "uppercase" }}>
             COMO FUNCIONA
           </div>
           <h2 style={{ fontSize: "clamp(36px,4vw,56px)", fontWeight: 800, color: "#0A0F1E", letterSpacing: "-0.03em", marginTop: 12, marginBottom: 0 }}>
@@ -392,7 +407,6 @@ function HowItWorks() {
           </p>
         </motion.div>
 
-        {/* Cards */}
         <motion.div
           className="grid-3"
           initial="hidden" whileInView="visible" viewport={vp}
@@ -433,20 +447,20 @@ function Categories() {
   const [hov, setHov] = useState(null);
 
   const cats = [
-    { icon: <MessageSquare size={22} color="#00D4AA" />, name: "Atendimento ao Cliente", desc: "Chatbots 24/7", slug: "atendimento" },
-    { icon: <Mail size={22} color="#00D4AA" />, name: "Automação de E-mails", desc: "Respostas e campanhas", slug: "automacao-emails" },
-    { icon: <TrendingUp size={22} color="#00D4AA" />, name: "Vendas e Prospecção", desc: "Geração de leads", slug: "vendas" },
-    { icon: <BarChart2 size={22} color="#00D4AA" />, name: "Análise de Dados", desc: "Insights em segundos", slug: "analise-dados" },
-    { icon: <Smartphone size={22} color="#00D4AA" />, name: "WhatsApp IA", desc: "Vendas pelo WhatsApp", slug: "whatsapp-ia" },
-    { icon: <Megaphone size={22} color="#00D4AA" />, name: "Marketing e Conteúdo", desc: "Criação automatizada", slug: "marketing" },
+    { icon: <MessageSquare size={22} color="#6366F1" />, name: "Atendimento ao Cliente", desc: "Chatbots 24/7", slug: "atendimento" },
+    { icon: <Mail size={22} color="#6366F1" />, name: "Automação de E-mails", desc: "Respostas e campanhas", slug: "automacao-emails" },
+    { icon: <TrendingUp size={22} color="#6366F1" />, name: "Vendas e Prospecção", desc: "Geração de leads", slug: "vendas" },
+    { icon: <BarChart2 size={22} color="#6366F1" />, name: "Análise de Dados", desc: "Insights em segundos", slug: "analise-dados" },
+    { icon: <Smartphone size={22} color="#6366F1" />, name: "WhatsApp IA", desc: "Vendas pelo WhatsApp", slug: "whatsapp-ia" },
+    { icon: <Megaphone size={22} color="#6366F1" />, name: "Marketing e Conteúdo", desc: "Criação automatizada", slug: "marketing" },
   ];
 
   return (
-    <section className="section-pad" style={{ background: "#F8F9FB", padding: "120px 48px", borderTop: "1px solid #E5E7EB" }}>
+    <section className="section-pad" style={{ background: "#F8F9FB", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <motion.div initial="hidden" whileInView="visible" viewport={vp} variants={fadeUp}
           style={{ textAlign: "center", marginBottom: 64 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#00D4AA", textTransform: "uppercase" }}>CATEGORIAS</div>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#6366F1", textTransform: "uppercase" }}>CATEGORIAS</div>
           <h2 style={{ fontSize: "clamp(32px,4vw,48px)", fontWeight: 800, color: "#0A0F1E", letterSpacing: "-0.03em", marginTop: 12, marginBottom: 0 }}>
             Uma solução para cada desafio.
           </h2>
@@ -465,18 +479,18 @@ function Categories() {
               onClick={() => router.push(`/solucoes?categoria=${cat.slug}`)}
               style={{
                 background: "#fff",
-                border: `1px solid ${hov === i ? "#00D4AA" : "#E5E7EB"}`,
+                border: `1px solid ${hov === i ? "#6366F1" : "#E5E7EB"}`,
                 borderRadius: 16, padding: 28, cursor: "pointer",
-                boxShadow: hov === i ? "0 8px 24px rgba(0,212,170,0.1)" : "none",
+                boxShadow: hov === i ? "0 8px 24px rgba(99,102,241,0.1)" : "none",
                 transform: hov === i ? "translateY(-2px)" : "translateY(0)",
                 transition: "border-color 0.2s, box-shadow 0.2s, transform 0.2s",
               }}>
-              <div style={{ width: 44, height: 44, background: "#F0FDF9", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 44, height: 44, background: "#EEF2FF", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {cat.icon}
               </div>
               <div style={{ fontSize: 16, fontWeight: 700, color: "#0A0F1E", marginTop: 14 }}>{cat.name}</div>
               <div style={{ fontSize: 13, color: "#6B7280", marginTop: 6 }}>{cat.desc}</div>
-              <div style={{ color: "#00D4AA", fontSize: 13, fontWeight: 600, marginTop: 18 }}>Ver soluções →</div>
+              <div style={{ color: "#6366F1", fontSize: 13, fontWeight: 600, marginTop: 18 }}>Ver soluções →</div>
             </motion.div>
           ))}
         </motion.div>
@@ -492,7 +506,7 @@ function ForCompanies() {
   const solutions = ["Agente de Atendimento", "ChatBot WhatsApp", "Gerador de E-mails"];
 
   return (
-    <section className="section-pad" style={{ background: "#fff", padding: "120px 48px", borderTop: "1px solid #E5E7EB" }}>
+    <section className="section-pad" style={{ background: "#fff", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div className="two-col" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
         {/* Left — mockup */}
         <motion.div
@@ -506,7 +520,7 @@ function ForCompanies() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ color: "#0A0F1E", fontWeight: 700, fontSize: 16 }}>Meu Painel</span>
-              <div style={{ background: "#F0FDF9", color: "#00A884", borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 600 }}>Empresa</div>
+              <div style={{ background: "#EEF2FF", color: "#4F46E5", borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 600 }}>Empresa</div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginTop: 20 }}>
               {[{ val: "3", label: "Soluções ativas" }, { val: "R$291", label: "Este mês" }, { val: "24h", label: "Suporte" }].map((m) => (
@@ -523,10 +537,10 @@ function ForCompanies() {
                   padding: "12px 0", borderBottom: i < solutions.length - 1 ? "1px solid #F3F4F6" : "none",
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#00D4AA", flexShrink: 0 }} />
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#6366F1", flexShrink: 0 }} />
                     <span style={{ color: "#0A0F1E", fontSize: 14 }}>{name}</span>
                   </div>
-                  <div style={{ background: "#F0FDF9", color: "#00A884", fontSize: 11, fontWeight: 600, borderRadius: 999, padding: "2px 8px" }}>Ativo</div>
+                  <div style={{ background: "#EEF2FF", color: "#4F46E5", fontSize: 11, fontWeight: 600, borderRadius: 999, padding: "2px 8px" }}>Ativo</div>
                 </div>
               ))}
             </div>
@@ -538,7 +552,7 @@ function ForCompanies() {
           initial={{ opacity: 0, x: 32 }} whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }} viewport={vp}
           style={{ flex: "0 0 50%" }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#00D4AA", textTransform: "uppercase" }}>PARA EMPRESAS</div>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#6366F1", textTransform: "uppercase" }}>PARA EMPRESAS</div>
           <h2 style={{ fontSize: "clamp(28px,3vw,40px)", fontWeight: 800, color: "#0A0F1E", marginTop: 12, marginBottom: 0, lineHeight: 1.15 }}>
             IA que trabalha pelo seu negócio. Em português.
           </h2>
@@ -548,7 +562,7 @@ function ForCompanies() {
           <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 14 }}>
             {["Soluções testadas e aprovadas pela nossa equipe", "Ative sem precisar de TI", "Suporte em português incluído", "Cancele quando quiser"].map((b) => (
               <div key={b} style={{ display: "flex", gap: 12 }}>
-                <CheckCircle size={18} color="#00D4AA" style={{ flexShrink: 0, marginTop: 2 }} />
+                <CheckCircle size={18} color="#6366F1" style={{ flexShrink: 0, marginTop: 2 }} />
                 <span style={{ color: "#0A0F1E", fontSize: 15 }}>{b}</span>
               </div>
             ))}
@@ -559,11 +573,11 @@ function ForCompanies() {
             onMouseLeave={() => setHovCta(false)}
             style={{
               marginTop: 36,
-              background: hovCta ? "#00D4AA" : "#0A0F1E",
-              color: hovCta ? "#0A0F1E" : "#fff",
+              background: hovCta ? "#6366F1" : "#0A0F1E",
+              color: "#fff",
               border: "none", borderRadius: 10,
               padding: "14px 28px", fontSize: 15, fontWeight: 700,
-              cursor: "pointer", transition: "background 0.2s, color 0.2s",
+              cursor: "pointer", transition: "background 0.2s",
             }}>
             Explorar o catálogo →
           </button>
@@ -585,14 +599,14 @@ function ForCreators() {
   const bars = [20, 28, 22, 36, 48];
 
   return (
-    <section className="section-pad" style={{ background: "#F8F9FB", padding: "120px 48px", borderTop: "1px solid #E5E7EB" }}>
+    <section className="section-pad" style={{ background: "#F8F9FB", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div className="two-col-rev" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
         {/* Left — text */}
         <motion.div
           initial={{ opacity: 0, x: -32 }} whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }} viewport={vp}
           style={{ flex: "0 0 50%" }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#00D4AA", textTransform: "uppercase" }}>PARA CRIADORES</div>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#6366F1", textTransform: "uppercase" }}>PARA CRIADORES</div>
           <h2 style={{ fontSize: "clamp(28px,3vw,40px)", fontWeight: 800, color: "#0A0F1E", marginTop: 12, marginBottom: 0, lineHeight: 1.15 }}>
             Monetize suas soluções. Alcance milhares.
           </h2>
@@ -602,7 +616,7 @@ function ForCreators() {
           <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 14 }}>
             {["Comece grátis — publique até 3 soluções", "Receba via PIX em até 30 dias", "Apenas 20% de comissão sobre o que você vende"].map((b) => (
               <div key={b} style={{ display: "flex", gap: 12 }}>
-                <CheckCircle size={18} color="#00D4AA" style={{ flexShrink: 0, marginTop: 2 }} />
+                <CheckCircle size={18} color="#6366F1" style={{ flexShrink: 0, marginTop: 2 }} />
                 <span style={{ color: "#0A0F1E", fontSize: 15 }}>{b}</span>
               </div>
             ))}
@@ -636,18 +650,18 @@ function ForCreators() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ color: "#0A0F1E", fontWeight: 700, fontSize: 16 }}>Minha receita</span>
-              <div style={{ background: "#F0FDF9", color: "#00A884", borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 600 }}>Criador Pro</div>
+              <div style={{ background: "#EEF2FF", color: "#4F46E5", borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 600 }}>Criador Pro</div>
             </div>
             <div style={{ marginTop: 16 }}>
               <div style={{ color: "#0A0F1E", fontSize: 36, fontWeight: 800 }}>R$ 2.840</div>
               <div style={{ color: "#6B7280", fontSize: 13, marginTop: 4 }}>Este mês</div>
-              <div style={{ color: "#00D4AA", fontSize: 13, fontWeight: 600, marginTop: 8 }}>↑ +34% vs. mês anterior</div>
+              <div style={{ color: "#6366F1", fontSize: 13, fontWeight: 600, marginTop: 8 }}>↑ +34% vs. mês anterior</div>
             </div>
             <div style={{ marginTop: 20, display: "flex", gap: 6, alignItems: "flex-end", height: 48 }}>
               {bars.map((h, i) => (
                 <div key={i} style={{
                   width: 20, height: h,
-                  background: i === bars.length - 1 ? "#00D4AA" : "#E5E7EB",
+                  background: i === bars.length - 1 ? "#6366F1" : "#E5E7EB",
                   borderRadius: "4px 4px 0 0",
                 }} />
               ))}
@@ -660,7 +674,7 @@ function ForCreators() {
                 }}>
                   <span style={{ color: "#0A0F1E", fontSize: 13 }}>{sale.name}</span>
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <span style={{ color: "#00D4AA", fontSize: 13, fontWeight: 600 }}>{sale.value}</span>
+                    <span style={{ color: "#6366F1", fontSize: 13, fontWeight: 600 }}>{sale.value}</span>
                     <span style={{ color: "#9CA3AF", fontSize: 12, marginLeft: 8 }}>{sale.time}</span>
                   </div>
                 </div>
@@ -678,7 +692,7 @@ function FinalCTA() {
   const router = useRouter();
 
   return (
-    <section className="section-pad" style={{ background: "#0A0F1E", padding: "120px 48px" }}>
+    <section className="section-pad" style={{ background: "#0A0F1E", padding: "80px 48px" }}>
       <motion.div
         initial="hidden" whileInView="visible" viewport={vp} variants={fadeUp}
         style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
@@ -696,11 +710,11 @@ function FinalCTA() {
           onClick={() => router.push("/cadastro")}
           style={{
             marginTop: 40,
-            background: "#00D4AA", color: "#0A0F1E",
+            background: "#6366F1", color: "#fff",
             border: "none", borderRadius: 10,
             padding: "18px 40px", fontSize: 16, fontWeight: 700,
             cursor: "pointer",
-            boxShadow: "0 8px 32px rgba(0,212,170,0.4)",
+            boxShadow: "0 8px 32px rgba(99,102,241,0.4)",
           }}>
           Começar agora, é grátis →
         </button>
@@ -710,72 +724,167 @@ function FinalCTA() {
 }
 
 /* ─── Footer ─────────────────────────────────────────────────────── */
-function Footer() {
-  const cols = [
-    { title: "Plataforma", links: ["Catálogo", "Preços", "Como funciona", "Blog"] },
-    { title: "Para você", links: ["Para Empresas", "Para Criadores", "Sobre nós", "Contato"] },
-    { title: "Legal", links: ["Privacidade", "Termos Empresas", "Termos Criadores"] },
-  ];
+const Footer = () => (
+  <footer style={{ background: "#0A0F1E",
+    borderTop: "1px solid rgba(255,255,255,0.06)" }}>
 
-  return (
-    <footer style={{
-      background: "#0A0F1E",
-      borderTop: "1px solid rgba(255,255,255,0.08)",
-      padding: "64px 48px",
+    {/* Top section — large brand statement */}
+    <div style={{
+      maxWidth: 1200, margin: "0 auto",
+      padding: "72px 48px 48px",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
     }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr repeat(3, 1fr)", gap: 40 }}>
-          {/* Col 1 */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 28, height: 28, background: "rgba(255,255,255,0.1)", borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>W</span>
-              </div>
-              <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>WePrompt</span>
-            </div>
-            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, lineHeight: 1.6, margin: 0 }}>
-              O 1º marketplace de soluções de IA da América Latina.
-            </p>
-            <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
-              {[Globe, Link, Share2].map((Icon, i) => (
-                <a key={i} href="#"
-                  style={{ color: "rgba(255,255,255,0.4)", transition: "color 0.15s" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-                  onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}>
-                  <Icon size={20} />
-                </a>
-              ))}
-            </div>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+        flexWrap: "wrap", gap: 40,
+      }}>
+        {/* Left: brand */}
+        <div style={{ maxWidth: 480 }}>
+          <div style={{
+            display: "flex", alignItems: "center",
+            gap: 10, marginBottom: 20,
+          }}>
+            <img src="/logo.png" alt="WePrompt" style={{ height: 32 }} />
           </div>
-
-          {/* Cols 2-4 */}
-          {cols.map((col) => (
-            <div key={col.title} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ color: "#fff", fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{col.title}</div>
-              {col.links.map((link) => (
-                <a key={link} href="#"
-                  style={{ color: "rgba(255,255,255,0.5)", fontSize: 14, textDecoration: "none", lineHeight: 2, transition: "color 0.15s" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-                  onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}>
-                  {link}
-                </a>
-              ))}
-            </div>
-          ))}
+          <p style={{
+            fontSize: "clamp(24px, 3vw, 36px)",
+            fontWeight: 800,
+            color: "white",
+            lineHeight: 1.2,
+            letterSpacing: "-0.02em",
+            margin: 0,
+          }}>
+            O futuro do trabalho<br />
+            <span style={{ color: "#6366F1" }}>
+              já chegou ao Brasil.
+            </span>
+          </p>
+          <p style={{
+            color: "rgba(255,255,255,0.4)",
+            fontSize: 15, lineHeight: 1.6,
+            marginTop: 16, marginBottom: 0,
+          }}>
+            O 1º marketplace de soluções de IA
+            da América Latina.
+          </p>
         </div>
 
-        <div className="footer-bottom" style={{
-          borderTop: "1px solid rgba(255,255,255,0.15)",
-          paddingTop: 32, marginTop: 40,
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-        }}>
-          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
-          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>Feito no Brasil 🇧🇷</span>
+        {/* Right: CTA */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <a href="/cadastro" style={{
+            display: "inline-flex",
+            alignItems: "center", gap: 8,
+            background: "#6366F1",
+            color: "white",
+            padding: "14px 28px",
+            borderRadius: 10,
+            fontWeight: 700,
+            fontSize: 15,
+            textDecoration: "none",
+            boxShadow: "0 4px 20px rgba(99,102,241,0.4)",
+          }}>
+            Começar grátis →
+          </a>
+          <span style={{
+            color: "rgba(255,255,255,0.3)",
+            fontSize: 13, textAlign: "center",
+          }}>
+            Sem cartão de crédito
+          </span>
         </div>
       </div>
-    </footer>
-  );
-}
+    </div>
+
+    {/* Middle section — links grid */}
+    <div style={{
+      maxWidth: 1200, margin: "0 auto",
+      padding: "48px 48px",
+      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      display: "grid",
+      gridTemplateColumns: "repeat(4, 1fr)",
+      gap: 40,
+    }}>
+      {[
+        { title: "Plataforma", links: ["Catálogo", "Preços", "Como funciona", "Blog"] },
+        { title: "Para você", links: ["Para Empresas", "Para Criadores", "Sobre nós", "Contato"] },
+        { title: "Legal", links: ["Privacidade", "Termos Empresas", "Termos Criadores", "Cookies"] },
+        { title: "Comunidade", links: ["Instagram", "LinkedIn", "YouTube", "Newsletter"] },
+      ].map(col => (
+        <div key={col.title}>
+          <p style={{
+            color: "white", fontSize: 13,
+            fontWeight: 700, letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            marginBottom: 20, marginTop: 0,
+          }}>
+            {col.title}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {col.links.map(link => (
+              <a key={link} href="#" style={{
+                color: "rgba(255,255,255,0.45)",
+                fontSize: 14, textDecoration: "none",
+                transition: "color 0.15s",
+                cursor: "pointer",
+              }}
+              onMouseEnter={e => e.target.style.color = "white"}
+              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
+              >
+                {link}
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* Bottom bar */}
+    <div style={{
+      maxWidth: 1200, margin: "0 auto",
+      padding: "24px 48px",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexWrap: "wrap", gap: 16,
+    }}>
+      <span style={{
+        color: "rgba(255,255,255,0.25)",
+        fontSize: 13,
+      }}>
+        © 2026 WePrompt. Todos os direitos reservados.
+      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <span style={{
+          color: "rgba(255,255,255,0.25)",
+          fontSize: 13,
+        }}>
+          Feito no Brasil 🇧🇷
+        </span>
+        <div style={{
+          display: "flex", alignItems: "center", gap: 6,
+          background: "rgba(99,102,241,0.15)",
+          border: "1px solid rgba(99,102,241,0.3)",
+          borderRadius: 999, padding: "4px 12px",
+        }}>
+          <div style={{
+            width: 6, height: 6,
+            borderRadius: "50%",
+            background: "#6366F1",
+            boxShadow: "0 0 6px #6366F1",
+          }} />
+          <span style={{
+            color: "#6366F1",
+            fontSize: 12, fontWeight: 600,
+          }}>
+            Online
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+);
 
 /* ─── Page ───────────────────────────────────────────────────────── */
 export default function Home() {

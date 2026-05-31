@@ -13,11 +13,11 @@ module.exports = {
         },
         surface: { 1: '#FFFFFF', 2: '#F8F9FB', 3: '#F3F4F6' },
         accent: {
-          DEFAULT: '#00D4AA',
-          hover: '#00A884',
-          muted: 'rgba(0,212,170,0.08)',
-          border: 'rgba(0,212,170,0.25)',
-          glow: 'rgba(0,212,170,0.15)',
+          DEFAULT: '#6366F1',
+          hover: '#4F46E5',
+          muted: 'rgba(99,102,241,0.1)',
+          border: 'rgba(99,102,241,0.25)',
+          glow: 'rgba(99,102,241,0.15)',
         },
         text: {
           primary: '#0A0F1E',
@@ -28,7 +28,7 @@ module.exports = {
         border: {
           DEFAULT: '#E5E7EB',
           light: '#F3F4F6',
-          accent: 'rgba(0,212,170,0.25)',
+          accent: 'rgba(99,102,241,0.25)',
         },
       },
       fontFamily: {
