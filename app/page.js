@@ -226,7 +226,7 @@ function Hero() {
       </div>
 
       {/* Content */}
-      <div className="hero-pad" style={{ position: "relative", zIndex: 1, padding: "120px 48px 80px" }}>
+      <div className="hero-pad" style={{ position: "relative", zIndex: 1, padding: "120px 48px 40px" }}>
         {/* Announcement badge */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -348,36 +348,44 @@ function IntegrationCard({ name, logo }) {
 }
 
 function Marquee() {
-  const row1 = [...integrations1, ...integrations1];
-  const row2 = [...integrations2, ...integrations2];
+  const row1 = [...integrations1, ...integrations1, ...integrations1];
+  const row2 = [...integrations2, ...integrations2, ...integrations2];
 
   return (
-    <section style={{
-      background: '#F8F9FB',
-      borderTop: '1px solid #E5E7EB',
-      borderBottom: '1px solid #E5E7EB',
-      padding: '24px 0',
-      overflow: 'hidden',
-    }}>
-      {/* Row 1 — scrolls left */}
-      <div style={{ display: 'flex' }}>
-        <div style={{
-          display: 'flex',
-          animation: 'marquee-left 30s linear infinite',
-        }}>
-          {row1.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
+    <>
+      <style>{`
+        @keyframes marquee-left {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-right {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+      `}</style>
+      <section style={{
+        background: '#F8F9FB',
+        borderTop: '1px solid #E5E7EB',
+        borderBottom: '1px solid #E5E7EB',
+        padding: '24px 0',
+        overflow: 'hidden',
+        width: '100%',
+        maxWidth: '100%',
+      }}>
+        {/* Row 1 — scrolls left */}
+        <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex', animation: 'marquee-left 30s linear infinite' }}>
+            {row1.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
+          </div>
         </div>
-      </div>
-      {/* Row 2 — scrolls right */}
-      <div style={{ display: 'flex', marginTop: 12 }}>
-        <div style={{
-          display: 'flex',
-          animation: 'marquee-right 25s linear infinite',
-        }}>
-          {row2.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
+        {/* Row 2 — scrolls right */}
+        <div style={{ display: 'flex', marginTop: 12 }}>
+          <div style={{ display: 'flex', animation: 'marquee-right 25s linear infinite' }}>
+            {row2.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 
