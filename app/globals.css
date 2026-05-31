@@ -84,6 +84,26 @@ body {
   background: rgba(0, 0, 0, 0.05);
 }
 
+/* Marquee animations */
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.marquee-left {
+  display: flex;
+  max-width: none;
+  animation: marquee-left 30s linear infinite;
+}
+.marquee-right {
+  display: flex;
+  max-width: none;
+  animation: marquee-right 25s linear infinite;
+}
+
 /* Footer links */
 .footer-link {
   color: #6B7280;

@@ -352,40 +352,27 @@ function Marquee() {
   const row2 = [...integrations2, ...integrations2, ...integrations2];
 
   return (
-    <>
-      <style>{`
-        @keyframes marquee-left {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes marquee-right {
-          0% { transform: translateX(-50%); }
-          100% { transform: translateX(0); }
-        }
-      `}</style>
-      <section style={{
-        background: '#F8F9FB',
-        borderTop: '1px solid #E5E7EB',
-        borderBottom: '1px solid #E5E7EB',
-        padding: '24px 0',
-        overflow: 'hidden',
-        width: '100%',
-        maxWidth: '100%',
-      }}>
-        {/* Row 1 — scrolls left */}
-        <div style={{ display: 'flex' }}>
-          <div style={{ display: 'flex', animation: 'marquee-left 30s linear infinite' }}>
-            {row1.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
-          </div>
+    <section style={{
+      background: '#F8F9FB',
+      borderTop: '1px solid #E5E7EB',
+      borderBottom: '1px solid #E5E7EB',
+      padding: '24px 0',
+      overflow: 'hidden',
+      width: '100%',
+    }}>
+      {/* Row 1 — scrolls left */}
+      <div style={{ overflow: 'hidden', width: '100%' }}>
+        <div className="marquee-left">
+          {row1.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
         </div>
-        {/* Row 2 — scrolls right */}
-        <div style={{ display: 'flex', marginTop: 12 }}>
-          <div style={{ display: 'flex', animation: 'marquee-right 25s linear infinite' }}>
-            {row2.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
-          </div>
+      </div>
+      {/* Row 2 — scrolls right */}
+      <div style={{ overflow: 'hidden', width: '100%', marginTop: 12 }}>
+        <div className="marquee-right">
+          {row2.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
 
