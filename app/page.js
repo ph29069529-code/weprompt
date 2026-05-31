@@ -112,7 +112,7 @@ function Navbar() {
         }}>
           {/* Logo */}
           <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <img src="/logo.png" alt="WePrompt" style={{ height: 40, width: 'auto', display: 'block' }} />
+            <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: 'auto', display: 'block' }} />
           </a>
 
           {/* Center */}
@@ -743,7 +743,7 @@ const Footer = () => (
         {/* Left: brand */}
         <div style={{ maxWidth: 480 }}>
           <div style={{ marginBottom: 20 }}>
-            <img src="/logo-white.png" alt="WePrompt" style={{ height: 36, width: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }} />
+            <img src="/logo-white.png" alt="WePrompt" style={{ width: 140, height: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
           <p style={{
             fontSize: "clamp(24px, 3vw, 36px)",
