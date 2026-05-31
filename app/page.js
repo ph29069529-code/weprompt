@@ -307,41 +307,42 @@ const integrations1 = [
   { name: 'Gmail', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg' },
   { name: 'Notion', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png' },
   { name: 'Slack', logo: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg' },
-  { name: 'Zapier', logo: 'https://images.ctfassets.net/lzny33ho1g45/6YoKV9RS3goEx4TT1MHEFH/e4f9bc83be8b8c2bcbf44ba8c54e3a33/zapier-icon.png' },
-  { name: 'HubSpot', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/HubSpot_Logo.svg' },
-  { name: 'Shopify', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg' },
-  { name: 'Trello', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Trello-logo-blue.svg' },
-  { name: 'Make', logo: 'https://images.ctfassets.net/lzny33ho1g45/4NiDPHjR9PBNBS3UsMpwVT/9ef7f1c7e6bf42cfe4f1aff4b1c06b41/make-icon.png' },
+  { name: 'Zapier', logo: 'https://cdn.worldvectorlogo.com/logos/zapier-1.svg' },
+  { name: 'HubSpot', logo: 'https://asset.brandfetch.io/idVfYQBsn5/idW8_j-c0l.svg' },
+  { name: 'Shopify', logo: 'https://asset.brandfetch.io/idnrCPuv87/id0HcBfPbO.svg' },
+  { name: 'Trello', logo: 'https://asset.brandfetch.io/idptGfMYSO/id4RLzxkFj.svg' },
+  { name: 'Make', logo: 'https://asset.brandfetch.io/idPBBGFhCL/idBBFxhFSj.svg' },
 ];
 
 const integrations2 = [
   { name: 'Google Sheets', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg' },
   { name: 'Telegram', logo: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg' },
   { name: 'Stripe', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg' },
-  { name: 'Asana', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Asana_logo.svg' },
-  { name: 'Mailchimp', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Freddie_by_Mailchimp.svg' },
+  { name: 'Asana', logo: 'https://asset.brandfetch.io/idcMXIRFE3/idV6UFpGEQ.svg' },
+  { name: 'Mailchimp', logo: 'https://asset.brandfetch.io/idQBmOUZXz/id8DdbKHME.svg' },
   { name: 'Discord', logo: 'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg' },
   { name: 'ChatGPT', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg' },
-  { name: 'Pipedrive', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/54/Pipedrive_Logo.png' },
-  { name: 'Monday', logo: 'https://dapulse-res.cloudinary.com/image/upload/monday_com_logo.png' },
+  { name: 'Pipedrive', logo: 'https://asset.brandfetch.io/idyEoSqHPd/idgNmSKMXt.svg' },
+  { name: 'Monday', logo: 'https://asset.brandfetch.io/idzNk8F4M3/idJWNH8Rn2.svg' },
 ];
 
 function IntegrationCard({ name, logo }) {
   return (
     <div style={{
-      display: 'inline-flex',
+      display: 'flex',
       alignItems: 'center',
-      gap: 10,
+      justifyContent: 'center',
       background: 'white',
       border: '1px solid #E5E7EB',
       borderRadius: 12,
-      padding: '10px 18px',
+      padding: 12,
+      width: 48,
+      height: 48,
       boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
       marginRight: 12,
       flexShrink: 0,
     }}>
-      <img src={logo} alt={name} style={{ width: 24, height: 24, objectFit: 'contain' }} />
-      <span style={{ fontSize: 14, fontWeight: 500, color: '#374151', whiteSpace: 'nowrap' }}>{name}</span>
+      <img src={logo} alt={name} style={{ width: 28, height: 28, objectFit: 'contain' }} />
     </div>
   );
 }
