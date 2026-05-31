@@ -11,15 +11,15 @@ export const metadata = {
   authors: [{ name: "WePrompt" }],
   robots: { index: true, follow: true },
   manifest: "/manifest.json",
-  themeColor: "#00D4AA",
+  themeColor: "#6366F1",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "WePrompt",
   },
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
+    icon: "/logo-icon.png",
+    shortcut: "/logo-icon.png",
     apple: "/favicon.png",
   },
   openGraph: {
