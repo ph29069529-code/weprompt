@@ -302,76 +302,76 @@ function Hero() {
 }
 
 /* ─── Marquee ────────────────────────────────────────────────────── */
-const ROW1_ITEMS = [
-  { name: "WhatsApp", logo: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" },
-  { name: "Gmail", logo: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" },
-  { name: "Notion", logo: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" },
-  { name: "Slack", logo: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg" },
-  { name: "Zapier", logo: "https://cdn.worldvectorlogo.com/logos/zapier-1.svg" },
-  { name: "HubSpot", logo: "https://upload.wikimedia.org/wikipedia/commons/3/3f/HubSpot_Logo.svg" },
-  { name: "Shopify", logo: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg" },
-  { name: "Trello", logo: "https://upload.wikimedia.org/wikipedia/commons/7/7a/Trello-logo-blue.svg" },
-  { name: "Make", logo: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Make_%28software%29_logo.svg" },
+const integrations1 = [
+  { name: 'WhatsApp', logo: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg' },
+  { name: 'Gmail', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg' },
+  { name: 'Notion', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png' },
+  { name: 'Slack', logo: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg' },
+  { name: 'Zapier', logo: 'https://images.ctfassets.net/lzny33ho1g45/6YoKV9RS3goEx4TT1MHEFH/e4f9bc83be8b8c2bcbf44ba8c54e3a33/zapier-icon.png' },
+  { name: 'HubSpot', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/HubSpot_Logo.svg' },
+  { name: 'Shopify', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg' },
+  { name: 'Trello', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Trello-logo-blue.svg' },
+  { name: 'Make', logo: 'https://images.ctfassets.net/lzny33ho1g45/4NiDPHjR9PBNBS3UsMpwVT/9ef7f1c7e6bf42cfe4f1aff4b1c06b41/make-icon.png' },
 ];
 
-const ROW2_ITEMS = [
-  { name: "Google Sheets", logo: "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" },
-  { name: "Discord", logo: "https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" },
-  { name: "Telegram", logo: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
-  { name: "Stripe", logo: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" },
-  { name: "Asana", logo: "https://upload.wikimedia.org/wikipedia/commons/3/3b/Asana_logo.svg" },
-  { name: "Monday", logo: "https://dapulse-res.cloudinary.com/image/upload/monday_com_logo.png" },
-  { name: "Mailchimp", logo: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Freddie_by_Mailchimp.svg" },
-  { name: "Pipedrive", logo: "https://upload.wikimedia.org/wikipedia/commons/5/54/Pipedrive_Logo.png" },
-  { name: "ChatGPT", logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" },
+const integrations2 = [
+  { name: 'Google Sheets', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg' },
+  { name: 'Telegram', logo: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg' },
+  { name: 'Stripe', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg' },
+  { name: 'Asana', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3b/Asana_logo.svg' },
+  { name: 'Mailchimp', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Freddie_by_Mailchimp.svg' },
+  { name: 'Discord', logo: 'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg' },
+  { name: 'ChatGPT', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg' },
+  { name: 'Pipedrive', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/54/Pipedrive_Logo.png' },
+  { name: 'Monday', logo: 'https://dapulse-res.cloudinary.com/image/upload/monday_com_logo.png' },
 ];
 
 function IntegrationCard({ name, logo }) {
   return (
     <div style={{
-      background: "white",
-      border: "1px solid #E5E7EB",
-      borderRadius: 12,
-      padding: "10px 16px",
-      display: "flex",
-      alignItems: "center",
+      display: 'inline-flex',
+      alignItems: 'center',
       gap: 10,
-      boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+      background: 'white',
+      border: '1px solid #E5E7EB',
+      borderRadius: 12,
+      padding: '10px 18px',
+      boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+      marginRight: 12,
       flexShrink: 0,
-      whiteSpace: "nowrap",
     }}>
-      <img src={logo} alt={name} style={{ height: 24, width: 24, objectFit: "contain" }} />
-      <span style={{ fontSize: 13, fontWeight: 500, color: "#374151" }}>{name}</span>
+      <img src={logo} alt={name} style={{ width: 24, height: 24, objectFit: 'contain' }} />
+      <span style={{ fontSize: 14, fontWeight: 500, color: '#374151', whiteSpace: 'nowrap' }}>{name}</span>
     </div>
   );
 }
 
 function Marquee() {
-  const row1 = [...ROW1_ITEMS, ...ROW1_ITEMS];
-  const row2 = [...ROW2_ITEMS, ...ROW2_ITEMS];
+  const row1 = [...integrations1, ...integrations1];
+  const row2 = [...integrations2, ...integrations2];
 
   return (
     <section style={{
-      background: "#F8F9FB",
-      borderTop: "1px solid #E5E7EB",
-      borderBottom: "1px solid #E5E7EB",
-      padding: "32px 0",
-      overflow: "hidden",
+      background: '#F8F9FB',
+      borderTop: '1px solid #E5E7EB',
+      borderBottom: '1px solid #E5E7EB',
+      padding: '24px 0',
+      overflow: 'hidden',
     }}>
-      {/* Row 1 — left */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 10 }}>
+      {/* Row 1 — scrolls left */}
+      <div style={{ display: 'flex' }}>
         <div style={{
-          display: "flex", gap: 12,
-          animation: "marquee-left 25s linear infinite",
+          display: 'flex',
+          animation: 'marquee-left 30s linear infinite',
         }}>
           {row1.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
         </div>
       </div>
-      {/* Row 2 — right */}
-      <div style={{ display: "flex", gap: 12 }}>
+      {/* Row 2 — scrolls right */}
+      <div style={{ display: 'flex', marginTop: 12 }}>
         <div style={{
-          display: "flex", gap: 12,
-          animation: "marquee-right 20s linear infinite",
+          display: 'flex',
+          animation: 'marquee-right 25s linear infinite',
         }}>
           {row2.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
         </div>
