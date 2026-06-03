@@ -842,13 +842,16 @@ function SolucoesTab({ solutions, onApprove, onConfirmReject, onPause, onReactiv
 }
 
 /* ── DASHBOARD TAB ── */
-function DashboardTab({ solutions, profiles, onApprove, onConfirmReject, onView, actionLoading, isMobile }) {
+function DashboardTab({ solutions, profiles, totalRevenue = 0, onApprove, onConfirmReject, onView, actionLoading, isMobile }) {
   const [rejectingId, setRejectingId]     = useState(null);
   const [rejectReason, setRejectReason]   = useState("");
   const [rejectLoading, setRejectLoading] = useState(false);
   const [revenueData, setRevenueData]     = useState([0,0,0,0,0,0]);
 
-  const pending      = solutions.filter(s => s.status === "pending");
+  const pending          = solutions.filter(s => s.status === "pending");
+  const sevenDaysAgo     = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const novosUsuarios    = profiles.filter(p => new Date(p.created_at) > sevenDaysAgo).length;
+  const fmtRevenue       = `R$ ${Number(totalRevenue).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const now = new Date();
   const last6Months = useMemo(() => Array.from({ length: 6 }, (_, i) => {
@@ -907,10 +910,10 @@ function DashboardTab({ solutions, profiles, onApprove, onConfirmReject, onView,
     <div>
       {/* KPIs */}
       <div style={{ display: "flex", gap: 14, marginBottom: 26, flexWrap: "wrap" }}>
-        <KpiCard label="Usuários Totais"       value={profiles.length || "—"}  sub={`+${Math.max(1, Math.round(profiles.length * 0.08))} esta semana`} subColor={GREEN}           iconD={icons.users} />
+        <KpiCard label="Usuários Totais"       value={profiles.length || "—"}  sub={novosUsuarios > 0 ? `+${novosUsuarios} novos (7 dias)` : "nenhum novo recente"} subColor={novosUsuarios > 0 ? GREEN : GRAY_TEXT} iconD={icons.users} />
         <KpiCard label="Criadores Ativos"      value={criadores.length || "—"} iconD={icons.pencil} />
         <KpiCard label="Empresas Cadastradas"  value={empresas.length || "—"}  iconD={icons.building} />
-        <KpiCard label="Receita Mensal"        value="R$ 8.900"                sub="este mês"    subColor={BLUE}           iconD={icons.cash} />
+        <KpiCard label="Receita (Assinaturas)" value={fmtRevenue}               sub="assinaturas ativas" subColor={BLUE} iconD={icons.cash} />
         <KpiCard label="Aprovações Pendentes"  value={pending.length}          sub={pending.length > 0 ? `${pending.length} aguardando` : "Em dia ✅"} subColor={pending.length > 0 ? "#B45309" : GREEN} iconD={icons.eye} accent={pending.length > 0 ? "#B45309" : GREEN} />
       </div>
 
@@ -2522,6 +2525,7 @@ export default function AdminDashboard() {
   const [profile, setProfile]           = useState(null);
   const [solutions, setSolutions]       = useState([]);
   const [profiles, setProfiles]         = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
   const [activeNav, setActiveNav]       = useState("dashboard");
   const [rejectTarget, setRejectTarget] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
@@ -2546,12 +2550,17 @@ export default function AdminDashboard() {
       setUser(session.user);
       setProfile(prof);
 
-      const [solRes, profRes] = await Promise.all([
+      const [solRes, profRes, subsRes] = await Promise.all([
         supabase.from("solutions").select("*, profiles:creator_id(nome)").order("created_at", { ascending: false }),
         supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+        supabase.from("subscriptions").select("solutions(preco)").eq("status", "active"),
       ]);
       if (solRes.data)  setSolutions(solRes.data);
       if (profRes.data) setProfiles(profRes.data);
+      if (subsRes.data) {
+        const rev = subsRes.data.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
+        setTotalRevenue(rev);
+      }
       setLoading(false);
     }
     init();
@@ -2735,7 +2744,7 @@ export default function AdminDashboard() {
 
           {/* Tab content */}
           {activeNav === "dashboard" && (
-            <DashboardTab solutions={solutions} profiles={profiles} onApprove={handleApprove} onConfirmReject={handleConfirmReject} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
+            <DashboardTab solutions={solutions} profiles={profiles} totalRevenue={totalRevenue} onApprove={handleApprove} onConfirmReject={handleConfirmReject} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
           )}
           {activeNav === "solucoes" && (
             <SolucoesTab solutions={solutions} onApprove={handleApprove} onConfirmReject={handleConfirmReject} onPause={handlePause} onReactivate={handleReactivate} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
