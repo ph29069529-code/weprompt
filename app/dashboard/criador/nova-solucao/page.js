@@ -182,7 +182,7 @@ export default function NovaSolucaoPage() {
         alignItems: 'center', justifyContent: 'space-between',
         position: 'sticky', top: 0, zIndex: 50,
       }}>
-        <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
+        <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}><img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} /></a>
         <div style={{
           display: 'flex', alignItems: 'center',
           background: searchFocused ? 'white' : '#f3f4f6',
@@ -202,7 +202,7 @@ export default function NovaSolucaoPage() {
           <button style={{ fontSize: 14, fontWeight: 500, color: '#374151', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>Marketplace ▾</button>
           <button style={{ fontSize: 14, fontWeight: 500, color: '#374151', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>Vender ▾</button>
           <div style={{ width: 1, height: 20, background: BORDER }} />
-          <div style={{ width: 32, height: 32, background: ACCENT, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>C</div>
+          <a href="/dashboard/criador/configuracoes" style={{ textDecoration: 'none' }}><div style={{ width: 32, height: 32, background: ACCENT, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }} onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'scale(1.05)'; }} onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)'; }}>C</div></a>
         </div>
       </nav>
 

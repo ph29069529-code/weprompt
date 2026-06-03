@@ -1,6 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
+import { supabase } from "../../../lib/supabase";
 
 const CRIADOR_TABS = ["Dashboard", "Minhas Soluções", "Vendas", "Configurações"];
 
@@ -35,10 +37,12 @@ export default function ConfiguracoesPage() {
   const router = useRouter();
   const [hoveredTab, setHoveredTab] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
 
-  const [nome, setNome] = useState("Carlos Mendes");
-  const [bio, setBio] = useState("Especialista em automações e IA para pequenas empresas.");
-  const [handle, setHandle] = useState("carlosmendes");
+  const [nome, setNome] = useState("");
+  const [bio, setBio] = useState("");
+  const [handle, setHandle] = useState("");
   const [saving, setSaving] = useState(false);
 
   const [notifVenda, setNotifVenda] = useState(true);
@@ -51,6 +55,26 @@ export default function ConfiguracoesPage() {
 
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) { router.replace("/login"); return; }
+      setUserEmail(session.user.email || "");
+      supabase.from("profiles").select("nome").eq("id", session.user.id).single()
+        .then(({ data }) => { if (data?.nome) setNome(data.nome); });
+    });
+  }, [router]);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    await supabase.auth.signOut();
+    router.push("/");
+  }
+
+  async function handleSwitchAccount() {
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
 
   const fi = e => { e.target.style.borderColor = "#2563EB"; e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)"; };
   const fb = e => { e.target.style.borderColor = "#e5e7eb"; e.target.style.boxShadow = "none"; };
@@ -278,6 +302,45 @@ export default function ConfiguracoesPage() {
           </button>
 
         </form>
+
+        {/* CONTA */}
+        <div style={{ ...sectionCard, marginTop: 24 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#111827", margin: "0 0 6px" }}>Conta</h3>
+          {userEmail && (
+            <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 20 }}>Conectado como <strong style={{ color: "#374151" }}>{userEmail}</strong></p>
+          )}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              style={{
+                display: "flex", alignItems: "center", gap: 8,
+                background: "#FEF2F2", color: "#EF4444",
+                border: "1px solid #FECACA", borderRadius: 10,
+                padding: "14px 28px", fontWeight: 600, fontSize: 15,
+                cursor: loggingOut ? "not-allowed" : "pointer",
+                fontFamily: "inherit", transition: "background 0.15s",
+                opacity: loggingOut ? 0.7 : 1,
+              }}
+              onMouseEnter={e => { if (!loggingOut) e.currentTarget.style.background = "#FEE2E2"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "#FEF2F2"; }}
+            >
+              <LogOut size={18} />
+              {loggingOut ? "Saindo…" : "Sair da conta"}
+            </button>
+            <button
+              type="button"
+              onClick={handleSwitchAccount}
+              style={{ fontSize: 14, color: "#6B7280", background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#374151")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#6B7280")}
+            >
+              Entrar em outra conta
+            </button>
+          </div>
+        </div>
+
       </div>
 
       {/* TOAST */}
