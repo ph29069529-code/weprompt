@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "./lib/supabase";
 import { motion } from "framer-motion";
 import {
   ChevronDown,
@@ -31,11 +32,30 @@ const stagger = {
 const vp = { once: true, margin: "-80px" };
 
 /* ─── Navbar ─────────────────────────────────────────────────────── */
+function getDashboardUrl(user) {
+  if (!user) return "/dashboard/empresa";
+  if (user.email === "ph29069529@gmail.com") return "/dashboard/admin";
+  const role = user.user_metadata?.role;
+  if (role === "criador") return "/dashboard/criador";
+  return "/dashboard/empresa";
+}
+
 function Navbar() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [hovLink, setHovLink] = useState(null);
   const [hovCta, setHovCta] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const links = [
     { label: "Soluções", href: "/solucoes" },
@@ -132,25 +152,40 @@ function Navbar() {
 
           {/* Right */}
           <div className="nav-right" style={{ alignItems: "center", gap: 16 }}>
-            <a href="/login"
-              style={{ color: "#6B7280", fontSize: 14, textDecoration: "none" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#0A0F1E")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#6B7280")}>
-              Entrar
-            </a>
-            <button
-              onClick={() => router.push("/cadastro")}
-              onMouseEnter={() => setHovCta(true)}
-              onMouseLeave={() => setHovCta(false)}
-              style={{
-                background: hovCta ? "#6366F1" : "#0A0F1E",
-                color: "#fff",
-                border: "none", borderRadius: 8,
-                padding: "10px 20px", fontSize: 14, fontWeight: 600,
-                cursor: "pointer", transition: "background 0.2s",
-              }}>
-              Começar grátis →
-            </button>
+            {user ? (
+              <a href={getDashboardUrl(user)}
+                onMouseEnter={() => setHovCta(true)}
+                onMouseLeave={() => setHovCta(false)}
+                style={{
+                  background: hovCta ? "#4F46E5" : "#6366F1",
+                  color: "#fff", textDecoration: "none",
+                  borderRadius: 8, padding: "10px 20px",
+                  fontSize: 14, fontWeight: 600, transition: "background 0.2s",
+                }}>
+                Meu Dashboard →
+              </a>
+            ) : (
+              <>
+                <a href="/login"
+                  style={{ color: "#6B7280", fontSize: 14, textDecoration: "none" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#0A0F1E")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "#6B7280")}>
+                  Entrar
+                </a>
+                <button
+                  onClick={() => router.push("/cadastro")}
+                  onMouseEnter={() => setHovCta(true)}
+                  onMouseLeave={() => setHovCta(false)}
+                  style={{
+                    background: hovCta ? "#6366F1" : "#0A0F1E",
+                    color: "#fff", border: "none", borderRadius: 8,
+                    padding: "10px 20px", fontSize: 14, fontWeight: 600,
+                    cursor: "pointer", transition: "background 0.2s",
+                  }}>
+                  Começar grátis →
+                </button>
+              </>
+            )}
           </div>
 
           {/* Hamburger */}
@@ -182,8 +217,14 @@ function Navbar() {
               ))}
             </nav>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 32 }}>
-              <a href="/login" style={{ border: "1.5px solid #E5E7EB", color: "#0A0F1E", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>Entrar</a>
-              <a href="/cadastro" style={{ background: "#0A0F1E", color: "#fff", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>Começar grátis →</a>
+              {user ? (
+                <a href={getDashboardUrl(user)} onClick={() => setMenuOpen(false)} style={{ background: "#6366F1", color: "#fff", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>Meu Dashboard →</a>
+              ) : (
+                <>
+                  <a href="/login" onClick={() => setMenuOpen(false)} style={{ border: "1.5px solid #E5E7EB", color: "#0A0F1E", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>Entrar</a>
+                  <a href="/cadastro" onClick={() => setMenuOpen(false)} style={{ background: "#0A0F1E", color: "#fff", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>Começar grátis →</a>
+                </>
+              )}
             </div>
           </div>
         )}
