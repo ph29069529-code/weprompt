@@ -3,18 +3,18 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request) {
   const authHeader = request.headers.get('Authorization')
-  const token = authHeader?.split(' ')[1]
 
-  if (!token) {
+  if (!authHeader) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    { global: { headers: { Authorization: authHeader } } }
   )
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
