@@ -94,11 +94,7 @@ export default function AdminPage() {
         zIndex: 50,
       }}>
         {/* Left: Logo */}
-        <img
-          src="/logo-icon.png"
-          alt="WePrompt"
-          style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center" }}
-        />
+        <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
 
         {/* Center: Search */}
         <div style={{

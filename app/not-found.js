@@ -5,7 +5,7 @@ import WePromptLogo from "./components/WePromptLogo";
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT  = "#6E6E73";
 const BG_GRAY    = "#F5F5F7";
-const BLUE       = "#0369A1";
+const BLUE       = "#6366F1";
 const BORDER     = "#e5e7eb";
 
 export default function NotFound() {
@@ -100,7 +100,7 @@ export default function NotFound() {
                 gap: 8,
                 transition: "background 0.15s",
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = "#0284C7")}
+              onMouseEnter={e => (e.currentTarget.style.background = "#4F46E5")}
               onMouseLeave={e => (e.currentTarget.style.background = BLUE)}
             >
               Voltar ao início →

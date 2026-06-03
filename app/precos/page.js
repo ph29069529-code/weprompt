@@ -329,11 +329,7 @@ export default function PrecosPage() {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         position: "sticky", top: 0, zIndex: 50,
       }}>
-        <img
-          src="/logo-icon.png" alt="WePrompt"
-          onClick={() => router.push("/")}
-          style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center", cursor: "pointer" }}
-        />
+        <img src="/logo.png" alt="WePrompt" onClick={() => router.push("/")} style={{ width: 160, height: "auto", cursor: "pointer" }} />
         <div style={{
           display: "flex", alignItems: "center",
           background: searchFocused ? "white" : "#f3f4f6",
@@ -564,7 +560,7 @@ export default function PrecosPage() {
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
             <div style={{ maxWidth: 320 }}>
-              <img src="/logo-icon.png" style={{ height: 224, width: "auto", filter: "brightness(0) invert(1)" }} alt="WePrompt" />
+              <img src="/logo-white.png" alt="WePrompt" style={{ height: 96, width: "auto" }} />
               <p style={{ color: "#9ca3af", fontSize: 16, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
                 O 1º marketplace de soluções de IA da América Latina.
               </p>

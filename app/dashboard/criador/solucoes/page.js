@@ -234,7 +234,7 @@ export default function SolucoesPage() {
         top: 0,
         zIndex: 50,
       }}>
-        <img src="/logo-icon.png" alt="WePrompt" style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center" }} />
+        <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
 
         <div style={{
           display: "flex",

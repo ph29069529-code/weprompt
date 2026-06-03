@@ -3,16 +3,15 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { signUp, supabase } from "../lib/supabase";
-import WePromptLogo from "../components/WePromptLogo";
+import { ShieldCheck, MessageCircle, Users } from "lucide-react";
 
-const NEAR_BLACK = "#1D1D1F";
-const GRAY_TEXT  = "#6E6E73";
-const BLUE       = "#0369A1";
+const NEAR_BLACK = "#0A0F1E";
+const GRAY_TEXT  = "#6B7280";
+const ACCENT     = "#6366F1";
+const ACCENT_HOVER = "#4F46E5";
 
 function useWindowSize() {
-  const [width, setWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
-  );
+  const [width, setWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
   useEffect(() => {
     function onResize() { setWidth(window.innerWidth); }
     window.addEventListener("resize", onResize);
@@ -25,7 +24,7 @@ const inputBase = {
   width: "100%",
   padding: "14px 16px",
   borderRadius: 12,
-  border: "1px solid #e5e7eb",
+  border: "1px solid #D1D5DB",
   fontSize: 15,
   color: NEAR_BLACK,
   background: "#fff",
@@ -34,6 +33,12 @@ const inputBase = {
   fontFamily: "inherit",
   transition: "border-color 0.15s, box-shadow 0.15s",
 };
+
+const PILLS = [
+  { Icon: ShieldCheck, label: "Soluções testadas e curadas" },
+  { Icon: MessageCircle, label: "Suporte em português" },
+  { Icon: Users, label: "Comunidade exclusiva" },
+];
 
 const EyeIcon = ({ open }) => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -52,87 +57,37 @@ const EyeIcon = ({ open }) => (
   </svg>
 );
 
-function DecorativeSide() {
+function BrandSide() {
   return (
     <div style={{
-      width: "50%", flexShrink: 0,
-      background: "linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)",
-      position: "relative", overflow: "hidden",
-      display: "flex", flexDirection: "column",
-      alignItems: "flex-start", justifyContent: "center",
+      width: "50%", flexShrink: 0, background: "#0A0F1E",
+      display: "flex", alignItems: "center", justifyContent: "center",
       padding: "64px 56px",
     }}>
-      <style>{`
-        @keyframes floatOrb {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-24px); }
-        }
-      `}</style>
-
-      {/* Floating orbs */}
-      <div style={{
-        position: "absolute", top: "8%", right: "8%",
-        width: 240, height: 240, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(3,105,161,0.12) 0%, transparent 70%)",
-        animation: "floatOrb 7s ease-in-out infinite",
-        pointerEvents: "none",
-      }} />
-      <div style={{
-        position: "absolute", bottom: "12%", left: "-4%",
-        width: 180, height: 180, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)",
-        animation: "floatOrb 9s ease-in-out infinite 1.5s",
-        pointerEvents: "none",
-      }} />
-      <div style={{
-        position: "absolute", top: "45%", right: "2%",
-        width: 100, height: 100, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(3,105,161,0.08) 0%, transparent 70%)",
-        animation: "floatOrb 5s ease-in-out infinite 3s",
-        pointerEvents: "none",
-      }} />
-
-      {/* WePrompt mark */}
-      <div style={{
-        width: 52, height: 52, borderRadius: 14,
-        background: BLUE,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        marginBottom: 36,
-      }}>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-            stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
-
-      {/* Quote */}
-      <blockquote style={{
-        fontSize: "clamp(22px, 2.4vw, 34px)",
-        fontWeight: 800, letterSpacing: "-1px",
-        color: NEAR_BLACK, lineHeight: 1.2,
-        margin: "0 0 48px",
-        maxWidth: 380,
-      }}>
-        "O 1º marketplace de soluções de IA da América Latina"
-      </blockquote>
-
-      {/* Stat chips */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {[
-          { label: "500+",    sub: "Soluções publicadas" },
-          { label: "180+",    sub: "Criadores ativos" },
-          { label: "10.000+", sub: "Empresas alcançadas" },
-        ].map(({ label, sub }) => (
-          <div key={sub} style={{
-            display: "inline-flex", alignItems: "center", gap: 14,
-            background: "#fff", borderRadius: 999, padding: "12px 22px",
-            boxShadow: "0 4px 20px rgba(3,105,161,0.1)",
-            alignSelf: "flex-start",
-          }}>
-            <span style={{ fontSize: 18, fontWeight: 800, color: BLUE }}>{label}</span>
-            <span style={{ fontSize: 13, color: GRAY_TEXT }}>{sub}</span>
-          </div>
-        ))}
+      <div style={{ maxWidth: 360, width: "100%" }}>
+        <img src="/logo-white.png" alt="WePrompt" style={{ width: 140, height: "auto" }} />
+        <p style={{
+          color: "#fff", fontSize: 32, fontWeight: 800,
+          lineHeight: 1.2, margin: "32px 0 0", letterSpacing: "-0.03em",
+        }}>
+          IA que trabalha pelo seu negócio.
+        </p>
+        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 16, marginTop: 16, lineHeight: 1.6 }}>
+          Marketplace de soluções de IA para o Brasil.
+        </p>
+        <div style={{ marginTop: 40, display: "flex", flexDirection: "column", gap: 12 }}>
+          {PILLS.map(({ Icon, label }) => (
+            <div key={label} style={{
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 12, padding: "14px 20px",
+              display: "flex", alignItems: "center", gap: 12,
+            }}>
+              <Icon size={20} color={ACCENT} />
+              <span style={{ color: "#fff", fontSize: 14, fontWeight: 500 }}>{label}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -168,16 +123,14 @@ function CadastroForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    setError(""); setSuccess("");
     if (!role) { setError("Selecione se você é Criador ou Empresa."); return; }
     if (!termsAccepted) { setError("Aceite os Termos de Uso para continuar."); return; }
     setLoading(true);
 
     if (existingUser) {
       const { error: profileError } = await supabase
-        .from("profiles")
-        .insert({ id: existingUser.id, nome, role });
+        .from("profiles").insert({ id: existingUser.id, nome, role });
       if (profileError) {
         setError(profileError.message || "Erro ao salvar perfil. Tente novamente.");
         setLoading(false);
@@ -200,7 +153,6 @@ function CadastroForm() {
       return;
     }
 
-    // Fire-and-forget welcome email
     fetch("/api/emails/boas-vindas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -209,8 +161,7 @@ function CadastroForm() {
 
     if (data.session) {
       const { error: profileError } = await supabase
-        .from("profiles")
-        .insert({ id: data.session.user.id, nome, role });
+        .from("profiles").insert({ id: data.session.user.id, nome, role });
       if (profileError) console.error("[cadastro] profile insert error:", profileError);
       router.replace(redirectTo || (role === "criador" ? "/dashboard/criador" : "/dashboard/empresa"));
     } else {
@@ -221,21 +172,21 @@ function CadastroForm() {
   }
 
   const focusInput = e => {
-    e.target.style.borderColor = BLUE;
-    e.target.style.boxShadow = "0 0 0 3px rgba(3,105,161,0.1)";
+    e.target.style.borderColor = ACCENT;
+    e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.1)";
   };
   const blurInput = e => {
-    e.target.style.borderColor = "#e5e7eb";
+    e.target.style.borderColor = "#D1D5DB";
     e.target.style.boxShadow = "none";
   };
 
   const strengthSegments = Math.min(Math.floor(senha.length / 2), 4);
-  const strengthColor = senha.length >= 8 ? "#15803D" : BLUE;
+  const strengthColor = senha.length >= 8 ? "#15803D" : ACCENT;
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif" }}>
 
-      {/* ── LEFT: Form ── */}
+      {/* LEFT: Form */}
       <div style={{
         flex: 1, background: "#fff",
         display: "flex", flexDirection: "column",
@@ -245,25 +196,22 @@ function CadastroForm() {
       }}>
         <div style={{ width: "100%", maxWidth: 420 }}>
 
-          {/* Logo */}
           <a href="/" style={{ textDecoration: "none", display: "inline-block", marginBottom: 36 }}>
-            <WePromptLogo id="cadastro-form" textColor={NEAR_BLACK} />
+            <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
           </a>
 
-          {/* Heading */}
           <h1 style={{
-            fontSize: 30, fontWeight: 800, letterSpacing: "-0.8px",
+            fontSize: 30, fontWeight: 800, letterSpacing: "-0.03em",
             color: NEAR_BLACK, marginBottom: 8,
           }}>
-            {existingUser ? "Complete seu perfil" : "Criar sua conta"}
+            {existingUser ? "Complete seu perfil" : "Crie sua conta"}
           </h1>
           <p style={{ fontSize: 16, color: GRAY_TEXT, marginBottom: 28, lineHeight: 1.5 }}>
             {existingUser
               ? "Falta pouco! Preencha seu nome e escolha seu perfil."
-              : "Junte-se ao 1º marketplace de IA da América Latina."}
+              : "Grátis para começar. Sem cartão de crédito."}
           </p>
 
-          {/* Form */}
           <form onSubmit={handleSubmit}>
 
             {/* Role selector */}
@@ -281,16 +229,18 @@ function CadastroForm() {
                     onClick={() => setRole(opt.value)}
                     style={{
                       padding: "16px 14px", borderRadius: 14, textAlign: "left",
-                      border: `2px solid ${role === opt.value ? BLUE : "#e5e7eb"}`,
-                      background: role === opt.value ? "rgba(3,105,161,0.05)" : "#fff",
+                      border: `2px solid ${role === opt.value ? ACCENT : "#E5E7EB"}`,
+                      background: role === opt.value ? "rgba(99,102,241,0.04)" : "#fff",
                       cursor: "pointer", fontFamily: "inherit",
                       transition: "border-color 0.15s, background 0.15s",
                     }}
-                    onMouseEnter={e => { if (role !== opt.value) e.currentTarget.style.borderColor = "rgba(3,105,161,0.4)"; }}
-                    onMouseLeave={e => { if (role !== opt.value) e.currentTarget.style.borderColor = "#e5e7eb"; }}
+                    onMouseEnter={e => { if (role !== opt.value) e.currentTarget.style.borderColor = "rgba(99,102,241,0.35)"; }}
+                    onMouseLeave={e => { if (role !== opt.value) e.currentTarget.style.borderColor = "#E5E7EB"; }}
                   >
-                    <div style={{ fontSize: 20, marginBottom: 8 }}>{opt.icon}</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: role === opt.value ? BLUE : NEAR_BLACK, marginBottom: 3 }}>
+                    <div style={{ fontSize: 20, marginBottom: 8, color: role === opt.value ? ACCENT : "#9CA3AF" }}>
+                      {opt.icon}
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: role === opt.value ? ACCENT : NEAR_BLACK, marginBottom: 3 }}>
                       {opt.title}
                     </div>
                     <div style={{ fontSize: 12, color: GRAY_TEXT, lineHeight: 1.4 }}>{opt.sub}</div>
@@ -299,7 +249,7 @@ function CadastroForm() {
               </div>
             </div>
 
-            {/* Founder banner — shown when criador is selected */}
+            {/* Founder banner */}
             {role === "criador" && (
               <div style={{
                 background: "#f0fdf4", border: "1px solid #bbf7d0",
@@ -321,8 +271,7 @@ function CadastroForm() {
               <input
                 type="text" required placeholder="Seu nome"
                 value={nome} onChange={e => setNome(e.target.value)}
-                style={inputBase}
-                onFocus={focusInput} onBlur={blurInput}
+                style={inputBase} onFocus={focusInput} onBlur={blurInput}
               />
             </div>
 
@@ -358,19 +307,14 @@ function CadastroForm() {
                     style={{ ...inputBase, paddingRight: 48 }}
                     onFocus={focusInput} onBlur={blurInput}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(p => !p)}
-                    style={{
-                      position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
-                      background: "none", border: "none", cursor: "pointer",
-                      color: GRAY_TEXT, display: "flex", alignItems: "center", padding: 0,
-                    }}
-                  >
+                  <button type="button" onClick={() => setShowPassword(p => !p)} style={{
+                    position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+                    background: "none", border: "none", cursor: "pointer",
+                    color: GRAY_TEXT, display: "flex", alignItems: "center", padding: 0,
+                  }}>
                     <EyeIcon open={showPassword} />
                   </button>
                 </div>
-                {/* Password strength bar */}
                 {senha.length > 0 && (
                   <div style={{ display: "flex", gap: 4, marginTop: 8 }}>
                     {[1, 2, 3, 4].map(n => (
@@ -385,33 +329,28 @@ function CadastroForm() {
               </div>
             )}
 
-            {/* Terms checkbox */}
+            {/* Terms */}
             <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 22 }}>
               <input
                 type="checkbox" id="terms"
                 checked={termsAccepted}
                 onChange={e => setTermsAccepted(e.target.checked)}
-                style={{ marginTop: 3, accentColor: BLUE, width: 16, height: 16, flexShrink: 0, cursor: "pointer" }}
+                style={{ marginTop: 3, accentColor: ACCENT, width: 16, height: 16, flexShrink: 0, cursor: "pointer" }}
               />
               <label htmlFor="terms" style={{ fontSize: 13, color: GRAY_TEXT, lineHeight: 1.5, cursor: "pointer" }}>
                 Li e aceito os{" "}
-                <a href="/para-criadores/termos" style={{ color: BLUE, textDecoration: "none" }}
+                <a href="/para-criadores/termos" style={{ color: ACCENT, textDecoration: "none" }}
                   onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
                   onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
-                >
-                  Termos de Uso
-                </a>{" "}
+                >Termos de Uso</a>{" "}
                 e a{" "}
-                <a href="/para-empresas/termos" style={{ color: BLUE, textDecoration: "none" }}
+                <a href="/para-empresas/termos" style={{ color: ACCENT, textDecoration: "none" }}
                   onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
                   onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
-                >
-                  Política de Privacidade
-                </a>
+                >Política de Privacidade</a>
               </label>
             </div>
 
-            {/* Error */}
             {error && (
               <div style={{
                 background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.18)",
@@ -421,8 +360,6 @@ function CadastroForm() {
                 {error}
               </div>
             )}
-
-            {/* Success */}
             {success && (
               <div style={{
                 background: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.18)",
@@ -433,29 +370,24 @@ function CadastroForm() {
               </div>
             )}
 
-            {/* Submit */}
-            <button
-              type="submit" disabled={loading}
-              style={{
-                width: "100%", padding: "14px",
-                background: loading ? "rgba(3,105,161,0.5)" : BLUE,
-                color: "#fff", border: "none",
-                borderRadius: 12, fontSize: 15, fontWeight: 700,
-                cursor: loading ? "not-allowed" : "pointer",
-                fontFamily: "inherit",
-                transition: "background 0.15s",
-              }}
-              onMouseEnter={e => { if (!loading) e.currentTarget.style.background = "#0284C7"; }}
-              onMouseLeave={e => { if (!loading) e.currentTarget.style.background = BLUE; }}
+            <button type="submit" disabled={loading} style={{
+              width: "100%", padding: "14px",
+              background: loading ? "rgba(99,102,241,0.5)" : ACCENT,
+              color: "#fff", border: "none", borderRadius: 10,
+              fontSize: 15, fontWeight: 700,
+              cursor: loading ? "not-allowed" : "pointer",
+              fontFamily: "inherit", transition: "background 0.15s",
+            }}
+              onMouseEnter={e => { if (!loading) e.currentTarget.style.background = ACCENT_HOVER; }}
+              onMouseLeave={e => { if (!loading) e.currentTarget.style.background = ACCENT; }}
             >
               {loading ? "Criando conta…" : "Criar conta"}
             </button>
           </form>
 
-          {/* Already have account */}
           <p style={{ fontSize: 13, color: GRAY_TEXT, textAlign: "center", marginTop: 24 }}>
             Já tenho conta{" "}
-            <a href="/login" style={{ color: BLUE, fontWeight: 600, textDecoration: "none" }}
+            <a href="/login" style={{ color: ACCENT, fontWeight: 600, textDecoration: "none" }}
               onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
               onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
             >
@@ -466,9 +398,7 @@ function CadastroForm() {
         </div>
       </div>
 
-      {/* ── RIGHT: Decorative ── */}
-      {!isMobile && <DecorativeSide />}
-
+      {!isMobile && <BrandSide />}
     </div>
   );
 }

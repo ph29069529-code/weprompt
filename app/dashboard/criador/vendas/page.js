@@ -47,7 +47,7 @@ export default function VendasPage() {
         alignItems: "center", justifyContent: "space-between",
         position: "sticky", top: 0, zIndex: 50,
       }}>
-        <img src="/logo-icon.png" alt="WePrompt" style={{ height: 32, width: 160, objectFit: "cover", objectPosition: "center" }} />
+        <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
         <div style={{
           display: "flex", alignItems: "center",
           background: searchFocused ? "white" : "#f3f4f6",
