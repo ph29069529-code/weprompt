@@ -20,24 +20,25 @@ export async function POST(request) {
   }
 
   const body = await request.json()
-  const {
-    nome, descricao, descricao_curta, categoria, preco,
-    payment_type, cover_url, delivery_type, access_url,
-    requirements, support_channel, demo_url,
-    agent_system_prompt, status
-  } = body
 
   const { data, error } = await supabase
     .from('solutions')
     .insert({
-      criador_id: user.id,
-      nome, descricao, descricao_curta, categoria,
-      preco: Number(preco),
-      payment_type: payment_type || 'subscription',
-      cover_url, delivery_type: delivery_type || 'external_link',
-      access_url, requirements, support_channel,
-      demo_url, agent_system_prompt,
-      status: status || 'pending'
+      creator_id: user.id,
+      titulo: body.nome,
+      descricao: body.descricao,
+      descricao_curta: body.descricao_curta,
+      categoria: body.categoria,
+      preco: Number(body.preco),
+      payment_type: body.payment_type || 'subscription',
+      cover_url: body.cover_url,
+      delivery_type: body.delivery_type || 'external_link',
+      access_url: body.access_url,
+      requirements: body.requirements,
+      support_channel: body.support_channel,
+      demo_url: body.demo_url,
+      agent_system_prompt: body.agent_system_prompt,
+      status: body.status || 'pending'
     })
     .select()
     .single()

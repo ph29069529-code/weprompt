@@ -65,7 +65,6 @@ function SkeletonCard() {
 }
 
 function SolutionCard({ solution }) {
-  const title       = solution.nome || solution.titulo || "Solução";
   const gradient    = CATEGORY_GRADIENTS[solution.categoria] || "linear-gradient(135deg, #1e3a5f, #2563EB)";
   const label       = paymentLabel(solution.payment_type);
   const badge       = PAYMENT_BADGE[label] || PAYMENT_BADGE["Mensal"];
@@ -97,7 +96,7 @@ function SolutionCard({ solution }) {
         {solution.cover_url ? (
           <img
             src={solution.cover_url}
-            alt={title}
+            alt={solution.titulo}
             style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
           />
         ) : (
@@ -108,7 +107,7 @@ function SolutionCard({ solution }) {
             padding: 24, boxSizing: "border-box",
           }}>
             <span style={{ fontSize: 16, fontWeight: 700, color: "#fff", textAlign: "center", lineHeight: 1.4 }}>
-              {title}
+              {solution.titulo}
             </span>
           </div>
         )}
@@ -136,7 +135,7 @@ function SolutionCard({ solution }) {
 
         {/* Title */}
         <h2 style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginTop: 10, lineHeight: 1.35, margin: "10px 0 0" }}>
-          {title}
+          {solution.titulo}
         </h2>
 
         {/* Description — 2-line clamp */}
@@ -226,9 +225,8 @@ export default function SolucoesPage() {
   const filtered = solutions.filter(s => {
     const matchCat = activeCategory === "Todos" || s.categoria === activeCategory;
     const q = searchQuery.trim().toLowerCase();
-    const title = s.nome || s.titulo || "";
     const matchSearch = !q
-      || title.toLowerCase().includes(q)
+      || s.titulo?.toLowerCase().includes(q)
       || s.descricao?.toLowerCase().includes(q);
     return matchCat && matchSearch;
   });
