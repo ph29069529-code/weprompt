@@ -437,11 +437,11 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
 
         {solution.status === "pending" && (
           <div style={{ padding: "16px 24px", borderTop: `1px solid ${BORDER}`, display: "flex", gap: 10, flexShrink: 0, background: "#fff" }}>
-            <button onClick={() => onApprove(solution.id)} disabled={isLoading} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: isLoading ? "rgba(5,150,105,0.4)" : GREEN, color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}
+            <button onClick={() => { if (!isLoading) onApprove(solution.id); }} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: isLoading ? "rgba(5,150,105,0.4)" : GREEN, color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.7 : 1, pointerEvents: "auto", fontFamily: "inherit" }}
               onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = "#047857"; }} onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = GREEN; }}>
               <Icon d={icons.check} size={16} /> Aprovar solução
             </button>
-            <button onClick={() => onReject(solution)} disabled={isLoading} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: "transparent", color: DANGER, border: "1.5px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}
+            <button onClick={() => { if (!isLoading) onReject(solution); }} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: "transparent", color: DANGER, border: "1.5px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.7 : 1, pointerEvents: "auto", fontFamily: "inherit" }}
               onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = "rgba(220,38,38,0.07)"; }} onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = "transparent"; }}>
               <Icon d={icons.x} size={16} /> Reprovar
             </button>
@@ -796,15 +796,15 @@ function SolucoesTab({ solutions, onApprove, onConfirmReject, onPause, onReactiv
                             <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver</button>
                             {s.status === "pending" && (
                               <>
-                                <button onClick={() => onApprove(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Aprovar</button>
-                                <button onClick={() => { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); }} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Reprovar</button>
+                                <button onClick={() => { if (!isLoading) onApprove(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Aprovar</button>
+                                <button onClick={() => { if (!isLoading) { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); } }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Reprovar</button>
                               </>
                             )}
                             {s.status === "approved" && (
-                              <button onClick={() => onPause(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(107,114,128,0.1)", color: "#4B5563", fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Pausar</button>
+                              <button onClick={() => { if (!isLoading) onPause(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(107,114,128,0.1)", color: "#4B5563", fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Pausar</button>
                             )}
                             {s.status === "paused" && (
-                              <button onClick={() => onReactivate(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Reativar</button>
+                              <button onClick={() => { if (!isLoading) onReactivate(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Reativar</button>
                             )}
                           </div>
                         </td>
@@ -982,8 +982,8 @@ function DashboardTab({ solutions, profiles, onApprove, onConfirmReject, onView,
                         <td style={{ padding: "12px 16px" }}>
                           <div style={{ display: "flex", gap: 6 }}>
                             <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver</button>
-                            <button onClick={() => onApprove(s.id)} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Aprovar</button>
-                            <button onClick={() => { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); }} disabled={isLoading} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>Reprovar</button>
+                            <button onClick={() => { if (!isLoading) onApprove(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Aprovar</button>
+                            <button onClick={() => { if (!isLoading) { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); } }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Reprovar</button>
                           </div>
                         </td>
                       </tr>

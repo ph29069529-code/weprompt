@@ -1,3 +1,6 @@
+// Seed data cleanup — run once in Supabase SQL editor:
+// DELETE FROM solutions WHERE creator_id = '00000000-0000-0000-0000-000000000000';
+
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
