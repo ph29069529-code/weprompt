@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, Fragment } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
@@ -2669,9 +2670,9 @@ export default function AdminDashboard() {
         {/* Logo + Admin badge */}
         <div style={{ padding: "20px 20px 14px", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <a href="/" style={{ textDecoration: "none" }}>
+            <Link href="/" style={{ textDecoration: "none" }}>
               <WePromptLogo id="admin-sidebar" dark />
-            </a>
+            </Link>
             <span style={{ background: DANGER, color: "#fff", fontSize: 9, fontWeight: 800, padding: "2px 7px", borderRadius: 99, letterSpacing: "0.5px", textTransform: "uppercase", flexShrink: 0 }}>
               Admin
             </span>
@@ -2719,7 +2720,7 @@ export default function AdminDashboard() {
         {isMobile && (
           <div style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${BORDER}`, padding: "0 16px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <a href="/" style={{ textDecoration: "none" }}><WePromptLogo id="admin-mobile" dark /></a>
+              <Link href="/" style={{ textDecoration: "none" }}><WePromptLogo id="admin-mobile" dark /></Link>
               <span style={{ background: DANGER, color: "#fff", fontSize: 9, fontWeight: 800, padding: "2px 7px", borderRadius: 99, letterSpacing: "0.5px", textTransform: "uppercase" }}>Admin</span>
             </div>
             <button onClick={() => setSidebarOpen(o => !o)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 22, color: NEAR_BLACK, padding: "4px 8px", display: "flex", alignItems: "center" }}>

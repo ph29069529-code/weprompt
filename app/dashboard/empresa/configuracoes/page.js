@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
+import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
 const TABS = [
@@ -69,21 +70,21 @@ export default function EmpresaConfiguracoesPage() {
 
       {/* NAVBAR */}
       <nav style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
-        <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
           <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
-        </a>
+        </Link>
         <div style={{ display: "flex", alignItems: "center", background: searchFocused ? "white" : "#f3f4f6", borderRadius: 8, padding: "8px 16px", width: 360, gap: 8, border: searchFocused ? "1px solid #6366F1" : "1px solid transparent", boxShadow: searchFocused ? "0 0 0 3px rgba(99,102,241,0.1)" : "none", transition: "all 0.2s ease" }}>
           <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" /></svg>
           <input placeholder="Buscar soluções..." onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)} style={{ fontSize: 14, border: "none", background: "transparent", outline: "none", flex: 1, color: "#374151" }} />
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <a href="/dashboard/empresa/configuracoes" style={{ textDecoration: "none" }}>
+          <Link href="/dashboard/empresa/configuracoes" style={{ textDecoration: "none" }}>
             <div style={{ width: 32, height: 32, background: "#6366F1", borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}
               onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.transform = "scale(1.05)"; }}
               onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "scale(1)"; }}>
               {initials}
             </div>
-          </a>
+          </Link>
         </div>
       </nav>
 

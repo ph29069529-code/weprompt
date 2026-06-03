@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from 'next/link'
 import { useRouter } from "next/navigation";
 
 const CRIADOR_TABS = ["Dashboard", "Minhas Soluções", "Vendas", "Configurações"];
@@ -47,7 +48,7 @@ export default function VendasPage() {
         alignItems: "center", justifyContent: "space-between",
         position: "sticky", top: 0, zIndex: 50,
       }}>
-        <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}><img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} /></a>
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}><img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} /></Link>
         <div style={{
           display: "flex", alignItems: "center",
           background: searchFocused ? "white" : "#f3f4f6",
@@ -77,7 +78,7 @@ export default function VendasPage() {
             </svg>
             <span style={{ width: 8, height: 8, background: "#ef4444", borderRadius: 999, position: "absolute", top: -2, right: -2 }} />
           </button>
-          <a href="/dashboard/criador/configuracoes" style={{ textDecoration: "none" }}><div style={{ width: 32, height: 32, background: "#6366F1", borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }} onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.transform = "scale(1.05)"; }} onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "scale(1)"; }}>C</div></a>
+          <Link href="/dashboard/criador/configuracoes" style={{ textDecoration: "none" }}><div style={{ width: 32, height: 32, background: "#6366F1", borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }} onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.transform = "scale(1.05)"; }} onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "scale(1)"; }}>C</div></Link>
         </div>
       </nav>
 

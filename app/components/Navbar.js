@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import WePromptLogo from "./WePromptLogo";
 import { supabase } from "../lib/supabase";
 
@@ -427,11 +428,11 @@ export default function Navbar() {
           }}
         >
           {/* Logo */}
-          <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
+          <Link href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
             <div style={{ height: 40, overflow: "hidden" }}>
               <WePromptLogo id="navbar-logo" />
             </div>
-          </a>
+          </Link>
 
           {/* Center nav — desktop only */}
           {!isMobile && (

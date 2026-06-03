@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { supabase } from "../../../lib/supabase";
 
@@ -107,7 +108,7 @@ export default function ConfiguracoesPage() {
         alignItems: "center", justifyContent: "space-between",
         position: "sticky", top: 0, zIndex: 50,
       }}>
-        <img src="/logo.png" alt="WePrompt" onClick={() => router.push("/")} style={{ width: 160, height: "auto", cursor: "pointer" }} />
+        <Link href="/"><img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto", cursor: "pointer" }} /></Link>
         <div style={{
           display: "flex", alignItems: "center",
           background: searchFocused ? "white" : "#f3f4f6",
@@ -137,10 +138,13 @@ export default function ConfiguracoesPage() {
             </svg>
             <span style={{ width: 8, height: 8, background: "#ef4444", borderRadius: 999, position: "absolute", top: -2, right: -2 }} />
           </button>
-          <div
-            onClick={() => router.push("/criadores/00000000-0000-0000-0000-000000000001")}
-            style={{ width: 32, height: 32, background: "#7c3aed", borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
-          >C</div>
+          <Link href="/dashboard/criador/configuracoes" style={{ textDecoration: "none" }}>
+            <div style={{ width: 32, height: 32, background: "#6366F1", borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.transform = "scale(1.05)"; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "scale(1)"; }}>
+              C
+            </div>
+          </Link>
         </div>
       </nav>
 
