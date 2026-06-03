@@ -23,3 +23,20 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut();
   return { error };
 }
+
+export async function uploadSolutionImage(file, userId) {
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${userId}/${Date.now()}.${fileExt}`
+
+  const { error } = await supabase.storage
+    .from('solution-covers')
+    .upload(fileName, file, { upsert: true })
+
+  if (error) throw error
+
+  const { data: { publicUrl } } = supabase.storage
+    .from('solution-covers')
+    .getPublicUrl(fileName)
+
+  return publicUrl
+}

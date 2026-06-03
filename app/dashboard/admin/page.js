@@ -287,7 +287,7 @@ function RejectDialog({ solution, onConfirm, onClose }) {
         </div>
         <h2 style={{ fontSize: 18, fontWeight: 800, color: NEAR_BLACK, margin: "0 0 8px" }}>Reprovar solução</h2>
         <p style={{ fontSize: 14, color: GRAY_TEXT, margin: "0 0 20px" }}>
-          <strong style={{ color: NEAR_BLACK }}>{solution.titulo}</strong> — informe o motivo da reprovação.
+          <strong style={{ color: NEAR_BLACK }}>{solution.nome || solution.titulo}</strong> — informe o motivo da reprovação.
         </p>
         <textarea autoFocus rows={4}
           placeholder="Ex: Descrição insuficiente, categoria incorreta, conteúdo inadequado…"
@@ -367,7 +367,7 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
             <span style={{ background: "#e0f2fe", color: BLUE, fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99 }}>{solution.categoria}</span>
             <StatusBadge status={solution.payment_type === "one_time" ? "venda" : "assinatura"} />
           </div>
-          <h3 style={{ fontSize: 20, fontWeight: 800, color: NEAR_BLACK, margin: "0 0 10px", letterSpacing: "-0.3px" }}>{solution.titulo}</h3>
+          <h3 style={{ fontSize: 20, fontWeight: 800, color: NEAR_BLACK, margin: "0 0 10px", letterSpacing: "-0.3px" }}>{solution.nome || solution.titulo}</h3>
           <p style={{ fontSize: 14, color: GRAY_TEXT, lineHeight: 1.7, margin: "0 0 12px", whiteSpace: "pre-line" }}>{solution.descricao}</p>
           <div style={{ fontSize: 18, fontWeight: 700, color: NEAR_BLACK, marginBottom: 4 }}>{priceLabel}</div>
           <div style={{ height: 1, background: BORDER, margin: "20px 0" }} />
@@ -782,10 +782,10 @@ function SolucoesTab({ solutions, onApprove, onConfirmReject, onPause, onReactiv
                                 ? <img src={s.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                                 : <span style={{ color: BLUE, opacity: 0.5 }}>✦</span>}
                             </div>
-                            <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.titulo}</span>
+                            <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.nome || s.titulo || "—"}</span>
                           </div>
                         </td>
-                        <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.profiles?.nome || "—"}</td>
+                        <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.profiles?.nome || s.creator?.nome || "—"}</td>
                         <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.categoria || "—"}</td>
                         <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>
                           {s.preco != null ? `R$ ${Number(s.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Grátis"}
@@ -973,10 +973,10 @@ function DashboardTab({ solutions, profiles, onApprove, onConfirmReject, onView,
                             <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center" }}>
                               {s.cover_url ? <img src={s.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: BLUE, opacity: 0.5 }}>✦</span>}
                             </div>
-                            <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.titulo}</span>
+                            <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.nome || s.titulo || "—"}</span>
                           </div>
                         </td>
-                        <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.profiles?.nome || "—"}</td>
+                        <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.profiles?.nome || s.creator?.nome || "—"}</td>
                         <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.categoria || "—"}</td>
                         <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{formatDate(s.created_at)}</td>
                         <td style={{ padding: "12px 16px" }}>
@@ -2547,7 +2547,7 @@ export default function AdminDashboard() {
       setProfile(prof);
 
       const [solRes, profRes] = await Promise.all([
-        supabase.from("solutions").select("*, profiles:creator_id(nome)").order("created_at", { ascending: false }),
+        supabase.from("solutions").select("*, profiles:criador_id(nome), creator:creator_id(nome)").order("created_at", { ascending: false }),
         supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       ]);
       if (solRes.data)  setSolutions(solRes.data);
@@ -2561,18 +2561,20 @@ export default function AdminDashboard() {
     setActionLoading(id);
     const sol = solutions.find(s => s.id === id);
     const version = sol?.version || 1;
+    const solTitle = sol?.nome || sol?.titulo || "Solução";
+    const ownerId = sol?.criador_id || sol?.creator_id;
     await supabase.from("solutions").update({ status: "approved", last_approved_version: version }).eq("id", id);
-    if (sol?.creator_id) {
+    if (ownerId) {
       supabase.from("notifications").insert({
-        user_id: sol.creator_id,
+        user_id: ownerId,
         type: "aprovacao",
         title: "Sua solução foi aprovada! 🎉",
-        message: `${sol.titulo} já está disponível no catálogo.`,
+        message: `${solTitle} já está disponível no catálogo.`,
         link: "/dashboard/criador",
       }).catch(console.error);
       fetch("/api/send-email", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "solution_approved", user_id: sol.creator_id, solution_titulo: sol.titulo }),
+        body: JSON.stringify({ type: "solution_approved", user_id: ownerId, solution_titulo: solTitle }),
       }).catch(console.error);
     }
     setSolutions(prev => prev.map(s => s.id === id ? { ...s, status: "approved", last_approved_version: version } : s));
@@ -2585,10 +2587,12 @@ export default function AdminDashboard() {
 
   async function handleConfirmReject(solution, reason) {
     setActionLoading(solution.id);
+    const solTitle = solution.nome || solution.titulo || "Solução";
+    const ownerId = solution.criador_id || solution.creator_id;
     await supabase.from("solutions").update({ status: "rejected", rejection_reason: reason }).eq("id", solution.id);
-    if (solution.creator_id) {
+    if (ownerId) {
       supabase.from("notifications").insert({
-        user_id: solution.creator_id,
+        user_id: ownerId,
         type: "sistema",
         title: "Solução não aprovada",
         message: `Motivo: ${reason}. Você pode editar e reenviar para análise.`,
@@ -2596,7 +2600,7 @@ export default function AdminDashboard() {
       }).catch(console.error);
       fetch("/api/send-email", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "solution_rejected", user_id: solution.creator_id, solution_titulo: solution.titulo, rejection_reason: reason }),
+        body: JSON.stringify({ type: "solution_rejected", user_id: ownerId, solution_titulo: solTitle, rejection_reason: reason }),
       }).catch(console.error);
     }
     setSolutions(prev => prev.map(s => s.id === solution.id ? { ...s, status: "rejected", rejection_reason: reason } : s));
