@@ -10,6 +10,7 @@ const ICONS_ROW1 = [
   { name: "HubSpot",       src: "https://cdn.simpleicons.org/hubspot/FF7A59" },
   { name: "Zapier",        src: "https://cdn.simpleicons.org/zapier/FF4A00" },
   { name: "Instagram",     src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" },
+  { name: "YouTube",       src: "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" },
 ]
 
 const ICONS_ROW2 = [
@@ -19,8 +20,7 @@ const ICONS_ROW2 = [
   { name: "LinkedIn",      src: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" },
   { name: "Airtable",      src: "https://cdn.simpleicons.org/airtable/18BFFF" },
   { name: "n8n",           src: "https://cdn.simpleicons.org/n8n/EA4B71" },
-  { name: "Make",          src: "https://images.ctfassets.net/qqlj6g4ee76j/3FGbroMBMPBb8QGjNeiCBa/7b5733e7d2d2ede90dd8abe87a32ce5c/make-logo-symbol.png" },
-  { name: "YouTube",       src: "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" },
+  { name: "Spotify",       src: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" },
 ]
 
 const row1Items = [...ICONS_ROW1, ...ICONS_ROW1, ...ICONS_ROW1, ...ICONS_ROW1]

@@ -19,7 +19,7 @@ import {
   Link,
   Share2,
 } from "lucide-react";
-import HeroParallax from "./components/HeroParallax";
+import ParticleHero from "./components/ParticleHero";
 import IntegrationMarquee from "./components/IntegrationMarquee";
 
 /* ─── Animation helpers ──────────────────────────────────────────── */
@@ -739,29 +739,11 @@ const Footer = () => (
 );
 
 /* ─── Page ───────────────────────────────────────────────────────── */
-const products = [
-  { title: "Secretária de WhatsApp",    link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=600&q=80" },
-  { title: "Agente de Prospecção",       link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80" },
-  { title: "Gerador de Conteúdo",        link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&q=80" },
-  { title: "Automação de E-mail",        link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&q=80" },
-  { title: "Análise de Dados",           link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" },
-  { title: "Chatbot de Vendas",          link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80" },
-  { title: "Resumidor de Reuniões",      link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80" },
-  { title: "Criador de Propostas",       link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&q=80" },
-  { title: "Monitor de Redes Sociais",   link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=600&q=80" },
-  { title: "Assistente Jurídico",        link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80" },
-  { title: "Copywriter de Anúncios",     link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1542744094-3a31f272c490?w=600&q=80" },
-  { title: "Triagem de CVs",             link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80" },
-  { title: "Precificação Inteligente",   link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80" },
-  { title: "Atendimento ao Cliente",     link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?w=600&q=80" },
-  { title: "Relatório Automático",       link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1543286386-713bdd548da4?w=600&q=80" },
-];
-
 export default function Home() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <Navbar />
-      <HeroParallax products={products} />
+      <ParticleHero />
       <IntegrationMarquee />
       <HowItWorks />
       <Categories />
