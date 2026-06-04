@@ -2,25 +2,25 @@
 import React from 'react'
 
 const ICONS_ROW1 = [
-  { name: "WhatsApp",     src: "https://cdn.simpleicons.org/whatsapp/25D366" },
-  { name: "Gmail",        src: "https://cdn.simpleicons.org/gmail/EA4335" },
-  { name: "Google Sheets",src: "https://cdn.simpleicons.org/googlesheets/34A853" },
-  { name: "Slack",        src: "https://cdn.simpleicons.org/slack/4A154B" },
-  { name: "Notion",       src: "https://cdn.simpleicons.org/notion/000000" },
-  { name: "HubSpot",      src: "https://cdn.simpleicons.org/hubspot/FF7A59" },
-  { name: "Zapier",       src: "https://cdn.simpleicons.org/zapier/FF4A00" },
-  { name: "Typeform",     src: "https://cdn.simpleicons.org/typeform/262627" },
+  { name: "WhatsApp",      src: "https://cdn.simpleicons.org/whatsapp/25D366" },
+  { name: "Gmail",         src: "https://cdn.simpleicons.org/gmail/EA4335" },
+  { name: "Google Sheets", src: "https://cdn.simpleicons.org/googlesheets/34A853" },
+  { name: "Slack",         src: "https://logo.clearbit.com/slack.com" },
+  { name: "Notion",        src: "https://cdn.simpleicons.org/notion/000000" },
+  { name: "HubSpot",       src: "https://cdn.simpleicons.org/hubspot/FF7A59" },
+  { name: "Zapier",        src: "https://cdn.simpleicons.org/zapier/FF4A00" },
+  { name: "Typeform",      src: "https://logo.clearbit.com/typeform.com" },
 ]
 
 const ICONS_ROW2 = [
-  { name: "Google Drive", src: "https://cdn.simpleicons.org/googledrive/4285F4" },
-  { name: "Airtable",     src: "https://cdn.simpleicons.org/airtable/18BFFF" },
-  { name: "Trello",       src: "https://cdn.simpleicons.org/trello/0052CC" },
-  { name: "LinkedIn",     src: "https://cdn.simpleicons.org/linkedin/0A66C2" },
-  { name: "Instagram",    src: "https://cdn.simpleicons.org/instagram/E4405F" },
-  { name: "Telegram",     src: "https://cdn.simpleicons.org/telegram/26A5E4" },
-  { name: "Make",         src: "https://cdn.simpleicons.org/make/6D00CC" },
-  { name: "n8n",          src: "https://cdn.simpleicons.org/n8n/EA4B71" },
+  { name: "Google Drive",  src: "https://cdn.simpleicons.org/googledrive/4285F4" },
+  { name: "Airtable",      src: "https://cdn.simpleicons.org/airtable/18BFFF" },
+  { name: "Trello",        src: "https://cdn.simpleicons.org/trello/0052CC" },
+  { name: "LinkedIn",      src: "https://logo.clearbit.com/linkedin.com" },
+  { name: "Instagram",     src: "https://cdn.simpleicons.org/instagram/E4405F" },
+  { name: "Telegram",      src: "https://cdn.simpleicons.org/telegram/26A5E4" },
+  { name: "Make",          src: "https://logo.clearbit.com/make.com" },
+  { name: "n8n",           src: "https://cdn.simpleicons.org/n8n/EA4B71" },
 ]
 
 const row1Items = [...ICONS_ROW1, ...ICONS_ROW1, ...ICONS_ROW1, ...ICONS_ROW1]
@@ -54,7 +54,7 @@ export default function IntegrationMarquee() {
   return (
     <section style={{
       background: 'white',
-      padding: '80px 0',
+      padding: '64px 0 64px',
       overflow: 'hidden',
       position: 'relative',
     }}>
