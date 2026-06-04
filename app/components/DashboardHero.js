@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
+import HeroDashboard from './HeroDashboard'
 
 export default function DashboardHero() {
   const router = useRouter()
@@ -131,40 +132,34 @@ export default function DashboardHero() {
       {/* 5. Dashboard Preview */}
       <div style={{
         width: '100%',
-        maxWidth: 1000,
+        maxWidth: 900,
+        margin: '0 auto',
         position: 'relative',
         paddingBottom: 80,
       }}>
-        {/* Glow */}
+        {/* Amber/orange glow */}
         <div style={{
           position: 'absolute',
-          top: '-23%',
+          top: '-10%',
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '90%',
+          width: '70%',
+          height: 300,
+          background: 'radial-gradient(ellipse, rgba(251,146,60,0.15) 0%, transparent 70%)',
+          filter: 'blur(40px)',
           pointerEvents: 'none',
           zIndex: 0,
-        }}>
-          <img
-            src="https://i.postimg.cc/Ss6yShGy/glows.png"
-            alt=""
-            style={{ width: '100%', height: 'auto' }}
-          />
-        </div>
+        }} />
 
-        {/* Dashboard image */}
-        <div style={{ position: 'relative', zIndex: 10 }}>
-          <img
-            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=90"
-            alt="WePrompt platform preview"
-            style={{
-              width: '100%',
-              height: 'auto',
-              borderRadius: 12,
-              boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 32px 80px rgba(0,0,0,0.6)',
-              display: 'block',
-            }}
-          />
+        {/* Dashboard component */}
+        <div style={{
+          position: 'relative',
+          zIndex: 10,
+          boxShadow: '0 0 0 1px rgba(255,255,255,0.06), 0 40px 100px rgba(0,0,0,0.7)',
+          borderRadius: 12,
+          overflow: 'hidden',
+        }}>
+          <HeroDashboard />
         </div>
       </div>
 
