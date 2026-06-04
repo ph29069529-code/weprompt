@@ -5,8 +5,8 @@ import { useState } from 'react'
 function RetroGrid({ className, angle = 65 }) {
   return (
     <div
-      className={`pointer-events-none absolute w-full h-full overflow-hidden opacity-50 ${className || ''}`}
-      style={{ perspective: '200px' }}
+      className={`pointer-events-none absolute w-full h-full overflow-hidden ${className || ''}`}
+      style={{ perspective: '200px', opacity: 0.4 }}
     >
       <div
         className="absolute inset-0"
@@ -16,10 +16,10 @@ function RetroGrid({ className, angle = 65 }) {
           className="animate-grid"
           style={{
             backgroundImage: [
-              'linear-gradient(to right, rgba(255,255,255,0.3) 1px, transparent 0)',
-              'linear-gradient(to bottom, rgba(255,255,255,0.3) 1px, transparent 0)',
+              `linear-gradient(to right, #4a4a4a 1px, transparent 0)`,
+              `linear-gradient(to bottom, #4a4a4a 1px, transparent 0)`,
             ].join(', '),
-            backgroundSize: '60px 60px',
+            backgroundSize: '50px 50px',
             height: '300vh',
             position: 'absolute',
             inset: '0% 0px',
@@ -37,12 +37,12 @@ function RetroGrid({ className, angle = 65 }) {
 
 // ── Hero ───────────────────────────────────────────────────────────────
 export default function RetroGridHero() {
-  const [imgSrc, setImgSrc] = useState('https://farmui.vercel.app/dashboard-light.png')
+  const [imgSrc, setImgSrc] = useState('https://www.launchuicomponents.com/app-light.png')
   const [imgFailed, setImgFailed] = useState(false)
 
   function handleImgError() {
-    if (imgSrc === 'https://farmui.vercel.app/dashboard-light.png') {
-      setImgSrc('https://farmui.vercel.app/dashboard.png')
+    if (imgSrc === 'https://www.launchuicomponents.com/app-light.png') {
+      setImgSrc('https://www.launchuicomponents.com/app-dark.png')
     } else {
       setImgFailed(true)
     }
