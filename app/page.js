@@ -21,6 +21,9 @@ import {
 } from "lucide-react";
 import { HeroSection } from "./components/HeroSectionDark";
 import IntegrationMarquee from "./components/IntegrationMarquee";
+import PlatformScrollDemo from "./components/PlatformScrollDemo";
+import SolutionsShowcase from "./components/SolutionsShowcase";
+import Testimonials from "./components/Testimonials";
 
 /* ─── Animation helpers ──────────────────────────────────────────── */
 const fadeUp = {
@@ -765,8 +768,10 @@ export default function Home() {
         }}
       />
       <IntegrationMarquee />
+      <PlatformScrollDemo />
+      <SolutionsShowcase />
+      <Testimonials />
       <HowItWorks />
-      <Categories />
       <ForCompanies />
       <ForCreators />
       <FinalCTA />
