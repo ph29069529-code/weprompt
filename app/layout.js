@@ -20,7 +20,7 @@ export const metadata = {
   icons: {
     icon: "/logo-icon.png",
     shortcut: "/logo-icon.png",
-    apple: "/favicon.png",
+    apple: "/logo-icon.png",
   },
   openGraph: {
     title: "WePrompt — O 1º Marketplace de Soluções de IA da América Latina",
@@ -43,6 +43,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
       <head>
+        <link rel="icon" href="/logo-icon.png" />
+        <link rel="apple-touch-icon" href="/logo-icon.png" />
+        <meta name="theme-color" content="#6366F1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
