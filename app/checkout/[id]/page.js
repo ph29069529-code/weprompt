@@ -3,12 +3,15 @@
 import { useState, useEffect, Suspense } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import Link from "next/link";
 import WePromptLogo from "../../components/WePromptLogo";
+import Spinner from "../../components/Spinner";
 
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT  = "#6E6E73";
 const BG_GRAY    = "#F5F5F7";
-const BLUE       = "#0369A1";
+const ACCENT      = "#6366F1";
+const ACCENT_HOVER = "#4F46E5";
 const BORDER     = "#e5e7eb";
 const GREEN      = "#059669";
 
@@ -77,9 +80,9 @@ function Navbar({ isMobile }) {
   return (
     <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(255,255,255,0.88)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
+        <Link href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
           <WePromptLogo id="checkout-header" textColor={NEAR_BLACK} />
-        </a>
+        </Link>
 
         {!isMobile && (
           <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -96,18 +99,18 @@ function Navbar({ isMobile }) {
         {!isMobile && (
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {session ? (
-              <a href={dashboardUrl} style={{ borderRadius: 999, padding: "9px 22px", background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none", transition: "background 0.15s" }}
-                onMouseEnter={e => e.currentTarget.style.background = "#0284C7"} onMouseLeave={e => e.currentTarget.style.background = BLUE}>
+              <a href={dashboardUrl} style={{ borderRadius: 999, padding: "9px 22px", background: ACCENT, color: "#fff", fontSize: 14, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none", transition: "background 0.15s" }}
+                onMouseEnter={e => e.currentTarget.style.background = "#4F46E5"} onMouseLeave={e => e.currentTarget.style.background = ACCENT}>
                 Meu Dashboard <Arrow />
               </a>
             ) : (
               <>
-                <a href="/login" style={{ borderRadius: 999, padding: "8px 20px", fontSize: 14, fontWeight: 500, textDecoration: "none", color: BLUE, border: `2px solid ${BLUE}`, background: "transparent", transition: "background 0.15s" }}
-                  onMouseEnter={e => e.currentTarget.style.background = "rgba(3,105,161,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                <a href="/login" style={{ borderRadius: 999, padding: "8px 20px", fontSize: 14, fontWeight: 500, textDecoration: "none", color: ACCENT, border: `2px solid ${ACCENT}`, background: "transparent", transition: "background 0.15s" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(99,102,241,0.06)"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                   Entrar
                 </a>
-                <a href="/cadastro" style={{ borderRadius: 999, padding: "9px 22px", background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none", transition: "background 0.15s" }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#0284C7"} onMouseLeave={e => e.currentTarget.style.background = BLUE}>
+                <a href="/cadastro" style={{ borderRadius: 999, padding: "9px 22px", background: ACCENT, color: "#fff", fontSize: 14, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none", transition: "background 0.15s" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#4F46E5"} onMouseLeave={e => e.currentTarget.style.background = ACCENT}>
                   Criar conta <Arrow />
                 </a>
               </>
@@ -131,13 +134,13 @@ function Navbar({ isMobile }) {
           ))}
           <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
             {session ? (
-              <a href={dashboardUrl} style={{ flex: 1, textAlign: "center", borderRadius: 999, padding: "13px", background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none" }}>
+              <a href={dashboardUrl} style={{ flex: 1, textAlign: "center", borderRadius: 999, padding: "13px", background: ACCENT, color: "#fff", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none" }}>
                 Meu Dashboard <Arrow />
               </a>
             ) : (
               <>
-                <a href="/login" style={{ flex: 1, textAlign: "center", borderRadius: 999, padding: "13px", fontSize: 14, fontWeight: 500, textDecoration: "none", color: BLUE, border: `2px solid ${BLUE}` }}>Entrar</a>
-                <a href="/cadastro" style={{ flex: 1, textAlign: "center", borderRadius: 999, padding: "13px", background: BLUE, color: "#fff", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none" }}>Criar conta <Arrow /></a>
+                <a href="/login" style={{ flex: 1, textAlign: "center", borderRadius: 999, padding: "13px", fontSize: 14, fontWeight: 500, textDecoration: "none", color: ACCENT, border: `2px solid ${ACCENT}` }}>Entrar</a>
+                <a href="/cadastro" style={{ flex: 1, textAlign: "center", borderRadius: 999, padding: "13px", background: ACCENT, color: "#fff", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none" }}>Criar conta <Arrow /></a>
               </>
             )}
           </div>
@@ -151,7 +154,7 @@ function Navbar({ isMobile }) {
 function TrustBadge({ icon, title, subtitle }) {
   return (
     <div style={{ background: "#fff", borderRadius: 16, padding: 16, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-      <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
+      <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
         {icon}
       </div>
       <div style={{ fontSize: 13, fontWeight: 700, color: NEAR_BLACK, lineHeight: 1.3 }}>{title}</div>
@@ -191,7 +194,7 @@ function StripeBadge() {
       </div>
       <div>
         <div style={{ fontSize: 11, color: GRAY_TEXT, lineHeight: 1.5 }}>Processado com segurança pelo Stripe</div>
-        <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: BLUE, fontWeight: 600, textDecoration: "none" }}>stripe.com</a>
+        <a href="https://stripe.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: ACCENT, fontWeight: 600, textDecoration: "none" }}>stripe.com</a>
       </div>
     </div>
   );
@@ -205,7 +208,7 @@ function CheckoutCard({ solution, onPay, loading, error, isMobile, alreadyOwned 
   const isOneTime = solution.payment_type === "one_time";
 
   return (
-    <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 8px 32px rgba(3,105,161,0.12)", padding: 32, position: isMobile ? "static" : "sticky", top: 88, marginBottom: isMobile ? 20 : 0 }}>
+    <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 8px 32px rgba(99,102,241,0.12)", padding: 32, position: isMobile ? "static" : "sticky", top: 88, marginBottom: isMobile ? 20 : 0 }}>
 
       {/* Solution name */}
       <div style={{ fontSize: 18, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6, lineHeight: 1.3 }}>
@@ -214,12 +217,12 @@ function CheckoutCard({ solution, onPay, loading, error, isMobile, alreadyOwned 
 
       {/* Price */}
       <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 36, fontWeight: 800, color: BLUE, letterSpacing: "-1.5px", lineHeight: 1 }}>
+        <span style={{ fontSize: 36, fontWeight: 800, color: ACCENT, letterSpacing: "-1.5px", lineHeight: 1 }}>
           {priceLabel}
         </span>
       </div>
       <div style={{ marginBottom: 20 }}>
-        <span style={{ display: "inline-block", background: "#e0f2fe", color: BLUE, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 99 }}>
+        <span style={{ display: "inline-block", background: "#EEF2FF", color: ACCENT, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 99 }}>
           {solution.preco == null ? "gratuito" : isOneTime ? "pagamento único" : "por mês"}
         </span>
       </div>
@@ -256,17 +259,18 @@ function CheckoutCard({ solution, onPay, loading, error, isMobile, alreadyOwned 
           onClick={onPay}
           disabled={loading}
           style={{
-            width: "100%", height: 56, borderRadius: 14, border: "none",
-            background: loading ? "rgba(3,105,161,0.5)" : BLUE,
+            width: "100%", height: 56, borderRadius: 10, border: "none",
+            background: loading ? "rgba(99,102,241,0.5)" : ACCENT,
             color: "#fff", fontSize: 16, fontWeight: 700,
             cursor: loading ? "not-allowed" : "pointer", fontFamily: "inherit",
             display: "flex", alignItems: "center", justifyContent: "center", gap: 9,
-            marginBottom: 10, transition: "background 0.15s",
+            marginBottom: 10, transition: "background 0.15s, box-shadow 0.15s",
+            boxShadow: loading ? "none" : "0 4px 16px rgba(99,102,241,0.3)",
           }}
-          onMouseEnter={e => { if (!loading) e.currentTarget.style.background = "#0284C7"; }}
-          onMouseLeave={e => { if (!loading) e.currentTarget.style.background = BLUE; }}
+          onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = ACCENT_HOVER; e.currentTarget.style.boxShadow = "0 4px 20px rgba(99,102,241,0.4)"; } }}
+          onMouseLeave={e => { if (!loading) { e.currentTarget.style.background = ACCENT; e.currentTarget.style.boxShadow = "0 4px 16px rgba(99,102,241,0.3)"; } }}
         >
-          {!loading && (
+          {loading ? <Spinner /> : (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0110 0v4" />
@@ -359,7 +363,7 @@ function CheckoutContent({ isMobile }) {
     if (!id) return;
     async function init() {
       const [solRes, sessionRes] = await Promise.all([
-        supabase.from("solutions").select("*").eq("id", id).eq("ativo", true).eq("status", "approved").single(),
+        supabase.from("solutions").select("*").eq("id", id).eq("status", "approved").single(),
         supabase.auth.getSession(),
       ]);
 
@@ -428,10 +432,10 @@ function CheckoutContent({ isMobile }) {
   if (notFound) {
     return (
       <div style={{ maxWidth: 560, margin: "120px auto", padding: "0 24px", textAlign: "center" }}>
-        <div style={{ fontSize: 48, color: BLUE, opacity: 0.18, marginBottom: 16 }}>✦</div>
+        <div style={{ fontSize: 48, color: ACCENT, opacity: 0.18, marginBottom: 16 }}>✦</div>
         <h1 style={{ fontSize: 24, fontWeight: 800, color: NEAR_BLACK, marginBottom: 8 }}>Solução não encontrada</h1>
         <p style={{ fontSize: 15, color: GRAY_TEXT, marginBottom: 24 }}>Esta solução pode ter sido removida ou ainda não está disponível.</p>
-        <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: BLUE, color: "#fff", padding: "12px 24px", borderRadius: 12, fontSize: 14, fontWeight: 700, textDecoration: "none" }}>
+        <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: ACCENT, color: "#fff", padding: "12px 24px", borderRadius: 12, fontSize: 14, fontWeight: 700, textDecoration: "none" }}>
           ← Voltar para soluções
         </a>
       </div>
@@ -470,12 +474,12 @@ function CheckoutContent({ isMobile }) {
             {/* Breadcrumb */}
             <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
               <a href="/solucoes" style={{ fontSize: 13, color: GRAY_TEXT, textDecoration: "none", transition: "color 0.15s" }}
-                onMouseEnter={e => e.currentTarget.style.color = BLUE} onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}>
+                onMouseEnter={e => e.currentTarget.style.color = ACCENT} onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}>
                 Soluções
               </a>
               <span style={{ fontSize: 13, color: GRAY_TEXT }}>→</span>
               <a href={`/solucoes/${id}`} style={{ fontSize: 13, color: GRAY_TEXT, textDecoration: "none", transition: "color 0.15s", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 260 }}
-                onMouseEnter={e => e.currentTarget.style.color = BLUE} onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}>
+                onMouseEnter={e => e.currentTarget.style.color = ACCENT} onMouseLeave={e => e.currentTarget.style.color = GRAY_TEXT}>
                 {solution.titulo}
               </a>
               <span style={{ fontSize: 13, color: GRAY_TEXT }}>→</span>
@@ -489,16 +493,16 @@ function CheckoutContent({ isMobile }) {
               {/* Solution row */}
               <div style={{ display: "flex", gap: 16, alignItems: "flex-start", marginBottom: 22 }}>
                 {/* Thumbnail */}
-                <div style={{ width: 80, height: 80, borderRadius: 12, overflow: "hidden", flexShrink: 0, background: "linear-gradient(135deg, #e0f2fe, #bae6fd)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 80, height: 80, borderRadius: 12, overflow: "hidden", flexShrink: 0, background: "linear-gradient(135deg, #EEF2FF, #E0E7FF)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   {solution.cover_url
                     ? <img src={solution.cover_url} alt={solution.titulo} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    : <span style={{ fontSize: 28, color: BLUE, opacity: 0.3 }}>✦</span>}
+                    : <span style={{ fontSize: 28, color: ACCENT, opacity: 0.3 }}>✦</span>}
                 </div>
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6, lineHeight: 1.3 }}>{solution.titulo}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                    <span style={{ display: "inline-block", background: "#e0f2fe", color: BLUE, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999 }}>
+                    <span style={{ display: "inline-block", background: "#EEF2FF", color: ACCENT, fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 999 }}>
                       {solution.categoria}
                     </span>
                     {(creator?.nome || solution.criador_nome) && (
@@ -521,7 +525,7 @@ function CheckoutContent({ isMobile }) {
                 <div style={{ height: 1, background: BORDER }} />
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                   <span style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK }}>Total</span>
-                  <span style={{ fontSize: 24, fontWeight: 800, color: BLUE, letterSpacing: "-0.8px" }}>{priceLabel}</span>
+                  <span style={{ fontSize: 24, fontWeight: 800, color: ACCENT, letterSpacing: "-0.8px" }}>{priceLabel}</span>
                 </div>
               </div>
             </div>

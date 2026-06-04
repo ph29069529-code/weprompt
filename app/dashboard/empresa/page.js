@@ -83,11 +83,24 @@ export default function EmpresaDashboard() {
   const initials = userName?.trim().split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase() || "E";
 
   if (loading) {
+    const sk = (h = 72) => ({
+      background: "linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%)",
+      backgroundSize: "200% 100%",
+      animation: "shimmer 1.5s infinite",
+      borderRadius: 12,
+      height: h,
+    });
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f9fafb", fontFamily: "Inter, sans-serif" }}>
-        <div style={{ textAlign: "center" }}>
-          <img src="/logo.png" alt="WePrompt" style={{ width: 140, height: "auto", marginBottom: 20 }} />
-          <div style={{ fontSize: 14, color: "#6b7280" }}>Carregando dashboard…</div>
+      <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, sans-serif" }}>
+        <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", height: 60 }} />
+        <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", height: 44 }} />
+        <div style={{ padding: "24px 32px", maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ ...sk(28), width: 220, marginBottom: 28, borderRadius: 8 }} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 24, maxWidth: 620 }}>
+            <div style={sk(80)} />
+            <div style={sk(80)} />
+          </div>
+          <div style={sk(240)} />
         </div>
       </div>
     );

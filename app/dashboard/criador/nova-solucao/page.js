@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase, uploadSolutionImage } from '@/app/lib/supabase'
+import Spinner from '@/app/components/Spinner'
 
 const ACCENT = '#6366F1'
 const ACCENT_HOVER = '#4F46E5'
@@ -516,10 +517,12 @@ export default function NovaSolucaoPage() {
               color: LABEL_COLOR, cursor: isLoading ? 'not-allowed' : 'pointer',
               fontFamily: 'inherit', opacity: loadingDraft ? 0.6 : 1,
               transition: 'background 0.15s',
+              display: 'flex', alignItems: 'center', gap: 8,
             }}
             onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = '#F3F4F6' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
           >
+            {loadingDraft && <Spinner />}
             {loadingDraft ? 'Salvando…' : 'Salvar rascunho'}
           </button>
           <button
@@ -533,10 +536,12 @@ export default function NovaSolucaoPage() {
               cursor: isLoading ? 'not-allowed' : 'pointer',
               fontFamily: 'inherit', opacity: loadingSubmit ? 0.8 : 1,
               transition: 'background 0.15s',
+              display: 'flex', alignItems: 'center', gap: 8,
             }}
             onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = ACCENT_HOVER }}
             onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = ACCENT }}
           >
+            {loadingSubmit && <Spinner />}
             {loadingSubmit ? 'Enviando…' : 'Enviar para aprovação →'}
           </button>
         </div>

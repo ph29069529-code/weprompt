@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, supabase } from "../lib/supabase";
 import { ShieldCheck, MessageCircle, Users } from "lucide-react";
+import Spinner from "../components/Spinner";
 
 const NEAR_BLACK = "#0A0F1E";
 const GRAY_TEXT  = "#6B7280";
@@ -246,10 +247,12 @@ function LoginForm() {
               fontSize: 15, fontWeight: 700,
               cursor: loading ? "not-allowed" : "pointer",
               fontFamily: "inherit", marginTop: 18, transition: "background 0.15s",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             }}
               onMouseEnter={e => { if (!loading) e.currentTarget.style.background = ACCENT_HOVER; }}
               onMouseLeave={e => { if (!loading) e.currentTarget.style.background = ACCENT; }}
             >
+              {loading && <Spinner />}
               {loading ? "Entrando…" : "Entrar"}
             </button>
           </form>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import WePromptLogo from "../../components/WePromptLogo";
 import NotificationBell from "../../components/NotificationBell";
+import Spinner from "../../components/Spinner";
 
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT  = "#6E6E73";
@@ -440,11 +441,13 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
           <div style={{ padding: "16px 24px", borderTop: `1px solid ${BORDER}`, display: "flex", gap: 10, flexShrink: 0, background: "#fff" }}>
             <button onClick={() => { if (!isLoading) onApprove(solution.id); }} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: isLoading ? "rgba(5,150,105,0.4)" : GREEN, color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.7 : 1, pointerEvents: "auto", fontFamily: "inherit" }}
               onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = "#047857"; }} onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = GREEN; }}>
-              <Icon d={icons.check} size={16} /> Aprovar solução
+              {isLoading ? <Spinner /> : <Icon d={icons.check} size={16} />}
+              {isLoading ? "Aprovando…" : "Aprovar solução"}
             </button>
             <button onClick={() => { if (!isLoading) onReject(solution); }} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: "transparent", color: DANGER, border: "1.5px solid rgba(220,38,38,0.3)", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.7 : 1, pointerEvents: "auto", fontFamily: "inherit" }}
               onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = "rgba(220,38,38,0.07)"; }} onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = "transparent"; }}>
-              <Icon d={icons.x} size={16} /> Reprovar
+              {isLoading ? <Spinner /> : <Icon d={icons.x} size={16} />}
+              {isLoading ? "Reprovando…" : "Reprovar"}
             </button>
           </div>
         )}
