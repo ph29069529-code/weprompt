@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Navbar from "../components/Navbar";
+import { Star } from "lucide-react";
 
 function CheckIcon() {
   return (
@@ -11,13 +13,6 @@ function CheckIcon() {
   );
 }
 
-function StarIcon() {
-  return (
-    <svg width="12" height="12" fill="#92400e" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-    </svg>
-  );
-}
 
 const CRIADOR_PLANS = (billing) => [
   {
@@ -188,7 +183,7 @@ function PlanCard({ plan, billing, router }) {
           borderRadius: 999, padding: "4px 12px", display: "inline-flex",
           alignItems: "center", gap: 5, marginBottom: 8, alignSelf: "flex-start",
         }}>
-          <StarIcon />
+          <Star size={12} color="#92400e" style={{ flexShrink: 0 }} />
           Criador Fundador — 1º mês grátis
         </div>
       )}
@@ -248,11 +243,11 @@ function PlanCard({ plan, billing, router }) {
       <button
         onClick={() => router.push(plan.ctaRoute)}
         style={{
-          width: "100%", padding: "14px", borderRadius: 10, fontSize: 15, fontWeight: 600,
+          width: "100%", padding: "14px", borderRadius: 10, fontSize: 15, fontWeight: 700,
           marginTop: 8, marginBottom: 24, cursor: "pointer",
-          background: plan.popular || (!isFree && !plan.popular) ? "#111827" : "white",
-          color: plan.popular || (!isFree && !plan.popular) ? "white" : "#374151",
-          border: isFree ? "1.5px solid #e5e7eb" : "none",
+          background: isFree ? "#6366F1" : "#111827",
+          color: "white",
+          border: "none",
           fontFamily: "inherit",
         }}
       >{plan.cta}</button>
@@ -307,7 +302,6 @@ export default function PrecosPage() {
   const router = useRouter();
   const [activeAudience, setActiveAudience] = useState("criadores");
   const [billing, setBilling] = useState("mensal");
-  const [searchFocused, setSearchFocused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -322,53 +316,7 @@ export default function PrecosPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
 
-      {/* ── NAVBAR ── */}
-      <nav style={{
-        background: "white", borderBottom: "1px solid #e5e7eb",
-        padding: "0 32px", height: 60,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        position: "sticky", top: 0, zIndex: 50,
-      }}>
-        <img src="/logo.png" alt="WePrompt" onClick={() => router.push("/")} style={{ width: 160, height: "auto", cursor: "pointer" }} />
-        <div style={{
-          display: "flex", alignItems: "center",
-          background: searchFocused ? "white" : "#f3f4f6",
-          borderRadius: 8, padding: "8px 16px", width: 360, gap: 8,
-          border: searchFocused ? "1px solid #2563EB" : "1px solid transparent",
-          boxShadow: searchFocused ? "0 0 0 3px rgba(37,99,235,0.1)" : "none",
-          transition: "all 0.2s ease",
-        }}>
-          <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
-          </svg>
-          <input
-            placeholder="Buscar soluções..."
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
-            style={{ fontSize: 14, border: "none", background: "transparent", outline: "none", flex: 1, color: "#374151" }}
-          />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <button onClick={() => router.push("/solucoes")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0, fontFamily: "inherit" }}>Marketplace</button>
-          <button onClick={() => router.push("/para-criadores")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0, fontFamily: "inherit" }}>Vender</button>
-          <div style={{ width: 1, height: 20, background: "#e5e7eb" }} />
-          <button onClick={() => window.__openCart?.()} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
-            <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
-            </svg>
-          </button>
-          <button onClick={() => window.__openNotif?.()} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", position: "relative", display: "flex", alignItems: "center" }}>
-            <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-            </svg>
-            <span style={{ width: 8, height: 8, background: "#ef4444", borderRadius: 999, position: "absolute", top: -2, right: -2 }} />
-          </button>
-          <div
-            onClick={() => router.push("/dashboard")}
-            style={{ width: 32, height: 32, background: "#0369A1", borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
-          >W</div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* ── MAIN CONTENT ── */}
       <div style={{ padding: "40px 48px", maxWidth: 1200, margin: "0 auto" }}>
@@ -443,7 +391,7 @@ export default function PrecosPage() {
             borderRadius: 14, textAlign: "center", fontSize: 13, color: "#6b7280", lineHeight: 1.8,
           }}>
             <strong style={{ color: "#0369A1" }}>
-              <StarIcon /> Oferta de Criadores Fundadores:
+              <Star size={12} color="#92400e" style={{ flexShrink: 0, verticalAlign: "middle" }} /> Oferta de Criadores Fundadores:
             </strong>{" "}
             Os primeiros 100 criadores ganham 1 mês grátis no plano Pro.
             Aplicado automaticamente no cadastro. Sem cartão de crédito no primeiro mês.
@@ -539,11 +487,15 @@ export default function PrecosPage() {
           <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 24, flexWrap: "wrap" }}>
             <button
               onClick={() => router.push(activeAudience === "criadores" ? "/cadastro?role=criador" : "/cadastro")}
-              style={{ background: "white", color: "#111827", borderRadius: 10, padding: "12px 28px", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none", fontFamily: "inherit" }}
+              style={{ background: "#6366F1", color: "white", borderRadius: 10, padding: "14px 28px", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none", fontFamily: "inherit", transition: "background 0.15s" }}
+              onMouseEnter={e => (e.currentTarget.style.background = "#4F46E5")}
+              onMouseLeave={e => (e.currentTarget.style.background = "#6366F1")}
             >Começar grátis</button>
             <button
               onClick={() => router.push("/contato")}
-              style={{ border: "1.5px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 10, padding: "12px 28px", fontSize: 15, fontWeight: 600, cursor: "pointer", background: "transparent", fontFamily: "inherit" }}
+              style={{ border: "1.5px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 10, padding: "14px 28px", fontSize: 15, fontWeight: 600, cursor: "pointer", background: "transparent", fontFamily: "inherit", transition: "border-color 0.15s" }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = "white")}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)")}
             >Falar com a equipe</button>
           </div>
         </div>
@@ -562,7 +514,7 @@ export default function PrecosPage() {
             <div style={{ maxWidth: 320 }}>
               <img src="/logo-white.png" alt="WePrompt" style={{ height: 96, width: "auto" }} />
               <p style={{ color: "#9ca3af", fontSize: 16, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
-                O 1º marketplace de soluções de IA da América Latina.
+                Marketplace de soluções de IA para o Brasil.
               </p>
             </div>
             <div style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
