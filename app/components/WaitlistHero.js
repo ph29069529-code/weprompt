@@ -83,19 +83,19 @@ export default function WaitlistHero() {
     animate()
   }
 
-  // Color tokens — original unchanged
+  // Color tokens — white background version
   const colors = {
-    textMain: "#ffffff",
-    textSecondary: "#94a3b8",
+    textMain: "#09090b",
+    textSecondary: "#71717a",
     bluePrimary: "#0079da",
     success: "#10b981",
-    inputBg: "#27272a",
-    baseBg: "#09090b",
-    inputShadow: "rgba(255, 255, 255, 0.1)",
+    inputBg: "#f4f4f5",
+    baseBg: "#ffffff",
+    inputShadow: "rgba(0, 0, 0, 0.08)",
   }
 
   return (
-    <div className="w-full min-h-screen bg-black flex items-center justify-center">
+    <div className="w-full min-h-screen bg-white flex items-center justify-center">
       {/* Animation Styles */}
       <style>{`
         @keyframes spin-slow {
@@ -234,7 +234,7 @@ export default function WaitlistHero() {
         <div
           className="absolute inset-0 z-10 pointer-events-none"
           style={{
-            background: `linear-gradient(to top, ${colors.baseBg} 10%, rgba(9, 9, 11, 0.8) 40%, transparent 100%)`,
+            background: `linear-gradient(to top, ${colors.baseBg} 10%, rgba(255, 255, 255, 0.8) 40%, transparent 100%)`,
           }}
         />
 
