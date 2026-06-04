@@ -20,6 +20,7 @@ import {
   Share2,
 } from "lucide-react";
 import HeroParallax from "./components/HeroParallax";
+import IntegrationMarquee from "./components/IntegrationMarquee";
 
 /* ─── Animation helpers ──────────────────────────────────────────── */
 const fadeUp = {
@@ -231,103 +232,6 @@ function Navbar() {
         )}
       </nav>
     </>
-  );
-}
-
-/* ─── Marquee ────────────────────────────────────────────────────── */
-const integrations1 = [
-  { name: 'WhatsApp', logo: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg' },
-  { name: 'Gmail', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg' },
-  { name: 'Notion', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png' },
-  { name: 'Slack', logo: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg' },
-  { name: 'ChatGPT', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg' },
-  { name: 'Telegram', logo: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg' },
-  { name: 'Discord', logo: 'https://assets-global.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg' },
-  { name: 'Google Sheets', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg' },
-  { name: 'Google Drive', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg' },
-];
-
-const integrations2 = [
-  { name: 'Stripe', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg' },
-  { name: 'GitHub', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg' },
-  { name: 'Figma', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg' },
-  { name: 'YouTube', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg' },
-  { name: 'Instagram', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png' },
-  { name: 'LinkedIn', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png' },
-  { name: 'Google Calendar', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg' },
-  { name: 'Google Docs', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/01/Google_Docs_logo_%282014-2020%29.svg' },
-  { name: 'Zoom', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/11/Zoom_Logo_2022.svg' },
-];
-
-function IntegrationCard({ name, logo }) {
-  return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: 'white',
-      border: '1px solid #E5E7EB',
-      borderRadius: 12,
-      padding: 10,
-      width: 48,
-      height: 48,
-      boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-      marginRight: 12,
-      flexShrink: 0,
-    }}>
-      <img src={logo} alt={name} style={{ width: 28, height: 28, objectFit: 'contain' }} />
-    </div>
-  );
-}
-
-function Marquee() {
-  const row1 = [...integrations1, ...integrations1, ...integrations1];
-  const row2 = [...integrations2, ...integrations2, ...integrations2];
-
-  return (
-    <section style={{
-      background: '#F8F9FB',
-      borderTop: '1px solid #E5E7EB',
-      borderBottom: '1px solid #E5E7EB',
-      padding: '24px 0',
-      overflow: 'hidden',
-      width: '100%',
-    }}>
-      <style>{`
-        @keyframes scroll-left {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes scroll-right {
-          0%   { transform: translateX(-50%); }
-          100% { transform: translateX(0); }
-        }
-        .marquee-row-left {
-          display: flex;
-          width: max-content;
-          animation: scroll-left 35s linear infinite;
-        }
-        .marquee-row-right {
-          display: flex;
-          width: max-content;
-          animation: scroll-right 28s linear infinite;
-          margin-top: 12px;
-        }
-      `}</style>
-
-      {/* Row 1 — scrolls left */}
-      <div style={{ overflow: 'hidden', width: '100%' }}>
-        <div className="marquee-row-left">
-          {row1.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
-        </div>
-      </div>
-      {/* Row 2 — scrolls right */}
-      <div style={{ overflow: 'hidden', width: '100%' }}>
-        <div className="marquee-row-right">
-          {row2.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -858,7 +762,7 @@ export default function Home() {
     <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <Navbar />
       <HeroParallax products={products} />
-      <Marquee />
+      <IntegrationMarquee />
       <HowItWorks />
       <Categories />
       <ForCompanies />
