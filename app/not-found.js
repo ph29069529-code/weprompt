@@ -1,7 +1,5 @@
 "use client";
 
-import Navbar from "./components/Navbar";
-
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT  = "#6E6E73";
 const BG_GRAY    = "#F5F5F7";
@@ -17,8 +15,6 @@ export default function NotFound() {
       display: "flex",
       flexDirection: "column",
     }}>
-      <Navbar />
-
       {/* Content */}
       <div style={{
         flex: 1,
