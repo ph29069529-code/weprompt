@@ -2,25 +2,25 @@
 import React from 'react'
 
 const ICONS_ROW1 = [
-  { name: "WhatsApp",      src: "https://cdn.simpleicons.org/whatsapp/25D366" },
-  { name: "Gmail",         src: "https://cdn.simpleicons.org/gmail/EA4335" },
-  { name: "Google Sheets", src: "https://cdn.simpleicons.org/googlesheets/34A853" },
-  { name: "Slack",         src: "https://logo.clearbit.com/slack.com" },
-  { name: "Notion",        src: "https://cdn.simpleicons.org/notion/000000" },
+  { name: "WhatsApp",      src: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" },
+  { name: "Gmail",         src: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" },
+  { name: "Google Sheets", src: "https://upload.wikimedia.org/wikipedia/commons/a/ae/Google_Sheets_2020_Logo.svg" },
+  { name: "Slack",         src: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg" },
+  { name: "Notion",        src: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" },
   { name: "HubSpot",       src: "https://cdn.simpleicons.org/hubspot/FF7A59" },
   { name: "Zapier",        src: "https://cdn.simpleicons.org/zapier/FF4A00" },
-  { name: "Typeform",      src: "https://logo.clearbit.com/typeform.com" },
+  { name: "Instagram",     src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" },
 ]
 
 const ICONS_ROW2 = [
-  { name: "Google Drive",  src: "https://cdn.simpleicons.org/googledrive/4285F4" },
-  { name: "Airtable",      src: "https://cdn.simpleicons.org/airtable/18BFFF" },
+  { name: "Google Drive",  src: "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg" },
+  { name: "Telegram",      src: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
   { name: "Trello",        src: "https://cdn.simpleicons.org/trello/0052CC" },
-  { name: "LinkedIn",      src: "https://logo.clearbit.com/linkedin.com" },
-  { name: "Instagram",     src: "https://cdn.simpleicons.org/instagram/E4405F" },
-  { name: "Telegram",      src: "https://cdn.simpleicons.org/telegram/26A5E4" },
-  { name: "Make",          src: "https://logo.clearbit.com/make.com" },
+  { name: "LinkedIn",      src: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" },
+  { name: "Airtable",      src: "https://cdn.simpleicons.org/airtable/18BFFF" },
   { name: "n8n",           src: "https://cdn.simpleicons.org/n8n/EA4B71" },
+  { name: "Make",          src: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Make_%28software%29_logo.svg" },
+  { name: "YouTube",       src: "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" },
 ]
 
 const row1Items = [...ICONS_ROW1, ...ICONS_ROW1, ...ICONS_ROW1, ...ICONS_ROW1]
