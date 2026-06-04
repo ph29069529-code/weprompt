@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import WePromptLogo from "./WePromptLogo";
 import { supabase } from "../lib/supabase";
 import {
@@ -171,6 +172,11 @@ function getDashboardUrl(session) {
 export default function Navbar() {
   const width = useWindowWidth();
   const isMobile = width < 768;
+  const pathname = usePathname();
+  const isHomepage = pathname === "/";
+
+  // On homepage: always transparent. On other pages: solid white.
+  const transparent = isHomepage;
 
   const [session, setSession] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -400,12 +406,12 @@ export default function Navbar() {
     cursor: "pointer",
     fontSize: 14,
     fontWeight: 500,
-    color: scrolled ? "#374151" : "rgba(255,255,255,0.8)",
+    color: transparent ? "rgba(255,255,255,0.85)" : "#374151",
     borderRadius: 8,
     transition: "background 0.15s, color 0.3s",
     fontFamily: "inherit",
   };
-  const triggerHoverBg = scrolled ? "#F5F5F7" : "rgba(255,255,255,0.1)";
+  const triggerHoverBg = transparent ? "rgba(255,255,255,0.1)" : "#F5F5F7";
 
   return (
     <>
@@ -429,11 +435,11 @@ export default function Navbar() {
           left: 0,
           right: 0,
           zIndex: 50,
-          background: scrolled ? "rgba(255,255,255,0.95)" : "transparent",
-          backdropFilter: scrolled ? "blur(16px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(0,0,0,0.06)" : "none",
-          boxShadow: scrolled ? "0 1px 20px rgba(0,0,0,0.06)" : "none",
+          background: transparent ? "transparent" : "rgba(255,255,255,0.95)",
+          backdropFilter: transparent ? "none" : "blur(16px)",
+          WebkitBackdropFilter: transparent ? "none" : "blur(16px)",
+          borderBottom: transparent ? "none" : "1px solid rgba(0,0,0,0.06)",
+          boxShadow: transparent ? "none" : "0 1px 20px rgba(0,0,0,0.06)",
           height: 64,
           transition: "all 0.3s ease",
         }}
@@ -453,7 +459,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
             <img
-              src={scrolled ? "/logo.png" : "/logo-white.png"}
+              src={transparent ? "/logo-white.png" : "/logo.png"}
               alt="WePrompt"
               style={{ width: 140, height: "auto", display: "block", transition: "opacity 0.3s" }}
             />
@@ -541,9 +547,9 @@ export default function Navbar() {
                 <a
                   href={dashboardUrl}
                   style={{
-                    background: scrolled ? "#6366F1" : "rgba(255,255,255,0.12)",
+                    background: transparent ? "rgba(255,255,255,0.12)" : "#6366F1",
                     color: "white",
-                    border: scrolled ? "none" : "1px solid rgba(255,255,255,0.2)",
+                    border: transparent ? "1px solid rgba(255,255,255,0.2)" : "none",
                     borderRadius: 999,
                     padding: "10px 20px",
                     fontSize: 14,
@@ -560,7 +566,7 @@ export default function Navbar() {
                   <a
                     href="/login"
                     style={{
-                      color: scrolled ? "#374151" : "rgba(255,255,255,0.7)",
+                      color: transparent ? "rgba(255,255,255,0.8)" : "#374151",
                       fontSize: 14,
                       fontWeight: 500,
                       textDecoration: "none",
@@ -572,8 +578,8 @@ export default function Navbar() {
                   <a
                     href="/cadastro"
                     style={{
-                      background: scrolled ? "#6366F1" : "white",
-                      color: scrolled ? "white" : "#0A0F1E",
+                      background: transparent ? "white" : "#6366F1",
+                      color: transparent ? "#0A0F1E" : "white",
                       borderRadius: 999,
                       padding: "10px 20px",
                       fontSize: 14,
@@ -599,7 +605,7 @@ export default function Navbar() {
                 background: "transparent",
                 cursor: "pointer",
                 padding: 8,
-                color: scrolled ? "#1D1D1F" : "white",
+                color: transparent ? "white" : "#1D1D1F",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

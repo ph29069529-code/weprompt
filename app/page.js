@@ -133,13 +133,10 @@ function Navbar() {
 
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        background: scrolled ? "rgba(255,255,255,0.95)" : "transparent",
-        backdropFilter: scrolled ? "blur(16px)" : "none",
-        WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(0,0,0,0.06)" : "none",
-        boxShadow: scrolled ? "0 1px 20px rgba(0,0,0,0.06)" : "none",
+        background: "transparent",
+        borderBottom: "none",
+        boxShadow: "none",
         height: 64,
-        transition: "all 0.3s ease",
       }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto",
@@ -149,7 +146,7 @@ function Navbar() {
         }}>
           {/* Logo */}
           <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <img src={scrolled ? "/logo.png" : "/logo-white.png"} alt="WePrompt" style={{ width: 140, height: 'auto', display: 'block', transition: 'all 0.3s' }} />
+            <img src="/logo-white.png" alt="WePrompt" style={{ width: 140, height: 'auto', display: 'block' }} />
           </a>
 
           {/* Center */}
@@ -159,9 +156,7 @@ function Navbar() {
                 onMouseEnter={() => setHovLink(l.label)}
                 onMouseLeave={() => setHovLink(null)}
                 style={{
-                  color: hovLink === l.label
-                    ? (scrolled ? "#0A0F1E" : "#fff")
-                    : (scrolled ? "#6B7280" : "rgba(255,255,255,0.85)"),
+                  color: hovLink === l.label ? "#fff" : "rgba(255,255,255,0.85)",
                   fontSize: 14, textDecoration: "none", transition: "color 0.2s",
                 }}>
                 {l.label}
@@ -176,9 +171,9 @@ function Navbar() {
                 onMouseEnter={() => setHovCta(true)}
                 onMouseLeave={() => setHovCta(false)}
                 style={{
-                  background: scrolled ? (hovCta ? "#4F46E5" : "#6366F1") : "rgba(255,255,255,0.12)",
+                  background: hovCta ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.12)",
                   color: "#fff", textDecoration: "none",
-                  border: scrolled ? "none" : "1px solid rgba(255,255,255,0.2)",
+                  border: "1px solid rgba(255,255,255,0.2)",
                   borderRadius: 8, padding: "10px 20px",
                   fontSize: 14, fontWeight: 600, transition: "all 0.2s",
                 }}>
@@ -187,9 +182,9 @@ function Navbar() {
             ) : (
               <>
                 <a href="/login"
-                  style={{ color: scrolled ? "#6B7280" : "rgba(255,255,255,0.8)", fontSize: 14, textDecoration: "none", transition: "color 0.2s" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = scrolled ? "#0A0F1E" : "#fff")}
-                  onMouseLeave={e => (e.currentTarget.style.color = scrolled ? "#6B7280" : "rgba(255,255,255,0.8)")}>
+                  style={{ color: "rgba(255,255,255,0.8)", fontSize: 14, textDecoration: "none" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}>
                   Entrar
                 </a>
                 <button
@@ -197,8 +192,8 @@ function Navbar() {
                   onMouseEnter={() => setHovCta(true)}
                   onMouseLeave={() => setHovCta(false)}
                   style={{
-                    background: scrolled ? (hovCta ? "#4F46E5" : "#6366F1") : (hovCta ? "rgba(255,255,255,0.9)" : "#fff"),
-                    color: scrolled ? "#fff" : "#0A0F1E",
+                    background: hovCta ? "rgba(255,255,255,0.9)" : "#fff",
+                    color: "#0A0F1E",
                     border: "none", borderRadius: 8,
                     padding: "10px 20px", fontSize: 14, fontWeight: 600,
                     cursor: "pointer", transition: "all 0.2s",
@@ -212,7 +207,7 @@ function Navbar() {
           {/* Hamburger */}
           <button className="nav-hamburger"
             onClick={() => setMenuOpen(true)}
-            style={{ background: "none", border: "none", color: scrolled ? "#6B7280" : "white", cursor: "pointer", padding: 4, alignItems: "center", transition: "color 0.2s" }}>
+            style={{ background: "none", border: "none", color: "white", cursor: "pointer", padding: 4, alignItems: "center" }}>
             <Menu size={22} />
           </button>
         </div>
