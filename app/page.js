@@ -64,7 +64,9 @@ function Navbar() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > window.innerHeight * 0.8);
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
@@ -130,8 +132,8 @@ function Navbar() {
       `}</style>
 
       <nav style={{
-        position: "sticky", top: 0, zIndex: 50,
-        background: scrolled ? "rgba(255,255,255,0.92)" : "transparent",
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
+        background: scrolled ? "rgba(255,255,255,0.95)" : "transparent",
         backdropFilter: scrolled ? "blur(16px)" : "none",
         WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
         borderBottom: scrolled ? "1px solid rgba(0,0,0,0.06)" : "none",
@@ -174,9 +176,9 @@ function Navbar() {
                 onMouseEnter={() => setHovCta(true)}
                 onMouseLeave={() => setHovCta(false)}
                 style={{
-                  background: scrolled ? (hovCta ? "#4F46E5" : "#6366F1") : (hovCta ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.15)"),
+                  background: scrolled ? (hovCta ? "#4F46E5" : "#6366F1") : "rgba(255,255,255,0.12)",
                   color: "#fff", textDecoration: "none",
-                  border: scrolled ? "none" : "1px solid rgba(255,255,255,0.25)",
+                  border: scrolled ? "none" : "1px solid rgba(255,255,255,0.2)",
                   borderRadius: 8, padding: "10px 20px",
                   fontSize: 14, fontWeight: 600, transition: "all 0.2s",
                 }}>

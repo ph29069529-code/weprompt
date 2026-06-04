@@ -220,10 +220,13 @@ export default function Navbar() {
     }
   }, [isMobile]);
 
-  // Scroll detection
+  // Scroll detection — transparent over hero (100vh), solid past it
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > window.innerHeight * 0.8);
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -421,15 +424,17 @@ export default function Navbar() {
       <header
         ref={navRef}
         style={{
-          position: "sticky",
+          position: "fixed",
           top: 0,
+          left: 0,
+          right: 0,
           zIndex: 50,
-          background: scrolled ? "rgba(255,255,255,0.92)" : "transparent",
+          background: scrolled ? "rgba(255,255,255,0.95)" : "transparent",
           backdropFilter: scrolled ? "blur(16px)" : "none",
           WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
           borderBottom: scrolled ? "1px solid rgba(0,0,0,0.06)" : "none",
           boxShadow: scrolled ? "0 1px 20px rgba(0,0,0,0.06)" : "none",
-          height: scrolled ? 60 : 68,
+          height: 64,
           transition: "all 0.3s ease",
         }}
       >
@@ -536,9 +541,9 @@ export default function Navbar() {
                 <a
                   href={dashboardUrl}
                   style={{
-                    background: scrolled ? "#6366F1" : "rgba(255,255,255,0.15)",
+                    background: scrolled ? "#6366F1" : "rgba(255,255,255,0.12)",
                     color: "white",
-                    border: scrolled ? "none" : "1px solid rgba(255,255,255,0.3)",
+                    border: scrolled ? "none" : "1px solid rgba(255,255,255,0.2)",
                     borderRadius: 999,
                     padding: "10px 20px",
                     fontSize: 14,
