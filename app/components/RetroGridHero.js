@@ -1,5 +1,4 @@
 'use client'
-import Link from 'next/link'
 
 // ── RetroGrid ──────────────────────────────────────────────────────────
 function RetroGrid({ className, angle = 65 }) {
@@ -95,32 +94,65 @@ export default function RetroGridHero() {
         </p>
 
         {/* CTA — spinning conic-gradient border */}
-        <div className="relative inline-flex overflow-hidden rounded-full p-[1px]">
-          <span
-            className="absolute inset-[-1000%]"
-            style={{
-              animation: 'spin 2s linear infinite',
-              background:
-                'conic-gradient(from 90deg at 50% 50%, #E2CBFF 0%, #393BB2 50%, #E2CBFF 100%)',
-            }}
-          />
-          <Link
-            href="/solucoes"
-            className="relative inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-zinc-950 px-8 py-3 text-sm font-medium text-white backdrop-blur-3xl"
-          >
-            Explorar soluções
-          </Link>
-        </div>
+        <span style={{
+          position: 'relative',
+          display: 'inline-block',
+          overflow: 'hidden',
+          borderRadius: '9999px',
+          padding: '1.5px',
+        }}>
+          <span style={{
+            position: 'absolute',
+            inset: '-1000%',
+            animation: 'spin 2s linear infinite',
+            background: 'conic-gradient(from 90deg at 50% 50%, #E2CBFF 0%, #393BB2 50%, #E2CBFF 100%)',
+          }} />
+          <div style={{
+            display: 'inline-flex',
+            height: '100%',
+            width: '100%',
+            cursor: 'pointer',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '9999px',
+            background: 'white',
+            fontSize: '13px',
+            fontWeight: 500,
+            backdropFilter: 'blur(24px)',
+          }}>
+            <a href="/solucoes" style={{
+              display: 'inline-flex',
+              borderRadius: '9999px',
+              textAlign: 'center',
+              alignItems: 'center',
+              width: '100%',
+              justifyContent: 'center',
+              background: 'linear-gradient(to right, rgba(212,196,255,0.2), rgba(167,139,250,0.3), transparent)',
+              color: '#111827',
+              border: '1px solid rgba(0,0,0,0.05)',
+              padding: '16px 40px',
+              textDecoration: 'none',
+            }}>
+              Explorar soluções
+            </a>
+          </div>
+        </span>
 
         {/* Dashboard preview image */}
-        <div className="relative mt-6 w-full max-w-3xl overflow-hidden rounded-xl border border-white/10 shadow-2xl">
+        <div className="relative mt-6 w-full max-w-3xl">
           <img
-            src="https://farmui.vercel.app/dashboard-light.png"
+            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1400&q=85"
             alt="WePrompt platform preview"
-            className="w-full block"
+            style={{
+              width: '100%',
+              borderRadius: '12px',
+              border: '1px solid rgba(0,0,0,0.08)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+              display: 'block',
+            }}
           />
           {/* Fade to background at the bottom */}
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent rounded-xl" />
         </div>
 
       </div>
