@@ -52,51 +52,28 @@ function ctaButton(text, href) {
 </div>`;
 }
 
-export async function sendPurchaseConfirmation({ to, solutionTitulo }) {
-  const html = base(`
-    <div style="text-align:center;margin-bottom:28px;">
-      <div style="width:56px;height:56px;border-radius:50%;background:#DCFCE7;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
-        <span style="font-size:26px;color:#16A34A;">✓</span>
-      </div>
-      <h1 style="font-size:22px;font-weight:800;color:#0A0A1A;margin:0 0 8px;letter-spacing:-0.4px;">Compra confirmada!</h1>
-      <p style="font-size:15px;color:#6B7280;margin:0;line-height:1.6;">Sua solução já está disponível no dashboard.</p>
-    </div>
-    ${solutionBox(solutionTitulo)}
-    <p style="font-size:14px;color:#6B7280;line-height:1.75;margin:0;">
-      Obrigado por escolher a WePrompt! Acesse seu dashboard para começar a usar sua solução de IA imediatamente.
-    </p>
-    ${ctaButton('Acessar minha solução →', `${SITE}/dashboard/empresa`)}
-  `);
-
-  return resend.emails.send({
-    from: FROM,
-    to,
-    subject: 'Compra confirmada! Acesse sua solução na WePrompt',
-    html,
-  });
-}
+// Use sendConfirmacaoCompra (below) for purchase confirmation emails — richer template.
 
 export async function sendSolutionApproved({ to, solutionTitulo }) {
-  const html = base(`
+  const html = newBase(`
     <div style="text-align:center;margin-bottom:28px;">
-      <div style="width:56px;height:56px;border-radius:50%;background:rgba(107,92,231,0.1);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
-        <span style="font-size:26px;color:${PURPLE};">✦</span>
+      <div style="width:56px;height:56px;border-radius:50%;background:#6366F1;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:24px;color:#ffffff;">✓</span>
       </div>
-      <h1 style="font-size:22px;font-weight:800;color:#0A0A1A;margin:0 0 8px;letter-spacing:-0.4px;">Sua solução foi aprovada!</h1>
-      <p style="font-size:15px;color:#6B7280;margin:0;line-height:1.6;">Ela já está ao vivo no marketplace WePrompt.</p>
+      <h1 style="font-size:26px;font-weight:800;color:#1D1D1F;margin:0 0 12px;letter-spacing:-0.5px;font-family:-apple-system,Arial,sans-serif;">Solução aprovada!</h1>
+      <p style="font-size:15px;color:#6E6E73;line-height:1.7;margin:0 0 28px;font-family:-apple-system,Arial,sans-serif;">
+        Boa notícia! Sua solução <strong style="color:#1D1D1F;">${solutionTitulo}</strong> foi aprovada pela nossa equipe e já está disponível no catálogo da WePrompt.
+      </p>
     </div>
-    ${solutionBox(solutionTitulo)}
-    <p style="font-size:14px;color:#6B7280;line-height:1.75;margin:0;">
-      Parabéns! Nossa equipe de curadoria analisou sua solução e ela está pronta para receber compradores.
-      Acompanhe seu desempenho e vendas diretamente pelo dashboard de criador.
-    </p>
-    ${ctaButton('Ver meu dashboard →', `${SITE}/dashboard/criador`)}
+    <div style="text-align:center;">
+      <a href="https://weprompt.app.br/dashboard/criador" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:16px 32px;border-radius:12px;font-family:-apple-system,Arial,sans-serif;">Ver minha solução →</a>
+    </div>
   `);
 
   return resend.emails.send({
-    from: FROM,
+    from: FROM_NEW,
     to,
-    subject: 'Sua solução foi aprovada na WePrompt! 🎉',
+    subject: 'Sua solução foi aprovada! ✓',
     html,
   });
 }
@@ -279,30 +256,28 @@ export async function sendConfirmacaoCompra({ to, nome, solutionName, solutionCa
 }
 
 export async function sendSolutionRejected({ to, solutionTitulo, reason }) {
-  const html = base(`
-    <div style="text-align:center;margin-bottom:28px;">
-      <h1 style="font-size:22px;font-weight:800;color:#0A0A1A;margin:0 0 8px;letter-spacing:-0.4px;">Atualização sobre sua solução</h1>
-      <p style="font-size:15px;color:#6B7280;margin:0;line-height:1.6;">Nossa equipe de curadoria analisou sua submissão.</p>
-    </div>
-    <div style="background:#F7F7FC;border-radius:12px;padding:20px;margin-bottom:20px;border-left:4px solid #E5E7EB;">
-      <p style="font-size:11px;font-weight:700;color:#6B7280;margin:0 0 6px;text-transform:uppercase;letter-spacing:0.6px;">Solução</p>
-      <p style="font-size:16px;font-weight:700;color:#0A0A1A;margin:0;">${solutionTitulo}</p>
-    </div>
-    ${reason ? `
-    <div style="background:#FEF2F2;border-radius:12px;padding:20px;margin-bottom:20px;border-left:4px solid #FECACA;">
-      <p style="font-size:11px;font-weight:700;color:#DC2626;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.6px;">Motivo do retorno</p>
-      <p style="font-size:14px;color:#0A0A1A;margin:0;line-height:1.75;">${reason}</p>
-    </div>
-    ` : ''}
-    <p style="font-size:14px;color:#6B7280;line-height:1.75;margin:0;">
-      Não desanime! Você pode ajustar sua solução com base no feedback acima e reenviá-la para curadoria.
-      Estamos aqui para ajudar você a publicar a melhor versão possível.
+  const html = newBase(`
+    <h1 style="font-size:26px;font-weight:800;color:#1D1D1F;margin:0 0 12px;letter-spacing:-0.5px;font-family:-apple-system,Arial,sans-serif;">Sua solução precisa de ajustes</h1>
+    <p style="font-size:15px;color:#6E6E73;line-height:1.7;margin:0 0 24px;font-family:-apple-system,Arial,sans-serif;">
+      Analisamos sua solução <strong style="color:#1D1D1F;">${solutionTitulo}</strong> e identificamos alguns pontos que precisam ser ajustados antes da publicação.
     </p>
-    ${ctaButton('Editar e reenviar →', `${SITE}/dashboard/criador`)}
+    ${reason ? `
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+      <tr><td style="border:1.5px solid #fecaca;border-radius:12px;background:#fef2f2;padding:16px 20px;">
+        <p style="margin:0 0 4px;font-size:12px;font-weight:700;color:#DC2626;text-transform:uppercase;letter-spacing:0.6px;font-family:-apple-system,Arial,sans-serif;">Motivo</p>
+        <p style="margin:0;font-size:14px;color:#1D1D1F;line-height:1.7;font-family:-apple-system,Arial,sans-serif;">${reason}</p>
+      </td></tr>
+    </table>` : ''}
+    <div style="text-align:center;margin-bottom:28px;">
+      <a href="https://weprompt.app.br/dashboard/criador/solucoes" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:16px 32px;border-radius:12px;font-family:-apple-system,Arial,sans-serif;">Ajustar e reenviar →</a>
+    </div>
+    <p style="font-size:13px;color:#6E6E73;text-align:center;margin:0;font-family:-apple-system,Arial,sans-serif;">
+      Se tiver dúvidas, responda este e-mail ou acesse nosso suporte.
+    </p>
   `);
 
   return resend.emails.send({
-    from: FROM,
+    from: FROM_NEW,
     to,
     subject: 'Atualização sobre sua solução na WePrompt',
     html,

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import {
-  sendPurchaseConfirmation,
+  sendConfirmacaoCompra,
   sendSolutionApproved,
   sendSolutionRejected,
 } from '../../lib/email';
@@ -32,7 +32,7 @@ export async function POST(request) {
   try {
     switch (type) {
       case 'purchase_confirmation':
-        await sendPurchaseConfirmation({ to: recipientEmail, solutionTitulo: solution_titulo });
+        await sendConfirmacaoCompra({ to: recipientEmail, solutionName: solution_titulo });
         break;
       case 'solution_approved':
         await sendSolutionApproved({ to: recipientEmail, solutionTitulo: solution_titulo });
