@@ -3,31 +3,18 @@
 import * as React from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import {
-  Bot,
-  Zap,
-  MessageSquare,
-  BarChart2,
-  Mail,
-  Smartphone,
-  TrendingUp,
-  Globe,
-  Brain,
-  Sparkles,
-} from 'lucide-react'
-
 // ─── Icons config ────────────────────────────────────────────────────
 const ICONS = [
-  { id: 1,  icon: Bot,            pos: 'top-[12%]  left-[6%]'   },
-  { id: 2,  icon: Sparkles,       pos: 'top-[7%]   left-[23%]'  },
-  { id: 3,  icon: Brain,          pos: 'top-[5%]   right-[20%]' },
-  { id: 4,  icon: Zap,            pos: 'top-[12%]  right-[5%]'  },
-  { id: 5,  icon: MessageSquare,  pos: 'top-[42%]  left-[4%]'   },
-  { id: 6,  icon: Globe,          pos: 'top-[42%]  right-[4%]'  },
-  { id: 7,  icon: Mail,           pos: 'bottom-[28%] left-[8%]' },
-  { id: 8,  icon: BarChart2,      pos: 'bottom-[28%] right-[8%]'},
-  { id: 9,  icon: Smartphone,     pos: 'bottom-[12%] left-[22%]'},
-  { id: 10, icon: TrendingUp,     pos: 'bottom-[12%] right-[22%]'},
+  { id: 1,  src: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg',                name: 'WhatsApp',      pos: 'top-[12%] left-[8%]'     },
+  { id: 2,  src: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg',          name: 'Slack',         pos: 'top-[8%] left-[30%]'     },
+  { id: 3,  src: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png',          name: 'Notion',        pos: 'top-[15%] right-[28%]'   },
+  { id: 4,  src: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg',    name: 'Gmail',         pos: 'top-[10%] right-[7%]'    },
+  { id: 5,  src: 'https://upload.wikimedia.org/wikipedia/commons/a/ae/Google_Sheets_2020_Logo.svg',  name: 'Google Sheets', pos: 'top-[42%] left-[4%]'     },
+  { id: 6,  src: 'https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg', name: 'Google Drive', pos: 'bottom-[30%] left-[7%]' },
+  { id: 7,  src: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',            name: 'Telegram',      pos: 'bottom-[15%] left-[25%]' },
+  { id: 8,  src: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png',   name: 'LinkedIn',      pos: 'bottom-[10%] right-[25%]'},
+  { id: 9,  src: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png',           name: 'Instagram',     pos: 'bottom-[20%] right-[6%]' },
+  { id: 10, src: 'https://cdn.simpleicons.org/hubspot/FF7A59',                                       name: 'HubSpot',       pos: 'top-[42%] right-[4%]'    },
 ]
 
 // ─── Single floating icon ─────────────────────────────────────────────
@@ -61,8 +48,6 @@ function FloatingIcon({ iconData, index, mouseX, mouseY }) {
     return () => window.removeEventListener('mousemove', onMouseMove)
   }, [x, y, mouseX, mouseY])
 
-  const IconComponent = iconData.icon
-
   return (
     <motion.div
       ref={ref}
@@ -73,16 +58,17 @@ function FloatingIcon({ iconData, index, mouseX, mouseY }) {
       className={`absolute ${iconData.pos}`}
     >
       <motion.div
-        className="flex items-center justify-center"
         style={{
           width: 72,
           height: 72,
-          borderRadius: 20,
-          background: 'rgba(255,255,255,0.85)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(99,102,241,0.12)',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
+          borderRadius: 24,
+          background: '#ffffff',
+          border: '1px solid rgba(0,0,0,0.06)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          padding: 16,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
         animate={{
           y:      [0, -8,  0,  8,  0],
@@ -96,9 +82,10 @@ function FloatingIcon({ iconData, index, mouseX, mouseY }) {
           ease: 'easeInOut',
         }}
       >
-        <IconComponent
-          size={32}
-          style={{ color: '#6366F1', strokeWidth: 1.5 }}
+        <img
+          src={iconData.src}
+          alt={iconData.name}
+          style={{ width: 40, height: 40, objectFit: 'contain' }}
         />
       </motion.div>
     </motion.div>
