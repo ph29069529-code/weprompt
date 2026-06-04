@@ -19,7 +19,7 @@ import {
   Link,
   Share2,
 } from "lucide-react";
-import DashboardHero from "./components/DashboardHero";
+import GalaxyHero from "./components/GalaxyHero";
 import IntegrationMarquee from "./components/IntegrationMarquee";
 
 /* ─── Animation helpers ──────────────────────────────────────────── */
@@ -743,7 +743,7 @@ export default function Home() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <Navbar />
-      <DashboardHero />
+      <GalaxyHero />
       <IntegrationMarquee />
       <HowItWorks />
       <Categories />
