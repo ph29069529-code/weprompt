@@ -19,7 +19,7 @@ import {
   Link,
   Share2,
 } from "lucide-react";
-import { HeroSection } from "./components/HeroSectionDark";
+import SplineHero from "./components/SplineHero";
 import IntegrationMarquee from "./components/IntegrationMarquee";
 import PlatformScrollDemo from "./components/PlatformScrollDemo";
 import SolutionsShowcase from "./components/SolutionsShowcase";
@@ -746,27 +746,7 @@ export default function Home() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <Navbar />
-      <HeroSection
-        title="Novo  •  Marketplace de IA para o Brasil"
-        subtitle={{
-          regular: "O marketplace de IA ",
-          gradient: "para o seu negócio.",
-        }}
-        description="Soluções de IA curadas, testadas e prontas para trabalhar pelo seu negócio — com suporte em português."
-        ctaText="Explorar soluções"
-        ctaHref="/solucoes"
-        bottomImage={{
-          light: "https://www.launchuicomponents.com/app-light.png",
-          dark: "https://www.launchuicomponents.com/app-dark.png",
-        }}
-        gridOptions={{
-          angle: 65,
-          opacity: 0.4,
-          cellSize: 50,
-          lightLineColor: "#4a4a4a",
-          darkLineColor: "#2a2a2a",
-        }}
-      />
+      <SplineHero />
       <IntegrationMarquee />
       <PlatformScrollDemo />
       <SolutionsShowcase />
