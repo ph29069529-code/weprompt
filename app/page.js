@@ -19,7 +19,7 @@ import {
   Link,
   Share2,
 } from "lucide-react";
-import SplineHero from "./components/SplineHero";
+import WaitlistHero from "./components/WaitlistHero";
 import IntegrationMarquee from "./components/IntegrationMarquee";
 import PlatformScrollDemo from "./components/PlatformScrollDemo";
 import SolutionsShowcase from "./components/SolutionsShowcase";
@@ -746,7 +746,7 @@ export default function Home() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <Navbar />
-      <SplineHero />
+      <WaitlistHero />
       <IntegrationMarquee />
       <PlatformScrollDemo />
       <SolutionsShowcase />
