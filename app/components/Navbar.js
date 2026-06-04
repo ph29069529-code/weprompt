@@ -176,6 +176,7 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
 
   const navRef = useRef(null);
   const closeTimerRef = useRef(null);
@@ -218,6 +219,13 @@ export default function Navbar() {
       setMobileOpen(false);
     }
   }, [isMobile]);
+
+  // Scroll detection
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   function openDropdown(key) {
     if (closeTimerRef.current) {
@@ -389,11 +397,12 @@ export default function Navbar() {
     cursor: "pointer",
     fontSize: 14,
     fontWeight: 500,
-    color: "#1D1D1F",
+    color: scrolled ? "#374151" : "rgba(255,255,255,0.75)",
     borderRadius: 8,
-    transition: "background 0.15s",
+    transition: "background 0.15s, color 0.3s",
     fontFamily: "inherit",
   };
+  const triggerHoverBg = scrolled ? "#F5F5F7" : "rgba(255,255,255,0.1)";
 
   return (
     <>
@@ -415,9 +424,13 @@ export default function Navbar() {
           position: "sticky",
           top: 0,
           zIndex: 50,
-          background: "white",
-          borderBottom: "1px solid #e5e7eb",
-          height: 64,
+          background: scrolled ? "rgba(255,255,255,0.92)" : "transparent",
+          backdropFilter: scrolled ? "blur(16px)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(0,0,0,0.06)" : "none",
+          boxShadow: scrolled ? "0 1px 20px rgba(0,0,0,0.06)" : "none",
+          height: scrolled ? 60 : 68,
+          transition: "all 0.3s ease",
         }}
       >
         <div
@@ -457,7 +470,7 @@ export default function Navbar() {
               >
                 <button
                   style={triggerStyle}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "#F5F5F7"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = triggerHoverBg; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                 >
                   Explorar <ChevronDown open={activeDropdown === "explorar"} />
@@ -474,7 +487,7 @@ export default function Navbar() {
                   display: "flex",
                   alignItems: "center",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#F5F5F7"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = triggerHoverBg; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
               >
                 Preços
@@ -488,7 +501,7 @@ export default function Navbar() {
               >
                 <button
                   style={triggerStyle}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "#F5F5F7"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = triggerHoverBg; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                 >
                   Como funciona <ChevronDown open={activeDropdown === "como-funciona"} />
@@ -504,7 +517,7 @@ export default function Navbar() {
               >
                 <button
                   style={triggerStyle}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "#F5F5F7"; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = triggerHoverBg; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                 >
                   Para Criadores <ChevronDown open={activeDropdown === "para-criadores"} />
@@ -538,10 +551,11 @@ export default function Navbar() {
                   <a
                     href="/login"
                     style={{
-                      color: "#1D1D1F",
+                      color: scrolled ? "#374151" : "rgba(255,255,255,0.7)",
                       fontSize: 14,
                       fontWeight: 500,
                       textDecoration: "none",
+                      transition: "color 0.3s",
                     }}
                   >
                     Entrar
@@ -549,14 +563,15 @@ export default function Navbar() {
                   <a
                     href="/cadastro"
                     style={{
-                      background: "#6366F1",
-                      color: "white",
+                      background: scrolled ? "#6366F1" : "white",
+                      color: scrolled ? "white" : "#0A0F1E",
                       borderRadius: 999,
                       padding: "10px 20px",
                       fontSize: 14,
                       fontWeight: 600,
                       textDecoration: "none",
                       display: "inline-block",
+                      transition: "background 0.3s, color 0.3s",
                     }}
                   >
                     Começar grátis
@@ -575,10 +590,11 @@ export default function Navbar() {
                 background: "transparent",
                 cursor: "pointer",
                 padding: 8,
-                color: "#1D1D1F",
+                color: scrolled ? "#1D1D1F" : "white",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                transition: "color 0.3s",
               }}
               aria-label="Abrir menu"
             >
