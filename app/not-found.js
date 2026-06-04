@@ -1,12 +1,11 @@
 "use client";
 
-import WePromptLogo from "./components/WePromptLogo";
+import Navbar from "./components/Navbar";
 
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT  = "#6E6E73";
 const BG_GRAY    = "#F5F5F7";
 const BLUE       = "#6366F1";
-const BORDER     = "#e5e7eb";
 
 export default function NotFound() {
   return (
@@ -18,17 +17,7 @@ export default function NotFound() {
       display: "flex",
       flexDirection: "column",
     }}>
-      {/* Navbar */}
-      <header style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-        background: "rgba(255,255,255,0.92)", backdropFilter: "blur(16px)",
-        borderBottom: `1px solid ${BORDER}`, height: 60,
-        display: "flex", alignItems: "center", padding: "0 32px",
-      }}>
-        <a href="/" style={{ textDecoration: "none" }}>
-          <WePromptLogo id="notfound-header" textColor={NEAR_BLACK} />
-        </a>
-      </header>
+      <Navbar />
 
       {/* Content */}
       <div style={{
@@ -108,9 +97,9 @@ export default function NotFound() {
             <a
               href="/solucoes"
               style={{
-                background: "transparent",
-                color: BLUE,
-                border: `2px solid ${BLUE}`,
+                background: BLUE,
+                color: "#fff",
+                border: "none",
                 borderRadius: 12,
                 padding: "14px 28px",
                 fontSize: 15,
@@ -120,8 +109,8 @@ export default function NotFound() {
                 alignItems: "center",
                 transition: "background 0.15s",
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = "rgba(3,105,161,0.06)")}
-              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              onMouseEnter={e => (e.currentTarget.style.background = "#4F46E5")}
+              onMouseLeave={e => (e.currentTarget.style.background = BLUE)}
             >
               Explorar soluções
             </a>
