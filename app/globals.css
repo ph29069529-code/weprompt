@@ -114,6 +114,15 @@ body {
   animation: marquee-right 25s linear infinite;
 }
 
+/* RetroGrid animation */
+@keyframes grid {
+  0%   { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
+}
+.animate-grid {
+  animation: grid 15s linear infinite;
+}
+
 /* Footer links */
 .footer-link {
   color: #6B7280;
