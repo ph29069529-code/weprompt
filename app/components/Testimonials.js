@@ -49,7 +49,8 @@ export default function Testimonials() {
     <section
       style={{
         padding: "100px 48px",
-        background: "#ffffff",
+        background: "#0A0F1E",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
         fontFamily: "'Inter', sans-serif",
       }}
     >
@@ -73,7 +74,7 @@ export default function Testimonials() {
               fontSize: "clamp(32px, 4vw, 52px)",
               fontWeight: 800,
               letterSpacing: "-0.04em",
-              color: "#0A0F1E",
+              color: "#ffffff",
               marginBottom: 0,
             }}
           >
@@ -95,13 +96,11 @@ export default function Testimonials() {
               onMouseEnter={() => setHov(t.id)}
               onMouseLeave={() => setHov(null)}
               style={{
-                background: "#fff",
-                border: `1px solid ${hov === t.id ? "rgba(99,102,241,0.25)" : "#E5E7EB"}`,
+                background: hov === t.id ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.04)",
+                border: `1px solid ${hov === t.id ? "rgba(99,102,241,0.35)" : "rgba(255,255,255,0.08)"}`,
                 borderRadius: 20,
                 padding: 32,
-                boxShadow: hov === t.id
-                  ? "0 16px 48px rgba(99,102,241,0.10)"
-                  : "0 2px 12px rgba(0,0,0,0.04)",
+                boxShadow: hov === t.id ? "0 16px 48px rgba(99,102,241,0.1)" : "none",
                 transform: hov === t.id ? "translateY(-3px)" : "none",
                 transition: "all 0.25s ease",
                 display: "flex",
@@ -114,8 +113,8 @@ export default function Testimonials() {
                 <Stars count={t.stars} />
                 <span
                   style={{
-                    background: "#EEF2FF",
-                    color: "#6366F1",
+                    background: "rgba(99,102,241,0.15)",
+                    color: "#a5b4fc",
                     fontSize: 11,
                     fontWeight: 700,
                     padding: "3px 10px",
@@ -131,7 +130,7 @@ export default function Testimonials() {
                 style={{
                   fontSize: 15,
                   lineHeight: 1.7,
-                  color: "#374151",
+                  color: "rgba(255,255,255,0.6)",
                   flex: 1,
                 }}
               >
@@ -152,8 +151,8 @@ export default function Testimonials() {
                   }}
                 />
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#0A0F1E" }}>{t.name}</div>
-                  <div style={{ fontSize: 12, color: "#9CA3AF" }}>{t.role}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#ffffff" }}>{t.name}</div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>{t.role}</div>
                 </div>
               </div>
             </div>

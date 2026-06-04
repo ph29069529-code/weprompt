@@ -30,11 +30,10 @@ function IconPill({ name, src }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 10,
-      background: 'white',
-      border: '1px solid #E5E7EB',
+      background: 'rgba(255,255,255,0.06)',
+      border: '1px solid rgba(255,255,255,0.08)',
       borderRadius: 100,
       padding: '10px 20px 10px 12px',
-      boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
       flexShrink: 0,
       whiteSpace: 'nowrap',
     }}>
@@ -45,7 +44,7 @@ function IconPill({ name, src }) {
         height={32}
         style={{ width: 32, height: 32, objectFit: 'contain', display: 'block' }}
       />
-      <span style={{ fontSize: 14, fontWeight: 500, color: '#374151' }}>{name}</span>
+      <span style={{ fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.8)' }}>{name}</span>
     </div>
   )
 }
@@ -53,10 +52,11 @@ function IconPill({ name, src }) {
 export default function IntegrationMarquee() {
   return (
     <section style={{
-      background: 'white',
-      padding: '64px 0 64px',
+      background: '#09090b',
+      padding: '64px 0',
       overflow: 'hidden',
       position: 'relative',
+      borderTop: '1px solid rgba(255,255,255,0.06)',
     }}>
       <style>{`
         @keyframes im-scroll-left {
@@ -69,6 +69,7 @@ export default function IntegrationMarquee() {
         }
         .im-track-left  { display: flex; width: max-content; gap: 16px; animation: im-scroll-left  30s linear infinite; }
         .im-track-right { display: flex; width: max-content; gap: 16px; animation: im-scroll-right 30s linear infinite; margin-top: 16px; }
+        .im-track-left:hover, .im-track-right:hover { animation-play-state: paused; }
         @media (prefers-reduced-motion: reduce) {
           .im-track-left, .im-track-right { animation: none; }
         }
@@ -78,15 +79,15 @@ export default function IntegrationMarquee() {
       <div style={{ textAlign: 'center', marginBottom: 48, padding: '0 24px' }}>
         <div style={{
           display: 'inline-block',
-          background: 'rgba(99,102,241,0.08)',
-          border: '1px solid rgba(99,102,241,0.2)',
+          background: 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.1)',
           borderRadius: 100,
           padding: '5px 14px',
           marginBottom: 16,
         }}>
           <span style={{
             fontSize: 11, letterSpacing: '0.12em',
-            color: '#6366F1', fontWeight: 700,
+            color: 'rgba(255,255,255,0.5)', fontWeight: 700,
             textTransform: 'uppercase',
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
           }}>
@@ -97,7 +98,7 @@ export default function IntegrationMarquee() {
         <h2 style={{
           fontSize: 'clamp(28px, 4vw, 40px)',
           fontWeight: 800,
-          color: '#0A0F1E',
+          color: '#ffffff',
           letterSpacing: '-0.02em',
           lineHeight: 1.2,
           margin: 0,
@@ -107,7 +108,7 @@ export default function IntegrationMarquee() {
         </h2>
 
         <p style={{
-          color: '#6B7280',
+          color: 'rgba(255,255,255,0.4)',
           fontSize: 16,
           marginTop: 8,
           marginBottom: 0,
@@ -119,8 +120,6 @@ export default function IntegrationMarquee() {
 
       {/* Marquee rows */}
       <div style={{ position: 'relative' }}>
-
-        {/* Row 1 — scrolls left */}
         <div style={{ overflow: 'hidden', width: '100%' }}>
           <div className="im-track-left">
             {row1Items.map((item, i) => (
@@ -129,7 +128,6 @@ export default function IntegrationMarquee() {
           </div>
         </div>
 
-        {/* Row 2 — scrolls right */}
         <div style={{ overflow: 'hidden', width: '100%' }}>
           <div className="im-track-right">
             {row2Items.map((item, i) => (
@@ -138,19 +136,19 @@ export default function IntegrationMarquee() {
           </div>
         </div>
 
-        {/* Left fade overlay */}
+        {/* Left fade */}
         <div style={{
           position: 'absolute', top: 0, left: 0,
           height: '100%', width: 120,
-          background: 'linear-gradient(to right, white, transparent)',
+          background: 'linear-gradient(to right, #09090b, transparent)',
           pointerEvents: 'none', zIndex: 2,
         }} />
 
-        {/* Right fade overlay */}
+        {/* Right fade */}
         <div style={{
           position: 'absolute', top: 0, right: 0,
           height: '100%', width: 120,
-          background: 'linear-gradient(to left, white, transparent)',
+          background: 'linear-gradient(to left, #09090b, transparent)',
           pointerEvents: 'none', zIndex: 2,
         }} />
       </div>

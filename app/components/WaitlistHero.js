@@ -226,7 +226,7 @@ export default function WaitlistHero() {
             height: 80,
             zIndex: 30,
             pointerEvents: 'none',
-            background: 'linear-gradient(to bottom, transparent, #f9fafb)',
+            background: 'linear-gradient(to bottom, transparent, #09090b)',
           }}
         />
       </div>
