@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import WePromptLogo from "./WePromptLogo";
 import { supabase } from "../lib/supabase";
+import { TrendingUp, Sparkles, Star } from "lucide-react";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -17,9 +18,9 @@ const EXPLORAR_CATS = [
 ];
 
 const EXPLORAR_HIGHLIGHTS = [
-  { icon: "🔥", label: "Soluções em Alta", href: "/solucoes?filter=alta" },
-  { icon: "✨", label: "Lançamentos", href: "/solucoes?filter=novos" },
-  { icon: "⭐", label: "Mais Vendidas", href: "/solucoes?filter=mais-vendidas" },
+  { Icon: TrendingUp, label: "Soluções em Alta", href: "/solucoes?filter=alta" },
+  { Icon: Sparkles,   label: "Lançamentos",      href: "/solucoes?filter=novos" },
+  { Icon: Star,       label: "Mais Vendidas",     href: "/solucoes?filter=mais-vendidas" },
 ];
 
 const COMO_FUNCIONA_ITEMS = [
@@ -313,7 +314,7 @@ export default function Navbar() {
                 onMouseEnter={(e) => { e.currentTarget.style.background = "#F0F0F0"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
               >
-                <span style={{ fontSize: 16 }}>{item.icon}</span>
+                <item.Icon size={16} color="#6366F1" style={{ flexShrink: 0 }} />
                 {item.label}
               </a>
             ))}
@@ -703,7 +704,7 @@ export default function Navbar() {
                         borderBottom: "1px solid #f3f4f6",
                       }}
                     >
-                      <span style={{ fontSize: 18 }}>{item.icon}</span>
+                      <item.Icon size={16} color="#6366F1" style={{ flexShrink: 0 }} />
                       <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{item.label}</div>
                     </a>
                   ))}
