@@ -13,7 +13,7 @@ const fmtDate = d =>
   d ? new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
 const STATUS_BADGE = {
-  approved: { background: "#dcfce7", color: "#16a34a", label: "Aprovada" },
+  approved: { background: "rgba(99,102,241,0.08)", color: "#6366F1", label: "Aprovada" },
   pending:  { background: "#fef3c7", color: "#d97706", label: "Pendente" },
   draft:    { background: "#f3f4f6", color: "#6b7280", label: "Rascunho" },
   rejected: { background: "#fee2e2", color: "#dc2626", label: "Rejeitada" },
@@ -193,7 +193,7 @@ export default function CriadorPage() {
           {/* LEFT: Metrics */}
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <MetricCard
-              iconBg="#16a34a"
+              iconBg="#6366F1"
               icon={<svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>}
               label="Soluções Aprovadas"
               value={approvedCount}
@@ -205,7 +205,7 @@ export default function CriadorPage() {
               onLeave={() => setHoveredMetric(null)}
             />
             <MetricCard
-              iconBg="#ea580c"
+              iconBg="#6366F1"
               icon={<svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
               label="Aguardando Revisão"
               value={pendingCount}
@@ -225,7 +225,7 @@ export default function CriadorPage() {
               subColor="#9ca3af"
             />
             <MetricCard
-              iconBg="#7c3aed"
+              iconBg="#6366F1"
               icon={<svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>}
               label="Vendas Totais"
               value="0"

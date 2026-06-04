@@ -5,30 +5,30 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
 const GRADIENTS = {
-  atendimento:  "linear-gradient(135deg, #1e3a5f, #0369A1)",
-  emails:       "linear-gradient(135deg, #1e3a5f, #2563EB)",
-  vendas:       "linear-gradient(135deg, #14532d, #16a34a)",
+  atendimento:  "linear-gradient(135deg, #6366F1, #6366F1)",
+  emails:       "linear-gradient(135deg, #6366F1, #6366F1)",
+  vendas:       "linear-gradient(135deg, #6366F1, #6366F1)",
   dados:        "linear-gradient(135deg, #1e1b4b, #4f46e5)",
-  whatsapp:     "linear-gradient(135deg, #14532d, #16a34a)",
-  marketing:    "linear-gradient(135deg, #1e3a5f, #0891b2)",
+  whatsapp:     "linear-gradient(135deg, #6366F1, #6366F1)",
+  marketing:    "linear-gradient(135deg, #6366F1, #6366F1)",
   outro:        "linear-gradient(135deg, #1c1917, #78716c)",
-  Automação:    "linear-gradient(135deg, #1e3a5f, #2563EB)",
-  Chatbots:     "linear-gradient(135deg, #1a1a2e, #7c3aed)",
-  Marketing:    "linear-gradient(135deg, #1e3a5f, #0891b2)",
-  Vendas:       "linear-gradient(135deg, #14532d, #16a34a)",
+  Automação:    "linear-gradient(135deg, #6366F1, #6366F1)",
+  Chatbots:     "linear-gradient(135deg, #0A0F1E, #6366F1)",
+  Marketing:    "linear-gradient(135deg, #6366F1, #6366F1)",
+  Vendas:       "linear-gradient(135deg, #6366F1, #6366F1)",
   Análise:      "linear-gradient(135deg, #1e1b4b, #4f46e5)",
-  Atendimento:  "linear-gradient(135deg, #1e3a5f, #0369A1)",
+  Atendimento:  "linear-gradient(135deg, #6366F1, #6366F1)",
 };
 
 const STATUS_DOT = {
-  approved: "#22c55e",
-  pending:  "#f97316",
+  approved: "#6366F1",
+  pending:  "#6366F1",
   draft:    "#9ca3af",
   rejected: "#ef4444",
 };
 
 const STATUS_BADGE = {
-  approved: { background: "#dcfce7", color: "#16a34a", label: "Aprovada" },
+  approved: { background: "rgba(99,102,241,0.08)", color: "#6366F1", label: "Aprovada" },
   pending:  { background: "#fef3c7", color: "#d97706", label: "Pendente" },
   draft:    { background: "#f3f4f6", color: "#6b7280", label: "Rascunho" },
   rejected: { background: "#fee2e2", color: "#dc2626", label: "Rejeitada" },

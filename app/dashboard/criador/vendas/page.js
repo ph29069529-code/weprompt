@@ -8,13 +8,13 @@ const CRIADOR_TABS = ["Dashboard", "Minhas Soluções", "Vendas", "Configuraçõ
 const SUMMARY_CARDS = [
   { label: "Total de Vendas",  value: "127",          sub: "desde o início",   subColor: "#9ca3af" },
   { label: "Receita Total",    value: "R$ 14.589,00", sub: "desde o início",   subColor: "#9ca3af" },
-  { label: "Esta Semana",      value: "6",             sub: "+20% ↑",           subColor: "#16a34a" },
-  { label: "Este Mês",         value: "28",            sub: "+12% ↑",           subColor: "#16a34a" },
+  { label: "Esta Semana",      value: "6",             sub: "+20% ↑",           subColor: "#6366F1" },
+  { label: "Este Mês",         value: "28",            sub: "+12% ↑",           subColor: "#6366F1" },
 ];
 
 const STATUS_STYLES = {
-  Concluído:   { background: "#dcfce7", color: "#16a34a" },
-  Processando: { background: "#dbeafe", color: "#2563EB" },
+  Concluído:   { background: "rgba(99,102,241,0.08)", color: "#6366F1" },
+  Processando: { background: "#EEF2FF", color: "#6366F1" },
   Reembolsado: { background: "#fee2e2", color: "#dc2626" },
 };
 
@@ -53,8 +53,8 @@ export default function VendasPage() {
           display: "flex", alignItems: "center",
           background: searchFocused ? "white" : "#f3f4f6",
           borderRadius: 8, padding: "8px 16px", width: 360, gap: 8,
-          border: searchFocused ? "1px solid #2563EB" : "1px solid transparent",
-          boxShadow: searchFocused ? "0 0 0 3px rgba(37,99,235,0.1)" : "none",
+          border: searchFocused ? "1px solid #6366F1" : "1px solid transparent",
+          boxShadow: searchFocused ? "0 0 0 3px rgba(99,102,241,0.1)" : "none",
           transition: "all 0.2s ease",
         }}>
           <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">

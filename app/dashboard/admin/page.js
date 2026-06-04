@@ -10,10 +10,10 @@ import Spinner from "../../components/Spinner";
 
 const NEAR_BLACK = "#1D1D1F";
 const GRAY_TEXT  = "#6E6E73";
-const BG_GRAY    = "#F5F5F7";
-const BLUE       = "#0369A1";
+const BG_GRAY    = "#F8F9FB";
+const BLUE       = "#6366F1";
 const BORDER     = "#e5e7eb";
-const GREEN      = "#059669";
+const GREEN      = "#6366F1";
 const DANGER     = "#dc2626";
 
 function useWindowSize() {
@@ -92,7 +92,7 @@ function NavItem({ label, iconD, active, onClick }) {
     <button onClick={onClick} style={{
       width: "100%", display: "flex", alignItems: "center", gap: 10,
       padding: "9px 12px", borderRadius: 12, border: "none",
-      background: active ? "#e0f2fe" : "transparent",
+      background: active ? "#EEF2FF" : "transparent",
       color: active ? BLUE : GRAY_TEXT,
       fontSize: 13, fontWeight: active ? 600 : 500,
       cursor: "pointer", fontFamily: "inherit", marginBottom: 2,
@@ -117,7 +117,7 @@ function KpiCard({ label, value, sub, subColor, iconD, accent }) {
       padding: "20px 22px", flex: "1 1 160px", minWidth: 0,
     }}>
       <div style={{
-        width: 38, height: 38, borderRadius: 11, background: "#e0f2fe",
+        width: 38, height: 38, borderRadius: 11, background: "#EEF2FF",
         display: "flex", alignItems: "center", justifyContent: "center",
         color, marginBottom: 12,
       }}>
@@ -135,21 +135,21 @@ function StatusBadge({ status }) {
   const map = {
     pending:   { label: "Pendente",    bg: "rgba(217,119,6,0.1)",   color: "#B45309" },
     pendente:  { label: "Pendente",    bg: "rgba(217,119,6,0.1)",   color: "#B45309" },
-    approved:  { label: "Ativa",       bg: "rgba(5,150,105,0.1)",   color: GREEN },
-    active:    { label: "Ativa",       bg: "rgba(5,150,105,0.1)",   color: GREEN },
-    ativo:     { label: "Ativo",       bg: "rgba(5,150,105,0.1)",   color: GREEN },
+    approved:  { label: "Ativa",       bg: "rgba(99,102,241,0.1)",   color: GREEN },
+    active:    { label: "Ativa",       bg: "rgba(99,102,241,0.1)",   color: GREEN },
+    ativo:     { label: "Ativo",       bg: "rgba(99,102,241,0.1)",   color: GREEN },
     rejected:  { label: "Reprovada",   bg: "rgba(220,38,38,0.1)",   color: DANGER },
     paused:    { label: "Pausada",     bg: "rgba(107,114,128,0.1)", color: "#4B5563" },
     banido:    { label: "Banido",      bg: "rgba(220,38,38,0.1)",   color: DANGER },
-    criador:   { label: "Criador",     bg: "#e0f2fe",               color: BLUE },
-    creator:   { label: "Criador",     bg: "#e0f2fe",               color: BLUE },
-    empresa:   { label: "Empresa",     bg: "rgba(139,92,246,0.1)",  color: "#7C3AED" },
-    business:  { label: "Empresa",     bg: "rgba(139,92,246,0.1)",  color: "#7C3AED" },
+    criador:   { label: "Criador",     bg: "#EEF2FF",               color: BLUE },
+    creator:   { label: "Criador",     bg: "#EEF2FF",               color: BLUE },
+    empresa:   { label: "Empresa",     bg: "rgba(99,102,241,0.1)",  color: "#6366F1" },
+    business:  { label: "Empresa",     bg: "rgba(99,102,241,0.1)",  color: "#6366F1" },
     admin:     { label: "Admin",       bg: "rgba(220,38,38,0.1)",   color: DANGER },
-    venda:     { label: "Venda",       bg: "#e0f2fe",               color: BLUE },
-    repasse:   { label: "Repasse",     bg: "rgba(5,150,105,0.1)",   color: GREEN },
-    assinatura:{ label: "Assinatura",  bg: "rgba(139,92,246,0.1)",  color: "#7C3AED" },
-    concluido: { label: "Concluído",   bg: "rgba(5,150,105,0.1)",   color: GREEN },
+    venda:     { label: "Venda",       bg: "#EEF2FF",               color: BLUE },
+    repasse:   { label: "Repasse",     bg: "rgba(99,102,241,0.1)",   color: GREEN },
+    assinatura:{ label: "Assinatura",  bg: "rgba(99,102,241,0.1)",  color: "#6366F1" },
+    concluido: { label: "Concluído",   bg: "rgba(99,102,241,0.1)",   color: GREEN },
     pendente_repasse: { label: "Pendente", bg: "rgba(217,119,6,0.1)", color: "#B45309" },
   };
   const s = map[status] || { label: status || "—", bg: "rgba(0,0,0,0.07)", color: GRAY_TEXT };
@@ -190,7 +190,7 @@ function Toast({ message, type, onClose }) {
 function ComingSoon({ label }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 320, textAlign: "center" }}>
-      <div style={{ width: 64, height: 64, borderRadius: 20, background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", color: BLUE, marginBottom: 20 }}>
+      <div style={{ width: 64, height: 64, borderRadius: 20, background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", color: BLUE, marginBottom: 20 }}>
         <Icon d={icons.wrench} size={28} />
       </div>
       <div style={{ fontSize: 20, fontWeight: 700, color: NEAR_BLACK, marginBottom: 8 }}>{label}</div>
@@ -251,7 +251,7 @@ function LineChart({ criadores, empresas, labels }) {
         return <line key={f} x1={PL} y1={y} x2={W - PR} y2={y} stroke="#e5e7eb" strokeWidth="1" />;
       })}
       <polyline points={pts(criadores)} fill="none" stroke={BLUE} strokeWidth="2.5" strokeLinejoin="round" />
-      <polyline points={pts(empresas)}  fill="none" stroke="#0891b2" strokeWidth="2.5" strokeLinejoin="round" />
+      <polyline points={pts(empresas)}  fill="none" stroke="#6366F1" strokeWidth="2.5" strokeLinejoin="round" />
       {criadores.map((v, i) => {
         const x = PL + (i / (criadores.length - 1)) * cW;
         const y = PT + cH * (1 - v / max);
@@ -260,7 +260,7 @@ function LineChart({ criadores, empresas, labels }) {
       {empresas.map((v, i) => {
         const x = PL + (i / (empresas.length - 1)) * cW;
         const y = PT + cH * (1 - v / max);
-        return <circle key={i} cx={x} cy={y} r={3} fill="#0891b2" />;
+        return <circle key={i} cx={x} cy={y} r={3} fill="#6366F1" />;
       })}
       {labels.map((l, i) => {
         const x = PL + (i / (labels.length - 1)) * cW;
@@ -366,7 +366,7 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
             </div>
           )}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
-            <span style={{ background: "#e0f2fe", color: BLUE, fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99 }}>{solution.categoria}</span>
+            <span style={{ background: "#EEF2FF", color: BLUE, fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 99 }}>{solution.categoria}</span>
             <StatusBadge status={solution.payment_type === "one_time" ? "venda" : "assinatura"} />
           </div>
           <h3 style={{ fontSize: 20, fontWeight: 800, color: NEAR_BLACK, margin: "0 0 10px", letterSpacing: "-0.3px" }}>{solution.titulo}</h3>
@@ -393,7 +393,7 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
                         </div>
                       </div>
                       {fileUrls[f.path] ? (
-                        <a href={fileUrls[f.path]} download target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 6, background: "#e0f2fe", color: BLUE, fontSize: 12, fontWeight: 600, textDecoration: "none", flexShrink: 0 }}>
+                        <a href={fileUrls[f.path]} download target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 6, background: "#EEF2FF", color: BLUE, fontSize: 12, fontWeight: 600, textDecoration: "none", flexShrink: 0 }}>
                           <Icon d={icons.download} size={12} /> Download
                         </a>
                       ) : (
@@ -409,7 +409,7 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
                 <div style={{ fontSize: 12, fontWeight: 600, color: GRAY_TEXT, marginBottom: 8 }}>Links de acesso</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {solution.delivery_links.map((l, i) => (
-                    <a key={i} href={l.url} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 14px", borderRadius: 8, border: "1px solid rgba(3,105,161,0.2)", background: "rgba(3,105,161,0.05)", color: BLUE, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+                    <a key={i} href={l.url} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 14px", borderRadius: 8, border: "1px solid rgba(99,102,241,0.2)", background: "rgba(99,102,241,0.05)", color: BLUE, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
                       <Icon d={icons.link} size={14} /> {l.label || l.url}
                     </a>
                   ))}
@@ -439,8 +439,8 @@ function DetailDrawer({ solution, onClose, onApprove, onReject, actionLoading })
 
         {solution.status === "pending" && (
           <div style={{ padding: "16px 24px", borderTop: `1px solid ${BORDER}`, display: "flex", gap: 10, flexShrink: 0, background: "#fff" }}>
-            <button onClick={() => { if (!isLoading) onApprove(solution.id); }} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: isLoading ? "rgba(5,150,105,0.4)" : GREEN, color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.7 : 1, pointerEvents: "auto", fontFamily: "inherit" }}
-              onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = "#047857"; }} onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = GREEN; }}>
+            <button onClick={() => { if (!isLoading) onApprove(solution.id); }} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, background: isLoading ? "rgba(99,102,241,0.4)" : GREEN, color: "#fff", border: "none", borderRadius: 10, padding: "13px", fontSize: 14, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.7 : 1, pointerEvents: "auto", fontFamily: "inherit" }}
+              onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = "#6366F1"; }} onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = GREEN; }}>
               {isLoading ? <Spinner /> : <Icon d={icons.check} size={16} />}
               {isLoading ? "Aprovando…" : "Aprovar solução"}
             </button>
@@ -526,11 +526,11 @@ function ConfigGeraisTab({ isMobile }) {
       </div>
 
       {saved && (
-        <div style={{ background: "rgba(5,150,105,0.08)", border: "1px solid rgba(5,150,105,0.2)", borderRadius: 10, padding: "11px 16px", fontSize: 13, color: GREEN, marginBottom: 16 }}>
+        <div style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 10, padding: "11px 16px", fontSize: 13, color: GREEN, marginBottom: 16 }}>
           ✓ Configurações salvas com sucesso!
         </div>
       )}
-      <button type="submit" disabled={saving} style={{ padding: "12px 28px", borderRadius: 12, background: saving ? "rgba(3,105,161,0.5)" : BLUE, color: "#fff", border: "none", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+      <button type="submit" disabled={saving} style={{ padding: "12px 28px", borderRadius: 12, background: saving ? "rgba(99,102,241,0.5)" : BLUE, color: "#fff", border: "none", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
         {saving ? "Salvando…" : "Salvar configurações"}
       </button>
     </form>
@@ -560,7 +560,7 @@ function TransacoesTab({ isMobile }) {
 
   const summary = [
     { label: "Receita Bruta",       value: fmt(totalBruto),       sub: `${subs.length} transações`,    color: BLUE },
-    { label: "Comissões (15%)",      value: fmt(totalComissao),    sub: "retidos pela plataforma",      color: "#7C3AED" },
+    { label: "Comissões (15%)",      value: fmt(totalComissao),    sub: "retidos pela plataforma",      color: "#6366F1" },
     { label: "Repasses Pendentes",   value: fmt(repassePendente),  sub: "assinaturas ativas",           color: "#B45309" },
     { label: "Repasses Realizados",  value: fmt(repasseRealizado), sub: "transações encerradas",        color: GREEN },
   ];
@@ -687,7 +687,7 @@ function UsuariosTab({ isMobile }) {
                   <tr key={p.id} style={{ borderTop: `1px solid ${BORDER}` }}>
                     <td style={{ padding: "12px 16px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
+                        <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
                           {initials(p.nome)}
                         </div>
                         <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{p.nome || "—"}</span>
@@ -780,7 +780,7 @@ function SolucoesTab({ solutions, onApprove, onConfirmReject, onPause, onReactiv
                       <tr style={{ borderTop: `1px solid ${BORDER}` }}>
                         <td style={{ padding: "12px 16px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                            <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
                               {s.cover_url
                                 ? <img src={s.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                                 : <span style={{ color: BLUE, opacity: 0.5 }}>✦</span>}
@@ -799,7 +799,7 @@ function SolucoesTab({ solutions, onApprove, onConfirmReject, onPause, onReactiv
                             <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver</button>
                             {s.status === "pending" && (
                               <>
-                                <button onClick={() => { if (!isLoading) onApprove(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Aprovar</button>
+                                <button onClick={() => { if (!isLoading) onApprove(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(99,102,241,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Aprovar</button>
                                 <button onClick={() => { if (!isLoading) { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); } }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Reprovar</button>
                               </>
                             )}
@@ -807,7 +807,7 @@ function SolucoesTab({ solutions, onApprove, onConfirmReject, onPause, onReactiv
                               <button onClick={() => { if (!isLoading) onPause(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(107,114,128,0.1)", color: "#4B5563", fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Pausar</button>
                             )}
                             {s.status === "paused" && (
-                              <button onClick={() => { if (!isLoading) onReactivate(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Reativar</button>
+                              <button onClick={() => { if (!isLoading) onReactivate(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(99,102,241,0.1)", color: GREEN, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Reativar</button>
                             )}
                           </div>
                         </td>
@@ -902,10 +902,10 @@ function DashboardTab({ solutions, profiles, totalRevenue = 0, onApprove, onConf
 
   const quickActions = [
     { label: "Adicionar Categoria", icon: icons.tag,     color: BLUE },
-    { label: "Enviar E-mail",       icon: icons.mail,    color: "#7C3AED" },
+    { label: "Enviar E-mail",       icon: icons.mail,    color: "#6366F1" },
     { label: "Relatório Mensal",    icon: icons.chart,   color: GREEN },
     { label: "Gerenciar Banners",   icon: icons.photo,   color: "#B45309" },
-    { label: "Configurar Taxas",    icon: icons.percent, color: "#0891b2" },
+    { label: "Configurar Taxas",    icon: icons.percent, color: "#6366F1" },
     { label: "Exportar Dados",      icon: icons.download, color: GRAY_TEXT },
   ];
 
@@ -931,7 +931,7 @@ function DashboardTab({ solutions, profiles, totalRevenue = 0, onApprove, onConf
               <div style={{ width: 10, height: 10, borderRadius: "50%", background: BLUE }} /> Criadores
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}>
-              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0891b2" }} /> Empresas
+              <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#6366F1" }} /> Empresas
             </div>
           </div>
         </div>
@@ -976,7 +976,7 @@ function DashboardTab({ solutions, profiles, totalRevenue = 0, onApprove, onConf
                       <tr style={{ borderTop: `1px solid ${BORDER}` }}>
                         <td style={{ padding: "12px 16px" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                            <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
                               {s.cover_url ? <img src={s.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: BLUE, opacity: 0.5 }}>✦</span>}
                             </div>
                             <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.titulo || "—"}</span>
@@ -988,7 +988,7 @@ function DashboardTab({ solutions, profiles, totalRevenue = 0, onApprove, onConf
                         <td style={{ padding: "12px 16px" }}>
                           <div style={{ display: "flex", gap: 6 }}>
                             <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver</button>
-                            <button onClick={() => { if (!isLoading) onApprove(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(5,150,105,0.1)", color: GREEN, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Aprovar</button>
+                            <button onClick={() => { if (!isLoading) onApprove(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(99,102,241,0.1)", color: GREEN, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Aprovar</button>
                             <button onClick={() => { if (!isLoading) { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); } }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Reprovar</button>
                           </div>
                         </td>
@@ -1030,7 +1030,7 @@ function DashboardTab({ solutions, profiles, totalRevenue = 0, onApprove, onConf
         ) : (
           recentSignups.map((p, i) => (
             <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 24px", borderTop: i > 0 ? `1px solid ${BORDER}` : "none" }}>
-              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
                 {initials(p.nome)}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -1069,33 +1069,33 @@ function DashboardTab({ solutions, profiles, totalRevenue = 0, onApprove, onConf
  *   nome text NOT NULL UNIQUE,
  *   slug text NOT NULL UNIQUE,
  *   icone text DEFAULT '🤖',
- *   cor text DEFAULT '#0369A1',
+ *   cor text DEFAULT '#6366F1',
  *   descricao text,
  *   created_at timestamptz DEFAULT now()
  * );
  *
  * INSERT INTO categories (nome, slug, icone, cor) VALUES
- *   ('Agentes de IA',   'agentes-de-ia',   '🤖', '#0369A1'),
- *   ('Automação',       'automacao',        '⚡', '#7C3AED'),
- *   ('Chatbots',        'chatbots',         '💬', '#059669'),
+ *   ('Agentes de IA',   'agentes-de-ia',   '🤖', '#6366F1'),
+ *   ('Automação',       'automacao',        '⚡', '#6366F1'),
+ *   ('Chatbots',        'chatbots',         '💬', '#6366F1'),
  *   ('Marketing IA',    'marketing-ia',     '📣', '#D97706'),
  *   ('Análise de Dados','analise-de-dados', '📊', '#DC2626'),
- *   ('WhatsApp IA',     'whatsapp-ia',      '📱', '#059669'),
- *   ('Integrações',     'integracoes',      '🔗', '#0891B2'),
- *   ('Copywriting IA',  'copywriting-ia',   '✍️', '#7C3AED')
+ *   ('WhatsApp IA',     'whatsapp-ia',      '📱', '#6366F1'),
+ *   ('Integrações',     'integracoes',      '🔗', '#6366F1'),
+ *   ('Copywriting IA',  'copywriting-ia',   '✍️', '#6366F1')
  * ON CONFLICT (nome) DO NOTHING;
  */
 
 /* ── CATEGORIAS TAB ── */
 function CategoriasTab({ isMobile }) {
-  const PRESET_COLORS = ["#0369A1", "#7C3AED", "#059669", "#D97706", "#DC2626", "#0891B2"];
+  const PRESET_COLORS = ["#6366F1", "#6366F1", "#6366F1", "#D97706", "#DC2626", "#6366F1"];
 
   const [categories, setCategories]   = useState([]);
   const [counts, setCounts]           = useState({});
   const [loading, setLoading]         = useState(true);
   const [formOpen, setFormOpen]       = useState(false);
   const [editTarget, setEditTarget]   = useState(null);
-  const [form, setForm]               = useState({ nome: "", slug: "", icone: "🤖", cor: "#0369A1", descricao: "" });
+  const [form, setForm]               = useState({ nome: "", slug: "", icone: "🤖", cor: "#6366F1", descricao: "" });
   const [slugEdited, setSlugEdited]   = useState(false);
   const [saving, setSaving]           = useState(false);
   const [deleting, setDeleting]       = useState(null);
@@ -1129,14 +1129,14 @@ function CategoriasTab({ isMobile }) {
 
   function openNew() {
     setEditTarget(null);
-    setForm({ nome: "", slug: "", icone: "🤖", cor: "#0369A1", descricao: "" });
+    setForm({ nome: "", slug: "", icone: "🤖", cor: "#6366F1", descricao: "" });
     setSlugEdited(false);
     setFormOpen(true);
   }
 
   function openEdit(cat) {
     setEditTarget(cat);
-    setForm({ nome: cat.nome, slug: cat.slug, icone: cat.icone || "🤖", cor: cat.cor || "#0369A1", descricao: cat.descricao || "" });
+    setForm({ nome: cat.nome, slug: cat.slug, icone: cat.icone || "🤖", cor: cat.cor || "#6366F1", descricao: cat.descricao || "" });
     setSlugEdited(true);
     setFormOpen(true);
   }
@@ -1152,7 +1152,7 @@ function CategoriasTab({ isMobile }) {
       nome: form.nome.trim(),
       slug: form.slug || generateSlug(form.nome.trim()),
       icone: form.icone || "🤖",
-      cor: form.cor || "#0369A1",
+      cor: form.cor || "#6366F1",
       descricao: form.descricao.trim() || null,
     };
     if (editTarget) {
@@ -1257,7 +1257,7 @@ function CategoriasTab({ isMobile }) {
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
             <button onClick={() => setFormOpen(false)} style={{ padding: "10px 20px", borderRadius: 10, border: `1.5px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
-            <button onClick={handleSave} disabled={!form.nome.trim() || saving} style={{ padding: "10px 24px", borderRadius: 10, background: !form.nome.trim() || saving ? "rgba(3,105,161,0.5)" : BLUE, color: "#fff", border: "none", fontSize: 14, fontWeight: 600, cursor: !form.nome.trim() || saving ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+            <button onClick={handleSave} disabled={!form.nome.trim() || saving} style={{ padding: "10px 24px", borderRadius: 10, background: !form.nome.trim() || saving ? "rgba(99,102,241,0.5)" : BLUE, color: "#fff", border: "none", fontSize: 14, fontWeight: 600, cursor: !form.nome.trim() || saving ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
               {saving ? "Salvando…" : "Salvar"}
             </button>
           </div>
@@ -1286,8 +1286,8 @@ function CategoriasTab({ isMobile }) {
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
                   <div style={{
                     width: 44, height: 44, borderRadius: "50%",
-                    background: `${cat.cor || "#0369A1"}22`,
-                    border: `2px solid ${cat.cor || "#0369A1"}55`,
+                    background: `${cat.cor || "#6366F1"}22`,
+                    border: `2px solid ${cat.cor || "#6366F1"}55`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 22, flexShrink: 0,
                   }}>
@@ -1310,7 +1310,7 @@ function CategoriasTab({ isMobile }) {
                 </div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 8 }}>{cat.nome}</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                  <span style={{ background: "#e0f2fe", color: BLUE, fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 99, flexShrink: 0 }}>
+                  <span style={{ background: "#EEF2FF", color: BLUE, fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 99, flexShrink: 0 }}>
                     {count === 0 ? "0 soluções" : count === 1 ? "1 solução" : `${count} soluções`}
                   </span>
                   {cat.descricao && (
@@ -1436,7 +1436,7 @@ function DonutChart({ data, size = 140 }) {
 
 /* ── MÉTRICAS TAB ── */
 const MONTHS_PT_ADMIN = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-const CAT_COLORS_ADMIN = ["#0369A1", "#7C3AED", "#059669", "#D97706", "#DC2626", "#0891B2", "#6B7280"];
+const CAT_COLORS_ADMIN = ["#6366F1", "#6366F1", "#6366F1", "#D97706", "#DC2626", "#6366F1", "#6B7280"];
 
 function MetricasAdminTab({ solutions, profiles, isMobile }) {
   const [period, setPeriod] = useState("30d");
@@ -1599,7 +1599,7 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
         {[
           { label: "Receita Total da Plataforma", value: `R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: `${subs.length} transações`, color: BLUE },
-          { label: "Ticket Médio", value: `R$ ${ticketMedio.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "por transação", color: "#7C3AED" },
+          { label: "Ticket Médio", value: `R$ ${ticketMedio.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "por transação", color: "#6366F1" },
           { label: "Taxa de Conversão", value: "3,2%", sub: "visitantes → compras", color: GREEN },
           { label: "MRR", value: `R$ ${mrr.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "assinaturas ativas", color: "#B45309" },
         ].map(c => (
@@ -1616,19 +1616,19 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
         <div style={card}>
           <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Receita ao longo do período</div>
           <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>{periodLabel} (R$)</div>
-          <DualLineChart line1={revenueByBucket} line2={commissionsByBucket} labels={bucketLabels} color1={BLUE} color2="#0891b2" />
+          <DualLineChart line1={revenueByBucket} line2={commissionsByBucket} labels={bucketLabels} color1={BLUE} color2="#6366F1" />
           <div style={{ display: "flex", gap: 16, marginTop: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: BLUE }} />Receita bruta</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0891b2" }} />Comissões</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: "#6366F1" }} />Comissões</div>
           </div>
         </div>
         <div style={card}>
           <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK, marginBottom: 2 }}>Novos usuários no período</div>
           <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>{periodLabel}</div>
-          <GroupedBarChart group1={criadoresByBucket} group2={empresasByBucket} labels={bucketLabels} color1={BLUE} color2="#7C3AED" />
+          <GroupedBarChart group1={criadoresByBucket} group2={empresasByBucket} labels={bucketLabels} color1={BLUE} color2="#6366F1" />
           <div style={{ display: "flex", gap: 16, marginTop: 10 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: BLUE }} />Criadores</div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: "#7C3AED" }} />Empresas</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: GRAY_TEXT }}><div style={{ width: 10, height: 10, borderRadius: "50%", background: "#6366F1" }} />Empresas</div>
           </div>
         </div>
       </div>
@@ -1684,7 +1684,7 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
                   <tr key={i} style={{ borderTop: `1px solid ${BORDER}` }}>
                     <td style={{ padding: "12px 16px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
                           {(c.nome || "?").charAt(0).toUpperCase()}
                         </div>
                         <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{c.nome}</span>
@@ -1722,7 +1722,7 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
                     <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{t.data}</td>
                     <td style={{ padding: "12px 16px", fontWeight: 500, color: NEAR_BLACK }}>{t.solucao}</td>
                     <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>R$ {t.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
-                    <td style={{ padding: "12px 16px", color: "#7C3AED" }}>R$ {t.comissao.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
+                    <td style={{ padding: "12px 16px", color: "#6366F1" }}>R$ {t.comissao.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
                     <td style={{ padding: "12px 16px", fontWeight: 600, color: GREEN }}>R$ {t.liquido.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</td>
                     <td style={{ padding: "12px 16px" }}>
                       <StatusBadge status={t.status === "active" ? "ativo" : t.status === "cancelled" ? "paused" : "pendente"} />
@@ -1871,13 +1871,13 @@ function EmpresasUTab({ isMobile }) {
                 <tr key={e.id} style={{ borderBottom: `1px solid ${BORDER}`, background: i % 2 === 0 ? "#fff" : "#fafafa" }}>
                   <td style={{ padding: "12px 14px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#7C3AED", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{initials(e.nome)}</div>
+                      <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#6366F1", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{initials(e.nome)}</div>
                       <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{e.nome || "—"}</span>
                     </div>
                   </td>
                   <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{e.email}</td>
                   <td style={{ padding: "12px 14px" }}>
-                    <span style={{ padding: "3px 10px", borderRadius: 6, background: "#EDE9FE", color: "#7C3AED", fontSize: 11, fontWeight: 700, textTransform: "uppercase" }}>{getPlan(e)}</span>
+                    <span style={{ padding: "3px 10px", borderRadius: 6, background: "#EEF2FF", color: "#6366F1", fontSize: 11, fontWeight: 700, textTransform: "uppercase" }}>{getPlan(e)}</span>
                   </td>
                   <td style={{ padding: "12px 14px" }}><StatusBadge status={e.status || "ativo"} /></td>
                   <td style={{ padding: "12px 14px", color: GRAY_TEXT }}>{formatDate(e.created_at)}</td>
@@ -1950,7 +1950,7 @@ function RepassesTab({ isMobile }) {
                     <td style={{ padding: "12px 14px", color: DANGER }}>{fmt(com)}</td>
                     <td style={{ padding: "12px 14px", color: GREEN, fontWeight: 700 }}>{fmt(liq)}</td>
                     <td style={{ padding: "12px 14px" }}>
-                      <span style={{ padding: "3px 10px", borderRadius: 6, background: isPaid ? "#D1FAE5" : "#FEF9C3", color: isPaid ? GREEN : "#92400E", fontSize: 11, fontWeight: 700 }}>
+                      <span style={{ padding: "3px 10px", borderRadius: 6, background: isPaid ? "#EEF2FF" : "#FEF9C3", color: isPaid ? GREEN : "#92400E", fontSize: 11, fontWeight: 700 }}>
                         {isPaid ? "Pago" : "Pendente"}
                       </span>
                     </td>
@@ -2290,8 +2290,8 @@ function TicketsTab({ isMobile }) {
 /* ── DenunciasTab ── */
 function DenunciasTab({ isMobile }) {
   const STATUS_FLOW   = ["Pendente", "Investigando", "Resolvido", "Arquivado"];
-  const STATUS_COLORS = { Pendente: "#FEF9C3", Investigando: "#DBEAFE", Resolvido: "#D1FAE5", Arquivado: "#F3F4F6" };
-  const STATUS_TEXT   = { Pendente: "#92400E", Investigando: "#1E40AF", Resolvido: "#065F46", Arquivado: "#6B7280" };
+  const STATUS_COLORS = { Pendente: "#FEF9C3", Investigando: "#EEF2FF", Resolvido: "#EEF2FF", Arquivado: "#F3F4F6" };
+  const STATUS_TEXT   = { Pendente: "#92400E", Investigando: "#6366F1", Resolvido: "#6366F1", Arquivado: "#6B7280" };
 
   const [denuncias, setDenuncias] = useState([
     { id: 1, tipo: "Conteúdo inapropriado", denunciado: "Usuário A", motivo: "Descrição ofensiva na solução.",         status: "Pendente",     created_at: new Date().toISOString() },
@@ -2372,7 +2372,7 @@ function LogsTab({ isMobile }) {
 
   const visible = roleFilter === "todos" ? logs : logs.filter(l => l.role === roleFilter);
 
-  const ROLE_COLORS = { admin: { bg: "#FEF3C7", color: "#92400E" }, criador: { bg: "#DBEAFE", color: "#1E40AF" }, empresa: { bg: "#EDE9FE", color: "#7C3AED" } };
+  const ROLE_COLORS = { admin: { bg: "#FEF3C7", color: "#92400E" }, criador: { bg: "#EEF2FF", color: "#6366F1" }, empresa: { bg: "#EEF2FF", color: "#6366F1" } };
 
   return (
     <div>
@@ -2693,7 +2693,7 @@ export default function AdminDashboard() {
         {/* Bottom: avatar + logout */}
         <div style={{ padding: "12px 16px 16px", borderTop: `1px solid ${BORDER}`, flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "0 4px" }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
               {initials(profile?.nome || "Admin")}
             </div>
             <div style={{ minWidth: 0 }}>

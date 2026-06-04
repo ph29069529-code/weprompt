@@ -77,7 +77,7 @@ export default function ConfiguracoesPage() {
     router.push("/login");
   }
 
-  const fi = e => { e.target.style.borderColor = "#2563EB"; e.target.style.boxShadow = "0 0 0 3px rgba(37,99,235,0.1)"; };
+  const fi = e => { e.target.style.borderColor = "#6366F1"; e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.1)"; };
   const fb = e => { e.target.style.borderColor = "#e5e7eb"; e.target.style.boxShadow = "none"; };
 
   function triggerToast(msg) {
@@ -113,8 +113,8 @@ export default function ConfiguracoesPage() {
           display: "flex", alignItems: "center",
           background: searchFocused ? "white" : "#f3f4f6",
           borderRadius: 8, padding: "8px 16px", width: 360, gap: 8,
-          border: searchFocused ? "1px solid #2563EB" : "1px solid transparent",
-          boxShadow: searchFocused ? "0 0 0 3px rgba(37,99,235,0.1)" : "none",
+          border: searchFocused ? "1px solid #6366F1" : "1px solid transparent",
+          boxShadow: searchFocused ? "0 0 0 3px rgba(99,102,241,0.1)" : "none",
           transition: "all 0.2s ease",
         }}>
           <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">
@@ -205,7 +205,7 @@ export default function ConfiguracoesPage() {
               <label style={lbl}>Foto de perfil</label>
               <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                 <div style={{
-                  width: 56, height: 56, borderRadius: 999, background: "#7c3aed",
+                  width: 56, height: 56, borderRadius: 999, background: "#6366F1",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "white", fontSize: 20, fontWeight: 700, flexShrink: 0,
                 }}>C</div>
@@ -222,17 +222,17 @@ export default function ConfiguracoesPage() {
           <div style={sectionCard}>
             <h3 style={{ fontSize: 15, fontWeight: 700, color: "#111827", margin: "0 0 16px" }}>Pagamentos</h3>
             <div style={{
-              background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10,
+              background: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.08)", borderRadius: 10,
               padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 28, height: 28, background: "#635BFF", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 28, height: 28, background: "#6366F1", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <span style={{ color: "white", fontWeight: 800, fontSize: 14 }}>S</span>
                 </div>
-                <svg width="16" height="16" fill="none" stroke="#16a34a" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg width="16" height="16" fill="none" stroke="#6366F1" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#15803d" }}>Stripe Conectado</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#6366F1" }}>Stripe Conectado</span>
                 <span style={{ color: "#9ca3af" }}>·</span>
                 <span style={{ fontSize: 14, color: "#6b7280" }}>Pagamentos habilitados</span>
               </div>
@@ -351,7 +351,7 @@ export default function ConfiguracoesPage() {
       {showToast && (
         <div style={{
           position: "fixed", bottom: 24, right: 24,
-          background: "#16a34a", color: "white",
+          background: "#6366F1", color: "white",
           padding: "12px 20px", borderRadius: 8,
           fontSize: 14, zIndex: 100,
         }}>
