@@ -401,15 +401,37 @@ function Marquee() {
       overflow: 'hidden',
       width: '100%',
     }}>
+      <style>{`
+        @keyframes scroll-left {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes scroll-right {
+          0%   { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        .marquee-row-left {
+          display: flex;
+          width: max-content;
+          animation: scroll-left 35s linear infinite;
+        }
+        .marquee-row-right {
+          display: flex;
+          width: max-content;
+          animation: scroll-right 28s linear infinite;
+          margin-top: 12px;
+        }
+      `}</style>
+
       {/* Row 1 — scrolls left */}
       <div style={{ overflow: 'hidden', width: '100%' }}>
-        <div className="marquee-left">
+        <div className="marquee-row-left">
           {row1.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
         </div>
       </div>
       {/* Row 2 — scrolls right */}
-      <div style={{ overflow: 'hidden', width: '100%', marginTop: 12 }}>
-        <div className="marquee-right">
+      <div style={{ overflow: 'hidden', width: '100%' }}>
+        <div className="marquee-row-right">
           {row2.map((item, i) => <IntegrationCard key={i} name={item.name} logo={item.logo} />)}
         </div>
       </div>
