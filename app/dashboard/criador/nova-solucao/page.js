@@ -43,7 +43,14 @@ function inputStyle(hasError) {
 
 function FieldError({ msg }) {
   if (!msg) return null
-  return <div style={{ fontSize: 13, color: ERROR, marginTop: 4 }}>{msg}</div>
+  return (
+    <p style={{
+      color: '#EF4444', fontSize: 13, margin: '4px 0 0',
+      display: 'flex', alignItems: 'center', gap: 4,
+    }}>
+      ⚠ {msg}
+    </p>
+  )
 }
 
 function SectionCard({ title, children }) {
@@ -111,14 +118,14 @@ export default function NovaSolucaoPage() {
 
   function validate() {
     const errs = {}
-    if (!form.nome.trim()) errs.nome = 'Nome é obrigatório'
+    if (!form.nome.trim()) errs.nome = 'Nome deve ter pelo menos 5 caracteres'
     else if (form.nome.trim().length < 5) errs.nome = 'Nome deve ter pelo menos 5 caracteres'
-    if (!form.descricao_curta.trim()) errs.descricao_curta = 'Descrição curta é obrigatória'
+    if (!form.descricao_curta.trim()) errs.descricao_curta = 'Descrição curta deve ter pelo menos 10 caracteres'
+    else if (form.descricao_curta.trim().length < 10) errs.descricao_curta = 'Descrição curta deve ter pelo menos 10 caracteres'
     if (!form.categoria) errs.categoria = 'Selecione uma categoria'
-    if (!form.descricao.trim()) errs.descricao = 'Descrição completa é obrigatória'
+    if (!form.descricao.trim()) errs.descricao = 'Descrição deve ter pelo menos 50 caracteres'
     else if (form.descricao.trim().length < 50) errs.descricao = 'Descrição deve ter pelo menos 50 caracteres'
-    if (!form.preco) errs.preco = 'Preço é obrigatório'
-    else if (Number(form.preco) < 1) errs.preco = 'Preço deve ser pelo menos R$ 1'
+    if (!form.preco || Number(form.preco) < 1) errs.preco = 'Informe um preço válido (mínimo R$1)'
     return errs
   }
 
@@ -126,6 +133,10 @@ export default function NovaSolucaoPage() {
     const errs = validate()
     if (Object.keys(errs).length > 0) {
       setErrors(errs)
+      setTimeout(() => {
+        const firstError = document.querySelector('[data-error="true"]')
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 0)
       return
     }
 
@@ -252,7 +263,7 @@ export default function NovaSolucaoPage() {
         <SectionCard title="1. Informações Básicas">
 
           {/* Nome */}
-          <div style={{ marginBottom: 18 }}>
+          <div data-error={errors.nome ? "true" : undefined} style={{ marginBottom: 18 }}>
             <label style={lbl}>Nome da solução *</label>
             <input
               value={form.nome}
@@ -266,7 +277,7 @@ export default function NovaSolucaoPage() {
           </div>
 
           {/* Descrição curta */}
-          <div style={{ marginBottom: 18 }}>
+          <div data-error={errors.descricao_curta ? "true" : undefined} style={{ marginBottom: 18 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <label style={{ ...lbl, marginBottom: 0 }}>Descrição curta *</label>
               <span style={{ fontSize: 12, color: form.descricao_curta.length > 110 ? (form.descricao_curta.length >= 120 ? ERROR : '#f59e0b') : '#9CA3AF' }}>
@@ -285,7 +296,7 @@ export default function NovaSolucaoPage() {
           </div>
 
           {/* Categoria */}
-          <div style={{ marginBottom: 18 }}>
+          <div data-error={errors.categoria ? "true" : undefined} style={{ marginBottom: 18 }}>
             <label style={lbl}>Categoria *</label>
             <select
               value={form.categoria}
@@ -301,7 +312,7 @@ export default function NovaSolucaoPage() {
           </div>
 
           {/* Descrição completa */}
-          <div>
+          <div data-error={errors.descricao ? "true" : undefined}>
             <label style={lbl}>Descrição completa *</label>
             <textarea
               rows={6}
@@ -321,7 +332,7 @@ export default function NovaSolucaoPage() {
         <SectionCard title="2. Precificação">
 
           {/* Preço */}
-          <div style={{ marginBottom: 20 }}>
+          <div data-error={errors.preco ? "true" : undefined} style={{ marginBottom: 20 }}>
             <label style={lbl}>Preço mensal (R$) *</label>
             <input
               type="number"
