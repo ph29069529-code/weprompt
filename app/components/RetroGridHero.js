@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 
 // ── RetroGrid ──────────────────────────────────────────────────────────
 function RetroGrid({ className, angle = 65 }) {
@@ -36,6 +37,17 @@ function RetroGrid({ className, angle = 65 }) {
 
 // ── Hero ───────────────────────────────────────────────────────────────
 export default function RetroGridHero() {
+  const [imgSrc, setImgSrc] = useState('https://farmui.vercel.app/dashboard-light.png')
+  const [imgFailed, setImgFailed] = useState(false)
+
+  function handleImgError() {
+    if (imgSrc === 'https://farmui.vercel.app/dashboard-light.png') {
+      setImgSrc('https://farmui.vercel.app/dashboard.png')
+    } else {
+      setImgFailed(true)
+    }
+  }
+
   return (
     <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-zinc-950">
 
@@ -138,22 +150,35 @@ export default function RetroGridHero() {
           </div>
         </span>
 
-        {/* Dashboard preview image */}
-        <div className="relative mt-6 w-full max-w-3xl">
-          <img
-            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1400&q=85"
-            alt="WePrompt platform preview"
-            style={{
-              width: '100%',
-              borderRadius: '12px',
-              border: '1px solid rgba(0,0,0,0.08)',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-              display: 'block',
-            }}
-          />
-          {/* Fade to background at the bottom */}
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent rounded-xl" />
-        </div>
+        {/* Dashboard preview — farmui light → dark → scroll indicator */}
+        {!imgFailed ? (
+          <div className="relative mt-6 w-full max-w-3xl">
+            <img
+              src={imgSrc}
+              alt="WePrompt platform preview"
+              onError={handleImgError}
+              style={{
+                width: '100%',
+                borderRadius: '12px',
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+                display: 'block',
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent rounded-xl" />
+          </div>
+        ) : (
+          <div style={{ marginTop: 48, textAlign: 'center' }}>
+            <p style={{
+              color: 'rgba(0,0,0,0.2)',
+              fontSize: 11,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+            }}>
+              Descubra como funciona
+            </p>
+          </div>
+        )}
 
       </div>
     </div>
