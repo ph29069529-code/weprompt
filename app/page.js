@@ -19,6 +19,7 @@ import {
   Link,
   Share2,
 } from "lucide-react";
+import HeroParallax from "./components/HeroParallax";
 
 /* ─── Animation helpers ──────────────────────────────────────────── */
 const fadeUp = {
@@ -230,201 +231,6 @@ function Navbar() {
         )}
       </nav>
     </>
-  );
-}
-
-/* ─── Hero ───────────────────────────────────────────────────────── */
-function Hero() {
-  const router = useRouter();
-
-  return (
-    <section style={{
-      minHeight: "100vh",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-      textAlign: "center",
-      position: "relative", overflow: "hidden",
-      background: "#0A0F1E",
-    }}>
-      <style>{`
-        @keyframes spin-cw  { from{transform:rotate(0deg)}   to{transform:rotate(360deg)}  }
-        @keyframes spin-ccw { from{transform:rotate(0deg)}   to{transform:rotate(-360deg)} }
-        @keyframes bounce-hero {
-          0%,100%{transform:translateY(0)}
-          50%{transform:translateY(6px)}
-        }
-        @media (max-width: 768px) {
-          .hero-new-pad { padding: 120px 24px 80px !important; }
-        }
-      `}</style>
-
-      {/* Rotating rings */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
-        {/* Back ring — clockwise 60s */}
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
-          <img
-            src="https://framerusercontent.com/images/oqZEqzDEgSLygmUDuZAYNh2XQ9U.png?scale-down-to=2048"
-            alt="" aria-hidden="true"
-            style={{ width: 2000, height: 2000, opacity: 0.3, display: "block",
-              animation: "spin-cw 60s linear infinite" }}
-          />
-        </div>
-        {/* Middle ring — counter-clockwise 60s */}
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
-          <img
-            src="https://framerusercontent.com/images/UbucGYsHDAUHfaGZNjwyCzViw8.png?scale-down-to=1024"
-            alt="" aria-hidden="true"
-            style={{ width: 1000, height: 1000, opacity: 0.4, display: "block",
-              animation: "spin-ccw 60s linear infinite" }}
-          />
-        </div>
-        {/* Front ring — clockwise 45s */}
-        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
-          <img
-            src="https://framerusercontent.com/images/Ans5PAxtJfg3CwxlrPMSshx2Pqc.png"
-            alt="" aria-hidden="true"
-            style={{ width: 800, height: 800, opacity: 0.5, display: "block",
-              animation: "spin-cw 45s linear infinite" }}
-          />
-        </div>
-        {/* Gradient overlay */}
-        <div style={{
-          position: "absolute", inset: 0,
-          background: "linear-gradient(to top, #0A0F1E 15%, rgba(10,15,30,0.7) 50%, transparent 100%)",
-        }} />
-      </div>
-
-      {/* Content */}
-      <div className="hero-new-pad" style={{
-        position: "relative", zIndex: 1,
-        display: "flex", flexDirection: "column",
-        alignItems: "center",
-        padding: "140px 48px 80px",
-        flex: 1,
-      }}>
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{
-            display: "inline-flex", alignItems: "center",
-            background: "rgba(99,102,241,0.15)",
-            border: "1px solid rgba(99,102,241,0.3)",
-            borderRadius: 100, padding: "6px 16px",
-            marginBottom: 32,
-          }}>
-          <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>
-            NOVO&nbsp;&nbsp;•&nbsp;&nbsp;O 1º marketplace de IA do Brasil
-          </span>
-        </motion.div>
-
-        {/* H1 */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          style={{
-            fontSize: "clamp(48px, 7vw, 80px)",
-            fontWeight: 800, color: "#ffffff",
-            letterSpacing: "-0.03em", lineHeight: 1.1,
-            maxWidth: 800, margin: "0 auto",
-            textAlign: "center",
-          }}>
-          Tudo que seu negócio<br />precisa de IA.
-        </motion.h1>
-
-        {/* Accent line */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.15 }}
-          style={{
-            fontSize: "clamp(48px, 7vw, 80px)",
-            fontWeight: 800, color: "#6366F1",
-            letterSpacing: "-0.03em", lineHeight: 1.1,
-            textAlign: "center",
-          }}>
-          Em um lugar só.
-        </motion.div>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          style={{
-            fontSize: 18, color: "rgba(255,255,255,0.5)",
-            lineHeight: 1.6, maxWidth: 520,
-            margin: "20px auto 0", textAlign: "center",
-          }}>
-          Agentes de IA curados, testados e prontos para trabalhar pelo seu negócio — com suporte em português.
-        </motion.p>
-
-        {/* CTA buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          style={{ marginTop: 40, display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-          <button
-            onClick={() => router.push("/solucoes")}
-            onMouseEnter={e => { e.currentTarget.style.background = "#4F46E5"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "#6366F1"; e.currentTarget.style.transform = "translateY(0)"; }}
-            style={{
-              background: "#6366F1", color: "#fff",
-              border: "none", borderRadius: 10,
-              padding: "16px 32px", fontWeight: 700, fontSize: 15,
-              cursor: "pointer", fontFamily: "inherit",
-              boxShadow: "0 0 40px rgba(99,102,241,0.4)",
-              transition: "background 0.2s, transform 0.15s",
-            }}>
-            Explorar soluções →
-          </button>
-          <button
-            onClick={() => router.push("/criadores")}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)"; e.currentTarget.style.color = "#fff"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; e.currentTarget.style.color = "rgba(255,255,255,0.7)"; }}
-            style={{
-              background: "transparent", color: "rgba(255,255,255,0.7)",
-              border: "1.5px solid rgba(255,255,255,0.2)",
-              borderRadius: 10, padding: "15px 28px",
-              fontWeight: 600, fontSize: 15,
-              cursor: "pointer", fontFamily: "inherit",
-              transition: "border-color 0.2s, color 0.2s",
-            }}>
-            Para criadores
-          </button>
-        </motion.div>
-      </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.7 }}
-        style={{
-          position: "relative", zIndex: 1,
-          display: "flex", flexDirection: "column",
-          alignItems: "center", gap: 8,
-          marginBottom: 32,
-        }}>
-        <span style={{
-          color: "rgba(255,255,255,0.3)", fontSize: 11,
-          letterSpacing: "0.15em", textTransform: "uppercase",
-        }}>DESCUBRA COMO FUNCIONA</span>
-        <div style={{ animation: "bounce-hero 2s ease-in-out infinite" }}>
-          <ChevronDown size={20} color="rgba(255,255,255,0.3)" />
-        </div>
-      </motion.div>
-
-      {/* Transition to light sections */}
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0,
-        height: 80, zIndex: 2, pointerEvents: "none",
-        background: "linear-gradient(to bottom, transparent, #f9fafb)",
-      }} />
-    </section>
   );
 }
 
@@ -1029,11 +835,29 @@ const Footer = () => (
 );
 
 /* ─── Page ───────────────────────────────────────────────────────── */
+const products = [
+  { title: "Secretária de WhatsApp",    link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=600&q=80" },
+  { title: "Agente de Prospecção",       link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80" },
+  { title: "Gerador de Conteúdo",        link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&q=80" },
+  { title: "Automação de E-mail",        link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&q=80" },
+  { title: "Análise de Dados",           link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" },
+  { title: "Chatbot de Vendas",          link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600&q=80" },
+  { title: "Resumidor de Reuniões",      link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80" },
+  { title: "Criador de Propostas",       link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=600&q=80" },
+  { title: "Monitor de Redes Sociais",   link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=600&q=80" },
+  { title: "Assistente Jurídico",        link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80" },
+  { title: "Copywriter de Anúncios",     link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1542744094-3a31f272c490?w=600&q=80" },
+  { title: "Triagem de CVs",             link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&q=80" },
+  { title: "Precificação Inteligente",   link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80" },
+  { title: "Atendimento ao Cliente",     link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1596524430615-b46475ddff6e?w=600&q=80" },
+  { title: "Relatório Automático",       link: "/solucoes", thumbnail: "https://images.unsplash.com/photo-1543286386-713bdd548da4?w=600&q=80" },
+];
+
 export default function Home() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <Navbar />
-      <Hero />
+      <HeroParallax products={products} />
       <Marquee />
       <HowItWorks />
       <Categories />
