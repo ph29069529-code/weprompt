@@ -397,7 +397,7 @@ export default function Navbar() {
     cursor: "pointer",
     fontSize: 14,
     fontWeight: 500,
-    color: scrolled ? "#374151" : "rgba(255,255,255,0.75)",
+    color: scrolled ? "#374151" : "rgba(255,255,255,0.8)",
     borderRadius: 8,
     transition: "background 0.15s, color 0.3s",
     fontFamily: "inherit",
@@ -447,9 +447,11 @@ export default function Navbar() {
         >
           {/* Logo */}
           <Link href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-            <div style={{ height: 40, overflow: "hidden" }}>
-              <WePromptLogo id="navbar-logo" />
-            </div>
+            <img
+              src={scrolled ? "/logo.png" : "/logo-white.png"}
+              alt="WePrompt"
+              style={{ width: 140, height: "auto", display: "block", transition: "opacity 0.3s" }}
+            />
           </Link>
 
           {/* Center nav — desktop only */}
@@ -534,14 +536,16 @@ export default function Navbar() {
                 <a
                   href={dashboardUrl}
                   style={{
-                    background: "#6366F1",
+                    background: scrolled ? "#6366F1" : "rgba(255,255,255,0.15)",
                     color: "white",
+                    border: scrolled ? "none" : "1px solid rgba(255,255,255,0.3)",
                     borderRadius: 999,
                     padding: "10px 20px",
                     fontSize: 14,
                     fontWeight: 600,
                     textDecoration: "none",
                     display: "inline-block",
+                    transition: "background 0.3s, border 0.3s",
                   }}
                 >
                   Meu Dashboard →
