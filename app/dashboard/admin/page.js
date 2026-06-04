@@ -583,7 +583,6 @@ function TransacoesTab({ isMobile }) {
           <div style={{ textAlign: "center", padding: "60px", color: GRAY_TEXT }}>Carregando transações…</div>
         ) : subs.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 24px" }}>
-            <div style={{ fontSize: 40, marginBottom: 16 }}>🧾</div>
             <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 8 }}>Nenhuma transação registrada ainda</div>
             <div style={{ fontSize: 14, color: GRAY_TEXT }}>As transações aparecerão aqui conforme as compras forem realizadas.</div>
           </div>
@@ -918,7 +917,7 @@ function DashboardTab({ solutions, profiles, totalRevenue = 0, onApprove, onConf
         <KpiCard label="Criadores Ativos"      value={criadores.length || "—"} iconD={icons.pencil} />
         <KpiCard label="Empresas Cadastradas"  value={empresas.length || "—"}  iconD={icons.building} />
         <KpiCard label="Receita (Assinaturas)" value={fmtRevenue}               sub="assinaturas ativas" subColor={BLUE} iconD={icons.cash} />
-        <KpiCard label="Aprovações Pendentes"  value={pending.length}          sub={pending.length > 0 ? `${pending.length} aguardando` : "Em dia ✅"} subColor={pending.length > 0 ? "#B45309" : GREEN} iconD={icons.eye} accent={pending.length > 0 ? "#B45309" : GREEN} />
+        <KpiCard label="Aprovações Pendentes"  value={pending.length}          sub={pending.length > 0 ? `${pending.length} aguardando` : "Em dia"} subColor={pending.length > 0 ? "#B45309" : GREEN} iconD={icons.eye} accent={pending.length > 0 ? "#B45309" : GREEN} />
       </div>
 
       {/* Charts */}
@@ -957,7 +956,7 @@ function DashboardTab({ solutions, profiles, totalRevenue = 0, onApprove, onConf
           )}
         </div>
         {pending.length === 0 ? (
-          <div style={{ padding: "36px 24px", textAlign: "center", color: GRAY_TEXT }}>Nenhuma solução pendente ✅</div>
+          <div style={{ padding: "36px 24px", textAlign: "center", color: GRAY_TEXT }}>Nenhuma solução pendente</div>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -1274,7 +1273,6 @@ function CategoriasTab({ isMobile }) {
         </div>
       ) : categories.length === 0 ? (
         <div style={{ textAlign: "center", padding: "64px 24px", background: "#fff", borderRadius: 16, boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>📂</div>
           <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6 }}>Nenhuma categoria ainda</div>
           <div style={{ fontSize: 14, color: GRAY_TEXT }}>Crie a primeira categoria para organizar as soluções.</div>
         </div>
@@ -1987,10 +1985,10 @@ function RelatoriosTab({ isMobile }) {
   ];
 
   const cards = [
-    { label: "Relatório de Receita",   desc: "Faturamento total, comissões e repasses por período.",        icon: "💰" },
-    { label: "Relatório de Usuários",  desc: "Novos cadastros, churn e distribuição por plano.",            icon: "👥" },
-    { label: "Relatório de Soluções",  desc: "Soluções publicadas, aprovadas e mais acessadas.",           icon: "📦" },
-    { label: "Relatório Fiscal",       desc: "Dados para declaração fiscal e emissão de notas fiscais.",   icon: "📄" },
+    { label: "Relatório de Receita",   desc: "Faturamento total, comissões e repasses por período." },
+    { label: "Relatório de Usuários",  desc: "Novos cadastros, churn e distribuição por plano." },
+    { label: "Relatório de Soluções",  desc: "Soluções publicadas, aprovadas e mais acessadas." },
+    { label: "Relatório Fiscal",       desc: "Dados para declaração fiscal e emissão de notas fiscais." },
   ];
 
   function gerarPDF(label) {
@@ -2009,7 +2007,6 @@ function RelatoriosTab({ isMobile }) {
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20 }}>
         {cards.map(c => (
           <div key={c.label} style={{ background: "#fff", borderRadius: 14, border: `1px solid ${BORDER}`, padding: 24 }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>{c.icon}</div>
             <div style={{ fontSize: 16, fontWeight: 700, color: NEAR_BLACK, marginBottom: 6 }}>{c.label}</div>
             <div style={{ fontSize: 13, color: GRAY_TEXT, marginBottom: 20, lineHeight: 1.5 }}>{c.desc}</div>
             <button onClick={() => gerarPDF(c.label)} style={{ padding: "8px 18px", borderRadius: 9, border: "none", background: BLUE, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
@@ -2119,7 +2116,6 @@ function BannersTab({ isMobile }) {
               <img src={b.preview} alt={b.slot} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
               <div style={{ textAlign: "center", color: GRAY_TEXT }}>
-                <div style={{ fontSize: 36, marginBottom: 6 }}>🖼️</div>
                 <div style={{ fontSize: 12 }}>Sem imagem</div>
               </div>
             )}
@@ -2247,7 +2243,6 @@ function TicketsTab({ isMobile }) {
       </div>
       {visible.length === 0 ? (
         <div style={{ textAlign: "center", padding: 80, color: GRAY_TEXT }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🎫</div>
           <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Nenhum ticket encontrado</div>
           <div style={{ fontSize: 13 }}>Tickets de suporte aparecerão aqui.</div>
         </div>
@@ -2315,7 +2310,6 @@ function DenunciasTab({ isMobile }) {
     <div>
       {denuncias.length === 0 ? (
         <div style={{ textAlign: "center", padding: 80, color: GRAY_TEXT }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🚩</div>
           <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Nenhuma denúncia</div>
           <div style={{ fontSize: 13 }}>Denúncias dos usuários aparecerão aqui.</div>
         </div>
@@ -2395,7 +2389,6 @@ function LogsTab({ isMobile }) {
         <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Carregando…</div>
       ) : visible.length === 0 ? (
         <div style={{ textAlign: "center", padding: 80, color: GRAY_TEXT }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🔍</div>
           <div style={{ fontSize: 16, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6 }}>Nenhum log registrado ainda</div>
           <div style={{ fontSize: 13 }}>Os logs de acesso aparecerão aqui conforme a plataforma for utilizada.</div>
         </div>
@@ -2453,7 +2446,6 @@ function BanidosTab({ isMobile }) {
         <div style={{ textAlign: "center", padding: 60, color: GRAY_TEXT }}>Carregando…</div>
       ) : banidos.length === 0 ? (
         <div style={{ textAlign: "center", padding: 80, color: GRAY_TEXT }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>🔓</div>
           <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Nenhum usuário banido</div>
           <div style={{ fontSize: 13 }}>Usuários banidos aparecerão aqui.</div>
         </div>

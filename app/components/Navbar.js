@@ -4,17 +4,22 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import WePromptLogo from "./WePromptLogo";
 import { supabase } from "../lib/supabase";
-import { TrendingUp, Sparkles, Star } from "lucide-react";
+import {
+  TrendingUp, Sparkles, Star,
+  Bot, Zap, MessageCircle, Megaphone, BarChart2, Smartphone,
+  Building2, Palette, HelpCircle,
+  Rocket, CreditCard, LayoutDashboard,
+} from "lucide-react";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const EXPLORAR_CATS = [
-  { icon: "🤖", label: "Agentes de IA", desc: "Automatize processos completos", href: "/solucoes?categoria=agentes" },
-  { icon: "⚡", label: "Automação", desc: "Make, n8n e integrações", href: "/solucoes?categoria=automacao" },
-  { icon: "💬", label: "Chatbots", desc: "Atendimento 24h no piloto automático", href: "/solucoes?categoria=chatbots" },
-  { icon: "📣", label: "Marketing IA", desc: "Copies, criativos e campanhas", href: "/solucoes?categoria=marketing" },
-  { icon: "📊", label: "Análise de Dados", desc: "Insights em segundos", href: "/solucoes?categoria=analytics" },
-  { icon: "📱", label: "WhatsApp IA", desc: "Vendas e suporte no WhatsApp", href: "/solucoes?categoria=whatsapp" },
+  { Icon: Bot,           label: "Agentes de IA",    desc: "Automatize processos completos",        href: "/solucoes?categoria=agentes" },
+  { Icon: Zap,           label: "Automação",         desc: "Make, n8n e integrações",              href: "/solucoes?categoria=automacao" },
+  { Icon: MessageCircle, label: "Chatbots",          desc: "Atendimento 24h no piloto automático", href: "/solucoes?categoria=chatbots" },
+  { Icon: Megaphone,     label: "Marketing IA",      desc: "Copies, criativos e campanhas",        href: "/solucoes?categoria=marketing" },
+  { Icon: BarChart2,     label: "Análise de Dados",  desc: "Insights em segundos",                 href: "/solucoes?categoria=analytics" },
+  { Icon: Smartphone,    label: "WhatsApp IA",       desc: "Vendas e suporte no WhatsApp",         href: "/solucoes?categoria=whatsapp" },
 ];
 
 const EXPLORAR_HIGHLIGHTS = [
@@ -24,16 +29,16 @@ const EXPLORAR_HIGHLIGHTS = [
 ];
 
 const COMO_FUNCIONA_ITEMS = [
-  { icon: "🏢", label: "Para Empresas", desc: "Encontre e implemente soluções de IA", href: "/#como-funciona" },
-  { icon: "🎨", label: "Para Criadores", desc: "Publique e monetize suas soluções", href: "/criadores" },
-  { icon: "❓", label: "Dúvidas frequentes", desc: "Perguntas e respostas", href: "/precos" },
+  { Icon: Building2,  label: "Para Empresas",    desc: "Encontre e implemente soluções de IA", href: "/#como-funciona" },
+  { Icon: Palette,    label: "Para Criadores",   desc: "Publique e monetize suas soluções",    href: "/criadores" },
+  { Icon: HelpCircle, label: "Dúvidas frequentes", desc: "Perguntas e respostas",             href: "/precos" },
 ];
 
 const PARA_CRIADORES_ITEMS = [
-  { icon: "🚀", label: "Publicar Solução", desc: "Comece a vender agora", href: "/cadastro?role=criador" },
-  { icon: "💰", label: "Planos para Criadores", desc: "Free, Pro e Premium", href: "/precos" },
-  { icon: "⚡", label: "Criadores Fundadores", desc: "100 vagas com 1 mês grátis", href: "/criadores", badge: true },
-  { icon: "📊", label: "Meu Dashboard", desc: "Acesse suas ferramentas", href: "/dashboard/criador" },
+  { Icon: Rocket,          label: "Publicar Solução",    desc: "Comece a vender agora",         href: "/cadastro?role=criador" },
+  { Icon: CreditCard,      label: "Planos para Criadores", desc: "Free, Pro e Premium",         href: "/precos" },
+  { Icon: Zap,             label: "Criadores Fundadores", desc: "100 vagas com 1 mês grátis",  href: "/criadores", badge: true },
+  { Icon: LayoutDashboard, label: "Meu Dashboard",       desc: "Acesse suas ferramentas",      href: "/dashboard/criador" },
 ];
 
 // ─── Hooks ───────────────────────────────────────────────────────────────────
@@ -53,7 +58,7 @@ function useWindowWidth() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function DropdownItem({ icon, label, desc, href, badge, onClose }) {
+function DropdownItem({ Icon, label, desc, href, badge, onClose }) {
   return (
     <a
       href={href}
@@ -76,15 +81,14 @@ function DropdownItem({ icon, label, desc, href, badge, onClose }) {
           width: 36,
           height: 36,
           borderRadius: "50%",
-          background: "#E0F2FE",
+          background: "#EEF2FF",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 18,
           flexShrink: 0,
         }}
       >
-        {icon}
+        <Icon size={18} color="#6366F1" />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -683,7 +687,7 @@ export default function Navbar() {
                         borderBottom: "1px solid #f3f4f6",
                       }}
                     >
-                      <span style={{ fontSize: 18 }}>{item.icon}</span>
+                      <item.Icon size={18} color="#6366F1" style={{ flexShrink: 0 }} />
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{item.label}</div>
                         <div style={{ fontSize: 12, color: "#6E6E73" }}>{item.desc}</div>
@@ -776,7 +780,7 @@ export default function Navbar() {
                         borderBottom: "1px solid #f3f4f6",
                       }}
                     >
-                      <span style={{ fontSize: 18 }}>{item.icon}</span>
+                      <item.Icon size={18} color="#6366F1" style={{ flexShrink: 0 }} />
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{item.label}</div>
                         <div style={{ fontSize: 12, color: "#6E6E73" }}>{item.desc}</div>
@@ -834,7 +838,7 @@ export default function Navbar() {
                         borderBottom: "1px solid #f3f4f6",
                       }}
                     >
-                      <span style={{ fontSize: 18 }}>{item.icon}</span>
+                      <item.Icon size={18} color="#6366F1" style={{ flexShrink: 0 }} />
                       <div>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{item.label}</span>

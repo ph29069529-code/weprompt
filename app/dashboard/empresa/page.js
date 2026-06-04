@@ -137,7 +137,7 @@ export default function EmpresaDashboard() {
         {/* TITLE ROW */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Olá, {firstName} 👋</h1>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Olá, {firstName}</h1>
             <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>
               Aqui está o resumo das suas soluções de IA.
             </p>

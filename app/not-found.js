@@ -42,9 +42,6 @@ export default function NotFound() {
             404
           </div>
 
-          {/* Icon */}
-          <div style={{ fontSize: 64, marginBottom: 24, lineHeight: 1 }}>🔍</div>
-
           <h1 style={{
             fontSize: 32,
             fontWeight: 800,
