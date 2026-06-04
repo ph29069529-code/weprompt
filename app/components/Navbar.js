@@ -337,7 +337,7 @@ export default function Navbar() {
           href="/solucoes"
           onClick={() => setActiveDropdown(null)}
           style={{
-            color: "#0369A1",
+            color: "#6366F1",
             fontSize: 13,
             fontWeight: 700,
             textDecoration: "none",
@@ -521,7 +521,7 @@ export default function Navbar() {
                 <a
                   href={dashboardUrl}
                   style={{
-                    background: "#0369A1",
+                    background: "#6366F1",
                     color: "white",
                     borderRadius: 999,
                     padding: "10px 20px",
@@ -549,7 +549,7 @@ export default function Navbar() {
                   <a
                     href="/cadastro"
                     style={{
-                      background: "#0369A1",
+                      background: "#6366F1",
                       color: "white",
                       borderRadius: 999,
                       padding: "10px 20px",
@@ -882,7 +882,7 @@ export default function Navbar() {
                 href={dashboardUrl}
                 onClick={() => setMobileOpen(false)}
                 style={{
-                  background: "#0369A1",
+                  background: "#6366F1",
                   color: "white",
                   height: 48,
                   borderRadius: 12,
@@ -902,8 +902,8 @@ export default function Navbar() {
                   href="/login"
                   onClick={() => setMobileOpen(false)}
                   style={{
-                    border: "2px solid #0369A1",
-                    color: "#0369A1",
+                    border: "2px solid #6366F1",
+                    color: "#6366F1",
                     height: 48,
                     borderRadius: 12,
                     display: "flex",
@@ -920,7 +920,7 @@ export default function Navbar() {
                   href="/cadastro"
                   onClick={() => setMobileOpen(false)}
                   style={{
-                    background: "#0369A1",
+                    background: "#6366F1",
                     color: "white",
                     height: 48,
                     borderRadius: 12,
