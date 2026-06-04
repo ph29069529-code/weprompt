@@ -2,23 +2,25 @@
 import React from 'react'
 
 const ICONS_ROW1 = [
-  { name: "WhatsApp", src: "https://cdn-icons-png.flaticon.com/512/5968/5968854.png" },
-  { name: "Excel",    src: "https://cdn-icons-png.flaticon.com/512/732/732221.png" },
-  { name: "LinkedIn", src: "https://cdn-icons-png.flaticon.com/512/733/733609.png" },
-  { name: "Outlook",  src: "https://cdn-icons-png.flaticon.com/512/732/732084.png" },
-  { name: "Slack",    src: "https://cdn-icons-png.flaticon.com/512/733/733585.png" },
-  { name: "Gmail",    src: "https://cdn-icons-png.flaticon.com/512/281/281763.png" },
-  { name: "Sheets",   src: "https://cdn-icons-png.flaticon.com/512/888/888879.png" },
+  { name: "WhatsApp",     src: "https://cdn.simpleicons.org/whatsapp/25D366" },
+  { name: "Gmail",        src: "https://cdn.simpleicons.org/gmail/EA4335" },
+  { name: "Google Sheets",src: "https://cdn.simpleicons.org/googlesheets/34A853" },
+  { name: "Slack",        src: "https://cdn.simpleicons.org/slack/4A154B" },
+  { name: "Notion",       src: "https://cdn.simpleicons.org/notion/000000" },
+  { name: "HubSpot",      src: "https://cdn.simpleicons.org/hubspot/FF7A59" },
+  { name: "Zapier",       src: "https://cdn.simpleicons.org/zapier/FF4A00" },
+  { name: "Typeform",     src: "https://cdn.simpleicons.org/typeform/262627" },
 ]
 
 const ICONS_ROW2 = [
-  { name: "LinkedIn", src: "https://cdn-icons-png.flaticon.com/512/174/174857.png" },
-  { name: "Notion",   src: "https://cdn-icons-png.flaticon.com/512/906/906324.png" },
-  { name: "Drive",    src: "https://cdn-icons-png.flaticon.com/512/888/888841.png" },
-  { name: "Figma",    src: "https://cdn-icons-png.flaticon.com/512/5968/5968875.png" },
-  { name: "Zoom",     src: "https://cdn-icons-png.flaticon.com/512/906/906361.png" },
-  { name: "Teams",    src: "https://cdn-icons-png.flaticon.com/512/732/732190.png" },
-  { name: "Docs",     src: "https://cdn-icons-png.flaticon.com/512/888/888847.png" },
+  { name: "Google Drive", src: "https://cdn.simpleicons.org/googledrive/4285F4" },
+  { name: "Airtable",     src: "https://cdn.simpleicons.org/airtable/18BFFF" },
+  { name: "Trello",       src: "https://cdn.simpleicons.org/trello/0052CC" },
+  { name: "LinkedIn",     src: "https://cdn.simpleicons.org/linkedin/0A66C2" },
+  { name: "Instagram",    src: "https://cdn.simpleicons.org/instagram/E4405F" },
+  { name: "Telegram",     src: "https://cdn.simpleicons.org/telegram/26A5E4" },
+  { name: "Make",         src: "https://cdn.simpleicons.org/make/6D00CC" },
+  { name: "n8n",          src: "https://cdn.simpleicons.org/n8n/EA4B71" },
 ]
 
 const row1Items = [...ICONS_ROW1, ...ICONS_ROW1, ...ICONS_ROW1, ...ICONS_ROW1]
