@@ -25,10 +25,9 @@ img {
 }
 
 body {
-  background: linear-gradient(135deg, #F0F0FF 0%, #E8E8F8 30%, #EEF0FF 60%, #F5F0FF 100%);
-  background-attachment: fixed;
-  color: #1a1a2e;
-  font-family: 'DM Sans', sans-serif;
+  background: #ffffff;
+  color: #0A0F1E;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Reusable card */

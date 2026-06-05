@@ -7,8 +7,9 @@ export default function PlatformScrollDemo() {
     <div
       className="flex flex-col overflow-hidden"
       style={{
-        background: "#0A0F1E",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        background: "#ffffff",
+        backgroundImage: "radial-gradient(circle, #00000010 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
       }}
     >
       <ContainerScroll
@@ -32,7 +33,7 @@ export default function PlatformScrollDemo() {
                 fontWeight: 800,
                 letterSpacing: "-0.04em",
                 lineHeight: 1.1,
-                color: "#ffffff",
+                color: "#0A0F1E",
                 marginBottom: 20,
               }}
             >
@@ -43,7 +44,7 @@ export default function PlatformScrollDemo() {
             <p
               style={{
                 fontSize: 17,
-                color: "rgba(255,255,255,0.5)",
+                color: "#6B7280",
                 maxWidth: 520,
                 margin: "0 auto 32px",
                 lineHeight: 1.65,

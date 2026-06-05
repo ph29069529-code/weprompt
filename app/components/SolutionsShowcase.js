@@ -97,10 +97,10 @@ function SolutionCard({ solution, router }) {
       onMouseLeave={() => setHov(false)}
       onClick={() => router.push("/solucoes")}
       style={{
-        background: hov ? "rgba(99,102,241,0.08)" : "rgba(255,255,255,0.04)",
+        background: "#fff",
         borderRadius: 20,
-        border: `1px solid ${hov ? "rgba(99,102,241,0.35)" : "rgba(255,255,255,0.08)"}`,
-        boxShadow: hov ? "0 20px 60px rgba(99,102,241,0.1)" : "none",
+        border: `1px solid ${hov ? "rgba(99,102,241,0.3)" : "#E5E7EB"}`,
+        boxShadow: hov ? "0 20px 60px rgba(0,0,0,0.10)" : "0 2px 12px rgba(0,0,0,0.05)",
         transform: hov ? "translateY(-4px)" : "translateY(0)",
         transition: "all 0.25s ease",
         cursor: "pointer",
@@ -149,7 +149,7 @@ function SolutionCard({ solution, router }) {
               width: 36,
               height: 36,
               borderRadius: 10,
-              background: "rgba(99,102,241,0.15)",
+              background: solution.color,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -159,20 +159,20 @@ function SolutionCard({ solution, router }) {
             <Icon size={18} color={solution.iconColor} />
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#ffffff" }}>{solution.name}</div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 1 }}>{solution.category}</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#0A0F1E" }}>{solution.name}</div>
+            <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 1 }}>{solution.category}</div>
           </div>
         </div>
 
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, flex: 1, marginBottom: 16 }}>
+        <p style={{ fontSize: 13, color: "#6B7280", lineHeight: 1.6, flex: 1, marginBottom: 16 }}>
           {solution.desc}
         </p>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 15, fontWeight: 800, color: "#ffffff" }}>{solution.price}</span>
+          <span style={{ fontSize: 15, fontWeight: 800, color: "#0A0F1E" }}>{solution.price}</span>
           <button
             style={{
-              background: hov ? "#4F46E5" : "#6366F1",
+              background: hov ? "#4F46E5" : "#0A0F1E",
               color: "#fff",
               border: "none",
               borderRadius: 8,
@@ -207,8 +207,7 @@ export default function SolutionsShowcase() {
     <section
       style={{
         padding: "100px 48px",
-        background: "#09090b",
-        backgroundImage: "none",
+        background: "#F8F9FB",
         fontFamily: "'Inter', sans-serif",
       }}
     >
@@ -232,13 +231,13 @@ export default function SolutionsShowcase() {
               fontSize: "clamp(32px, 4vw, 52px)",
               fontWeight: 800,
               letterSpacing: "-0.04em",
-              color: "#ffffff",
+              color: "#0A0F1E",
               marginBottom: 16,
             }}
           >
             Soluções prontas para usar.
           </h2>
-          <p style={{ fontSize: 17, color: "rgba(255,255,255,0.5)", maxWidth: 480, margin: "0 auto" }}>
+          <p style={{ fontSize: 17, color: "#6B7280", maxWidth: 480, margin: "0 auto" }}>
             Escolha, ative e comece a usar em minutos.
           </p>
         </div>
@@ -258,9 +257,9 @@ export default function SolutionsShowcase() {
               key={cat}
               onClick={() => setActive(cat)}
               style={{
-                background: active === cat ? "#6366F1" : "rgba(255,255,255,0.06)",
-                color: active === cat ? "#fff" : "rgba(255,255,255,0.6)",
-                border: `1px solid ${active === cat ? "#6366F1" : "rgba(255,255,255,0.1)"}`,
+                background: active === cat ? "#0A0F1E" : "#fff",
+                color: active === cat ? "#fff" : "#374151",
+                border: `1px solid ${active === cat ? "#0A0F1E" : "#E5E7EB"}`,
                 borderRadius: 999,
                 padding: "8px 20px",
                 fontSize: 14,
@@ -270,14 +269,14 @@ export default function SolutionsShowcase() {
               }}
               onMouseEnter={(e) => {
                 if (active !== cat) {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
-                  e.currentTarget.style.color = "#fff";
+                  e.currentTarget.style.borderColor = "#0A0F1E";
+                  e.currentTarget.style.color = "#0A0F1E";
                 }
               }}
               onMouseLeave={(e) => {
                 if (active !== cat) {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-                  e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+                  e.currentTarget.style.borderColor = "#E5E7EB";
+                  e.currentTarget.style.color = "#374151";
                 }
               }}
             >
