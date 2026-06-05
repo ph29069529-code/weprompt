@@ -199,7 +199,7 @@ export default function FloatingIconsHero() {
                   color: '#0A0F1E',
                   letterSpacing: '-0.04em',
                   lineHeight: 1.0,
-                  display: 'inline-block',
+                  display: 'inline-block', marginRight: '0.25em',
                 }}
               >
                 {word}
@@ -219,7 +219,7 @@ export default function FloatingIconsHero() {
                   fontWeight: 900,
                   letterSpacing: '-0.04em',
                   lineHeight: 1.0,
-                  display: 'inline-block',
+                  display: 'inline-block', marginRight: '0.25em',
                   background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 40%, #A855F7 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
