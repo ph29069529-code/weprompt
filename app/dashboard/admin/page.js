@@ -693,9 +693,9 @@ function UsuariosTab({ isMobile }) {
                         <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{p.nome || "—"}</span>
                       </div>
                     </td>
-                    <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>—</td>
+                    <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{p.email || "—"}</td>
                     <td style={{ padding: "12px 16px" }}><StatusBadge status={p.role} /></td>
-                    <td style={{ padding: "12px 16px" }}><StatusBadge status="ativo" /></td>
+                    <td style={{ padding: "12px 16px" }}><StatusBadge status={p.status || "ativo"} /></td>
                     <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{formatDate(p.created_at)}</td>
                     <td style={{ padding: "12px 16px" }}>
                       <button style={{ padding: "5px 12px", borderRadius: 8, border: `1px solid rgba(220,38,38,0.3)`, background: "transparent", color: DANGER, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Banir</button>
@@ -2491,12 +2491,117 @@ function BanidosTab({ isMobile }) {
   );
 }
 
+/* ── SOLICITAÇÕES TAB ── */
+function SolicitacoesTab({ solutions, onApprove, onConfirmReject, onView, actionLoading, isMobile }) {
+  const [rejectingId, setRejectingId]   = useState(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectLoading, setRejectLoading] = useState(false);
+
+  const pending = solutions.filter(s => s.status === "pending");
+
+  async function submitReject(s) {
+    if (!rejectReason.trim()) return;
+    setRejectLoading(true);
+    await onConfirmReject(s, rejectReason.trim());
+    setRejectingId(null);
+    setRejectReason("");
+    setRejectLoading(false);
+  }
+
+  if (pending.length === 0) {
+    return (
+      <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "64px 24px", textAlign: "center" }}>
+        <div style={{ fontSize: 16, fontWeight: 600, color: NEAR_BLACK, marginBottom: 8 }}>Nenhuma solicitação pendente</div>
+        <div style={{ fontSize: 14, color: GRAY_TEXT }}>Novas soluções submetidas pelos criadores aparecerão aqui para análise.</div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px", borderBottom: `1px solid ${BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: NEAR_BLACK }}>Soluções aguardando análise</div>
+            <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 2 }}>Revise e aprove ou reprove cada solução</div>
+          </div>
+          <span style={{ background: "rgba(217,119,6,0.1)", color: "#B45309", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 99 }}>
+            {pending.length} pendente{pending.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: "#f9fafb" }}>
+                {["Solução", "Criador", "Categoria", "Preço", "Enviada em", "Ações"].map(h => (
+                  <th key={h} style={{ padding: "11px 16px", textAlign: "left", fontWeight: 600, color: GRAY_TEXT, whiteSpace: "nowrap" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {pending.map(s => {
+                const isLoading   = actionLoading === s.id;
+                const isRejecting = rejectingId === s.id;
+                return (
+                  <Fragment key={s.id}>
+                    <tr style={{ borderTop: `1px solid ${BORDER}` }}>
+                      <td style={{ padding: "12px 16px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, overflow: "hidden", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            {s.cover_url ? <img src={s.cover_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: BLUE, opacity: 0.5 }}>✦</span>}
+                          </div>
+                          <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{s.titulo || "—"}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.profiles?.nome || "—"}</td>
+                      <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{s.categoria || "—"}</td>
+                      <td style={{ padding: "12px 16px", fontWeight: 600, color: NEAR_BLACK }}>
+                        {s.preco != null ? `R$ ${Number(s.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Grátis"}
+                      </td>
+                      <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{formatDate(s.created_at)}</td>
+                      <td style={{ padding: "12px 16px" }}>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver</button>
+                          <button onClick={() => { if (!isLoading) onApprove(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(99,102,241,0.1)", color: GREEN, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Aprovar</button>
+                          <button onClick={() => { if (!isLoading) { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); } }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 700, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, pointerEvents: "auto", fontFamily: "inherit" }}>Reprovar</button>
+                        </div>
+                      </td>
+                    </tr>
+                    {isRejecting && (
+                      <tr>
+                        <td colSpan={6} style={{ padding: "0 16px 12px", background: "rgba(220,38,38,0.02)", borderTop: "none" }}>
+                          <div style={{ display: "flex", gap: 8, alignItems: "center", paddingTop: 8 }}>
+                            <input autoFocus placeholder="Motivo da reprovação…" value={rejectReason}
+                              onChange={e => setRejectReason(e.target.value)}
+                              onKeyDown={e => { if (e.key === "Enter") submitReject(s); if (e.key === "Escape") { setRejectingId(null); setRejectReason(""); } }}
+                              style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: `1.5px solid rgba(220,38,38,0.35)`, fontSize: 13, color: NEAR_BLACK, outline: "none", fontFamily: "inherit", background: "#fff" }} />
+                            <button onClick={() => submitReject(s)} disabled={!rejectReason.trim() || rejectLoading}
+                              style={{ padding: "8px 14px", borderRadius: 8, background: !rejectReason.trim() || rejectLoading ? "rgba(220,38,38,0.3)" : DANGER, color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: !rejectReason.trim() || rejectLoading ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                              {rejectLoading ? "…" : "Confirmar"}
+                            </button>
+                            <button onClick={() => { setRejectingId(null); setRejectReason(""); }}
+                              style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: GRAY_TEXT, border: `1px solid ${BORDER}`, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════ */
 const SIDEBAR_SECTIONS = [
   { label: "VISÃO GERAL", items: [{ key: "dashboard",  label: "Dashboard",        icon: "home" }] },
-  { label: "CONTEÚDO",    items: [{ key: "solucoes",   label: "Soluções",         icon: "puzzle" }, { key: "categorias", label: "Categorias", icon: "tag" }] },
+  { label: "CONTEÚDO",    items: [{ key: "solucoes",   label: "Soluções",         icon: "puzzle" }, { key: "solicitacoes", label: "Solicitações", icon: "eye" }, { key: "categorias", label: "Categorias", icon: "tag" }] },
   { label: "USUÁRIOS",    items: [{ key: "usuarios",   label: "Todos Usuários",   icon: "users" }, { key: "criadores_u", label: "Criadores", icon: "pencil" }, { key: "empresas_u", label: "Empresas", icon: "building" }] },
   { label: "FINANCEIRO",  items: [{ key: "transacoes", label: "Transações",       icon: "arrows" }, { key: "repasses", label: "Repasses", icon: "cash" }, { key: "receita", label: "Receita", icon: "chart" }] },
   { label: "ANALYTICS",   items: [{ key: "metricas",   label: "Métricas",         icon: "chart" }, { key: "relatorios", label: "Relatórios", icon: "file" }] },
@@ -2506,7 +2611,7 @@ const SIDEBAR_SECTIONS = [
 ];
 
 const TAB_LABELS = {
-  dashboard: "Painel Administrativo", solucoes: "Soluções", categorias: "Categorias",
+  dashboard: "Painel Administrativo", solucoes: "Soluções", solicitacoes: "Solicitações", categorias: "Categorias",
   usuarios: "Todos os Usuários", criadores_u: "Criadores", empresas_u: "Empresas",
   transacoes: "Transações", repasses: "Repasses", receita: "Receita",
   metricas: "Métricas da Plataforma", relatorios: "Relatórios",
@@ -2515,7 +2620,7 @@ const TAB_LABELS = {
   logs: "Logs de Acesso", banidos: "Usuários Banidos",
 };
 
-const REAL_TABS = new Set(["dashboard", "solucoes", "categorias", "usuarios", "transacoes", "config", "receita", "metricas", "criadores_u", "empresas_u", "repasses", "relatorios", "taxas", "banners", "emails", "tickets", "denuncias", "logs", "banidos"]);
+const REAL_TABS = new Set(["dashboard", "solucoes", "solicitacoes", "categorias", "usuarios", "transacoes", "config", "receita", "metricas", "criadores_u", "empresas_u", "repasses", "relatorios", "taxas", "banners", "emails", "tickets", "denuncias", "logs", "banidos"]);
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -2737,6 +2842,11 @@ export default function AdminDashboard() {
               {activeNav === "dashboard" && (
                 <p style={{ fontSize: 13, color: GRAY_TEXT, margin: "4px 0 0", textTransform: "capitalize" }}>{todayPtBR()}</p>
               )}
+              {activeNav === "solicitacoes" && (
+                <p style={{ fontSize: 13, color: GRAY_TEXT, margin: "4px 0 0" }}>
+                  {solutions.filter(s => s.status === "pending").length} aguardando análise
+                </p>
+              )}
             </div>
             <NotificationBell />
           </div>
@@ -2747,6 +2857,9 @@ export default function AdminDashboard() {
           )}
           {activeNav === "solucoes" && (
             <SolucoesTab solutions={solutions} onApprove={handleApprove} onConfirmReject={handleConfirmReject} onPause={handlePause} onReactivate={handleReactivate} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
+          )}
+          {activeNav === "solicitacoes" && (
+            <SolicitacoesTab solutions={solutions} onApprove={handleApprove} onConfirmReject={handleConfirmReject} onView={s => setSelectedSolution(s)} actionLoading={actionLoading} isMobile={isMobile} />
           )}
           {activeNav === "categorias" && <CategoriasTab isMobile={isMobile} />}
           {activeNav === "usuarios"   && <UsuariosTab isMobile={isMobile} />}
