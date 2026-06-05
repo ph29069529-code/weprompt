@@ -429,10 +429,12 @@ export default function Navbar() {
           left: 0,
           right: 0,
           zIndex: 50,
-          background: "rgba(255,255,255,0.92)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
-          borderBottom: "1px solid #E5E7EB",
+          borderBottom: "1px solid transparent",
+          backgroundImage: "linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)), linear-gradient(to right, transparent, rgba(99,102,241,0.2), transparent)",
+          backgroundOrigin: "border-box",
+          backgroundClip: "padding-box, border-box",
           boxShadow: "none",
           height: 64,
           transition: "all 0.3s ease",
@@ -541,7 +543,7 @@ export default function Navbar() {
                 <a
                   href={dashboardUrl}
                   style={{
-                    background: "#6366F1",
+                    background: "#0A0F1E",
                     color: "white",
                     border: "none",
                     borderRadius: 999,
@@ -550,8 +552,11 @@ export default function Navbar() {
                     fontWeight: 600,
                     textDecoration: "none",
                     display: "inline-block",
-                    transition: "background 0.3s, border 0.3s",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+                    transition: "background 0.2s",
                   }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "#1a2035"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "#0A0F1E"; }}
                 >
                   Meu Dashboard →
                 </a>
@@ -572,7 +577,7 @@ export default function Navbar() {
                   <a
                     href="/cadastro"
                     style={{
-                      background: "#6366F1",
+                      background: "#0A0F1E",
                       color: "white",
                       borderRadius: 999,
                       padding: "10px 20px",
@@ -580,8 +585,11 @@ export default function Navbar() {
                       fontWeight: 600,
                       textDecoration: "none",
                       display: "inline-block",
-                      transition: "background 0.3s, color 0.3s",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+                      transition: "background 0.2s",
                     }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "#1a2035"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "#0A0F1E"; }}
                   >
                     Começar grátis
                   </a>
@@ -907,7 +915,7 @@ export default function Navbar() {
                 href={dashboardUrl}
                 onClick={() => setMobileOpen(false)}
                 style={{
-                  background: "#6366F1",
+                  background: "#0A0F1E",
                   color: "white",
                   height: 48,
                   borderRadius: 12,
@@ -945,7 +953,7 @@ export default function Navbar() {
                   href="/cadastro"
                   onClick={() => setMobileOpen(false)}
                   style={{
-                    background: "#6366F1",
+                    background: "#0A0F1E",
                     color: "white",
                     height: 48,
                     borderRadius: 12,

@@ -27,7 +27,7 @@ import Testimonials from "./components/Testimonials";
 /* ─── Animation helpers ──────────────────────────────────────────── */
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
 };
 const stagger = {
   hidden: {},
@@ -171,11 +171,13 @@ function Navbar() {
                 onMouseEnter={() => setHovCta(true)}
                 onMouseLeave={() => setHovCta(false)}
                 style={{
-                  background: hovCta ? "#4F46E5" : "#6366F1",
+                  background: hovCta ? "#1a2035" : "#0A0F1E",
                   color: "#fff", textDecoration: "none",
                   border: "none",
                   borderRadius: 8, padding: "10px 20px",
-                  fontSize: 14, fontWeight: 600, transition: "all 0.2s",
+                  fontSize: 14, fontWeight: 600,
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+                  transition: "all 0.2s",
                 }}>
                 Meu Dashboard →
               </a>
@@ -192,11 +194,13 @@ function Navbar() {
                   onMouseEnter={() => setHovCta(true)}
                   onMouseLeave={() => setHovCta(false)}
                   style={{
-                    background: hovCta ? "#6366F1" : "#0A0F1E",
+                    background: hovCta ? "#1a2035" : "#0A0F1E",
                     color: "#fff",
                     border: "none", borderRadius: 8,
                     padding: "10px 20px", fontSize: 14, fontWeight: 600,
-                    cursor: "pointer", transition: "all 0.2s",
+                    cursor: "pointer",
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+                    transition: "all 0.2s",
                   }}>
                   Começar grátis →
                 </button>
@@ -234,7 +238,7 @@ function Navbar() {
             </nav>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 32 }}>
               {user ? (
-                <a href={getDashboardUrl(user)} onClick={() => setMenuOpen(false)} style={{ background: "#6366F1", color: "#fff", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>Meu Dashboard →</a>
+                <a href={getDashboardUrl(user)} onClick={() => setMenuOpen(false)} style={{ background: "#0A0F1E", color: "#fff", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>Meu Dashboard →</a>
               ) : (
                 <>
                   <a href="/login" onClick={() => setMenuOpen(false)} style={{ border: "1.5px solid #E5E7EB", color: "#0A0F1E", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>Entrar</a>
@@ -265,11 +269,29 @@ function HowItWorks() {
           initial="hidden" whileInView="visible" viewport={vp}
           variants={fadeUp}
           style={{ textAlign: "center", marginBottom: 80 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#6366F1", textTransform: "uppercase" }}>
+          <div style={{
+            display: "inline-block",
+            background: "rgba(99,102,241,0.06)",
+            border: "1px solid rgba(99,102,241,0.15)",
+            color: "#6366F1",
+            borderRadius: 100,
+            padding: "5px 16px",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+          }}>
             COMO FUNCIONA
           </div>
           <h2 style={{ fontSize: "clamp(36px,4vw,56px)", fontWeight: 800, color: "#0A0F1E", letterSpacing: "-0.03em", marginTop: 12, marginBottom: 0 }}>
-            Três passos.
+            Três{" "}
+            <span style={{
+              background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              fontWeight: 900,
+            }}>passos.</span>
           </h2>
           <p style={{ color: "#6B7280", fontSize: 18, marginTop: 16 }}>
             Do catálogo ao seu negócio funcionando.
@@ -289,11 +311,11 @@ function HowItWorks() {
               onMouseLeave={() => setHov(null)}
               style={{
                 background: "#fff",
-                border: `1px solid ${hov === i ? "#6366F1" : "#E5E7EB"}`,
+                border: `1px solid ${hov === i ? "rgba(99,102,241,0.2)" : "#E5E7EB"}`,
                 borderRadius: 20, padding: 40,
-                boxShadow: hov === i ? "0 8px 32px rgba(0,0,0,0.10)" : "0 1px 3px rgba(0,0,0,0.06)",
+                boxShadow: hov === i ? "0 20px 40px rgba(0,0,0,0.08)" : "0 1px 3px rgba(0,0,0,0.06)",
                 transform: hov === i ? "translateY(-4px)" : "translateY(0)",
-                transition: "box-shadow 0.25s, transform 0.25s",
+                transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
               }}>
               <div style={{ fontSize: 64, fontWeight: 900, color: "#F3F4F6", lineHeight: 1, marginBottom: 24, fontFamily: "monospace" }}>
                 {step.num}
@@ -327,9 +349,27 @@ function Categories() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <motion.div initial="hidden" whileInView="visible" viewport={vp} variants={fadeUp}
           style={{ textAlign: "center", marginBottom: 64 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#6366F1", textTransform: "uppercase" }}>CATEGORIAS</div>
+          <div style={{
+            display: "inline-block",
+            background: "rgba(99,102,241,0.06)",
+            border: "1px solid rgba(99,102,241,0.15)",
+            color: "#6366F1",
+            borderRadius: 100,
+            padding: "5px 16px",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+          }}>CATEGORIAS</div>
           <h2 style={{ fontSize: "clamp(32px,4vw,48px)", fontWeight: 800, color: "#0A0F1E", letterSpacing: "-0.03em", marginTop: 12, marginBottom: 0 }}>
-            Uma solução para cada desafio.
+            Uma solução para{" "}
+            <span style={{
+              background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              fontWeight: 900,
+            }}>cada desafio.</span>
           </h2>
           <p style={{ color: "#6B7280", fontSize: 18, marginTop: 12 }}>Curadas para o mercado brasileiro.</p>
         </motion.div>
@@ -346,11 +386,11 @@ function Categories() {
               onClick={() => router.push(`/solucoes?categoria=${cat.slug}`)}
               style={{
                 background: "#fff",
-                border: `1px solid ${hov === i ? "#6366F1" : "#E5E7EB"}`,
+                border: `1px solid ${hov === i ? "rgba(99,102,241,0.2)" : "#E5E7EB"}`,
                 borderRadius: 16, padding: 28, cursor: "pointer",
-                boxShadow: hov === i ? "0 8px 24px rgba(99,102,241,0.1)" : "none",
-                transform: hov === i ? "translateY(-2px)" : "translateY(0)",
-                transition: "border-color 0.2s, box-shadow 0.2s, transform 0.2s",
+                boxShadow: hov === i ? "0 20px 40px rgba(0,0,0,0.08)" : "none",
+                transform: hov === i ? "translateY(-4px)" : "translateY(0)",
+                transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
               }}>
               <div style={{ width: 44, height: 44, background: "#EEF2FF", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {cat.icon}
@@ -373,7 +413,7 @@ function ForCompanies() {
   const solutions = ["Agente de Atendimento", "ChatBot WhatsApp", "Gerador de E-mails"];
 
   return (
-    <section className="section-pad" style={{ background: "#fff", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
+    <section className="section-pad" style={{ backgroundColor: "#FAFAFA", backgroundImage: "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(99,102,241,0.03), transparent)", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div className="two-col" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
         {/* Left — mockup */}
         <motion.div
@@ -419,9 +459,28 @@ function ForCompanies() {
           initial={{ opacity: 0, x: 32 }} whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }} viewport={vp}
           style={{ flex: "0 0 50%" }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#6366F1", textTransform: "uppercase" }}>PARA EMPRESAS</div>
+          <div style={{
+            display: "inline-block",
+            background: "rgba(99,102,241,0.06)",
+            border: "1px solid rgba(99,102,241,0.15)",
+            color: "#6366F1",
+            borderRadius: 100,
+            padding: "5px 16px",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+          }}>PARA EMPRESAS</div>
           <h2 style={{ fontSize: "clamp(28px,3vw,40px)", fontWeight: 800, color: "#0A0F1E", marginTop: 12, marginBottom: 0, lineHeight: 1.15 }}>
-            IA que trabalha pelo seu negócio. Em português.
+            IA que trabalha pelo seu negócio.
+            <br />
+            <span style={{
+              background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              fontWeight: 900,
+            }}>Em português.</span>
           </h2>
           <p style={{ color: "#6B7280", fontSize: 16, lineHeight: 1.7, marginTop: 16 }}>
             Encontre, ative e use soluções de IA — tudo dentro da WePrompt, sem precisar de equipe técnica.
@@ -440,11 +499,13 @@ function ForCompanies() {
             onMouseLeave={() => setHovCta(false)}
             style={{
               marginTop: 36,
-              background: hovCta ? "#6366F1" : "#0A0F1E",
+              background: hovCta ? "#1a2035" : "#0A0F1E",
               color: "#fff",
               border: "none", borderRadius: 10,
               padding: "14px 28px", fontSize: 15, fontWeight: 700,
-              cursor: "pointer", transition: "background 0.2s",
+              cursor: "pointer",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+              transition: "all 0.2s",
             }}>
             Explorar o catálogo →
           </button>
@@ -466,16 +527,35 @@ function ForCreators() {
   const bars = [20, 28, 22, 36, 48];
 
   return (
-    <section className="section-pad" style={{ background: "#F8F9FB", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
+    <section className="section-pad" style={{ background: "#fff", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div className="two-col-rev" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
         {/* Left — text */}
         <motion.div
           initial={{ opacity: 0, x: -32 }} whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7 }} viewport={vp}
           style={{ flex: "0 0 50%" }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", color: "#6366F1", textTransform: "uppercase" }}>PARA CRIADORES</div>
+          <div style={{
+            display: "inline-block",
+            background: "rgba(99,102,241,0.06)",
+            border: "1px solid rgba(99,102,241,0.15)",
+            color: "#6366F1",
+            borderRadius: 100,
+            padding: "5px 16px",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+          }}>PARA CRIADORES</div>
           <h2 style={{ fontSize: "clamp(28px,3vw,40px)", fontWeight: 800, color: "#0A0F1E", marginTop: 12, marginBottom: 0, lineHeight: 1.15 }}>
-            Monetize suas soluções. Alcance milhares.
+            Monetize suas soluções.
+            <br />
+            <span style={{
+              background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              fontWeight: 900,
+            }}>Alcance milhares.</span>
           </h2>
           <p style={{ color: "#6B7280", fontSize: 16, lineHeight: 1.7, marginTop: 16 }}>
             Publique, defina seu preço e comece a receber. Cuidamos da distribuição e dos pagamentos.
@@ -559,14 +639,14 @@ function FinalCTA() {
   const router = useRouter();
 
   return (
-    <section className="section-pad" style={{ background: "#0A0F1E", padding: "80px 48px" }}>
+    <section className="section-pad" style={{ background: "linear-gradient(135deg, #0A0F1E 0%, #1e1b4b 100%)", padding: "80px 48px" }}>
       <motion.div
         initial="hidden" whileInView="visible" viewport={vp} variants={fadeUp}
         style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
         <h2 style={{
           color: "#fff",
           fontSize: "clamp(32px,4vw,52px)",
-          fontWeight: 800, letterSpacing: "-0.03em", margin: 0,
+          fontWeight: 900, letterSpacing: "-0.03em", margin: 0,
         }}>
           Seu negócio não pode esperar.
         </h2>
@@ -577,11 +657,11 @@ function FinalCTA() {
           onClick={() => router.push("/cadastro")}
           style={{
             marginTop: 40,
-            background: "#6366F1", color: "#fff",
+            background: "#fff", color: "#0A0F1E",
             border: "none", borderRadius: 10,
             padding: "18px 40px", fontSize: 16, fontWeight: 700,
             cursor: "pointer",
-            boxShadow: "0 8px 32px rgba(99,102,241,0.4)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
           }}>
           Começar agora, é grátis →
         </button>

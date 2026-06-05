@@ -39,38 +39,26 @@ export default function PlatformScrollDemo() {
             >
               Tudo que você precisa,
               <br />
-              <span style={{ color: "#6366F1" }}>em um só lugar.</span>
+              <span style={{
+                background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                fontWeight: 900,
+              }}>em um só lugar.</span>
             </h2>
             <p
               style={{
                 fontSize: 17,
                 color: "#6B7280",
                 maxWidth: 520,
-                margin: "0 auto 32px",
+                margin: "0 auto",
                 lineHeight: 1.65,
               }}
             >
               Ative, gerencie e acompanhe suas soluções de IA direto do
               painel WePrompt — sem precisar de equipe técnica.
             </p>
-            <a
-              href="/solucoes"
-              style={{
-                display: "inline-block",
-                background: "#0A0F1E",
-                color: "#fff",
-                borderRadius: 10,
-                padding: "14px 32px",
-                fontSize: 15,
-                fontWeight: 700,
-                textDecoration: "none",
-                transition: "background 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#6366F1")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "#0A0F1E")}
-            >
-              Explorar soluções →
-            </a>
           </div>
         }
       >

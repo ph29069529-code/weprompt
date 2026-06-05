@@ -72,10 +72,12 @@ function FloatingIcon({ iconData, index, mouseX, mouseY }) {
         style={{
           width: 72,
           height: 72,
-          borderRadius: 24,
-          background: 'white',
-          border: '1px solid rgba(0,0,0,0.06)',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          borderRadius: 20,
+          background: 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          border: '1px solid rgba(99,102,241,0.1)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.8) inset',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -212,7 +214,7 @@ export default function FloatingIconsHero() {
           <button
             onClick={() => router.push('/solucoes')}
             style={{
-              background: '#6366F1',
+              background: '#0A0F1E',
               color: 'white',
               padding: '15px 32px',
               borderRadius: 10,
@@ -220,16 +222,16 @@ export default function FloatingIconsHero() {
               fontSize: 15,
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 24px rgba(99,102,241,0.35)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
               transition: 'background 0.2s, transform 0.2s',
               fontFamily: 'inherit',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#4F46E5'
+              e.currentTarget.style.background = '#1a2035'
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#6366F1'
+              e.currentTarget.style.background = '#0A0F1E'
               e.currentTarget.style.transform = 'translateY(0)'
             }}
           >

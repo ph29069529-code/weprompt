@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Star } from "lucide-react";
+import { motion } from "framer-motion";
 
 const TESTIMONIALS = [
   {
@@ -55,14 +56,25 @@ export default function Testimonials() {
     >
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 64 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          style={{ textAlign: "center", marginBottom: 64 }}
+        >
           <p
             style={{
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
+              display: "inline-block",
+              background: "rgba(99,102,241,0.06)",
+              border: "1px solid rgba(99,102,241,0.15)",
               color: "#6366F1",
+              borderRadius: 100,
+              padding: "5px 16px",
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
               marginBottom: 12,
             }}
           >
@@ -77,9 +89,16 @@ export default function Testimonials() {
               marginBottom: 0,
             }}
           >
-            Resultados reais.
+            Resultados{" "}
+            <span style={{
+              background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              fontWeight: 900,
+            }}>reais.</span>
           </h2>
-        </div>
+        </motion.div>
 
         {/* Cards */}
         <div
@@ -96,12 +115,12 @@ export default function Testimonials() {
               onMouseLeave={() => setHov(null)}
               style={{
                 background: "#fff",
-                border: `1px solid ${hov === t.id ? "rgba(99,102,241,0.25)" : "#E5E7EB"}`,
+                border: `1px solid ${hov === t.id ? "rgba(99,102,241,0.2)" : "#E5E7EB"}`,
                 borderRadius: 20,
                 padding: 32,
-                boxShadow: hov === t.id ? "0 16px 48px rgba(99,102,241,0.10)" : "0 2px 12px rgba(0,0,0,0.04)",
-                transform: hov === t.id ? "translateY(-3px)" : "none",
-                transition: "all 0.25s ease",
+                boxShadow: hov === t.id ? "0 20px 40px rgba(0,0,0,0.08)" : "0 2px 12px rgba(0,0,0,0.04)",
+                transform: hov === t.id ? "translateY(-4px)" : "none",
+                transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
                 display: "flex",
                 flexDirection: "column",
                 gap: 20,
@@ -179,10 +198,13 @@ export default function Testimonials() {
             <div key={stat.label}>
               <div
                 style={{
-                  fontSize: "clamp(28px, 4vw, 40px)",
-                  fontWeight: 800,
-                  color: "#fff",
-                  letterSpacing: "-0.03em",
+                  fontSize: "clamp(40px, 5vw, 64px)",
+                  fontWeight: 900,
+                  background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  letterSpacing: "-0.04em",
                 }}
               >
                 {stat.value}
