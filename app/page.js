@@ -20,7 +20,6 @@ import {
   Share2,
 } from "lucide-react";
 import FloatingIconsHero from "./components/FloatingIconsHero";
-import IntegrationMarquee from "./components/IntegrationMarquee";
 import PlatformScrollDemo from "./components/PlatformScrollDemo";
 import SolutionsShowcase from "./components/SolutionsShowcase";
 import Testimonials from "./components/Testimonials";
@@ -757,7 +756,6 @@ export default function Home() {
     <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <Navbar />
       <FloatingIconsHero />
-      <IntegrationMarquee />
       <PlatformScrollDemo />
       <SolutionsShowcase />
       <Testimonials />
