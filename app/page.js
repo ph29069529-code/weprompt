@@ -634,41 +634,6 @@ function ForCreators() {
   );
 }
 
-/* ─── Final CTA ──────────────────────────────────────────────────── */
-function FinalCTA() {
-  const router = useRouter();
-
-  return (
-    <section className="section-pad" style={{ background: "linear-gradient(135deg, #0A0F1E 0%, #1e1b4b 100%)", padding: "80px 48px" }}>
-      <motion.div
-        initial="hidden" whileInView="visible" viewport={vp} variants={fadeUp}
-        style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{
-          color: "#fff",
-          fontSize: "clamp(32px,4vw,52px)",
-          fontWeight: 900, letterSpacing: "-0.03em", margin: 0,
-        }}>
-          Seu negócio não pode esperar.
-        </h2>
-        <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 18, marginTop: 16, lineHeight: 1.6 }}>
-          Comece hoje. É grátis. Suporte em português.
-        </p>
-        <button
-          onClick={() => router.push("/cadastro")}
-          style={{
-            marginTop: 40,
-            background: "#fff", color: "#0A0F1E",
-            border: "none", borderRadius: 10,
-            padding: "18px 40px", fontSize: 16, fontWeight: 700,
-            cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-          }}>
-          Começar agora, é grátis →
-        </button>
-      </motion.div>
-    </section>
-  );
-}
 
 /* ─── Footer ─────────────────────────────────────────────────────── */
 const Footer = () => (
@@ -842,7 +807,6 @@ export default function Home() {
       <HowItWorks />
       <ForCompanies />
       <ForCreators />
-      <FinalCTA />
       <Footer />
     </div>
   );
