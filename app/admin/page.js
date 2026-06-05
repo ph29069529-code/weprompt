@@ -1,227 +1,455 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
+import { supabase } from "../lib/supabase";
 
-const TABS = [
-  { label: "Dashboard", badge: null },
-  { label: "Soluções", badge: "13" },
-  { label: "Usuários", badge: null },
-  { label: "Solicitações", badge: "3" },
-];
+const BLUE   = "#6366F1";
+const NEAR_BLACK = "#1D1D1F";
+const GRAY   = "#6B7280";
+const BORDER = "#E5E7EB";
+const DANGER = "#DC2626";
+const GREEN  = "#6366F1";
 
-const METRICS_ROW1 = [
-  { label: "Aguardando Revisão", value: "13", sub: "soluções aguardando aprovação", color: null },
-  { label: "Solicitações de Loja", value: "3", sub: "alterações de perfil pendentes", color: null },
-  { label: "Total de Usuários", value: "125", sub: "124 criadores", color: null },
-  { label: "Soluções Ativas", value: "0", sub: "de 39 no total", color: null },
-];
+function formatDate(d) {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
+}
 
-const METRICS_ROW2 = [
-  { label: "GMV Total", value: "R$ 0,00", sub: "volume total transacionado", color: null },
-  { label: "Taxa de Aprovação", value: "68%", sub: "dos últimos 30 dias", color: "#16a34a" },
-  { label: "Novos Usuários", value: "12", sub: "esta semana", color: "#2563EB" },
-  { label: "Receita Total", value: "R$ 0,00", sub: "de pedidos concluídos", color: null },
-];
+function initials(name) {
+  if (!name) return "?";
+  const p = name.trim().split(" ");
+  return p.length >= 2 ? (p[0][0] + p[p.length - 1][0]).toUpperCase() : p[0].slice(0, 2).toUpperCase();
+}
 
-const BAR_DATA = [
-  { month: "Jan", value: 8 },
-  { month: "Fev", value: 15 },
-  { month: "Mar", value: 22 },
-  { month: "Abr", value: 31 },
-  { month: "Mai", value: 45 },
-  { month: "Jun", value: 58 },
-];
+function StatusBadge({ status }) {
+  const map = {
+    pending:  { label: "Pendente",  bg: "rgba(217,119,6,0.1)",  color: "#B45309" },
+    approved: { label: "Ativa",     bg: "rgba(99,102,241,0.1)", color: BLUE },
+    rejected: { label: "Reprovada", bg: "rgba(220,38,38,0.1)",  color: DANGER },
+    paused:   { label: "Pausada",   bg: "rgba(107,114,128,0.1)",color: "#4B5563" },
+    criador:  { label: "Criador",   bg: "#EEF2FF",              color: BLUE },
+    creator:  { label: "Criador",   bg: "#EEF2FF",              color: BLUE },
+    empresa:  { label: "Empresa",   bg: "#EEF2FF",              color: BLUE },
+    business: { label: "Empresa",   bg: "#EEF2FF",              color: BLUE },
+    admin:    { label: "Admin",     bg: "rgba(220,38,38,0.1)",  color: DANGER },
+    ativo:    { label: "Ativo",     bg: "rgba(99,102,241,0.1)", color: BLUE },
+  };
+  const s = map[status] || { label: status || "—", bg: "rgba(0,0,0,0.07)", color: GRAY };
+  return (
+    <span style={{ background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 99, display: "inline-block" }}>
+      {s.label}
+    </span>
+  );
+}
 
-const ACTIVITY_ROWS = [
-  { solution: "Assistente de E-mails Pro", creator: "Carlos M.", category: "Automação", status: "Aguardando", date: "28 mai 2026", action: "Revisar" },
-  { solution: "ChatBot WhatsApp", creator: "Ana S.", category: "Chatbots", status: "Aprovado", date: "27 mai 2026", action: "Ver" },
-  { solution: "Gerador de Conteúdo", creator: "Pedro R.", category: "Marketing", status: "Aguardando", date: "27 mai 2026", action: "Revisar" },
-  { solution: "CRM Inteligente", creator: "Marina L.", category: "Vendas", status: "Rejeitado", date: "26 mai 2026", action: "Ver" },
-  { solution: "Analytics Dashboard", creator: "João F.", category: "Análise", status: "Aprovado", date: "26 mai 2026", action: "Ver" },
-  { solution: "Bot de Prospecção", creator: "Lucas T.", category: "Vendas", status: "Aguardando", date: "25 mai 2026", action: "Revisar" },
-  { solution: "Resumidor de Reuniões", creator: "Carla B.", category: "Produtividade", status: "Aprovado", date: "25 mai 2026", action: "Ver" },
-  { solution: "Gerador de Contratos", creator: "Rafael N.", category: "Jurídico", status: "Aguardando", date: "24 mai 2026", action: "Revisar" },
-];
+/* ── Dashboard Tab ── */
+function DashboardContent({ solutions, profiles }) {
+  const pending    = solutions.filter(s => s.status === "pending");
+  const criadores  = profiles.filter(p => p.role === "criador" || p.role === "creator");
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const novosEssaSemana = profiles.filter(p => new Date(p.created_at) > sevenDaysAgo).length;
 
-const STATUS_STYLES = {
-  Aprovado: { background: "#dcfce7", color: "#16a34a" },
-  Aguardando: { background: "#fef3c7", color: "#d97706" },
-  Rejeitado: { background: "#fee2e2", color: "#dc2626" },
-};
-
-const FILTERS = ["Todos", "Aguardando", "Aprovado", "Rejeitado"];
-
-const MAX_BAR_VALUE = 58;
-const MAX_BAR_HEIGHT = 80;
-const BAR_DELAYS = ["0s", "0.1s", "0.2s", "0.3s", "0.4s", "0.5s"];
-
-export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState(0);
-  const [activeFilter, setActiveFilter] = useState("Todos");
-  const [chartReady, setChartReady] = useState(false);
-  const [hoveredMetric, setHoveredMetric] = useState(null);
-  const [hoveredAction, setHoveredAction] = useState(null);
-  const [hoveredRow, setHoveredRow] = useState(null);
-  const [hoveredBar, setHoveredBar] = useState(null);
-  const [hoveredTab, setHoveredTab] = useState(null);
-  const [hoveredActionLink, setHoveredActionLink] = useState(null);
-  const [avatarHovered, setAvatarHovered] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setChartReady(true), 300);
-    return () => clearTimeout(t);
-  }, []);
-
-  const filteredRows =
-    activeFilter === "Todos"
-      ? ACTIVITY_ROWS
-      : ACTIVITY_ROWS.filter((r) => r.status === activeFilter);
+  const metrics = [
+    { label: "Aguardando Revisão", value: String(pending.length), sub: "soluções pendentes de aprovação" },
+    { label: "Total de Usuários",  value: String(profiles.length), sub: `${criadores.length} criadores` },
+    { label: "Novos Usuários",     value: String(novosEssaSemana), sub: "últimos 7 dias" },
+    { label: "Soluções Ativas",    value: String(solutions.filter(s => s.status === "approved").length), sub: `de ${solutions.length} no total` },
+  ];
 
   return (
-    <div style={{ isolation: "isolate" }}>
-    <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
-      {/* TOP NAVBAR */}
-      <nav style={{
-        background: "white",
-        borderBottom: "1px solid #e5e7eb",
-        padding: "0 32px",
-        height: 60,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-      }}>
-        {/* Left: Logo */}
-        <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
-
-        {/* Center: Search */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          background: searchFocused ? "white" : "#f3f4f6",
-          borderRadius: 8,
-          padding: "8px 16px",
-          width: 360,
-          gap: 8,
-          border: searchFocused ? "1px solid #2563EB" : "1px solid transparent",
-          boxShadow: searchFocused ? "0 0 0 3px rgba(37,99,235,0.1)" : "none",
-          transition: "all 0.2s ease",
-        }}>
-          <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8" />
-            <path strokeLinecap="round" d="M21 21l-4.35-4.35" />
-          </svg>
-          <input
-            placeholder="Buscar soluções, usuários..."
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
-            style={{ fontSize: 14, border: "none", background: "transparent", outline: "none", flex: 1, color: "#374151" }}
-          />
-        </div>
-
-        {/* Right */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <button style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0 }}>
-            Marketplace ▾
-          </button>
-          <button style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0 }}>
-            Vender
-          </button>
-          <div style={{ width: 1, height: 20, background: "#e5e7eb" }} />
-          {/* Cart */}
-          <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
-            <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
-            </svg>
-          </button>
-          {/* Bell with red dot */}
-          <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", position: "relative", display: "flex", alignItems: "center" }}>
-            <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-            </svg>
-            <span style={{
-              width: 8,
-              height: 8,
-              background: "#ef4444",
-              borderRadius: 999,
-              position: "absolute",
-              top: -2,
-              right: -2,
-            }} />
-          </button>
-          {/* Avatar */}
-          <div
-            onMouseEnter={() => setAvatarHovered(true)}
-            onMouseLeave={() => setAvatarHovered(false)}
-            style={{
-              width: 32,
-              height: 32,
-              background: "#2563EB",
-              borderRadius: 999,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: "pointer",
-              transform: avatarHovered ? "scale(1.1)" : "scale(1)",
-              transition: "transform 0.15s ease",
-            }}
-          >
-            A
+    <div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
+        {metrics.map(m => (
+          <div key={m.label} style={{ background: "white", borderRadius: 12, padding: 20, border: `1px solid ${BORDER}` }}>
+            <div style={{ fontSize: 12, color: GRAY, fontWeight: 500 }}>{m.label}</div>
+            <div style={{ fontSize: 36, fontWeight: 800, color: NEAR_BLACK, marginTop: 6, lineHeight: 1 }}>{m.value}</div>
+            <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>{m.sub}</div>
           </div>
+        ))}
+      </div>
+
+      <div style={{ background: "white", borderRadius: 12, border: `1px solid ${BORDER}` }}>
+        <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, fontSize: 15, fontWeight: 600, color: NEAR_BLACK }}>
+          Aprovações Pendentes
+          {pending.length > 0 && (
+            <span style={{ marginLeft: 8, background: "rgba(217,119,6,0.1)", color: "#B45309", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 99 }}>
+              {pending.length}
+            </span>
+          )}
         </div>
+        {pending.length === 0 ? (
+          <div style={{ padding: "40px", textAlign: "center", color: GRAY }}>Nenhuma solução aguardando análise.</div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#f9fafb" }}>
+                  {["Solução", "Criador", "Categoria", "Data"].map(h => (
+                    <th key={h} style={{ padding: "10px 20px", textAlign: "left", fontWeight: 600, color: GRAY, whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {pending.slice(0, 8).map((s, i) => (
+                  <tr key={s.id} style={{ borderTop: `1px solid ${BORDER}` }}>
+                    <td style={{ padding: "12px 20px", color: NEAR_BLACK, fontWeight: 500 }}>{s.titulo || s.nome || "—"}</td>
+                    <td style={{ padding: "12px 20px", color: GRAY }}>{s.profiles?.nome || "—"}</td>
+                    <td style={{ padding: "12px 20px", color: GRAY }}>{s.categoria || "—"}</td>
+                    <td style={{ padding: "12px 20px", color: GRAY, whiteSpace: "nowrap" }}>{formatDate(s.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Soluções Tab ── */
+function SolucoesContent({ solutions, onApprove, onReject, actionLoading }) {
+  const [filter, setFilter] = useState("todas");
+  const [search, setSearch] = useState("");
+  const [rejectingId, setRejectingId] = useState(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectLoading, setRejectLoading] = useState(false);
+
+  const statusMap = { todas: null, pendentes: "pending", ativas: "approved", reprovadas: "rejected" };
+  const filtered = solutions.filter(s => {
+    const matchStatus = !statusMap[filter] || s.status === statusMap[filter];
+    const matchSearch = !search || (s.titulo || s.nome || "").toLowerCase().includes(search.toLowerCase());
+    return matchStatus && matchSearch;
+  });
+
+  async function submitReject(s) {
+    if (!rejectReason.trim()) return;
+    setRejectLoading(true);
+    await onReject(s, rejectReason.trim());
+    setRejectingId(null);
+    setRejectReason("");
+    setRejectLoading(false);
+  }
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 6 }}>
+          {[["todas","Todas"],["pendentes","Pendentes"],["ativas","Ativas"],["reprovadas","Reprovadas"]].map(([k, lbl]) => (
+            <button key={k} onClick={() => setFilter(k)} style={{ padding: "6px 16px", borderRadius: 99, border: "none", background: filter === k ? BLUE : "white", color: filter === k ? "white" : GRAY, fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+              {lbl}
+            </button>
+          ))}
+        </div>
+        <input type="text" placeholder="Buscar solução…" value={search} onChange={e => setSearch(e.target.value)}
+          style={{ flex: 1, minWidth: 200, padding: "7px 12px", borderRadius: 8, border: `1.5px solid ${BORDER}`, fontSize: 13, color: NEAR_BLACK, outline: "none" }} />
+      </div>
+
+      <div style={{ background: "white", borderRadius: 12, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
+        {filtered.length === 0 ? (
+          <div style={{ padding: "48px", textAlign: "center", color: GRAY }}>Nenhuma solução encontrada.</div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#f9fafb" }}>
+                  {["Solução", "Criador", "Categoria", "Preço", "Status", "Ações"].map(h => (
+                    <th key={h} style={{ padding: "11px 20px", textAlign: "left", fontWeight: 600, color: GRAY, whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(s => {
+                  const isLoading   = actionLoading === s.id;
+                  const isRejecting = rejectingId === s.id;
+                  return (
+                    <Fragment key={s.id}>
+                      <tr style={{ borderTop: `1px solid ${BORDER}` }}>
+                        <td style={{ padding: "12px 20px", fontWeight: 500, color: NEAR_BLACK }}>{s.titulo || s.nome || "—"}</td>
+                        <td style={{ padding: "12px 20px", color: GRAY }}>{s.profiles?.nome || "—"}</td>
+                        <td style={{ padding: "12px 20px", color: GRAY }}>{s.categoria || "—"}</td>
+                        <td style={{ padding: "12px 20px", fontWeight: 600, color: NEAR_BLACK }}>
+                          {s.preco != null ? `R$ ${Number(s.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Grátis"}
+                        </td>
+                        <td style={{ padding: "12px 20px" }}><StatusBadge status={s.status} /></td>
+                        <td style={{ padding: "12px 20px" }}>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            {s.status === "pending" && (
+                              <>
+                                <button onClick={() => { if (!isLoading) onApprove(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(99,102,241,0.1)", color: BLUE, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1 }}>Aprovar</button>
+                                <button onClick={() => { if (!isLoading) { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); } }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1 }}>Reprovar</button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                      {isRejecting && (
+                        <tr>
+                          <td colSpan={6} style={{ padding: "0 20px 12px", background: "rgba(220,38,38,0.02)" }}>
+                            <div style={{ display: "flex", gap: 8, alignItems: "center", paddingTop: 8 }}>
+                              <input autoFocus placeholder="Motivo da reprovação…" value={rejectReason}
+                                onChange={e => setRejectReason(e.target.value)}
+                                onKeyDown={e => { if (e.key === "Enter") submitReject(s); if (e.key === "Escape") { setRejectingId(null); setRejectReason(""); } }}
+                                style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: `1.5px solid rgba(220,38,38,0.35)`, fontSize: 13, outline: "none" }} />
+                              <button onClick={() => submitReject(s)} disabled={!rejectReason.trim() || rejectLoading} style={{ padding: "8px 14px", borderRadius: 8, background: !rejectReason.trim() ? "rgba(220,38,38,0.3)" : DANGER, color: "white", border: "none", fontSize: 13, fontWeight: 600, cursor: !rejectReason.trim() ? "not-allowed" : "pointer" }}>
+                                {rejectLoading ? "…" : "Confirmar"}
+                              </button>
+                              <button onClick={() => { setRejectingId(null); setRejectReason(""); }} style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: GRAY, border: `1px solid ${BORDER}`, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancelar</button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Usuários Tab ── */
+function UsuariosContent({ profiles }) {
+  const [search, setSearch] = useState("");
+  const [filterRole, setFilterRole] = useState("todos");
+
+  const filtered = profiles.filter(p => {
+    const r = p.role;
+    const matchRole =
+      filterRole === "todos" ||
+      (filterRole === "criadores" && (r === "criador" || r === "creator")) ||
+      (filterRole === "empresas"  && (r === "empresa" || r === "business"));
+    const matchSearch = !search || p.nome?.toLowerCase().includes(search.toLowerCase()) || p.email?.toLowerCase().includes(search.toLowerCase());
+    return matchRole && matchSearch;
+  });
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 10, marginBottom: 18, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 6 }}>
+          {[["todos","Todos"],["criadores","Criadores"],["empresas","Empresas"]].map(([k, lbl]) => (
+            <button key={k} onClick={() => setFilterRole(k)} style={{ padding: "6px 16px", borderRadius: 99, border: "none", background: filterRole === k ? BLUE : "white", color: filterRole === k ? "white" : GRAY, fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+              {lbl}
+            </button>
+          ))}
+        </div>
+        <input type="text" placeholder="Buscar usuário…" value={search} onChange={e => setSearch(e.target.value)}
+          style={{ flex: 1, minWidth: 200, padding: "7px 12px", borderRadius: 8, border: `1.5px solid ${BORDER}`, fontSize: 13, color: NEAR_BLACK, outline: "none" }} />
+      </div>
+
+      <div style={{ background: "white", borderRadius: 12, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
+        {filtered.length === 0 ? (
+          <div style={{ padding: "48px", textAlign: "center", color: GRAY }}>Nenhum usuário encontrado.</div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: "#f9fafb" }}>
+                  {["Usuário", "Email", "Tipo", "Cadastro"].map(h => (
+                    <th key={h} style={{ padding: "11px 20px", textAlign: "left", fontWeight: 600, color: GRAY, whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(p => (
+                  <tr key={p.id} style={{ borderTop: `1px solid ${BORDER}` }}>
+                    <td style={{ padding: "12px 20px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
+                          {initials(p.nome)}
+                        </div>
+                        <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{p.nome || "—"}</span>
+                      </div>
+                    </td>
+                    <td style={{ padding: "12px 20px", color: GRAY }}>{p.email || "—"}</td>
+                    <td style={{ padding: "12px 20px" }}><StatusBadge status={p.role} /></td>
+                    <td style={{ padding: "12px 20px", color: GRAY, whiteSpace: "nowrap" }}>{formatDate(p.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Solicitações Tab ── */
+function SolicitacoesContent({ solutions, onApprove, onReject, actionLoading }) {
+  const [rejectingId, setRejectingId] = useState(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectLoading, setRejectLoading] = useState(false);
+
+  const pending = solutions.filter(s => s.status === "pending");
+
+  async function submitReject(s) {
+    if (!rejectReason.trim()) return;
+    setRejectLoading(true);
+    await onReject(s, rejectReason.trim());
+    setRejectingId(null);
+    setRejectReason("");
+    setRejectLoading(false);
+  }
+
+  if (pending.length === 0) {
+    return (
+      <div style={{ background: "white", borderRadius: 12, border: `1px solid ${BORDER}`, padding: "64px 24px", textAlign: "center" }}>
+        <div style={{ fontSize: 16, fontWeight: 600, color: NEAR_BLACK, marginBottom: 8 }}>Nenhuma solicitação pendente.</div>
+        <div style={{ fontSize: 14, color: GRAY }}>Novas soluções submetidas pelos criadores aparecerão aqui.</div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ background: "white", borderRadius: 12, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
+        <div style={{ padding: "16px 20px", borderBottom: `1px solid ${BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: NEAR_BLACK }}>Soluções aguardando análise</div>
+          <span style={{ background: "rgba(217,119,6,0.1)", color: "#B45309", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 99 }}>
+            {pending.length} pendente{pending.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ background: "#f9fafb" }}>
+                {["Solução", "Criador", "Categoria", "Preço", "Enviada em", "Ações"].map(h => (
+                  <th key={h} style={{ padding: "11px 20px", textAlign: "left", fontWeight: 600, color: GRAY, whiteSpace: "nowrap" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {pending.map(s => {
+                const isLoading   = actionLoading === s.id;
+                const isRejecting = rejectingId === s.id;
+                return (
+                  <Fragment key={s.id}>
+                    <tr style={{ borderTop: `1px solid ${BORDER}` }}>
+                      <td style={{ padding: "12px 20px", fontWeight: 500, color: NEAR_BLACK }}>{s.titulo || s.nome || "—"}</td>
+                      <td style={{ padding: "12px 20px", color: GRAY }}>{s.profiles?.nome || "—"}</td>
+                      <td style={{ padding: "12px 20px", color: GRAY }}>{s.categoria || "—"}</td>
+                      <td style={{ padding: "12px 20px", fontWeight: 600, color: NEAR_BLACK }}>
+                        {s.preco != null ? `R$ ${Number(s.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "Grátis"}
+                      </td>
+                      <td style={{ padding: "12px 20px", color: GRAY, whiteSpace: "nowrap" }}>{formatDate(s.created_at)}</td>
+                      <td style={{ padding: "12px 20px" }}>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <button onClick={() => { if (!isLoading) onApprove(s.id); }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(99,102,241,0.1)", color: BLUE, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1 }}>Aprovar</button>
+                          <button onClick={() => { if (!isLoading) { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); } }} style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1 }}>Reprovar</button>
+                        </div>
+                      </td>
+                    </tr>
+                    {isRejecting && (
+                      <tr>
+                        <td colSpan={6} style={{ padding: "0 20px 12px", background: "rgba(220,38,38,0.02)" }}>
+                          <div style={{ display: "flex", gap: 8, alignItems: "center", paddingTop: 8 }}>
+                            <input autoFocus placeholder="Motivo da reprovação…" value={rejectReason}
+                              onChange={e => setRejectReason(e.target.value)}
+                              onKeyDown={e => { if (e.key === "Enter") submitReject(s); if (e.key === "Escape") { setRejectingId(null); setRejectReason(""); } }}
+                              style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: `1.5px solid rgba(220,38,38,0.35)`, fontSize: 13, outline: "none" }} />
+                            <button onClick={() => submitReject(s)} disabled={!rejectReason.trim() || rejectLoading} style={{ padding: "8px 14px", borderRadius: 8, background: !rejectReason.trim() ? "rgba(220,38,38,0.3)" : DANGER, color: "white", border: "none", fontSize: 13, fontWeight: 600, cursor: !rejectReason.trim() ? "not-allowed" : "pointer" }}>
+                              {rejectLoading ? "…" : "Confirmar"}
+                            </button>
+                            <button onClick={() => { setRejectingId(null); setRejectReason(""); }} style={{ padding: "8px 14px", borderRadius: 8, background: "transparent", color: GRAY, border: `1px solid ${BORDER}`, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancelar</button>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════
+   MAIN PAGE
+══════════════════════════════ */
+const TABS = [
+  { key: "dashboard",    label: "Dashboard" },
+  { key: "solucoes",     label: "Soluções" },
+  { key: "usuarios",     label: "Usuários" },
+  { key: "solicitacoes", label: "Solicitações" },
+];
+
+export default function AdminPage() {
+  const [activeTab, setActiveTab]         = useState("dashboard");
+  const [solutions, setSolutions]         = useState([]);
+  const [profiles, setProfiles]           = useState([]);
+  const [loading, setLoading]             = useState(true);
+  const [actionLoading, setActionLoading] = useState(null);
+  const [toast, setToast]                 = useState("");
+
+  useEffect(() => {
+    async function load() {
+      const [solRes, profRes] = await Promise.all([
+        supabase.from("solutions").select("*, profiles:creator_id(nome)").order("created_at", { ascending: false }),
+        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+      ]);
+      if (solRes.data)  setSolutions(solRes.data);
+      if (profRes.data) setProfiles(profRes.data);
+      setLoading(false);
+    }
+    load().catch(() => setLoading(false));
+  }, []);
+
+  async function handleApprove(id) {
+    setActionLoading(id);
+    await supabase.from("solutions").update({ status: "approved" }).eq("id", id);
+    setSolutions(prev => prev.map(s => s.id === id ? { ...s, status: "approved" } : s));
+    setActionLoading(null);
+    setToast("Solução aprovada!");
+    setTimeout(() => setToast(""), 3000);
+  }
+
+  async function handleReject(solution, reason) {
+    setActionLoading(solution.id);
+    await supabase.from("solutions").update({ status: "rejected", rejection_reason: reason }).eq("id", solution.id);
+    setSolutions(prev => prev.map(s => s.id === solution.id ? { ...s, status: "rejected" } : s));
+    setActionLoading(null);
+    setToast("Solução reprovada.");
+    setTimeout(() => setToast(""), 3000);
+  }
+
+  const pendingCount = solutions.filter(s => s.status === "pending").length;
+
+  return (
+    <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+      {/* NAVBAR */}
+      <nav style={{ background: "white", borderBottom: `1px solid ${BORDER}`, padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
+        <img src="/logo.png" alt="WePrompt" style={{ height: 32 }} />
+        <span style={{ background: DANGER, color: "white", fontSize: 10, fontWeight: 800, padding: "3px 10px", borderRadius: 99, letterSpacing: "0.5px", textTransform: "uppercase" }}>Admin</span>
       </nav>
 
-      {/* TABS ROW */}
-      <div style={{
-        background: "white",
-        borderBottom: "1px solid #e5e7eb",
-        padding: "0 32px",
-        display: "flex",
-        gap: 0,
-      }}>
-        {TABS.map((tab, i) => {
-          const isActive = activeTab === i;
-          const isHovered = hoveredTab === i;
+      {/* TABS */}
+      <div style={{ background: "white", borderBottom: `1px solid ${BORDER}`, padding: "0 32px", display: "flex", gap: 0 }}>
+        {TABS.map(tab => {
+          const isActive = activeTab === tab.key;
+          const badge = tab.key === "solucoes" || tab.key === "solicitacoes" ? pendingCount : 0;
           return (
             <button
-              key={tab.label}
-              onClick={() => setActiveTab(i)}
-              onMouseEnter={() => setHoveredTab(i)}
-              onMouseLeave={() => setHoveredTab(null)}
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
               style={{
-                fontSize: 14,
-                padding: "14px 0",
-                marginRight: 8,
-                paddingRight: 20,
-                cursor: "pointer",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                border: "none",
-                borderBottom: isActive ? "2px solid #111827" : "2px solid transparent",
-                background: "transparent",
-                color: isActive ? "#111827" : isHovered ? "#374151" : "#6b7280",
-                fontWeight: isActive ? 600 : 400,
-                marginBottom: -1,
+                fontSize: 14, padding: "14px 0", paddingRight: 20,
+                cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6,
+                border: "none", borderBottom: isActive ? `2px solid ${NEAR_BLACK}` : "2px solid transparent",
+                background: "transparent", color: isActive ? NEAR_BLACK : GRAY,
+                fontWeight: isActive ? 600 : 400, marginBottom: -1,
                 transition: "color 0.15s ease",
               }}
             >
               {tab.label}
-              {tab.badge && (
-                <span style={{
-                  background: "#fee2e2",
-                  color: "#dc2626",
-                  borderRadius: 999,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  padding: "2px 7px",
-                }}>
-                  {tab.badge}
+              {badge > 0 && (
+                <span style={{ background: "rgba(217,119,6,0.1)", color: "#B45309", borderRadius: 999, fontSize: 11, fontWeight: 700, padding: "2px 7px" }}>
+                  {badge}
                 </span>
               )}
             </button>
@@ -230,291 +458,30 @@ export default function AdminPage() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div style={{ padding: "32px 32px", maxWidth: 1200 }}>
-        {/* Section Title */}
+      <div style={{ padding: "32px", maxWidth: 1200 }}>
         <div style={{ marginBottom: 24 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Dashboard</h1>
-          <p style={{ fontSize: 14, color: "#6b7280", marginTop: 2, marginBottom: 0 }}>
-            Visão geral da atividade do marketplace
-          </p>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: NEAR_BLACK, margin: 0 }}>
+            {TABS.find(t => t.key === activeTab)?.label}
+          </h1>
         </div>
 
-        {/* Metrics Grid — 8 cards, 2 rows of 4 */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 20 }}>
-          {[...METRICS_ROW1, ...METRICS_ROW2].map((m, i) => (
-            <div
-              key={m.label}
-              onMouseEnter={() => setHoveredMetric(i)}
-              onMouseLeave={() => setHoveredMetric(null)}
-              style={{
-                background: "white",
-                borderRadius: 12,
-                padding: 20,
-                border: "1px solid #e5e7eb",
-                transform: hoveredMetric === i ? "scale(1.02)" : "scale(1)",
-                boxShadow: hoveredMetric === i ? "0 8px 24px rgba(0,0,0,0.08)" : "none",
-                transition: "all 0.2s ease",
-                cursor: "default",
-              }}
-            >
-              <div style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>{m.label}</div>
-              <div style={{ fontSize: 36, fontWeight: 800, color: m.color || "#111827", marginTop: 6, lineHeight: 1 }}>
-                {m.value}
-              </div>
-              <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{m.sub}</div>
-              <div style={{ fontSize: 11, color: "#16a34a", marginTop: 6, fontWeight: 500 }}>↑ 12% esta semana</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Two Column Row */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
-          {/* Mini Bar Chart */}
-          <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 20 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#111827", marginBottom: 16 }}>
-              Crescimento de Usuários
-            </div>
-            <div style={{ display: "flex", alignItems: "flex-end", height: 100, gap: 0 }}>
-              {BAR_DATA.map((bar, i) => {
-                const barHeight = Math.round((bar.value / MAX_BAR_VALUE) * MAX_BAR_HEIGHT);
-                const isBarHovered = hoveredBar === i;
-                return (
-                  <div
-                    key={bar.month}
-                    style={{ display: "flex", flexDirection: "column", alignItems: "center", marginRight: 8 }}
-                  >
-                    <div
-                      onMouseEnter={() => setHoveredBar(i)}
-                      onMouseLeave={() => setHoveredBar(null)}
-                      style={{
-                        width: 32,
-                        height: chartReady ? barHeight : 0,
-                        background: isBarHovered ? "#1d4ed8" : "#2563EB",
-                        borderRadius: "4px 4px 0 0",
-                        transition: "height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, transform 0.15s ease",
-                        transitionDelay: BAR_DELAYS[i],
-                        transform: isBarHovered ? "scaleY(1.05)" : "scaleY(1)",
-                        transformOrigin: "bottom",
-                        cursor: "pointer",
-                        position: "relative",
-                      }}
-                    >
-                      {isBarHovered && (
-                        <div style={{
-                          position: "absolute",
-                          top: -24,
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          background: "#111827",
-                          color: "white",
-                          fontSize: 11,
-                          padding: "2px 6px",
-                          borderRadius: 4,
-                          whiteSpace: "nowrap",
-                          pointerEvents: "none",
-                          zIndex: 10,
-                        }}>
-                          {bar.value}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ fontSize: 10, color: "#9ca3af", textAlign: "center", marginTop: 4 }}>
-                      {bar.month}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 20 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#111827", marginBottom: 16 }}>
-              Ações Rápidas
-            </div>
-            {[
-              {
-                icon: (
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                ),
-                label: "Revisar soluções pendentes",
-                badge: "13",
-              },
-              {
-                icon: (
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                  </svg>
-                ),
-                label: "Gerenciar usuários",
-                badge: "125",
-              },
-              {
-                icon: (
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
-                  </svg>
-                ),
-                label: "Solicitações de loja",
-                badge: "3",
-              },
-            ].map((action, i) => (
-              <button
-                key={i}
-                onMouseEnter={() => setHoveredAction(i)}
-                onMouseLeave={() => setHoveredAction(null)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  width: "100%",
-                  padding: "10px 16px",
-                  borderRadius: 8,
-                  border: hoveredAction === i ? "1px solid #2563EB" : "1px solid #e5e7eb",
-                  fontSize: 14,
-                  color: "#374151",
-                  textAlign: "left",
-                  cursor: "pointer",
-                  marginBottom: 8,
-                  background: hoveredAction === i ? "#f8faff" : "white",
-                  transform: hoveredAction === i ? "translateX(4px)" : "translateX(0)",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                {action.icon}
-                <span style={{ flex: 1 }}>{action.label}</span>
-                <span style={{
-                  marginLeft: "auto",
-                  background: "#fee2e2",
-                  color: "#dc2626",
-                  borderRadius: 999,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  padding: "2px 7px",
-                }}>
-                  {action.badge}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Recent Activity Table */}
-        <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb" }}>
-          {/* Table Header */}
-          <div style={{
-            padding: "16px 20px",
-            borderBottom: "1px solid #e5e7eb",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}>
-            <span style={{ fontSize: 15, fontWeight: 600, color: "#111827" }}>Atividade Recente</span>
-            <div style={{ display: "flex", gap: 8 }}>
-              {FILTERS.map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setActiveFilter(f)}
-                  style={{
-                    borderRadius: 999,
-                    padding: "4px 12px",
-                    fontSize: 12,
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    border: "none",
-                    background: activeFilter === f ? "#111827" : "#f3f4f6",
-                    color: activeFilter === f ? "white" : "#6b7280",
-                    transition: "all 0.15s ease",
-                  }}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Table */}
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                {["SOLUÇÃO", "CRIADOR", "CATEGORIA", "STATUS", "DATA", "AÇÃO"].map((col) => (
-                  <th key={col} style={{
-                    padding: "10px 20px",
-                    fontSize: 11,
-                    color: "#9ca3af",
-                    fontWeight: 600,
-                    textAlign: "left",
-                    borderBottom: "1px solid #f3f4f6",
-                    letterSpacing: 0.5,
-                  }}>
-                    {col}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map((row, i) => (
-                <tr
-                  key={i}
-                  onMouseEnter={() => setHoveredRow(i)}
-                  onMouseLeave={() => setHoveredRow(null)}
-                  style={{
-                    background: hoveredRow === i ? "#f8faff" : "transparent",
-                    transition: "background 0.15s ease",
-                    cursor: "pointer",
-                  }}
-                >
-                  <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>
-                    {row.solution}
-                  </td>
-                  <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>
-                    {row.creator}
-                  </td>
-                  <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>
-                    {row.category}
-                  </td>
-                  <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>
-                    <span style={{
-                      borderRadius: 999,
-                      padding: "3px 10px",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      ...STATUS_STYLES[row.status],
-                    }}>
-                      {row.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>
-                    {row.date}
-                  </td>
-                  <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
-                    <button
-                      onMouseEnter={() => setHoveredActionLink(i)}
-                      onMouseLeave={() => setHoveredActionLink(null)}
-                      style={{
-                        color: hoveredActionLink === i ? "#1d4ed8" : "#2563EB",
-                        fontSize: 13,
-                        fontWeight: 500,
-                        cursor: "pointer",
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        textDecoration: hoveredActionLink === i ? "underline" : "none",
-                        transition: "color 0.15s ease",
-                      }}
-                    >
-                      {row.action}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "80px", color: GRAY }}>Carregando…</div>
+        ) : (
+          <>
+            {activeTab === "dashboard"    && <DashboardContent solutions={solutions} profiles={profiles} />}
+            {activeTab === "solucoes"     && <SolucoesContent solutions={solutions} onApprove={handleApprove} onReject={handleReject} actionLoading={actionLoading} />}
+            {activeTab === "usuarios"     && <UsuariosContent profiles={profiles} />}
+            {activeTab === "solicitacoes" && <SolicitacoesContent solutions={solutions} onApprove={handleApprove} onReject={handleReject} actionLoading={actionLoading} />}
+          </>
+        )}
       </div>
-    </div>
+
+      {toast && (
+        <div style={{ position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", background: NEAR_BLACK, color: "white", borderRadius: 10, padding: "12px 24px", fontSize: 14, fontWeight: 500, zIndex: 9999 }}>
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
