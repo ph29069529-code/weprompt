@@ -62,18 +62,18 @@ export async function sendSolutionApproved({ to, solutionTitulo }) {
       </div>
       <h1 style="font-size:26px;font-weight:800;color:#1D1D1F;margin:0 0 12px;letter-spacing:-0.5px;font-family:-apple-system,Arial,sans-serif;">Solução aprovada!</h1>
       <p style="font-size:15px;color:#6E6E73;line-height:1.7;margin:0 0 28px;font-family:-apple-system,Arial,sans-serif;">
-        Boa notícia! Sua solução <strong style="color:#1D1D1F;">${solutionTitulo}</strong> foi aprovada pela nossa equipe e já está disponível no catálogo da WePrompt.
+        Boa notícia! Sua solução <strong style="color:#1D1D1F;">${solutionTitulo}</strong> foi aprovada e já está disponível no catálogo.
       </p>
     </div>
     <div style="text-align:center;">
-      <a href="https://weprompt.app.br/dashboard/criador" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:16px 32px;border-radius:12px;font-family:-apple-system,Arial,sans-serif;">Ver minha solução →</a>
+      <a href="https://weprompt.app.br/dashboard/criador" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:16px 32px;border-radius:12px;font-family:-apple-system,Arial,sans-serif;">Ver meu dashboard →</a>
     </div>
   `);
 
   return resend.emails.send({
     from: FROM_NEW,
     to,
-    subject: 'Sua solução foi aprovada! ✓',
+    subject: 'Sua solução foi aprovada na WePrompt',
     html,
   });
 }
@@ -257,29 +257,26 @@ export async function sendConfirmacaoCompra({ to, nome, solutionName, solutionCa
 
 export async function sendSolutionRejected({ to, solutionTitulo, reason }) {
   const html = newBase(`
-    <h1 style="font-size:26px;font-weight:800;color:#1D1D1F;margin:0 0 12px;letter-spacing:-0.5px;font-family:-apple-system,Arial,sans-serif;">Sua solução precisa de ajustes</h1>
+    <h1 style="font-size:26px;font-weight:800;color:#1D1D1F;margin:0 0 12px;letter-spacing:-0.5px;font-family:-apple-system,Arial,sans-serif;">Ajustes necessários</h1>
     <p style="font-size:15px;color:#6E6E73;line-height:1.7;margin:0 0 24px;font-family:-apple-system,Arial,sans-serif;">
-      Analisamos sua solução <strong style="color:#1D1D1F;">${solutionTitulo}</strong> e identificamos alguns pontos que precisam ser ajustados antes da publicação.
+      Analisamos sua solução <strong style="color:#1D1D1F;">${solutionTitulo}</strong> e identificamos pontos que precisam ser ajustados.
     </p>
     ${reason ? `
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
-      <tr><td style="border:1.5px solid #fecaca;border-radius:12px;background:#fef2f2;padding:16px 20px;">
-        <p style="margin:0 0 4px;font-size:12px;font-weight:700;color:#DC2626;text-transform:uppercase;letter-spacing:0.6px;font-family:-apple-system,Arial,sans-serif;">Motivo</p>
-        <p style="margin:0;font-size:14px;color:#1D1D1F;line-height:1.7;font-family:-apple-system,Arial,sans-serif;">${reason}</p>
-      </td></tr>
-    </table>` : ''}
+    <div style="background:#F8F9FB;border-left:3px solid #6366F1;padding:12px 16px;border-radius:8px;font-size:14px;color:#1D1D1F;line-height:1.7;margin-bottom:24px;font-family:-apple-system,Arial,sans-serif;">
+      <strong>Motivo:</strong> ${reason}
+    </div>` : ''}
     <div style="text-align:center;margin-bottom:28px;">
       <a href="https://weprompt.app.br/dashboard/criador/solucoes" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:16px 32px;border-radius:12px;font-family:-apple-system,Arial,sans-serif;">Ajustar e reenviar →</a>
     </div>
     <p style="font-size:13px;color:#6E6E73;text-align:center;margin:0;font-family:-apple-system,Arial,sans-serif;">
-      Se tiver dúvidas, responda este e-mail ou acesse nosso suporte.
+      Dúvidas? Responda este e-mail.
     </p>
   `);
 
   return resend.emails.send({
     from: FROM_NEW,
     to,
-    subject: 'Atualização sobre sua solução na WePrompt',
+    subject: 'Sua solução precisa de ajustes — WePrompt',
     html,
   });
 }

@@ -718,7 +718,7 @@ const Footer = () => (
       {[
         { title: "Plataforma", links: ["Catálogo", "Preços", "Como funciona", "Blog"] },
         { title: "Para você", links: ["Para Empresas", "Para Criadores", "Sobre nós", "Contato"] },
-        { title: "Legal", links: ["Privacidade", "Termos Empresas", "Termos Criadores", "Cookies"] },
+        { title: "Legal", links: [{ label: "Privacidade", href: "/privacidade" }, { label: "Termos", href: "/termos" }, { label: "Termos Criadores", href: "/para-criadores/termos" }, { label: "Cookies", href: "#" }] },
         { title: "Comunidade", links: ["Instagram", "LinkedIn", "YouTube", "Newsletter"] },
       ].map(col => (
         <div key={col.title}>
@@ -731,19 +731,23 @@ const Footer = () => (
             {col.title}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {col.links.map(link => (
-              <a key={link} href="#" style={{
-                color: "rgba(255,255,255,0.45)",
-                fontSize: 14, textDecoration: "none",
-                transition: "color 0.15s",
-                cursor: "pointer",
-              }}
-              onMouseEnter={e => e.target.style.color = "white"}
-              onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
-              >
-                {link}
-              </a>
-            ))}
+            {col.links.map(link => {
+              const label = typeof link === "string" ? link : link.label;
+              const href = typeof link === "string" ? "#" : link.href;
+              return (
+                <a key={label} href={href} style={{
+                  color: "rgba(255,255,255,0.45)",
+                  fontSize: 14, textDecoration: "none",
+                  transition: "color 0.15s",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={e => e.target.style.color = "white"}
+                onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
+                >
+                  {label}
+                </a>
+              );
+            })}
           </div>
         </div>
       ))}
