@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
-const CRIADOR_TABS = ["Dashboard", "Minhas Soluções", "Vendas", "Configurações"];
+const CRIADOR_TABS = ["Dashboard", "Minhas Soluções", "Vendas", "Configurações", "Analytics"];
 
 const fmtBRL = v =>
   `R$ ${Number(v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -55,6 +55,8 @@ export default function CriadorPage() {
   const [hoveredMetric, setHoveredMetric] = useState(null);
   const [hoveredAvatar, setHoveredAvatar] = useState(false);
   const [hoveredRow, setHoveredRow] = useState(null);
+  const [activeView, setActiveView] = useState("dashboard");
+  const [criadorSubs, setCriadorSubs] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -96,6 +98,22 @@ export default function CriadorPage() {
     init();
   }, [router]);
 
+  useEffect(() => {
+    if (!userId) return;
+    async function loadAnalytics() {
+      const { data: sols } = await supabase.from("solutions").select("id").eq("creator_id", userId);
+      const ids = (sols || []).map(s => s.id);
+      if (ids.length > 0) {
+        const { data: subs } = await supabase
+          .from("subscriptions")
+          .select("id, created_at, solution_id, solutions(titulo, preco)")
+          .in("solution_id", ids);
+        setCriadorSubs(subs || []);
+      }
+    }
+    loadAnalytics().catch(() => {});
+  }, [userId]);
+
   const initials = name => name?.trim().split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase() || "C";
 
   if (loading) {
@@ -127,6 +145,29 @@ export default function CriadorPage() {
     );
   }
 
+  const isTabActive = (i) => (i === 0 && activeView === "dashboard") || (i === 4 && activeView === "analytics");
+  const MONTHS_PT_C = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+  const analyticsLast6 = Array.from({ length: 6 }, (_, j) => {
+    const d = new Date(); d.setMonth(d.getMonth() - 5 + j);
+    return { year: d.getFullYear(), month: d.getMonth(), label: MONTHS_PT_C[d.getMonth()] };
+  });
+  const analyticsRevenueByMonth = analyticsLast6.map(({ year, month }) =>
+    criadorSubs.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; })
+      .reduce((sum, s) => sum + (s.solutions?.preco || 0), 0)
+  );
+  const analyticsMaxRevenue = Math.max(...analyticsRevenueByMonth, 1);
+  const analyticsHasRevenue = analyticsRevenueByMonth.some(v => v > 0);
+  const analyticsSalesMap = {};
+  for (const s of criadorSubs) {
+    const sid = s.solution_id;
+    if (sid) {
+      if (!analyticsSalesMap[sid]) analyticsSalesMap[sid] = { titulo: s.solutions?.titulo || "—", count: 0 };
+      analyticsSalesMap[sid].count++;
+    }
+  }
+  const analyticsTopSols = Object.values(analyticsSalesMap).sort((a, b) => b.count - a.count).slice(0, 5);
+  const analyticsMaxSales = Math.max(...analyticsTopSols.map(s => s.count), 1);
+
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
       {/* NAVBAR */}
@@ -152,13 +193,15 @@ export default function CriadorPage() {
         {CRIADOR_TABS.map((tab, i) => (
           <button key={tab}
             onClick={() => {
-              if (i === 1) router.push("/dashboard/criador/solucoes");
+              if (i === 0) setActiveView("dashboard");
+              else if (i === 1) router.push("/dashboard/criador/solucoes");
               else if (i === 2) router.push("/dashboard/criador/vendas");
               else if (i === 3) router.push("/dashboard/criador/configuracoes");
+              else if (i === 4) setActiveView("analytics");
             }}
             onMouseEnter={() => setHoveredTab(i)}
             onMouseLeave={() => setHoveredTab(null)}
-            style={{ fontSize: 14, padding: "14px 20px 14px 0", marginRight: 8, cursor: "pointer", display: "inline-flex", alignItems: "center", border: "none", borderBottom: i === 0 ? "2px solid #111827" : "2px solid transparent", background: "transparent", color: i === 0 ? "#111827" : hoveredTab === i ? "#374151" : "#6b7280", fontWeight: i === 0 ? 600 : 400, marginBottom: -1, transition: "color 0.15s ease", fontFamily: "inherit", whiteSpace: "nowrap" }}
+            style={{ fontSize: 14, padding: "14px 20px 14px 0", marginRight: 8, cursor: "pointer", display: "inline-flex", alignItems: "center", border: "none", borderBottom: isTabActive(i) ? "2px solid #111827" : "2px solid transparent", background: "transparent", color: isTabActive(i) ? "#111827" : hoveredTab === i ? "#374151" : "#6b7280", fontWeight: isTabActive(i) ? 600 : 400, marginBottom: -1, transition: "color 0.15s ease", fontFamily: "inherit", whiteSpace: "nowrap" }}
           >{tab}</button>
         ))}
       </div>
@@ -166,6 +209,7 @@ export default function CriadorPage() {
       {/* MAIN CONTENT */}
       <div style={{ padding: "24px 32px" }}>
 
+        {activeView === "dashboard" && <>
         {/* TITLE ROW */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
           <div>
@@ -298,6 +342,75 @@ export default function CriadorPage() {
             </table>
           )}
         </div>
+        </>}
+
+        {activeView === "analytics" && (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
+              <div>
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Analytics</h1>
+                <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Desempenho das suas soluções</p>
+              </div>
+            </div>
+
+            <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24, marginBottom: 16 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Receita por período</div>
+              <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 20 }}>Últimos 6 meses (R$)</div>
+              {!analyticsHasRevenue ? (
+                <div style={{ textAlign: "center", padding: "32px 0", color: "#9ca3af", fontSize: 14 }}>
+                  Nenhum dado ainda. Suas métricas aparecerão aqui após as primeiras vendas.
+                </div>
+              ) : (
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 120 }}>
+                  {analyticsRevenueByMonth.map((v, idx) => (
+                    <div key={idx} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                      <div style={{ fontSize: 10, color: "#6366F1", fontWeight: 600, minHeight: 14 }}>
+                        {v > 0 ? `R$${v.toLocaleString("pt-BR", { minimumFractionDigits: 0 })}` : ""}
+                      </div>
+                      <div style={{ width: "100%", background: "#6366F1", borderRadius: 4, height: Math.max((v / analyticsMaxRevenue) * 72, v > 0 ? 4 : 0) }} />
+                      <div style={{ fontSize: 10, color: "#9ca3af" }}>{analyticsLast6[idx].label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24, marginBottom: 16 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Top soluções por vendas</div>
+              <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 20 }}>Ranking por número de vendas</div>
+              {analyticsTopSols.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "32px 0", color: "#9ca3af", fontSize: 14 }}>
+                  Nenhum dado ainda. Suas métricas aparecerão aqui após as primeiras vendas.
+                </div>
+              ) : (
+                <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 120 }}>
+                  {analyticsTopSols.map((sol, idx) => (
+                    <div key={idx} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                      <div style={{ fontSize: 11, color: "#6366F1", fontWeight: 600, minHeight: 14 }}>{sol.count}</div>
+                      <div style={{ width: "100%", background: "#6366F1", borderRadius: 4, height: Math.max((sol.count / analyticsMaxSales) * 72, 4) }} />
+                      <div style={{ fontSize: 10, color: "#9ca3af", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%", textAlign: "center" }}>
+                        {sol.titulo.length > 12 ? sol.titulo.slice(0, 11) + "…" : sol.titulo}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Conversão</div>
+                <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 16 }}>Views → Compras</div>
+                <div style={{ textAlign: "center", padding: "24px 0", color: "#9ca3af", fontSize: 13 }}>Em breve</div>
+              </div>
+              <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Visualizações</div>
+                <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 16 }}>Views por solução</div>
+                <div style={{ textAlign: "center", padding: "24px 0", color: "#9ca3af", fontSize: 13 }}>Em breve</div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ const TABS = [
   { label: "Explorar Catálogo" },
   { label: "Histórico de Compras" },
   { label: "Configurações" },
+  { label: "Analytics" },
 ];
 
 const PLAN_FEATURES = [
@@ -106,6 +107,23 @@ export default function EmpresaDashboard() {
     );
   }
 
+  const MONTHS_PT_E = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+  const empresaLast6 = Array.from({ length: 6 }, (_, j) => {
+    const d = new Date(); d.setMonth(d.getMonth() - 5 + j);
+    return { year: d.getFullYear(), month: d.getMonth(), label: MONTHS_PT_E[d.getMonth()] };
+  });
+  const empresaSubsByMonth = empresaLast6.map(({ year, month }) =>
+    subscriptions.filter(s => { const d = new Date(s.created_at); return d.getFullYear() === year && d.getMonth() === month; }).length
+  );
+  const empresaMaxByMonth = Math.max(...empresaSubsByMonth, 1);
+  const empresaSolUsageMap = subscriptions.reduce((acc, s) => {
+    const titulo = s.solutions?.titulo || "—";
+    acc[titulo] = (acc[titulo] || 0) + 1;
+    return acc;
+  }, {});
+  const empresaTopSols = Object.entries(empresaSolUsageMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const empresaMaxSolUsage = Math.max(...empresaTopSols.map(([, v]) => v), 1);
+
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
 
@@ -158,6 +176,7 @@ export default function EmpresaDashboard() {
           </div>
         )}
 
+        {activeTab !== 5 && <>
         {/* METRICS ROW */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 24, maxWidth: 620 }}>
           <MetricCard
@@ -256,6 +275,72 @@ export default function EmpresaDashboard() {
             </a>
           </div>
         </div>
+        </>}
+
+        {activeTab === 5 && (
+          <>
+            <div style={{ marginBottom: 28 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Analytics</h1>
+              <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Uso e impacto das suas soluções de IA</p>
+            </div>
+
+            {subscriptions.length === 0 ? (
+              <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: "64px 24px", textAlign: "center" }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
+                  Ative sua primeira solução para ver métricas de uso aqui.
+                </div>
+                <div style={{ fontSize: 13, color: "#9ca3af" }}>As métricas aparecerão após você adquirir e usar soluções.</div>
+              </div>
+            ) : (
+              <>
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24, marginBottom: 16 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Soluções mais usadas</div>
+                  <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 20 }}>Por número de licenças ativas</div>
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 120 }}>
+                    {empresaTopSols.map(([titulo, count], i) => (
+                      <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                        <div style={{ fontSize: 11, color: "#6366F1", fontWeight: 600, minHeight: 14 }}>{count}</div>
+                        <div style={{ width: "100%", background: "#6366F1", borderRadius: 4, height: Math.max((count / empresaMaxSolUsage) * 72, 4) }} />
+                        <div style={{ fontSize: 10, color: "#9ca3af", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%", textAlign: "center" }}>
+                          {titulo.length > 12 ? titulo.slice(0, 11) + "…" : titulo}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24, marginBottom: 16 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Uso ao longo do tempo</div>
+                  <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 20 }}>Aquisições por mês (últimos 6 meses)</div>
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 120 }}>
+                    {empresaSubsByMonth.map((v, i) => (
+                      <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                        <div style={{ fontSize: 11, color: "#6366F1", fontWeight: 600, minHeight: 14 }}>{v > 0 ? v : ""}</div>
+                        <div style={{ width: "100%", background: "#6366F1", borderRadius: 4, height: Math.max((v / empresaMaxByMonth) * 72, v > 0 ? 4 : 0) }} />
+                        <div style={{ fontSize: 10, color: "#9ca3af" }}>{empresaLast6[i].label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Economia estimada</div>
+                  <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 20 }}>Horas automatizadas pelo uso das soluções</div>
+                  <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
+                    <div>
+                      <div style={{ fontSize: 32, fontWeight: 800, color: "#6366F1" }}>{subscriptions.length * 5}h</div>
+                      <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>estimativa mensal</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 32, fontWeight: 800, color: "#111827" }}>{subscriptions.length}</div>
+                      <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2 }}>processos automatizados</div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        )}
 
       </div>
     </div>

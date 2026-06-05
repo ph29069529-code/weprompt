@@ -1469,6 +1469,9 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
   const mrr = subs
     .filter(s => s.status === "active" && s.solutions?.payment_type === "subscription")
     .reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
+  const approvedCount = solutions.filter(s => s.status === "approved").length;
+  const rejectedCount = solutions.filter(s => s.status === "rejected").length;
+  const taxaAprovacao = approvedCount + rejectedCount > 0 ? Math.round(approvedCount / (approvedCount + rejectedCount) * 100) : 0;
 
   // Time buckets that adapt to the selected period
   const { bucketLabels, revenueByBucket, commissionsByBucket, criadoresByBucket, empresasByBucket } = useMemo(() => {
@@ -1600,7 +1603,7 @@ function MetricasAdminTab({ solutions, profiles, isMobile }) {
         {[
           { label: "Receita Total da Plataforma", value: `R$ ${totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: `${subs.length} transações`, color: BLUE },
           { label: "Ticket Médio", value: `R$ ${ticketMedio.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "por transação", color: "#6366F1" },
-          { label: "Taxa de Conversão", value: "3,2%", sub: "visitantes → compras", color: GREEN },
+          { label: "Taxa de Aprovação", value: `${taxaAprovacao}%`, sub: "aprovadas vs reprovadas", color: GREEN },
           { label: "MRR", value: `R$ ${mrr.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, sub: "assinaturas ativas", color: "#B45309" },
         ].map(c => (
           <div key={c.label} style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", padding: "20px 22px" }}>
