@@ -20,7 +20,7 @@ const SOLUTIONS = [
     icon: Bot,
     color: "#EEF2FF",
     iconColor: "#6366F1",
-    img: "https://images.unsplash.com/photo-1677442136019-21780ecad979?w=600&q=80",
+    img: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80",
   },
   {
     id: 2,
@@ -33,7 +33,7 @@ const SOLUTIONS = [
     icon: Zap,
     color: "#F0FDF4",
     iconColor: "#10B981",
-    img: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=600&q=80",
+    img: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80",
   },
   {
     id: 3,
@@ -58,7 +58,7 @@ const SOLUTIONS = [
     icon: Megaphone,
     color: "#FFFBEB",
     iconColor: "#F59E0B",
-    img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80",
+    img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&q=80",
   },
   {
     id: 5,
@@ -83,7 +83,7 @@ const SOLUTIONS = [
     icon: MessageCircle,
     color: "#F5F3FF",
     iconColor: "#8B5CF6",
-    img: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=600&q=80",
+    img: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&q=80",
   },
 ];
 

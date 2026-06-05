@@ -161,56 +161,105 @@ export default function FloatingIconsHero() {
       <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '0 24px' }}>
 
         {/* Badge */}
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          background: 'rgba(99,102,241,0.08)',
-          border: '1px solid rgba(99,102,241,0.2)',
-          borderRadius: 100,
-          padding: '5px 16px',
-          marginBottom: 24,
-          fontSize: 12,
-          color: '#6366F1',
-          fontWeight: 600,
-          letterSpacing: '0.05em',
-        }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: -10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'rgba(99,102,241,0.08)',
+            border: '1px solid rgba(99,102,241,0.2)',
+            borderRadius: 100,
+            padding: '5px 16px',
+            marginBottom: 24,
+            fontSize: 12,
+            color: '#6366F1',
+            fontWeight: 600,
+            letterSpacing: '0.05em',
+          }}
+        >
           NOVO&nbsp;&nbsp;•&nbsp;&nbsp;O 1º marketplace de IA do Brasil
+        </motion.div>
+
+        {/* H1 — word-by-word animated */}
+        <div style={{ marginBottom: 8, marginTop: 0 }}>
+          {/* Line 1 */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0 0.28em', lineHeight: 1.0 }}>
+            {['O', 'marketplace', 'de', 'IA'].map((word, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{ delay: i * 0.08, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  fontSize: 'clamp(44px, 6.5vw, 80px)',
+                  fontWeight: 900,
+                  color: '#0A0F1E',
+                  letterSpacing: '-0.04em',
+                  lineHeight: 1.0,
+                  display: 'inline-block',
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </div>
+          {/* Line 2 — gradient */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0 0.28em', lineHeight: 1.0 }}>
+            {['para', 'o', 'seu', 'negócio.'].map((word, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                transition={{ delay: 3 * 0.08 + i * 0.08, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  fontSize: 'clamp(44px, 6.5vw, 80px)',
+                  fontWeight: 900,
+                  letterSpacing: '-0.04em',
+                  lineHeight: 1.0,
+                  display: 'inline-block',
+                  background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 40%, #A855F7 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </div>
         </div>
 
-        {/* H1 */}
-        <h1 style={{
-          fontSize: 'clamp(40px, 6vw, 72px)',
-          fontWeight: 800,
-          lineHeight: 1.1,
-          letterSpacing: '-0.03em',
-          color: '#0A0F1E',
-          marginBottom: 8,
-          marginTop: 0,
-        }}>
-          O marketplace de IA
-          <br />
-          para o seu negócio.
-        </h1>
-
         {/* Subtitle */}
-        <p style={{
-          fontSize: 18,
-          color: '#6B7280',
-          maxWidth: 500,
-          lineHeight: 1.65,
-          margin: '16px auto 40px',
-        }}>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.7 }}
+          style={{
+            fontSize: 18,
+            color: '#6B7280',
+            maxWidth: 500,
+            lineHeight: 1.65,
+            margin: '16px auto 40px',
+          }}
+        >
           Soluções de IA curadas, testadas e prontas para usar — com suporte em português.
-        </p>
+        </motion.p>
 
         {/* Buttons */}
-        <div style={{
-          display: 'flex',
-          gap: 12,
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-        }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+          style={{
+            display: 'flex',
+            gap: 12,
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
           <button
             onClick={() => router.push('/solucoes')}
             style={{
@@ -263,7 +312,7 @@ export default function FloatingIconsHero() {
           >
             Para criadores
           </button>
-        </div>
+        </motion.div>
       </div>
     </section>
   )
