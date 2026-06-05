@@ -122,7 +122,7 @@ export default function FloatingIconsHero() {
       style={{
         position: 'relative',
         width: '100%',
-        minHeight: '100vh',
+        minHeight: '100vh', maxHeight: '100vh', overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
