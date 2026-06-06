@@ -93,6 +93,7 @@ export default function NovaSolucaoPage() {
     support_channel: 'email',
     demo_url: '',
     conteudo_pack: '',
+    agent_system_prompt: '',
   })
   const [coverFile, setCoverFile] = useState(null)
   const [coverPreview, setCoverPreview] = useState(null)
@@ -308,6 +309,27 @@ export default function NovaSolucaoPage() {
               />
               <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6 }}>
                 Este conteúdo será exibido para o comprador após a compra. Use ## para títulos, [PROMPT] para blocos de prompt e --- para separadores.
+              </p>
+            </div>
+          </SectionCard>
+        )}
+
+        {/* ── System Prompt (only for agente) ── */}
+        {/* SQL: ALTER TABLE solutions ADD COLUMN IF NOT EXISTS agent_system_prompt TEXT; */}
+        {form.tipo === 'agente' && (
+          <SectionCard title="Prompt do Sistema (System Prompt)">
+            <div style={{ marginBottom: 4 }}>
+              <label style={lbl}>Defina o comportamento do agente</label>
+              <textarea
+                value={form.agent_system_prompt}
+                onChange={e => set('agent_system_prompt', e.target.value)}
+                placeholder={"Você é [nome do agente], um assistente especializado em [área].\nSeu objetivo é [objetivo principal].\nSempre responda em português brasileiro.\nTom de voz: [profissional/amigável/técnico].\n\nInstruções específicas:\n- [instrução 1]\n- [instrução 2]"}
+                style={{ ...inputStyle(false), minHeight: 150, resize: 'vertical', lineHeight: 1.7, fontFamily: 'monospace' }}
+                onFocus={onFocus}
+                onBlur={e => onBlur(e, false)}
+              />
+              <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6 }}>
+                Este é o prompt que define o comportamento do seu agente. Quanto mais detalhado, melhor o resultado. Sem um system prompt, o agente usará um padrão genérico.
               </p>
             </div>
           </SectionCard>

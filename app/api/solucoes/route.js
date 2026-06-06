@@ -40,7 +40,9 @@ export async function POST(request) {
       requirements: body.requirements,
       support_channel: body.support_channel,
       demo_url: body.demo_url,
-      agent_system_prompt: body.agent_system_prompt,
+      tipo: body.tipo || 'agente',
+      conteudo_pack: body.conteudo_pack || null,
+      agent_system_prompt: body.agent_system_prompt || null,
       status: body.status || 'pending'
     })
     .select()

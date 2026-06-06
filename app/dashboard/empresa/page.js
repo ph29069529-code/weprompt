@@ -265,9 +265,10 @@ export default function EmpresaDashboard() {
                           Ver Prompts →
                         </a>
                       ) : (
-                        <span title="Disponível em breve" style={{ color: "#9ca3af", fontSize: 13, cursor: "default" }}>
+                        <a href={`/dashboard/empresa/workspace/${sub.solutions?.id}`}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "5px 12px", borderRadius: 7, border: "none", background: "#6366F1", color: "white", fontSize: 12, fontWeight: 600, textDecoration: "none", cursor: "pointer" }}>
                           Abrir Workspace →
-                        </span>
+                        </a>
                       )}
                     </td>
                     <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
