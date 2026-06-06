@@ -24,6 +24,15 @@ const PAYMENT_BADGE = {
   "Anual":  { bg: "#f3f4f6", color: "#374151" },
 };
 
+function getReputationBadge(avgRating, reviewCount) {
+  const r = Number(avgRating) || 0;
+  const c = reviewCount || 0;
+  if (c >= 50 && r >= 4.5) return { icon: "🏆", label: "Elite", color: "#F59E0B" };
+  if (c >= 20 && r >= 4.5) return { icon: "💎", label: "Top",   color: "#6366F1" };
+  if (c >= 10 && r >= 4.0) return { icon: "🥇", label: "Pro",   color: "#10B981" };
+  return null;
+}
+
 function paymentLabel(payment_type) {
   if (payment_type === "one_time") return "Único";
   if (payment_type === "annual")   return "Anual";
@@ -150,7 +159,9 @@ function SolutionCard({ solution }) {
 
         {/* Creator row */}
         {creatorName && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12 }}>
+          <a href={solution.creator_id ? `/criadores/${solution.creator_id}` : undefined}
+            style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, textDecoration: "none", cursor: solution.creator_id ? "pointer" : "default" }}
+            onClick={e => { if (!solution.creator_id) e.preventDefault(); }}>
             <div style={{
               width: 24, height: 24, borderRadius: 999,
               background: "#dbeafe", color: "#2563EB",
@@ -160,7 +171,15 @@ function SolutionCard({ solution }) {
               {creatorName.charAt(0).toUpperCase()}
             </div>
             <span style={{ fontSize: 12, color: "#6b7280" }}>{creatorName}</span>
-          </div>
+            {(() => {
+              const badge = getReputationBadge(solution.avg_rating, solution.review_count);
+              return badge ? (
+                <span style={{ fontSize: 10, fontWeight: 700, color: badge.color, background: `${badge.color}18`, padding: "1px 7px", borderRadius: 99 }}>
+                  {badge.icon} {badge.label}
+                </span>
+              ) : null;
+            })()}
+          </a>
         )}
 
         {/* Price + stars */}

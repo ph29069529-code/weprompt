@@ -52,6 +52,13 @@ export default function EmpresaDashboard() {
   const [userName, setUserName] = useState("usuário");
   const [subscriptions, setSubscriptions] = useState([]);
 
+  /* review modal */
+  const [reviewModal,   setReviewModal]   = useState(null);
+  const [reviewRating,  setReviewRating]  = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewedIds,   setReviewedIds]   = useState(new Set());
+
   useEffect(() => {
     async function init() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -63,7 +70,7 @@ export default function EmpresaDashboard() {
         const [profileRes, subsRes] = await Promise.all([
           supabase.from("profiles").select("nome").eq("id", uid).single(),
           supabase.from("subscriptions")
-            .select("id, status, created_at, solutions(id, titulo, categoria, preco, access_url)")
+            .select("id, status, created_at, solutions(id, titulo, categoria, preco, access_url, creator_id)")
             .eq("user_id", uid)
             .order("created_at", { ascending: false }),
         ]);
@@ -78,6 +85,24 @@ export default function EmpresaDashboard() {
     }
     init();
   }, [router]);
+
+  async function submitReview() {
+    if (!reviewModal || !reviewRating) return;
+    setReviewLoading(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    await supabase.from("reviews").insert({
+      reviewer_id:  session.user.id,
+      creator_id:   reviewModal.creator_id,
+      solution_id:  reviewModal.solution_id,
+      rating:       reviewRating,
+      comment:      reviewComment.trim() || null,
+    });
+    setReviewedIds(prev => new Set([...prev, reviewModal.sub_id]));
+    setReviewModal(null);
+    setReviewRating(5);
+    setReviewComment("");
+    setReviewLoading(false);
+  }
 
   const totalInvestment = subscriptions.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
   const firstName = userName.split(" ")[0];
@@ -220,7 +245,7 @@ export default function EmpresaDashboard() {
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr>
-                  {["SOLUÇÃO", "CATEGORIA", "VALOR", "DESDE", "AÇÃO"].map(col => (
+                  {["SOLUÇÃO", "CATEGORIA", "VALOR", "DESDE", "AÇÃO", "AVALIAR"].map(col => (
                     <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>
                   ))}
                 </tr>
@@ -238,6 +263,19 @@ export default function EmpresaDashboard() {
                         <a href={sub.solutions.access_url} target="_blank" rel="noreferrer" style={{ color: "#6366F1", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>
                           Acessar →
                         </a>
+                      ) : (
+                        <span style={{ color: "#9ca3af", fontSize: 13 }}>—</span>
+                      )}
+                    </td>
+                    <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
+                      {sub.solutions?.creator_id && !reviewedIds.has(sub.id) ? (
+                        <button
+                          onClick={() => setReviewModal({ sub_id: sub.id, creator_id: sub.solutions.creator_id, solution_id: sub.solutions.id, title: sub.solutions.titulo })}
+                          style={{ padding: "5px 12px", borderRadius: 7, border: "1px solid #c7d2fe", background: "#eef2ff", color: "#4338CA", fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                          Avaliar criador
+                        </button>
+                      ) : reviewedIds.has(sub.id) ? (
+                        <span style={{ fontSize: 12, color: "#16a34a", fontWeight: 600 }}>✓ Avaliado</span>
                       ) : (
                         <span style={{ color: "#9ca3af", fontSize: 13 }}>—</span>
                       )}
@@ -343,6 +381,50 @@ export default function EmpresaDashboard() {
         )}
 
       </div>
+
+      {/* ── REVIEW MODAL ── */}
+      {reviewModal && (
+        <>
+          <div onClick={() => setReviewModal(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 199 }} />
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: "white", borderRadius: 16, padding: 32, width: "100%", maxWidth: 440, zIndex: 200, boxShadow: "0 20px 60px rgba(0,0,0,0.15)", boxSizing: "border-box" }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#111827", marginBottom: 4 }}>Avaliar criador</div>
+            <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 20 }}>{reviewModal.title}</div>
+
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Avaliação</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                {[1,2,3,4,5].map(n => (
+                  <button key={n} onClick={() => setReviewRating(n)}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill={n <= reviewRating ? "#f59e0b" : "#e5e7eb"} stroke="none">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Comentário (opcional)</div>
+              <textarea value={reviewComment} onChange={e => setReviewComment(e.target.value)} rows={4}
+                placeholder="Deixe um comentário sobre o criador..."
+                style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid #e5e7eb", fontSize: 14, color: "#111827", outline: "none", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box", fontFamily: "inherit" }}
+                onFocus={e => (e.target.style.borderColor = "#6366F1")} onBlur={e => (e.target.style.borderColor = "#e5e7eb")} />
+            </div>
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setReviewModal(null)} style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "1.5px solid #e5e7eb", background: "transparent", color: "#6b7280", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                Cancelar
+              </button>
+              <button onClick={submitReview} disabled={reviewLoading}
+                style={{ flex: 2, padding: "11px 0", borderRadius: 10, border: "none", background: reviewLoading ? "rgba(99,102,241,0.5)" : "#6366F1", color: "white", fontSize: 14, fontWeight: 700, cursor: reviewLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+                {reviewLoading ? "Enviando…" : "Enviar avaliação"}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
     </div>
   );
 }

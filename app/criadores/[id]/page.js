@@ -54,6 +54,28 @@ const MOCK_CATEGORIES = [
 const TABS = ["Soluções 40", "Avaliações 157", "Sobre"];
 const AVATAR_COLORS = ["#2563EB", "#7c3aed", "#ea580c", "#16a34a", "#0891b2", "#d97706", "#4f46e5", "#dc2626"];
 
+// ─── REPUTATION ──────────────────────────────────────────────────────────────
+
+function getReputationLevel(avgRating, totalSales, totalReviews) {
+  const rating = Number(avgRating) || 0;
+  const sales  = totalSales || totalReviews || 0;
+  if (sales >= 50 && rating >= 4.5) return { label: "Elite WePrompt", icon: "🏆", color: "#F59E0B", bg: "rgba(245,158,11,0.15)", border: "rgba(245,158,11,0.35)" };
+  if (sales >= 20 && rating >= 4.5) return { label: "Top Criador",    icon: "💎", color: "#6366F1", bg: "rgba(99,102,241,0.15)",  border: "rgba(99,102,241,0.35)"  };
+  if (sales >= 10 && rating >= 4.0) return { label: "Estabelecido",   icon: "🥇", color: "#10B981", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.35)" };
+  if (sales >= 3  && rating >= 3.5) return { label: "Em Ascensão",    icon: "🥈", color: "#3B82F6", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.35)" };
+  return                                     { label: "Iniciante",     icon: "🥉", color: "#9CA3AF", bg: "rgba(156,163,175,0.15)",border: "rgba(156,163,175,0.35)" };
+}
+
+function getNextLevel(avgRating, totalSales, totalReviews) {
+  const rating = Number(avgRating) || 0;
+  const sales  = totalSales || totalReviews || 0;
+  if (sales >= 50 && rating >= 4.5) return null; // already max
+  if (sales >= 20 && rating >= 4.5) return { label: "Elite WePrompt", salesNeeded: 50, salesCurrent: sales };
+  if (sales >= 10 && rating >= 4.0) return { label: "Top Criador",    salesNeeded: 20, salesCurrent: sales };
+  if (sales >= 3  && rating >= 3.5) return { label: "Estabelecido",   salesNeeded: 10, salesCurrent: sales };
+  return                                     { label: "Em Ascensão",   salesNeeded: 3,  salesCurrent: sales };
+}
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
 function parsePrice(str) {
@@ -92,11 +114,11 @@ function mapSolution(s) {
 
 function mapReview(r, i) {
   return {
-    name: r.profiles?.nome || r.nome || "Usuário",
+    name: r.reviewer?.nome || r.profiles?.nome || r.nome || "Usuário",
     solution: r.solutions?.titulo || "",
-    stars: r.nota || r.rating || 5,
+    stars: r.rating || r.nota || 5,
     date: formatDate(r.created_at),
-    text: r.comentario || r.texto || r.text || "",
+    text: r.comment || r.comentario || r.texto || "",
     helpful: 0,
     color: AVATAR_COLORS[i % AVATAR_COLORS.length],
   };
@@ -282,20 +304,20 @@ export default function CriadorProfilePage() {
         .from("solutions")
         .select("*, categories(nome, slug)")
         .eq("creator_id", creatorData.id)
-        .eq("status", "active")
+        .eq("status", "approved")
         .order("review_count", { ascending: false });
 
       if (solutionsData && solutionsData.length > 0) {
         setDbSolutions(solutionsData);
       }
 
-      // 3. Fetch reviews
+      // 3. Fetch reviews for this creator
       const { data: reviewsData } = await supabase
         .from("reviews")
-        .select("*, solutions(titulo), profiles(nome, avatar_url)")
-        .eq("solutions.creator_id", creatorData.id)
+        .select("*, solutions(id, titulo), reviewer:reviewer_id(nome)")
+        .eq("creator_id", creatorData.id)
         .order("created_at", { ascending: false })
-        .limit(8);
+        .limit(20);
 
       if (reviewsData && reviewsData.length > 0) {
         setDbReviews(reviewsData);
@@ -522,15 +544,29 @@ export default function CriadorProfilePage() {
               </div>
             ) : (
               <>
-                <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                  <span style={{ fontSize: 28, fontWeight: 800, color: "white" }}>{displayName}</span>
-                  <span style={{
-                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                    color: "white", borderRadius: 999, padding: "4px 14px",
-                    fontSize: 12, fontWeight: 700,
-                    display: "inline-flex", alignItems: "center", gap: 4,
-                  }}>⭐ Criador Pro</span>
-                </div>
+                {(() => {
+                  const rep = getReputationLevel(Number(avgRating), totalSales, totalReviews);
+                  const nxt = getNextLevel(Number(avgRating), totalSales, totalReviews);
+                  const pct = nxt ? Math.min(100, Math.round((nxt.salesCurrent / nxt.salesNeeded) * 100)) : 100;
+                  return (
+                    <>
+                      <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                        <span style={{ fontSize: 28, fontWeight: 800, color: "white" }}>{displayName}</span>
+                        <span style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 999, padding: "4px 14px", fontSize: 12, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          {rep.icon} {rep.label}
+                        </span>
+                      </div>
+                      {nxt && (
+                        <div style={{ marginTop: 12, maxWidth: 360 }}>
+                          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 4 }}>Próximo nível: {nxt.label} ({nxt.salesCurrent}/{nxt.salesNeeded} vendas)</div>
+                          <div style={{ height: 6, borderRadius: 3, background: "rgba(255,255,255,0.15)", overflow: "hidden" }}>
+                            <div style={{ height: "100%", borderRadius: 3, background: "#6366F1", width: `${pct}%`, transition: "width 0.6s ease" }} />
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
                 <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginTop: 4 }}>{displayHandle}</div>
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 4 }}>
                   Membro desde {displayMemberSince} · {displayLocation}

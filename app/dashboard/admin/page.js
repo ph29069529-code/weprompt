@@ -635,7 +635,10 @@ function CriadoresTab({ profiles, solutions, subscriptions }) {
                       <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
                         {initials(p.nome)}
                       </div>
-                      <span style={{ fontWeight: 600, color: NEAR_BLACK }}>{p.nome || "—"}</span>
+                      <a href={`/criadores/${p.id}`} target="_blank" rel="noreferrer" style={{ fontWeight: 600, color: NEAR_BLACK, textDecoration: "none" }}
+                        onMouseEnter={e => (e.currentTarget.style.color = BLUE)} onMouseLeave={e => (e.currentTarget.style.color = NEAR_BLACK)}>
+                        {p.nome || "—"}
+                      </a>
                     </div>
                   </td>
                   <td style={{ padding: "12px 16px", color: GRAY_TEXT }}>{p.email || "—"}</td>
