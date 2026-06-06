@@ -51,6 +51,7 @@ const icons = {
   check:    "M20 6L9 17l-5-5",
   pencil:   "M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z",
   trash:    "M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6",
+  x:        "M18 6L6 18M6 6l12 12",
 };
 
 /* ── Helpers ── */
@@ -1072,6 +1073,134 @@ function ConfiguracoesTab() {
   );
 }
 
+/* ── ProfileDrawer ── */
+function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
+  const [nome,     setNome]     = useState(profile?.nome     || "");
+  const [telefone, setTelefone] = useState(profile?.telefone || "");
+  const [cidade,   setCidade]   = useState(profile?.cidade   || "");
+  const [bio,      setBio]      = useState(profile?.bio      || "");
+  const [saving,   setSaving]   = useState(false);
+  const [saved,    setSaved]    = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setNome(profile.nome     || "");
+      setTelefone(profile.telefone || "");
+      setCidade(profile.cidade   || "");
+      setBio(profile.bio      || "");
+    }
+  }, [profile]);
+
+  async function handleSave() {
+    setSaving(true);
+    await supabase.from("profiles")
+      .update({ nome, telefone, cidade, bio })
+      .eq("id", profile.id);
+    setSaving(false);
+    setSaved(true);
+    onSaved?.({ ...profile, nome, telefone, cidade, bio });
+    setTimeout(() => setSaved(false), 3000);
+  }
+
+  async function handleSignOutFromDrawer() {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  }
+
+  const inp = {
+    width: "100%", padding: "10px 14px", borderRadius: 10,
+    border: `1.5px solid ${BORDER}`, fontSize: 14, color: NEAR_BLACK,
+    background: "#fff", outline: "none", boxSizing: "border-box",
+    fontFamily: "inherit", transition: "border-color 0.15s",
+  };
+  const lbl = { fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginBottom: 6, display: "block" };
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.3)", zIndex: 199 }} />
+
+      {/* Drawer */}
+      <div style={{
+        position: "fixed", right: 0, top: 0, height: "100vh",
+        width: 400, maxWidth: "100vw",
+        background: "#fff", boxShadow: "-4px 0 24px rgba(0,0,0,0.12)",
+        zIndex: 200, padding: 32, overflowY: "auto",
+        boxSizing: "border-box",
+        animation: "slideInProfile 0.25s ease",
+      }}>
+        <style>{`@keyframes slideInProfile { from { transform: translateX(100%) } to { transform: translateX(0) } }`}</style>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: NEAR_BLACK }}>Meu Perfil</div>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: GRAY_TEXT, padding: 6, borderRadius: 8, display: "flex", alignItems: "center" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.05)")}
+            onMouseLeave={e => (e.currentTarget.style.background = "none")}>
+            <Icon d={icons.x} size={20} />
+          </button>
+        </div>
+
+        {/* Avatar */}
+        <div style={{ textAlign: "center", marginBottom: 28 }}>
+          <div style={{ width: 80, height: 80, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 700, color: "#fff", margin: "0 auto 12px" }}>
+            {initials(nome || profile?.nome || "A")}
+          </div>
+          <button style={{ fontSize: 13, color: BLUE, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+            Alterar foto
+          </button>
+          <div style={{ fontSize: 11, color: GRAY_TEXT, marginTop: 4 }}>Upload de foto disponível em breve</div>
+        </div>
+
+        {/* Form */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div>
+            <label style={lbl}>Nome completo</label>
+            <input value={nome} onChange={e => setNome(e.target.value)} style={inp}
+              onFocus={e => (e.target.style.borderColor = BLUE)} onBlur={e => (e.target.style.borderColor = BORDER)} />
+          </div>
+          <div>
+            <label style={lbl}>Email</label>
+            <input value={userEmail || ""} readOnly style={{ ...inp, background: "#f9fafb", color: GRAY_TEXT, cursor: "default" }} />
+            <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 4 }}>Para alterar o email, entre em contato</div>
+          </div>
+          <div>
+            <label style={lbl}>Telefone</label>
+            <input value={telefone} onChange={e => setTelefone(e.target.value)} placeholder="+55 11 99999-9999" style={inp}
+              onFocus={e => (e.target.style.borderColor = BLUE)} onBlur={e => (e.target.style.borderColor = BORDER)} />
+          </div>
+          <div>
+            <label style={lbl}>Cidade</label>
+            <input value={cidade} onChange={e => setCidade(e.target.value)} placeholder="São Paulo, SP" style={inp}
+              onFocus={e => (e.target.style.borderColor = BLUE)} onBlur={e => (e.target.style.borderColor = BORDER)} />
+          </div>
+          <div>
+            <label style={lbl}>Bio</label>
+            <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Conte um pouco sobre você..." rows={3}
+              style={{ ...inp, resize: "vertical", lineHeight: 1.6 }}
+              onFocus={e => (e.target.style.borderColor = BLUE)} onBlur={e => (e.target.style.borderColor = BORDER)} />
+          </div>
+        </div>
+
+        {/* Save */}
+        <button onClick={handleSave} disabled={saving}
+          style={{ width: "100%", padding: "12px 0", borderRadius: 12, border: "none", fontFamily: "inherit", marginTop: 24, fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", transition: "background 0.2s", color: "#fff", background: saved ? "#16A34A" : saving ? "rgba(99,102,241,0.5)" : BLUE }}>
+          {saved ? "✓ Perfil atualizado!" : saving ? "Salvando…" : "Salvar alterações"}
+        </button>
+
+        {/* Danger zone */}
+        <div style={{ borderTop: "1px solid #FEE2E2", marginTop: 32, paddingTop: 24 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#EF4444", marginBottom: 12 }}>Zona de Perigo</div>
+          <button onClick={handleSignOutFromDrawer}
+            style={{ width: "100%", padding: "10px 0", borderRadius: 10, border: "1px solid #FECACA", background: "#FEF2F2", color: "#EF4444", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+            Sair da conta
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 /* ════════════════════════════════════════
    MAIN PAGE
 ════════════════════════════════════════ */
@@ -1086,6 +1215,7 @@ export default function AdminDashboard() {
 
   /* auth */
   const [loading, setLoading]   = useState(true);
+  const [user, setUser]         = useState(null);
   const [profile, setProfile]   = useState(null);
 
   /* data */
@@ -1097,6 +1227,9 @@ export default function AdminDashboard() {
   const [actionLoading,    setActionLoading]    = useState(null);
   const [selectedSolution, setSelectedSolution] = useState(null);
 
+  /* profile drawer */
+  const [profileOpen, setProfileOpen] = useState(false);
+
   useEffect(() => {
     async function init() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -1106,6 +1239,7 @@ export default function AdminDashboard() {
         .from("profiles").select("*").eq("id", session.user.id).single();
       if (!prof || prof.role !== "admin") { router.replace("/"); return; }
 
+      setUser(session.user);
       setProfile(prof);
 
       const [solRes, profRes, subsRes] = await Promise.all([
@@ -1182,19 +1316,12 @@ export default function AdminDashboard() {
         left: isMobile && !sidebarOpen ? -260 : 0,
         zIndex: 50, transition: "left 0.25s ease", overflowY: "auto",
       }}>
-        {/* Logo + Admin badge */}
-        <div style={{ padding: "20px 20px 14px", flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Link href="/" style={{ textDecoration: "none" }}>
-              <WePromptLogo id="admin-sidebar" dark />
-            </Link>
-            <span style={{ background: DANGER, color: "#fff", fontSize: 9, fontWeight: 800, padding: "2px 7px", borderRadius: 99, letterSpacing: "0.5px", textTransform: "uppercase", flexShrink: 0 }}>
-              Admin
-            </span>
-          </div>
+        {/* Logo */}
+        <div style={{ padding: "20px 16px", borderBottom: `1px solid #E5E7EB`, marginBottom: 8, flexShrink: 0 }}>
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <img src="/logo.png" alt="WePrompt" style={{ width: 130, height: "auto", display: "block" }} />
+          </Link>
         </div>
-
-        <div style={{ height: 1, background: BORDER, margin: "0 16px 6px", flexShrink: 0 }} />
 
         {/* Nav items */}
         <div style={{ flex: 1, padding: "4px 12px 8px" }}>
@@ -1211,13 +1338,19 @@ export default function AdminDashboard() {
 
         {/* Bottom: avatar + logout */}
         <div style={{ padding: "12px 16px 16px", borderTop: `1px solid ${BORDER}`, flexShrink: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "0 4px" }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: BLUE, flexShrink: 0 }}>
+          <div
+            onClick={() => setProfileOpen(true)}
+            style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "6px 4px", borderRadius: 10, cursor: "pointer", transition: "background 0.15s" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.04)")}
+            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: BLUE, flexShrink: 0, transition: "opacity 0.15s, outline 0.15s" }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.outline = `2px solid ${BLUE}`; e.currentTarget.style.outlineOffset = "2px"; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.outline = "none"; }}>
               {initials(profile?.nome || "Admin")}
             </div>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{profile?.nome || "Admin"}</div>
-              <div style={{ fontSize: 11, color: DANGER, fontWeight: 600 }}>Administrador</div>
+              <div style={{ fontSize: 11, color: GRAY_TEXT, fontWeight: 500 }}>Administrador · editar perfil</div>
             </div>
           </div>
           <button onClick={handleSignOut} style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "9px 12px", borderRadius: 10, border: "none", background: "transparent", color: DANGER, fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
@@ -1274,6 +1407,16 @@ export default function AdminDashboard() {
 
         </div>
       </main>
+
+      {/* Profile drawer */}
+      {profileOpen && (
+        <ProfileDrawer
+          profile={profile}
+          userEmail={user?.email}
+          onClose={() => setProfileOpen(false)}
+          onSaved={updated => setProfile(updated)}
+        />
+      )}
 
     </div>
   );
