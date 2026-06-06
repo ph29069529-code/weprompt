@@ -14,44 +14,6 @@ const GRADIENTS = {
 
 const GRADIENT_DEFAULT = "linear-gradient(135deg, #1e3a5f, #2563EB)";
 
-const MOCK_SOLUTIONS = [
-  { id: "assistente-emails-pro", name: "Assistente de E-mails Pro", category: "Automação", price: "R$ 97,00",  sales: 34, rating: 4.9, reviews: 89,  badge: "🏆 Top Seller" },
-  { id: "chatbot-whatsapp",      name: "ChatBot WhatsApp",          category: "Chatbots",  price: "R$ 147,00", sales: 28, rating: 4.8, reviews: 67,  badge: "🏆 Top Seller" },
-  { id: "gerador-conteudo-ia",   name: "Gerador de Conteúdo IA",    category: "Marketing", price: "R$ 67,00",  sales: 21, rating: 4.7, reviews: 43,  badge: null },
-  { id: "crm-inteligente",       name: "CRM Inteligente",           category: "Vendas",    price: "R$ 197,00", sales: 15, rating: 4.9, reviews: 31,  badge: "🏆 Top Seller" },
-  { id: "bot-prospeccao",        name: "Bot de Prospecção",         category: "Vendas",    price: "R$ 87,00",  sales: 12, rating: 4.6, reviews: 24,  badge: null },
-  { id: "analytics-dashboard",   name: "Analytics Dashboard",       category: "Automação", price: "R$ 127,00", sales: 9,  rating: 4.8, reviews: 18,  badge: null },
-];
-
-const MOCK_REVIEWS = [
-  { name: "João S.",     solution: "Assistente de E-mails Pro", stars: 5, date: "28 mai 2026", text: "Solução incrível! Economizei horas por semana. A automação funciona perfeitamente com o Gmail e o Outlook.", helpful: 12, color: "#2563EB" },
-  { name: "Maria L.",    solution: "ChatBot WhatsApp",          stars: 5, date: "27 mai 2026", text: "O chatbot superou minhas expectativas. Meus clientes adoraram o atendimento mais rápido. Recomendo muito!", helpful: 8,  color: "#7c3aed" },
-  { name: "Pedro R.",    solution: "Gerador de Conteúdo IA",    stars: 4, date: "26 mai 2026", text: "Muito bom! Gera conteúdo de qualidade. Às vezes preciso de pequenos ajustes mas no geral é excelente.",   helpful: 5,  color: "#ea580c" },
-  { name: "Ana C.",      solution: "CRM Inteligente",           stars: 5, date: "25 mai 2026", text: "Transformou nossa operação de vendas. A equipe se adaptou rápido e os resultados apareceram em semanas.",  helpful: 19, color: "#16a34a" },
-  { name: "Lucas M.",    solution: "Assistente de E-mails Pro", stars: 5, date: "24 mai 2026", text: "Melhor investimento que fiz para o meu negócio. Suporte do criador é excelente.",                          helpful: 7,  color: "#0891b2" },
-  { name: "Carla B.",    solution: "ChatBot WhatsApp",          stars: 4, date: "23 mai 2026", text: "Funciona muito bem. Integração com WhatsApp Business foi simples e rápida.",                               helpful: 4,  color: "#d97706" },
-  { name: "Rafael N.",   solution: "Analytics Dashboard",       stars: 5, date: "22 mai 2026", text: "Dashboard muito completo. Agora tenho visibilidade total do meu negócio em tempo real.",                   helpful: 11, color: "#4f46e5" },
-  { name: "Fernanda S.", solution: "Bot de Prospecção",         stars: 4, date: "21 mai 2026", text: "Aumentou minha taxa de resposta em 40%. Vale muito o investimento.",                                       helpful: 6,  color: "#dc2626" },
-];
-
-const MOCK_RATING_BARS = [
-  { star: 5, pct: 78, count: 123 },
-  { star: 4, pct: 14, count: 22  },
-  { star: 3, pct: 5,  count: 8   },
-  { star: 2, pct: 2,  count: 3   },
-  { star: 1, pct: 1,  count: 1   },
-];
-
-const MOCK_ABOUT_TAGS = ["Automação", "IA Aplicada", "Chatbots", "CRM", "Marketing Digital"];
-const MOCK_CATEGORIES = [
-  { id: "all",       label: "Todas 40" },
-  { id: "Automação", label: "Automação 15" },
-  { id: "Chatbots",  label: "Chatbots 12" },
-  { id: "Marketing", label: "Marketing 8" },
-  { id: "Vendas",    label: "Vendas 5" },
-];
-
-const TABS = ["Soluções 40", "Avaliações 157", "Sobre"];
 const AVATAR_COLORS = ["#2563EB", "#7c3aed", "#ea580c", "#16a34a", "#0891b2", "#d97706", "#4f46e5", "#dc2626"];
 
 // ─── REPUTATION ──────────────────────────────────────────────────────────────
@@ -94,7 +56,7 @@ function formatDate(dateStr) {
 }
 
 function formatMemberSince(dateStr) {
-  if (!dateStr) return "jan. 2025";
+  if (!dateStr) return null;
   const d = new Date(dateStr);
   return d.toLocaleDateString("pt-BR", { month: "short", year: "numeric" });
 }
@@ -106,7 +68,7 @@ function mapSolution(s) {
     category: s.categoria || s.categories?.nome || "Automação",
     price: formatPrice(s.preco),
     sales: s.review_count || 0,
-    rating: Number((s.avg_rating || 4.8).toFixed(1)),
+    rating: s.avg_rating ? Number(Number(s.avg_rating).toFixed(1)) : 0,
     reviews: s.review_count || 0,
     badge: (s.review_count || 0) > 20 ? "🏆 Top Seller" : null,
   };
@@ -275,6 +237,7 @@ export default function CriadorProfilePage() {
   const [creator, setCreator] = useState(null);
   const [dbSolutions, setDbSolutions] = useState(null);
   const [dbReviews, setDbReviews] = useState(null);
+  const [dbSalesCount, setDbSalesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -309,6 +272,13 @@ export default function CriadorProfilePage() {
 
       if (solutionsData && solutionsData.length > 0) {
         setDbSolutions(solutionsData);
+        // Count real sales (subscriptions) across all creator solutions
+        const solIds = solutionsData.map(s => s.id);
+        const { count: salesCount } = await supabase
+          .from("subscriptions")
+          .select("id", { count: "exact", head: true })
+          .in("solution_id", solIds);
+        setDbSalesCount(salesCount || 0);
       }
 
       // 3. Fetch reviews for this creator
@@ -329,58 +299,52 @@ export default function CriadorProfilePage() {
     fetchData();
   }, [id]);
 
-  // ── Derived display data ──────────────────────────────────────────────────
+  // ── Derived display data (real data only, no mock fallbacks) ─────────────
 
-  const displaySolutions = (dbSolutions && dbSolutions.length > 0)
-    ? dbSolutions.map(mapSolution)
-    : MOCK_SOLUTIONS;
+  const displaySolutions = dbSolutions ? dbSolutions.map(mapSolution) : [];
+  const displayReviews   = dbReviews   ? dbReviews.map(mapReview)     : [];
 
-  const displayReviews = (dbReviews && dbReviews.length > 0)
-    ? dbReviews.map(mapReview)
-    : MOCK_REVIEWS;
-
-  const displayName        = creator?.nome          || "Carlos Mendes";
-  const displayHandle      = creator?.slug ? `@${creator.slug}` : "@carlosmendes";
-  const displayBio         = creator?.bio           || "Olá! Sou Carlos Mendes, especialista em automação e inteligência artificial aplicada a negócios. Com mais de 5 anos de experiência desenvolvendo soluções de IA, já ajudei mais de 200 empresas a economizarem tempo e aumentarem receita com automação inteligente.";
-  const displayLocation    = creator?.localizacao   || creator?.city || "São Paulo, Brasil";
+  const displayName        = creator?.nome || "";
+  const displayHandle      = creator?.slug ? `@${creator.slug}` : null;
+  const displayBio         = creator?.bio  || null;
+  const displayLocation    = creator?.cidade || creator?.localizacao || creator?.city || null;
   const displayMemberSince = formatMemberSince(creator?.created_at);
-  const displayTags        = creator?.tags || MOCK_ABOUT_TAGS;
+  const displayTags        = Array.isArray(creator?.tags) ? creator.tags : [];
 
   const totalSolutions = displaySolutions.length;
-  const totalSales     = displaySolutions.reduce((sum, s) => sum + (s.sales || 0), 0);
-  const avgRating      = displaySolutions.length > 0
-    ? (displaySolutions.reduce((sum, s) => sum + (s.rating || 0), 0) / displaySolutions.length).toFixed(1)
-    : "4.8";
-  const totalReviews   = displaySolutions.reduce((sum, s) => sum + (s.reviews || 0), 0);
+  const totalSales     = dbSalesCount;
+  const totalReviews   = dbReviews?.length || 0;
+  const avgRating      = totalReviews > 0
+    ? (dbReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / totalReviews).toFixed(1)
+    : null; // null = no reviews yet
 
-  // Dynamic category pills from real data
-  const displayCategories = (dbSolutions && dbSolutions.length > 0)
-    ? (() => {
-        const counts = dbSolutions.reduce((acc, s) => {
-          const cat = s.categoria || s.categories?.nome || "Outras";
-          acc[cat] = (acc[cat] || 0) + 1;
-          return acc;
-        }, {});
-        return [
-          { id: "all", label: `Todas ${dbSolutions.length}` },
-          ...Object.entries(counts).map(([name, count]) => ({ id: name, label: `${name} ${count}` })),
-        ];
-      })()
-    : MOCK_CATEGORIES;
+  // Dynamic category pills from real solutions only
+  const displayCategories = (() => {
+    if (!dbSolutions || dbSolutions.length === 0) return [{ id: "all", label: "Todas 0" }];
+    const counts = dbSolutions.reduce((acc, s) => {
+      const cat = s.categoria || s.categories?.nome || "Outras";
+      acc[cat] = (acc[cat] || 0) + 1;
+      return acc;
+    }, {});
+    return [
+      { id: "all", label: `Todas ${dbSolutions.length}` },
+      ...Object.entries(counts).map(([name, count]) => ({ id: name, label: `${name} ${count}` })),
+    ];
+  })();
 
   // Tabs with real counts
   const displayTabs = [
     `Soluções ${totalSolutions}`,
-    `Avaliações ${totalReviews || 157}`,
+    `Avaliações ${totalReviews}`,
     "Sobre",
   ];
 
-  // Rating bars from real reviews
+  // Rating bars — only from real reviews, empty array if none
   const displayRatingBars = (() => {
-    if (!dbReviews || dbReviews.length === 0) return MOCK_RATING_BARS;
+    if (!dbReviews || dbReviews.length === 0) return [];
     const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    dbReviews.forEach(r => { const n = r.nota || r.rating || 5; if (counts[n] !== undefined) counts[n]++; });
-    const total = dbReviews.length || 1;
+    dbReviews.forEach(r => { const n = r.rating || 0; if (counts[n] !== undefined) counts[n]++; });
+    const total = dbReviews.length;
     return [5, 4, 3, 2, 1].map(star => ({
       star, count: counts[star], pct: Math.round((counts[star] / total) * 100),
     }));
@@ -567,9 +531,13 @@ export default function CriadorProfilePage() {
                     </>
                   );
                 })()}
-                <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginTop: 4 }}>{displayHandle}</div>
+                {displayHandle && (
+                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginTop: 4 }}>{displayHandle}</div>
+                )}
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 4 }}>
-                  Membro desde {displayMemberSince} · {displayLocation}
+                  {displayMemberSince && `Membro desde ${displayMemberSince}`}
+                  {displayMemberSince && displayLocation && " · "}
+                  {displayLocation}
                 </div>
               </>
             )}
@@ -590,10 +558,10 @@ export default function CriadorProfilePage() {
                     </div>
                   ))
                 : [
-                    { value: totalSolutions.toString(), sub: "Soluções", extra: null },
-                    { value: totalSales.toLocaleString("pt-BR"), sub: "Vendas", extra: null },
-                    { value: avgRating,  sub: "Avaliação", extra: "★" },
-                    { value: totalReviews.toString(), sub: "Reviews", extra: null },
+                    { value: totalSolutions.toString(),              sub: "Soluções",  extra: null },
+                    { value: totalSales.toLocaleString("pt-BR"),     sub: "Vendas",    extra: null },
+                    { value: avgRating ?? "—",                       sub: "Avaliação", extra: avgRating ? "★" : null },
+                    { value: totalReviews.toString(),                sub: "Reviews",   extra: null },
                   ].map((s, i) => (
                     <div key={i} style={{
                       padding: "14px 28px", textAlign: "center", color: "white",
@@ -691,7 +659,13 @@ export default function CriadorProfilePage() {
                   ))}
                 </div>
               )
-              : (
+              : filteredSolutions.length === 0 ? (
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: "56px 24px", textAlign: "center" }}>
+                  <div style={{ fontSize: 40, marginBottom: 12 }}>📦</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 6 }}>Nenhuma solução publicada ainda</div>
+                  <div style={{ fontSize: 14, color: "#6b7280" }}>Este criador ainda não publicou soluções.</div>
+                </div>
+              ) : (
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
                   {filteredSolutions.map((sol, i) => <SolutionCard key={i} sol={sol} />)}
                 </div>
@@ -714,26 +688,34 @@ export default function CriadorProfilePage() {
                   <Skeleton w={160} h={14} />
                   {[1,2,3,4,5].map(i => <Skeleton key={i} w="100%" h={16} />)}
                 </div>
+              ) : totalReviews === 0 ? (
+                <div style={{ textAlign: "center", padding: "16px 0" }}>
+                  <div style={{ fontSize: 32, marginBottom: 8 }}>⭐</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Sem avaliações ainda</div>
+                  <div style={{ fontSize: 13, color: "#6b7280" }}>As avaliações aparecerão aqui após as primeiras vendas.</div>
+                </div>
               ) : (
                 <>
                   <div style={{ fontSize: 64, fontWeight: 900, color: "#111827", textAlign: "center", lineHeight: 1 }}>{avgRating}</div>
                   <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
-                    <Stars rating={5} size={28} />
+                    <Stars rating={Math.round(Number(avgRating))} size={28} />
                   </div>
                   <div style={{ fontSize: 13, color: "#6b7280", textAlign: "center", marginTop: 8 }}>
-                    Baseado em {totalReviews || 157} avaliações
+                    Baseado em {totalReviews} avaliação{totalReviews !== 1 ? "ões" : ""}
                   </div>
-                  <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-                    {displayRatingBars.map(rb => (
-                      <div key={rb.star} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                        <span style={{ fontSize: 13, color: "#374151", width: 24 }}>{rb.star}★</span>
-                        <div style={{ flex: 1, height: 8, background: "#f3f4f6", borderRadius: 4, overflow: "hidden" }}>
-                          <div style={{ width: `${rb.pct}%`, height: "100%", background: "#f59e0b", borderRadius: 4 }} />
+                  {displayRatingBars.length > 0 && (
+                    <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 8 }}>
+                      {displayRatingBars.map(rb => (
+                        <div key={rb.star} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <span style={{ fontSize: 13, color: "#374151", width: 24 }}>{rb.star}★</span>
+                          <div style={{ flex: 1, height: 8, background: "#f3f4f6", borderRadius: 4, overflow: "hidden" }}>
+                            <div style={{ width: `${rb.pct}%`, height: "100%", background: "#f59e0b", borderRadius: 4 }} />
+                          </div>
+                          <span style={{ fontSize: 13, color: "#6b7280", width: 28, textAlign: "right" }}>{rb.count}</span>
                         </div>
-                        <span style={{ fontSize: 13, color: "#6b7280", width: 28, textAlign: "right" }}>{rb.count}</span>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -754,7 +736,12 @@ export default function CriadorProfilePage() {
                       <Skeleton w="70%" h={14} />
                     </div>
                   ))
-                : displayReviews.map((rev, i) => (
+                : displayReviews.length === 0 ? (
+                    <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: "48px 24px", textAlign: "center" }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 6 }}>Nenhuma avaliação ainda.</div>
+                      <div style={{ fontSize: 14, color: "#6b7280" }}>As avaliações aparecerão aqui após as primeiras vendas.</div>
+                    </div>
+                  ) : displayReviews.map((rev, i) => (
                     <ReviewCard
                       key={i}
                       rev={rev}
@@ -781,32 +768,38 @@ export default function CriadorProfilePage() {
                     <Skeleton w="80%" h={16} />
                   </div>
                 )
-                : (
+                : displayBio ? (
                   <p style={{ fontSize: 15, color: "#374151", lineHeight: 1.7, margin: 0 }}>
                     {displayBio}
                   </p>
+                ) : (
+                  <p style={{ fontSize: 15, color: "#9ca3af", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>
+                    Este criador ainda não adicionou uma bio.
+                  </p>
                 )
               }
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
-                {(Array.isArray(displayTags) ? displayTags : MOCK_ABOUT_TAGS).map(tag => (
-                  <span key={tag} style={{ background: "#eff6ff", color: "#2563EB", borderRadius: 999, padding: "4px 14px", fontSize: 13 }}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              {displayTags.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
+                  {displayTags.map(tag => (
+                    <span key={tag} style={{ background: "#eff6ff", color: "#2563EB", borderRadius: 999, padding: "4px 14px", fontSize: 13 }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24, marginTop: 16 }}>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>Informações</h3>
               {[
-                {
+                ...(displayLocation ? [{
                   icon: <svg width="18" height="18" fill="none" stroke="#6b7280" strokeWidth="1.75" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>,
                   text: displayLocation,
-                },
-                {
+                }] : []),
+                ...(displayMemberSince ? [{
                   icon: <svg width="18" height="18" fill="none" stroke="#6b7280" strokeWidth="1.75" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>,
                   text: `Membro desde ${displayMemberSince}`,
-                },
+                }] : []),
                 {
                   icon: <svg width="18" height="18" fill="none" stroke="#16a34a" strokeWidth="1.75" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
                   text: "Identidade verificada",
