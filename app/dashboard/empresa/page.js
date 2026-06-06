@@ -70,7 +70,7 @@ export default function EmpresaDashboard() {
         const [profileRes, subsRes] = await Promise.all([
           supabase.from("profiles").select("nome").eq("id", uid).single(),
           supabase.from("subscriptions")
-            .select("id, status, created_at, solutions(id, titulo, categoria, preco, access_url, creator_id)")
+            .select("id, status, created_at, solutions(id, titulo, categoria, preco, access_url, creator_id, tipo)")
             .eq("user_id", uid)
             .order("created_at", { ascending: false }),
         ]);
@@ -259,12 +259,15 @@ export default function EmpresaDashboard() {
                     <td style={{ padding: "12px 20px", fontSize: 13, color: "#111827", fontWeight: 600, borderBottom: "1px solid #f9fafb" }}>{fmtBRL(sub.solutions?.preco)}</td>
                     <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{fmtDate(sub.created_at)}</td>
                     <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
-                      {sub.solutions?.access_url ? (
-                        <a href={sub.solutions.access_url} target="_blank" rel="noreferrer" style={{ color: "#6366F1", fontSize: 13, fontWeight: 500, textDecoration: "none" }}>
-                          Acessar →
+                      {sub.solutions?.tipo === "prompt_pack" || sub.solutions?.tipo === "prompt" ? (
+                        <a href={`/dashboard/empresa/solucoes/${sub.solutions.id}`}
+                          style={{ color: "#6366F1", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+                          Ver Prompts →
                         </a>
                       ) : (
-                        <span style={{ color: "#9ca3af", fontSize: 13 }}>—</span>
+                        <span title="Disponível em breve" style={{ color: "#9ca3af", fontSize: 13, cursor: "default" }}>
+                          Abrir Workspace →
+                        </span>
                       )}
                     </td>
                     <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>

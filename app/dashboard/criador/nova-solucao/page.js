@@ -80,6 +80,7 @@ export default function NovaSolucaoPage() {
   const [searchFocused, setSearchFocused] = useState(false)
 
   const [form, setForm] = useState({
+    tipo: 'agente',
     nome: '',
     descricao_curta: '',
     categoria: '',
@@ -91,6 +92,7 @@ export default function NovaSolucaoPage() {
     requirements: '',
     support_channel: 'email',
     demo_url: '',
+    conteudo_pack: '',
   })
   const [coverFile, setCoverFile] = useState(null)
   const [coverPreview, setCoverPreview] = useState(null)
@@ -258,6 +260,58 @@ export default function NovaSolucaoPage() {
             ← Voltar
           </button>
         </div>
+
+        {/* ── Tipo de Produto ── */}
+        {/* SQL (run once in Supabase):
+            ALTER TABLE solutions ADD COLUMN IF NOT EXISTS tipo TEXT DEFAULT 'agente';
+            ALTER TABLE solutions ADD COLUMN IF NOT EXISTS conteudo_pack TEXT; */}
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ ...lbl, marginBottom: 10, display: 'block' }}>Tipo de Produto *</label>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {[
+              { key: 'agente',      icon: '🤖', title: 'Agente IA',    desc: 'Solução que roda dentro do Workspace WePrompt', badge: 'Requer Workspace' },
+              { key: 'prompt_pack', icon: '📄', title: 'Prompt Pack',  desc: 'Coleção de prompts para usar em qualquer IA',   badge: 'Entrega digital' },
+            ].map(opt => (
+              <button key={opt.key} type="button" onClick={() => set('tipo', opt.key)}
+                style={{
+                  border: form.tipo === opt.key ? `2px solid ${ACCENT}` : `1px solid ${BORDER}`,
+                  background: form.tipo === opt.key ? 'rgba(99,102,241,0.04)' : 'white',
+                  borderRadius: 12, padding: 20, textAlign: 'left', cursor: 'pointer',
+                  transition: 'all 0.15s', fontFamily: 'inherit',
+                }}
+              >
+                <div style={{ fontSize: 28, marginBottom: 10 }}>{opt.icon}</div>
+                <div style={{ fontWeight: 700, color: '#111827', fontSize: 15, marginBottom: 4 }}>{opt.title}</div>
+                <div style={{ color: '#6b7280', fontSize: 13, lineHeight: 1.5, marginBottom: 10 }}>{opt.desc}</div>
+                <span style={{
+                  fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 99,
+                  background: form.tipo === opt.key ? '#EEF2FF' : '#f3f4f6',
+                  color: form.tipo === opt.key ? ACCENT : '#6b7280',
+                }}>{opt.badge}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Conteúdo do Pack (only for prompt_pack) ── */}
+        {form.tipo === 'prompt_pack' && (
+          <SectionCard title="Conteúdo do Pack">
+            <div style={{ marginBottom: 4 }}>
+              <label style={lbl}>Cole aqui os seus prompts *</label>
+              <textarea
+                value={form.conteudo_pack}
+                onChange={e => set('conteudo_pack', e.target.value)}
+                placeholder={"## Prompt 1 — Nome do Prompt\n\nDescrição do prompt...\n\n[PROMPT]\nCole aqui o prompt completo\n\n---\n\n## Prompt 2..."}
+                style={{ ...inputStyle(false), minHeight: 220, resize: 'vertical', lineHeight: 1.7 }}
+                onFocus={onFocus}
+                onBlur={e => onBlur(e, false)}
+              />
+              <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6 }}>
+                Este conteúdo será exibido para o comprador após a compra. Use ## para títulos, [PROMPT] para blocos de prompt e --- para separadores.
+              </p>
+            </div>
+          </SectionCard>
+        )}
 
         {/* SECTION 1 — Informações Básicas */}
         <SectionCard title="1. Informações Básicas">

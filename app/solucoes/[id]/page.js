@@ -481,10 +481,21 @@ function SolutionDetail() {
 
         {/* ── LEFT COLUMN ── */}
         <div>
-          {/* Category badge */}
-          <span style={{ display: "inline-block", background: "#f3f4f6", color: "#374151", borderRadius: 999, fontSize: 12, fontWeight: 600, padding: "3px 10px" }}>
-            {solution.categoria}
-          </span>
+          {/* Category + tipo badges */}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <span style={{ display: "inline-block", background: "#f3f4f6", color: "#374151", borderRadius: 999, fontSize: 12, fontWeight: 600, padding: "3px 10px" }}>
+              {solution.categoria}
+            </span>
+            {solution.tipo === "prompt_pack" || solution.tipo === "prompt" ? (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#F3E8FF", color: "#7C3AED", borderRadius: 999, fontSize: 12, fontWeight: 700, padding: "3px 10px" }}>
+                📄 Prompt Pack
+              </span>
+            ) : (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#EEF2FF", color: "#4338CA", borderRadius: 999, fontSize: 12, fontWeight: 700, padding: "3px 10px" }}>
+                🤖 Agente IA
+              </span>
+            )}
+          </div>
 
           {/* Title */}
           <h1 style={{ fontSize: 36, fontWeight: 800, color: "#111827", marginTop: 12, lineHeight: 1.2, margin: "12px 0 0" }}>
@@ -634,8 +645,17 @@ function SolutionDetail() {
                 style={{ width: "100%", background: checkoutLoading ? "rgba(17,24,39,0.5)" : "#111827", color: "#fff", borderRadius: 10, padding: "14px", fontSize: 16, fontWeight: 700, marginTop: 16, border: "none", cursor: checkoutLoading ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
                 onMouseEnter={e => { if (!checkoutLoading) e.currentTarget.style.background = "#374151"; }}
                 onMouseLeave={e => { if (!checkoutLoading) e.currentTarget.style.background = "#111827"; }}>
-                {checkoutLoading ? "Redirecionando…" : solution.preco != null ? "Adquirir solução →" : "Começar gratuitamente →"}
+                {checkoutLoading ? "Redirecionando…" : solution.preco != null
+                  ? (solution.tipo === "prompt_pack" || solution.tipo === "prompt" ? "Adquirir Prompt Pack →" : "Adquirir solução →")
+                  : "Começar gratuitamente →"}
               </button>
+            )}
+
+            {/* Prompt Pack info box */}
+            {(solution.tipo === "prompt_pack" || solution.tipo === "prompt") && !alreadyOwned && (
+              <div style={{ marginTop: 12, padding: "12px 14px", background: "#F3E8FF", border: "1px solid #DDD6FE", borderRadius: 10, fontSize: 13, color: "#6D28D9", lineHeight: 1.6 }}>
+                📄 Após a compra, você terá acesso imediato ao conteúdo completo dentro da plataforma.
+              </div>
             )}
 
             {/* Secondary buttons */}

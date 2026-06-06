@@ -102,7 +102,7 @@ function SolutionCard({ solution }) {
       }}
     >
       {/* Thumbnail */}
-      <div style={{ height: 180, flexShrink: 0, overflow: "hidden" }}>
+      <div style={{ height: 180, flexShrink: 0, overflow: "hidden", position: "relative" }}>
         {solution.cover_url ? (
           <img
             src={solution.cover_url}
@@ -121,6 +121,16 @@ function SolutionCard({ solution }) {
             </span>
           </div>
         )}
+        {/* Product type badge */}
+        <span style={{
+          position: "absolute", bottom: 10, left: 10,
+          fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 99,
+          background: solution.tipo === "prompt_pack" || solution.tipo === "prompt"
+            ? "rgba(124,58,237,0.85)" : "rgba(99,102,241,0.85)",
+          color: "white", backdropFilter: "blur(4px)",
+        }}>
+          {solution.tipo === "prompt_pack" || solution.tipo === "prompt" ? "📄 Prompt Pack" : "🤖 Agente IA"}
+        </span>
       </div>
 
       {/* Body */}
