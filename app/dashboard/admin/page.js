@@ -1242,19 +1242,37 @@ export default function AdminDashboard() {
       setUser(session.user);
       setProfile(prof);
 
-      const [solRes, profRes, subsRes] = await Promise.all([
+      const [solRes, subsRes] = await Promise.all([
         supabase.from("solutions")
           .select("*, profiles:creator_id(nome)")
-          .order("created_at", { ascending: false }),
-        supabase.from("profiles")
-          .select("*")
           .order("created_at", { ascending: false }),
         supabase.from("subscriptions")
           .select("*, solutions(preco)")
           .order("created_at", { ascending: false }),
       ]);
+
+      // Try RPC that joins auth.users to get emails; fall back to direct query
+      // SQL to create the function (run once in Supabase SQL editor):
+      // CREATE OR REPLACE FUNCTION get_users_with_email()
+      // RETURNS TABLE(id uuid, nome text, email text, role text, status text, created_at timestamptz)
+      // LANGUAGE sql SECURITY DEFINER AS $$
+      //   SELECT p.id, p.nome, u.email, p.role, p.status, p.created_at
+      //   FROM profiles p JOIN auth.users u ON p.id = u.id
+      // $$;
+      let profData = [];
+      const { data: rpcData, error: rpcErr } = await supabase
+        .rpc("get_users_with_email")
+        .order("created_at", { ascending: false });
+      if (!rpcErr && rpcData) {
+        profData = rpcData;
+      } else {
+        const { data: fallback } = await supabase
+          .from("profiles").select("*").order("created_at", { ascending: false });
+        profData = fallback || [];
+      }
+
       if (solRes.data)  setSolutions(solRes.data);
-      if (profRes.data) setProfiles(profRes.data);
+      setProfiles(profData);
       if (subsRes.data) setSubscriptions(subsRes.data);
 
       setLoading(false);
