@@ -66,12 +66,16 @@ export default function EmpresaDashboard() {
 
       const uid = session.user.id;
 
+      // RLS note — run once in Supabase SQL Editor if subscriptions return empty:
+      // CREATE POLICY "Empresas can read own subscriptions" ON subscriptions
+      //   FOR SELECT USING (auth.uid() = business_id);
       try {
         const [profileRes, subsRes] = await Promise.all([
           supabase.from("profiles").select("nome").eq("id", uid).single(),
           supabase.from("subscriptions")
             .select("id, status, created_at, solutions(id, titulo, categoria, preco, access_url, creator_id, tipo)")
-            .eq("user_id", uid)
+            .eq("business_id", uid)   // fixed: was incorrectly "user_id"
+            .eq("status", "active")
             .order("created_at", { ascending: false }),
         ]);
 
