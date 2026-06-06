@@ -19,10 +19,21 @@ import {
   Link,
   Share2,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import FloatingIconsHero from "./components/FloatingIconsHero";
-import PlatformScrollDemo from "./components/PlatformScrollDemo";
-import SolutionsShowcase from "./components/SolutionsShowcase";
-import Testimonials from "./components/Testimonials";
+
+const PlatformScrollDemo = dynamic(() => import("./components/PlatformScrollDemo"), {
+  ssr: false,
+  loading: () => <div style={{ height: 600 }} />,
+});
+const SolutionsShowcase = dynamic(() => import("./components/SolutionsShowcase"), {
+  ssr: false,
+  loading: () => <div style={{ height: 500 }} />,
+});
+const Testimonials = dynamic(() => import("./components/Testimonials"), {
+  ssr: false,
+  loading: () => <div style={{ height: 400 }} />,
+});
 
 /* ─── Animation helpers ──────────────────────────────────────────── */
 const fadeUp = {
@@ -146,7 +157,7 @@ function Navbar() {
         }}>
           {/* Logo */}
           <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: 'auto', display: 'block' }} />
+            <img src="/logo.png" alt="WePrompt" width={160} height={35} style={{ width: 160, height: 'auto', display: 'block' }} />
           </a>
 
           {/* Center */}
@@ -209,7 +220,7 @@ function Navbar() {
           </div>
 
           {/* Hamburger */}
-          <button className="nav-hamburger"
+          <button className="nav-hamburger" aria-label="Abrir menu"
             onClick={() => setMenuOpen(true)}
             style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer", padding: 4, alignItems: "center" }}>
             <Menu size={22} />
@@ -223,8 +234,8 @@ function Navbar() {
             background: "#fff", display: "flex", flexDirection: "column", padding: "0 24px",
           }}>
             <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <img src="/logo.png" alt="WePrompt" style={{ height: 28 }} />
-              <button onClick={() => setMenuOpen(false)} style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer" }}>
+              <img src="/logo.png" alt="WePrompt" width={127} height={28} style={{ height: 28, width: 'auto' }} loading="lazy" />
+              <button onClick={() => setMenuOpen(false)} aria-label="Fechar menu" style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer" }}>
                 <X size={22} />
               </button>
             </div>
@@ -655,7 +666,7 @@ const Footer = () => (
         {/* Left: brand */}
         <div style={{ maxWidth: 480 }}>
           <div style={{ marginBottom: 20 }}>
-            <img src="/logo-white.png" alt="WePrompt" style={{ width: 140, height: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }} />
+            <img src="/logo-white.png" alt="WePrompt" width={140} height={31} loading="lazy" style={{ width: 140, height: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }} />
           </div>
           <p style={{
             fontSize: "clamp(24px, 3vw, 36px)",

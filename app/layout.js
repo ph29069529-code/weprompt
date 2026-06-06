@@ -1,7 +1,14 @@
 import "./globals.css";
+import { Inter } from "next/font/google";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import NavbarController from "./components/NavbarController";
 import GlobalDrawers from "@/components/GlobalDrawers";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata = {
   metadataBase: new URL("https://weprompt.app.br"),
@@ -46,11 +53,12 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/logo-icon-white.png" />
         <link rel="apple-touch-icon" href="/logo-icon-white.png" />
         <meta name="theme-color" content="#6366F1" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://upload.wikimedia.org" />
+        <link rel="preconnect" href="https://cdn.simpleicons.org" />
+        <link rel="dns-prefetch" href="https://upload.wikimedia.org" />
+        <link rel="dns-prefetch" href="https://cdn.simpleicons.org" />
       </head>
-      <body style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }} className="min-h-full flex flex-col">
+      <body className={`${inter.variable} min-h-full flex flex-col`}>
         <NavbarController />
         {children}
         <PWAInstallPrompt />

@@ -31,7 +31,7 @@ body {
     radial-gradient(circle at 80% 20%, rgba(139,92,246,0.03) 0%, transparent 50%),
     radial-gradient(circle at 50% 80%, rgba(99,102,241,0.02) 0%, transparent 50%);
   color: #0A0F1E;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Reusable card */
@@ -96,26 +96,6 @@ body {
 @keyframes shimmer {
   0%   { background-position: 200% 0 }
   100% { background-position: -200% 0 }
-}
-
-/* Marquee animations */
-@keyframes marquee-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-@keyframes marquee-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
-}
-.marquee-left {
-  display: flex;
-  max-width: none;
-  animation: marquee-left 30s linear infinite;
-}
-.marquee-right {
-  display: flex;
-  max-width: none;
-  animation: marquee-right 25s linear infinite;
 }
 
 /* RetroGrid animation */

@@ -98,6 +98,8 @@ function FloatingIcon({ iconData, index, mouseX, mouseY }) {
         <img
           src={iconData.src}
           alt={iconData.name}
+          width={40}
+          height={40}
           style={{ width: 40, height: 40, objectFit: 'contain' }}
         />
       </motion.div>
