@@ -118,12 +118,12 @@ export default function WorkspacePage() {
       if (!session) { router.replace("/login"); return; }
       setUser(session.user);
 
-      /* verify subscription */
+      /* verify subscription — business_id is the empresa user column */
       const { data: sub } = await supabase
         .from("subscriptions")
         .select("id")
         .eq("solution_id", id)
-        .eq("user_id", session.user.id)
+        .eq("business_id", session.user.id)
         .eq("status", "active")
         .limit(1)
         .maybeSingle();
