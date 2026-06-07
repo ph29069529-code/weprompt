@@ -101,8 +101,9 @@ export default function WorkspacePage() {
   const [sessionId,   setSessionId]   = useState(null);
   const [sessions,    setSessions]    = useState([]);
 
-  const messagesEndRef = useRef(null);
-  const textareaRef    = useRef(null);
+  const messagesEndRef  = useRef(null);
+  const textareaRef     = useRef(null);
+  const accessTokenRef  = useRef(null);
   const [copiedId, copy] = useCopy();
 
   /* auto-scroll */
@@ -117,6 +118,7 @@ export default function WorkspacePage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { router.replace("/login"); return; }
       setUser(session.user);
+      accessTokenRef.current = session.access_token;
 
       /* verify subscription — business_id is the empresa user column */
       const { data: sub } = await supabase
@@ -196,10 +198,12 @@ export default function WorkspacePage() {
     try {
       const res = await fetch("/api/workspace/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessTokenRef.current}`,
+        },
         body: JSON.stringify({
           messages: withUser.map((m) => ({ role: m.role, content: m.content })),
-          systemPrompt: solution?.agent_system_prompt,
           solutionId: solution?.id,
         }),
       });

@@ -154,11 +154,16 @@ function CadastroForm() {
       return;
     }
 
-    fetch("/api/emails/boas-vindas", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, nome, role }),
-    }).catch(() => {});
+    if (data.session) {
+      fetch("/api/emails/boas-vindas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${data.session.access_token}`,
+        },
+        body: JSON.stringify({ nome, role }),
+      }).catch(() => {});
+    }
 
     if (data.session) {
       const { error: profileError } = await supabase

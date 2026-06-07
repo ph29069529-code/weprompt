@@ -14,7 +14,7 @@ const supabaseAdmin = createClient(
 export const runtime = "nodejs";
 
 export async function GET() {
-  return Response.json({ ok: true });
+  return new Response(null, { status: 405 });
 }
 
 export async function POST(request) {

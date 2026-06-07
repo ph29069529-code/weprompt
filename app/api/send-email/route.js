@@ -14,12 +14,32 @@ const supabaseAdmin = createClient(
 );
 
 export async function POST(request) {
+  const token = request.headers.get("authorization")?.replace("Bearer ", "");
+  if (!token) {
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+
+  const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+  if (authError || !user) {
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 });
+  }
+
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile || profile.role !== 'admin') {
+    return NextResponse.json({ error: 'Acesso negado.' }, { status: 403 });
+  }
+
   const { type, to, user_id, solution_titulo, rejection_reason } = await request.json();
 
   let recipientEmail = to;
   if (!recipientEmail && user_id) {
-    const { data: { user } } = await supabaseAdmin.auth.admin.getUserById(user_id);
-    recipientEmail = user?.email;
+    const { data: { user: targetUser } } = await supabaseAdmin.auth.admin.getUserById(user_id);
+    recipientEmail = targetUser?.email;
   }
 
   if (!recipientEmail) {
@@ -46,6 +66,6 @@ export async function POST(request) {
     return NextResponse.json({ sent: true });
   } catch (err) {
     console.error('[send-email] error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Erro interno. Tente novamente.' }, { status: 500 });
   }
 }

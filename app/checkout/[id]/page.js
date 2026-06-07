@@ -17,9 +17,8 @@ const GREEN      = "#059669";
 
 function getDashboardUrl(session) {
   if (!session) return "/login";
-  const role  = session.user.user_metadata?.role;
-  const email = session.user.email;
-  if (email === "ph29069529@gmail.com") return "/dashboard/admin";
+  const role = session.user.user_metadata?.role;
+  if (role === "admin") return "/dashboard/admin";
   if (role === "criador") return "/dashboard/criador";
   return "/dashboard/empresa";
 }
@@ -353,6 +352,7 @@ function CheckoutContent({ isMobile }) {
   const [solution, setSolution]       = useState(null);
   const [creator, setCreator]         = useState(null);
   const [user, setUser]               = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
   const [alreadyOwned, setAlreadyOwned] = useState(false);
   const [loading, setLoading]         = useState(true);
   const [notFound, setNotFound]       = useState(false);
@@ -382,6 +382,7 @@ function CheckoutContent({ isMobile }) {
         return;
       }
       setUser(sess.user);
+      setAccessToken(sess.access_token);
 
       const [creatorRes, ownedRes] = await Promise.all([
         sol.creator_id
@@ -405,12 +406,12 @@ function CheckoutContent({ isMobile }) {
     try {
       const res = await fetch("/api/create-checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`,
+        },
         body: JSON.stringify({
           solution_id: solution.id,
-          solution_titulo: solution.titulo,
-          solution_preco: solution.preco,
-          user_id: user.id,
           payment_type: solution.payment_type || "subscription",
         }),
       });

@@ -110,9 +110,8 @@ function ChevronDown({ open }) {
 
 function getDashboardUrl(session) {
   if (!session) return "/dashboard/empresa";
-  const email = session.user?.email;
   const role = session.user?.user_metadata?.role;
-  if (email === "ph29069529@gmail.com") return "/dashboard/admin";
+  if (role === "admin") return "/dashboard/admin";
   if (role === "criador") return "/dashboard/criador";
   return "/dashboard/empresa";
 }

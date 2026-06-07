@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, Fragment } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
 
 const BLUE   = "#6366F1";
@@ -380,6 +381,7 @@ const TABS = [
 ];
 
 export default function AdminPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab]         = useState("dashboard");
   const [solutions, setSolutions]         = useState([]);
   const [profiles, setProfiles]           = useState([]);
@@ -389,6 +391,11 @@ export default function AdminPage() {
 
   useEffect(() => {
     async function load() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { router.replace("/login"); return; }
+      const { data: prof } = await supabase.from("profiles").select("role").eq("id", session.user.id).single();
+      if (!prof || prof.role !== "admin") { router.replace("/"); return; }
+
       const [solRes, profRes] = await Promise.all([
         supabase.from("solutions").select("*, profiles:creator_id(nome)").order("created_at", { ascending: false }),
         supabase.from("profiles").select("*").order("created_at", { ascending: false }),
@@ -398,7 +405,7 @@ export default function AdminPage() {
       setLoading(false);
     }
     load().catch(() => setLoading(false));
-  }, []);
+  }, [router]);
 
   async function handleApprove(id) {
     setActionLoading(id);

@@ -125,7 +125,7 @@ export default function PromptPackPage() {
         .from("subscriptions")
         .select("id, created_at")
         .eq("solution_id", id)
-        .eq("user_id", uid)
+        .eq("business_id", uid)
         .eq("status", "active")
         .limit(1)
         .single();

@@ -43,13 +43,13 @@ export async function POST(request) {
       tipo: body.tipo || 'agente',
       conteudo_pack: body.conteudo_pack || null,
       agent_system_prompt: body.agent_system_prompt || null,
-      status: body.status || 'pending'
+      status: 'pending'
     })
     .select()
     .single()
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Erro interno. Tente novamente.' }, { status: 500 })
   }
 
   return NextResponse.json({ success: true, solution: data })
