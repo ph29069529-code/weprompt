@@ -188,17 +188,16 @@ export default function Footer() {
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 10,
-          background: 'rgba(255,255,255,0.8)',
-          backdropFilter: 'blur(8px)',
+          background: 'white',
           borderRadius: 24,
-          border: '2px solid #E5E7EB',
+          border: '2px solid #6366F1',
           padding: 12,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-          transition: 'border-color 0.3s',
+          boxShadow: '0 8px 32px rgba(99,102,241,0.25)',
+          transition: 'box-shadow 0.3s',
           cursor: 'pointer',
         }}
-          onMouseEnter={e => e.currentTarget.style.borderColor = '#6366F1'}
-          onMouseLeave={e => e.currentTarget.style.borderColor = '#E5E7EB'}
+          onMouseEnter={e => e.currentTarget.style.boxShadow = '0 12px 40px rgba(99,102,241,0.4)'}
+          onMouseLeave={e => e.currentTarget.style.boxShadow = '0 8px 32px rgba(99,102,241,0.25)'}
         >
           <div style={{
             width: 64, height: 64,
