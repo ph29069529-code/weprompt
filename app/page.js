@@ -2,10 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "./lib/supabase";
 import { motion } from "framer-motion";
 import {
-  ChevronDown,
   MessageSquare,
   Mail,
   TrendingUp,
@@ -13,11 +11,6 @@ import {
   Smartphone,
   Megaphone,
   CheckCircle,
-  Menu,
-  X,
-  Globe,
-  Link,
-  Share2,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import FloatingIconsHero from "./components/FloatingIconsHero";
@@ -46,221 +39,47 @@ const stagger = {
 };
 const vp = { once: true, margin: "-80px" };
 
-/* ─── Navbar ─────────────────────────────────────────────────────── */
-function getDashboardUrl(user) {
-  if (!user) return "/dashboard/empresa";
-  if (user.email === "ph29069529@gmail.com") return "/dashboard/admin";
-  const role = user.user_metadata?.role;
-  if (role === "criador") return "/dashboard/criador";
-  return "/dashboard/empresa";
-}
-
-function Navbar() {
-  const router = useRouter();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [hovLink, setHovLink] = useState(null);
-  const [hovCta, setHovCta] = useState(false);
-  const [user, setUser] = useState(null);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > window.innerHeight * 0.8);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const links = [
-    { label: "Soluções", href: "/solucoes" },
-    { label: "Preços", href: "/precos" },
-    { label: "Para Criadores", href: "/criadores" },
-    { label: "Como Funciona", href: "/#como-funciona" },
-  ];
-
+/* ─── Page-level styles ───────────────────────────────────────────── */
+function PageStyles() {
   return (
-    <>
-      <style>{`
-        @keyframes blob1 {
-          0%,100%{transform:translate(0,0) scale(1)}
-          33%{transform:translate(60px,40px) scale(1.1)}
-          66%{transform:translate(-30px,20px) scale(0.95)}
-        }
-        @keyframes blob2 {
-          0%,100%{transform:translate(0,0) scale(1)}
-          33%{transform:translate(-50px,30px) scale(1.05)}
-          66%{transform:translate(40px,-20px) scale(0.9)}
-        }
-        @keyframes blob3 {
-          0%,100%{transform:translate(0,0) scale(1)}
-          33%{transform:translate(30px,-40px) scale(1.08)}
-          66%{transform:translate(-60px,10px) scale(0.97)}
-        }
-        @keyframes bounce-arrow {
-          0%,100%{transform:translateY(0)}
-          50%{transform:translateY(6px)}
-        }
-        @keyframes marquee-left {
-          0%{transform:translateX(0)}
-          100%{transform:translateX(-50%)}
-        }
-        @keyframes marquee-right {
-          0%{transform:translateX(-50%)}
-          100%{transform:translateX(0)}
-        }
-        .nav-links { display: flex; }
-        .nav-right { display: flex; }
-        .nav-hamburger { display: none !important; }
-        @media (max-width: 768px) {
-          .nav-links { display: none !important; }
-          .nav-right { display: none !important; }
-          .nav-hamburger { display: flex !important; }
-          .hero-h1 { font-size: clamp(40px,10vw,64px) !important; }
-          .section-pad { padding: 80px 24px !important; }
-          .two-col { flex-direction: column !important; gap: 40px !important; }
-          .two-col-rev { flex-direction: column-reverse !important; gap: 40px !important; }
-          .grid-3 { grid-template-columns: 1fr !important; }
-          .grid-2 { grid-template-columns: 1fr !important; }
-          .footer-grid { grid-template-columns: 1fr 1fr !important; }
-          .footer-bottom { flex-direction: column !important; gap: 8px !important; }
-          .hero-pad { padding: 100px 24px 64px !important; }
-        }
-        @media (max-width: 480px) {
-          .footer-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
-
-      <nav style={{
-        position: "sticky", top: 0, zIndex: 50,
-        background: "rgba(255,255,255,0.92)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "1px solid #E5E7EB",
-        height: 64,
-      }}>
-        <div style={{
-          maxWidth: 1200, margin: "0 auto",
-          padding: "0 48px", height: "100%",
-          display: "flex", alignItems: "center",
-          justifyContent: "space-between",
-        }}>
-          {/* Logo */}
-          <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-            <img src="/logo.png" alt="WePrompt" width={160} height={35} style={{ width: 160, height: 'auto', display: 'block' }} />
-          </a>
-
-          {/* Center */}
-          <div className="nav-links" style={{ alignItems: "center", gap: 32 }}>
-            {links.map((l) => (
-              <a key={l.label} href={l.href}
-                onMouseEnter={() => setHovLink(l.label)}
-                onMouseLeave={() => setHovLink(null)}
-                style={{
-                  color: hovLink === l.label ? "#0A0F1E" : "#6B7280",
-                  fontSize: 14, textDecoration: "none", transition: "color 0.2s",
-                }}>
-                {l.label}
-              </a>
-            ))}
-          </div>
-
-          {/* Right */}
-          <div className="nav-right" style={{ alignItems: "center", gap: 16 }}>
-            {user ? (
-              <a href={getDashboardUrl(user)}
-                onMouseEnter={() => setHovCta(true)}
-                onMouseLeave={() => setHovCta(false)}
-                style={{
-                  background: hovCta ? "#1a2035" : "#0A0F1E",
-                  color: "#fff", textDecoration: "none",
-                  border: "none",
-                  borderRadius: 8, padding: "10px 20px",
-                  fontSize: 14, fontWeight: 600,
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-                  transition: "all 0.2s",
-                }}>
-                Meu Dashboard →
-              </a>
-            ) : (
-              <>
-                <a href="/login"
-                  style={{ color: "#6B7280", fontSize: 14, textDecoration: "none" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = "#0A0F1E")}
-                  onMouseLeave={e => (e.currentTarget.style.color = "#6B7280")}>
-                  Entrar
-                </a>
-                <button
-                  onClick={() => router.push("/cadastro")}
-                  onMouseEnter={() => setHovCta(true)}
-                  onMouseLeave={() => setHovCta(false)}
-                  style={{
-                    background: hovCta ? "#1a2035" : "#0A0F1E",
-                    color: "#fff",
-                    border: "none", borderRadius: 8,
-                    padding: "10px 20px", fontSize: 14, fontWeight: 600,
-                    cursor: "pointer",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-                    transition: "all 0.2s",
-                  }}>
-                  Começar grátis →
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Hamburger */}
-          <button className="nav-hamburger" aria-label="Abrir menu"
-            onClick={() => setMenuOpen(true)}
-            style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer", padding: 4, alignItems: "center" }}>
-            <Menu size={22} />
-          </button>
-        </div>
-
-        {/* Mobile overlay */}
-        {menuOpen && (
-          <div style={{
-            position: "fixed", inset: 0, zIndex: 100,
-            background: "#fff", display: "flex", flexDirection: "column", padding: "0 24px",
-          }}>
-            <div style={{ height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <img src="/logo.png" alt="WePrompt" width={127} height={28} style={{ height: 28, width: 'auto' }} loading="lazy" />
-              <button onClick={() => setMenuOpen(false)} aria-label="Fechar menu" style={{ background: "none", border: "none", color: "#6B7280", cursor: "pointer" }}>
-                <X size={22} />
-              </button>
-            </div>
-            <nav style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 24 }}>
-              {links.map((l) => (
-                <a key={l.label} href={l.href} onClick={() => setMenuOpen(false)}
-                  style={{ fontSize: 18, fontWeight: 600, color: "#0A0F1E", textDecoration: "none", padding: "14px 0", borderBottom: "1px solid #F3F4F6" }}>
-                  {l.label}
-                </a>
-              ))}
-            </nav>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 32 }}>
-              {user ? (
-                <a href={getDashboardUrl(user)} onClick={() => setMenuOpen(false)} style={{ background: "#0A0F1E", color: "#fff", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>Meu Dashboard →</a>
-              ) : (
-                <>
-                  <a href="/login" onClick={() => setMenuOpen(false)} style={{ border: "1.5px solid #E5E7EB", color: "#0A0F1E", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>Entrar</a>
-                  <a href="/cadastro" onClick={() => setMenuOpen(false)} style={{ background: "#0A0F1E", color: "#fff", borderRadius: 10, padding: "14px 24px", fontSize: 15, fontWeight: 700, textDecoration: "none", textAlign: "center" }}>Começar grátis →</a>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </nav>
-    </>
+    <style>{`
+      @keyframes blob1 {
+        0%,100%{transform:translate(0,0) scale(1)}
+        33%{transform:translate(60px,40px) scale(1.1)}
+        66%{transform:translate(-30px,20px) scale(0.95)}
+      }
+      @keyframes blob2 {
+        0%,100%{transform:translate(0,0) scale(1)}
+        33%{transform:translate(-50px,30px) scale(1.05)}
+        66%{transform:translate(40px,-20px) scale(0.9)}
+      }
+      @keyframes blob3 {
+        0%,100%{transform:translate(0,0) scale(1)}
+        33%{transform:translate(30px,-40px) scale(1.08)}
+        66%{transform:translate(-60px,10px) scale(0.97)}
+      }
+      @keyframes bounce-arrow {
+        0%,100%{transform:translateY(0)}
+        50%{transform:translateY(6px)}
+      }
+      @keyframes marquee-left {
+        0%{transform:translateX(0)}
+        100%{transform:translateX(-50%)}
+      }
+      @keyframes marquee-right {
+        0%{transform:translateX(-50%)}
+        100%{transform:translateX(0)}
+      }
+      @media (max-width: 768px) {
+        .hero-h1 { font-size: clamp(40px,10vw,64px) !important; }
+        .section-pad { padding: 80px 24px !important; }
+        .two-col { flex-direction: column !important; gap: 40px !important; }
+        .two-col-rev { flex-direction: column-reverse !important; gap: 40px !important; }
+        .grid-3 { grid-template-columns: 1fr !important; }
+        .grid-2 { grid-template-columns: 1fr !important; }
+        .hero-pad { padding: 100px 24px 64px !important; }
+      }
+    `}</style>
   );
 }
 
@@ -646,175 +465,11 @@ function ForCreators() {
 }
 
 
-/* ─── Footer ─────────────────────────────────────────────────────── */
-const Footer = () => (
-  <footer style={{ background: "#0A0F1E",
-    borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-
-    {/* Top section — large brand statement */}
-    <div style={{
-      maxWidth: 1200, margin: "0 auto",
-      padding: "72px 48px 48px",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-    }}>
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "flex-end",
-        flexWrap: "wrap", gap: 40,
-      }}>
-        {/* Left: brand */}
-        <div style={{ maxWidth: 480 }}>
-          <div style={{ marginBottom: 20 }}>
-            <img src="/logo-white.png" alt="WePrompt" width={140} height={31} loading="lazy" style={{ width: 140, height: 'auto', display: 'block', filter: 'brightness(0) invert(1)' }} />
-          </div>
-          <p style={{
-            fontSize: "clamp(24px, 3vw, 36px)",
-            fontWeight: 800,
-            color: "white",
-            lineHeight: 1.2,
-            letterSpacing: "-0.02em",
-            margin: 0,
-          }}>
-            O futuro do trabalho<br />
-            <span style={{ color: "#6366F1" }}>
-              já chegou ao Brasil.
-            </span>
-          </p>
-          <p style={{
-            color: "rgba(255,255,255,0.4)",
-            fontSize: 15, lineHeight: 1.6,
-            marginTop: 16, marginBottom: 0,
-          }}>
-            O 1º marketplace de soluções de IA
-            da América Latina.
-          </p>
-        </div>
-
-        {/* Right: CTA */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <a href="/cadastro" style={{
-            display: "inline-flex",
-            alignItems: "center", gap: 8,
-            background: "#6366F1",
-            color: "white",
-            padding: "14px 28px",
-            borderRadius: 10,
-            fontWeight: 700,
-            fontSize: 15,
-            textDecoration: "none",
-            boxShadow: "0 4px 20px rgba(99,102,241,0.4)",
-          }}>
-            Começar grátis →
-          </a>
-          <span style={{
-            color: "rgba(255,255,255,0.3)",
-            fontSize: 13, textAlign: "center",
-          }}>
-            Sem cartão de crédito
-          </span>
-        </div>
-      </div>
-    </div>
-
-    {/* Middle section — links grid */}
-    <div style={{
-      maxWidth: 1200, margin: "0 auto",
-      padding: "48px 48px",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
-      display: "grid",
-      gridTemplateColumns: "repeat(4, 1fr)",
-      gap: 40,
-    }}>
-      {[
-        { title: "Plataforma", links: ["Catálogo", "Preços", "Como funciona", "Blog"] },
-        { title: "Para você", links: ["Para Empresas", "Para Criadores", "Sobre nós", "Contato"] },
-        { title: "Legal", links: [{ label: "Privacidade", href: "/privacidade" }, { label: "Termos", href: "/termos" }, { label: "Termos Criadores", href: "/para-criadores/termos" }, { label: "Cookies", href: "#" }] },
-        { title: "Comunidade", links: ["Instagram", "LinkedIn", "YouTube", "Newsletter"] },
-      ].map(col => (
-        <div key={col.title}>
-          <p style={{
-            color: "white", fontSize: 13,
-            fontWeight: 700, letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            marginBottom: 20, marginTop: 0,
-          }}>
-            {col.title}
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {col.links.map(link => {
-              const label = typeof link === "string" ? link : link.label;
-              const href = typeof link === "string" ? "#" : link.href;
-              return (
-                <a key={label} href={href} style={{
-                  color: "rgba(255,255,255,0.45)",
-                  fontSize: 14, textDecoration: "none",
-                  transition: "color 0.15s",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={e => e.target.style.color = "white"}
-                onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.45)"}
-                >
-                  {label}
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      ))}
-    </div>
-
-    {/* Bottom bar */}
-    <div style={{
-      maxWidth: 1200, margin: "0 auto",
-      padding: "24px 48px",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexWrap: "wrap", gap: 16,
-    }}>
-      <span style={{
-        color: "rgba(255,255,255,0.25)",
-        fontSize: 13,
-      }}>
-        © 2026 WePrompt. Todos os direitos reservados.
-      </span>
-      <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-        <span style={{
-          color: "rgba(255,255,255,0.25)",
-          fontSize: 13,
-        }}>
-          Feito no Brasil 🇧🇷
-        </span>
-        <div style={{
-          display: "flex", alignItems: "center", gap: 6,
-          background: "rgba(99,102,241,0.15)",
-          border: "1px solid rgba(99,102,241,0.3)",
-          borderRadius: 999, padding: "4px 12px",
-        }}>
-          <div style={{
-            width: 6, height: 6,
-            borderRadius: "50%",
-            background: "#6366F1",
-            boxShadow: "0 0 6px #6366F1",
-          }} />
-          <span style={{
-            color: "#6366F1",
-            fontSize: 12, fontWeight: 600,
-          }}>
-            Online
-          </span>
-        </div>
-      </div>
-    </div>
-  </footer>
-);
-
 /* ─── Page ───────────────────────────────────────────────────────── */
 export default function Home() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-      <Navbar />
+      <PageStyles />
       <FloatingIconsHero />
       <PlatformScrollDemo />
       <SolutionsShowcase />
@@ -822,7 +477,6 @@ export default function Home() {
       <HowItWorks />
       <ForCompanies />
       <ForCreators />
-      <Footer />
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import Navbar from "../components/Navbar";
 
 const BLUE   = "#0369A1";
 const BORDER = "#e5e7eb";
@@ -275,9 +274,6 @@ export default function SolucoesPage() {
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
-
-      {/* ── NAVBAR ── */}
-      <Navbar />
 
       {/* ── MAIN CONTENT ── */}
       <div style={{ padding: "32px 48px" }}>

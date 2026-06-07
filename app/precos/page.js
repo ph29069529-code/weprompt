@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "../components/Navbar";
 import { Star } from "lucide-react";
 
 function CheckIcon() {
@@ -316,8 +315,6 @@ export default function PrecosPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
 
-      <Navbar />
-
       {/* ── MAIN CONTENT ── */}
       <div style={{ padding: "40px 48px", maxWidth: 1200, margin: "0 auto" }}>
 
@@ -501,50 +498,6 @@ export default function PrecosPage() {
         </div>
       </div>
 
-      {/* ── FOOTER (same as homepage) ── */}
-      <div style={{ position: "relative" }}>
-        <div style={{ background: "#f9fafb", borderRadius: "0 0 48px 48px", height: 80, position: "relative", zIndex: 2 }} />
-        <footer style={{
-          background: "#0a0a0a",
-          paddingTop: 80, paddingBottom: 60,
-          paddingLeft: isMobile ? 24 : 48, paddingRight: isMobile ? 24 : 48,
-          marginTop: -40, position: "relative",
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
-            <div style={{ maxWidth: 320 }}>
-              <img src="/logo-white.png" alt="WePrompt" style={{ height: 96, width: "auto" }} />
-              <p style={{ color: "#9ca3af", fontSize: 16, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
-                Marketplace de soluções de IA para o Brasil.
-              </p>
-            </div>
-            <div style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
-              <div>
-                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Seguir</div>
-                {[{ label: "Instagram", href: "https://instagram.com" }, { label: "LinkedIn", href: "https://linkedin.com" }, { label: "Twitter/X", href: "https://x.com" }].map(l => (
-                  <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none" }}>{l.label}</a>
-                ))}
-              </div>
-              <div>
-                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Recursos</div>
-                <a href="/blog" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none" }}>Blog</a>
-              </div>
-              <div>
-                <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Empresa</div>
-                {[{ label: "Sobre nós", href: "/sobre" }, { label: "FAQ", href: "/faq" }, { label: "Contato", href: "/contato" }].map(l => (
-                  <a key={l.label} href={l.href} style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none" }}>{l.label}</a>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1f2937", paddingTop: 24, marginTop: 24, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 0 }}>
-            <span style={{ color: "#6b7280", fontSize: 14 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
-            <div style={{ display: "flex", gap: 24 }}>
-              <a href="/privacidade" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none" }}>Privacidade</a>
-              <a href="/para-empresas/termos" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none" }}>Termos</a>
-            </div>
-          </div>
-        </footer>
-      </div>
     </div>
   );
 }

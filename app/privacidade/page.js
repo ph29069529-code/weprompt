@@ -20,8 +20,6 @@ export default function Privacidade() {
   const p = { fontSize: 16, color: B, lineHeight: 1.8, margin: "0 0 16px" };
   const li = { marginBottom: 8 };
 
-  const footerLinks = [["Início", "/"], ["Termos", "/termos"], ["Privacidade", "/privacidade"], ["Contato", "mailto:contato@weprompt.app.br"]];
-
   return (
     <div style={{ background: "#fff", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <main style={{ paddingTop: 64 }}>
@@ -133,22 +131,6 @@ export default function Privacidade() {
         </div>
       </main>
 
-      <footer style={{ background: H, padding: "36px 24px" }}>
-        <div style={{ maxWidth: 800, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, margin: 0 }}>
-            © 2026 WePrompt — O 1º marketplace de IA da América Latina
-          </p>
-          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            {footerLinks.map(([label, href]) => (
-              <a key={label} href={href} style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, textDecoration: "none", transition: "color 0.15s" }}
-                onMouseEnter={e => e.currentTarget.style.color = "#fff"}
-                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.45)"}>
-                {label}
-              </a>
-            ))}
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -191,37 +191,6 @@ export default function NovaSolucaoPage() {
   return (
     <div style={{ background: BG, minHeight: '100vh', fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif' }}>
 
-      {/* NAVBAR */}
-      <nav style={{
-        background: 'white', borderBottom: `1px solid ${BORDER}`,
-        padding: '0 32px', height: 60, display: 'flex',
-        alignItems: 'center', justifyContent: 'space-between',
-        position: 'sticky', top: 0, zIndex: 50,
-      }}>
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}><img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} /></Link>
-        <div style={{
-          display: 'flex', alignItems: 'center',
-          background: searchFocused ? 'white' : '#f3f4f6',
-          borderRadius: 8, padding: '8px 16px', width: 360, gap: 8,
-          border: searchFocused ? `1px solid ${ACCENT}` : '1px solid transparent',
-          boxShadow: searchFocused ? `0 0 0 3px ${ACCENT_MUTED}` : 'none',
-          transition: 'all 0.2s ease',
-        }}>
-          <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
-          </svg>
-          <input placeholder="Buscar soluções..."
-            onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}
-            style={{ fontSize: 14, border: 'none', background: 'transparent', outline: 'none', flex: 1, color: '#374151' }} />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <button style={{ fontSize: 14, fontWeight: 500, color: '#374151', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>Marketplace ▾</button>
-          <button style={{ fontSize: 14, fontWeight: 500, color: '#374151', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}>Vender ▾</button>
-          <div style={{ width: 1, height: 20, background: BORDER }} />
-          <Link href="/dashboard/criador/configuracoes" style={{ textDecoration: 'none' }}><div style={{ width: 32, height: 32, background: ACCENT, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', transition: 'all 0.15s' }} onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'scale(1.05)'; }} onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1)'; }}>C</div></Link>
-        </div>
-      </nav>
-
       {/* TABS ROW */}
       <div style={{ background: 'white', borderBottom: `1px solid ${BORDER}`, padding: '0 32px', display: 'flex', gap: 0 }}>
         {CRIADOR_TABS.map((tab, i) => (

@@ -290,66 +290,6 @@ function FAQSection() {
   );
 }
 
-/* ── Footer ── */
-function Footer() {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-  return (
-    <div style={{ position: "relative" }}>
-      <div style={{ background: "white", borderRadius: "0 0 48px 48px", height: 80, position: "relative", zIndex: 2 }} />
-      <footer style={{
-        background: "#0a0a0a",
-        paddingTop: 80, paddingBottom: 60,
-        paddingLeft: isMobile ? 24 : 48, paddingRight: isMobile ? 24 : 48,
-        marginTop: -40,
-        position: "relative",
-      }}>
-        {/* Top row */}
-        <div className="section-footer-top" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 48, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 40 : 0 }}>
-          {/* Left: brand */}
-          <div style={{ maxWidth: 320 }}>
-            <img src="/logo-white.png" alt="WePrompt" style={{ height: 96, width: "auto" }} />
-            <p style={{ color: "#9ca3af", fontSize: 16, marginTop: 12, lineHeight: 1.6, marginBottom: 0 }}>
-              O 1º marketplace de soluções de IA da América Latina.
-            </p>
-          </div>
-          {/* Right: link columns */}
-          <div className="footer-links-row" style={{ display: "flex", gap: isMobile ? 40 : 64 }}>
-            <div>
-              <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Seguir</div>
-              {[{ label: "Instagram", href: "https://instagram.com" }, { label: "LinkedIn", href: "https://linkedin.com" }, { label: "Twitter/X", href: "https://x.com" }].map(l => (
-                <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
-              ))}
-            </div>
-            <div>
-              <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Recursos</div>
-              <a href="/blog" style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>Blog</a>
-            </div>
-            <div>
-              <div style={{ color: "#6b7280", fontSize: 13, fontWeight: 700, letterSpacing: 1.5, marginBottom: 16, textTransform: "uppercase" }}>Empresa</div>
-              {[{ label: "Sobre nós", href: "/sobre" }, { label: "FAQ", href: "/faq" }, { label: "Contato", href: "/contato" }].map(l => (
-                <a key={l.label} href={l.href} style={{ color: "white", fontSize: 18, fontWeight: 500, display: "block", marginBottom: 14, textDecoration: "none", cursor: "pointer" }}>{l.label}</a>
-              ))}
-            </div>
-          </div>
-        </div>
-        {/* Bottom row */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1f2937", paddingTop: 24, marginTop: 24, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 0 }}>
-          <span style={{ color: "#6b7280", fontSize: 14 }}>© 2026 WePrompt. Todos os direitos reservados.</span>
-          <div style={{ display: "flex", gap: 24 }}>
-            <a href="/privacidade" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none", cursor: "pointer" }}>Privacidade</a>
-            <a href="/para-empresas/termos" style={{ color: "#6b7280", fontSize: 14, textDecoration: "none", cursor: "pointer" }}>Termos</a>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-}
 
 /* ══════════════════════════════════════════
    SOLUTION DETAIL — all Supabase queries preserved exactly
@@ -741,73 +681,14 @@ function SolutionDetail() {
 
       {/* FAQ */}
       <FAQSection />
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
 
 export default function SolutionPage() {
-  const router = useRouter();
-  const [searchFocused, setSearchFocused] = useState(false);
-
   return (
     <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
       <style>{`@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.45} }`}</style>
-      {/* NAVBAR */}
-      <nav style={{
-        background: "#fff",
-        borderBottom: "1px solid #e5e7eb",
-        padding: "0 32px",
-        height: 60,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        position: "sticky", top: 0, zIndex: 50,
-      }}>
-        <img src="/logo.png" alt="WePrompt" onClick={() => router.push("/")} style={{ width: 160, height: "auto", cursor: "pointer" }} />
-        <div style={{
-          display: "flex", alignItems: "center",
-          background: searchFocused ? "#fff" : "#f3f4f6",
-          borderRadius: 8, padding: "8px 16px",
-          width: 360, gap: 8,
-          border: searchFocused ? "1px solid #2563EB" : "1px solid transparent",
-          boxShadow: searchFocused ? "0 0 0 3px rgba(37,99,235,0.1)" : "none",
-          transition: "all 0.2s ease",
-        }}>
-          <svg width="16" height="16" fill="none" stroke="#9ca3af" strokeWidth="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
-          </svg>
-          <input
-            placeholder="Buscar soluções..."
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
-            style={{ fontSize: 14, border: "none", background: "transparent", outline: "none", flex: 1, color: "#374151" }}
-          />
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <button onClick={() => router.push("/solucoes")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0, fontFamily: "inherit" }}>Marketplace</button>
-          <button onClick={() => router.push("/para-criadores")} style={{ fontSize: 14, fontWeight: 500, color: "#374151", cursor: "pointer", background: "none", border: "none", padding: 0, fontFamily: "inherit" }}>Vender</button>
-          <div style={{ width: 1, height: 20, background: "#e5e7eb" }} />
-          <button onClick={() => window.__openCart?.()} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center" }}>
-            <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
-            </svg>
-          </button>
-          <button onClick={() => window.__openNotif?.()} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", position: "relative", display: "flex", alignItems: "center" }}>
-            <svg width="20" height="20" fill="none" stroke="#374151" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-            </svg>
-            <span style={{ width: 8, height: 8, background: "#ef4444", borderRadius: 999, position: "absolute", top: -2, right: -2 }} />
-          </button>
-          <div
-            onClick={() => router.push("/dashboard")}
-            style={{
-              width: 32, height: 32, background: "#0369A1", borderRadius: 999,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
-            }}>W</div>
-        </div>
-      </nav>
       <Suspense fallback={<Skeleton />}>
         <SolutionDetail />
       </Suspense>

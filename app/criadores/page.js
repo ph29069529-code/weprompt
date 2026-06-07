@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "../components/Navbar";
 import { Zap, DollarSign, Users } from "lucide-react";
 
 const ACCENT      = "#6366F1";
@@ -91,7 +90,6 @@ export default function CriadoresPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: NEAR_BLACK }}>
-      <Navbar />
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section style={{ padding: "120px 24px 80px", textAlign: "center" }}>
@@ -327,14 +325,6 @@ export default function CriadoresPage() {
         </div>
       </section>
 
-      {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer style={{
-        borderTop: `1px solid ${BORDER}`,
-        padding: "24px", textAlign: "center",
-        fontSize: 13, color: "#9CA3AF",
-      }}>
-        © 2026 WePrompt
-      </footer>
     </div>
   );
 }

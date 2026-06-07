@@ -176,14 +176,6 @@ export default function PromptPackPage() {
   return (
     <div style={{ background: "#F8F9FB", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
 
-      {/* Navbar */}
-      <nav style={{ background: "white", borderBottom: "1px solid #E5E7EB", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 }}>
-        <img src="/logo.png" alt="WePrompt" onClick={() => router.push("/")} width={160} height={35} style={{ width: 160, height: "auto", cursor: "pointer" }} />
-        <button onClick={() => router.push("/dashboard/empresa")} style={{ fontSize: 14, color: "#6366F1", fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
-          ← Voltar para minhas soluções
-        </button>
-      </nav>
-
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "32px 24px 64px" }}>
 
         {/* Header card */}

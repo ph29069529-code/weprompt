@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import NavbarController from "./components/NavbarController";
+import FooterController from "./components/FooterController";
 import GlobalDrawers from "@/components/GlobalDrawers";
 
 const inter = Inter({
@@ -61,6 +62,7 @@ export default function RootLayout({ children }) {
       <body className={`${inter.variable} min-h-full flex flex-col`}>
         <NavbarController />
         {children}
+        <FooterController />
         <PWAInstallPrompt />
         <GlobalDrawers />
       </body>

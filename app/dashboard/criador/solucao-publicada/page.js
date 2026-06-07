@@ -36,18 +36,6 @@ export default function SolucaoPublicadaPage() {
         }
       `}</style>
 
-      {/* Navbar */}
-      <nav style={{
-        background: 'white', borderBottom: `1px solid ${BORDER}`,
-        padding: '0 32px', height: 60,
-        display: 'flex', alignItems: 'center',
-        position: 'sticky', top: 0, zIndex: 50,
-      }}>
-        <a href="/" style={{ textDecoration: 'none' }}>
-          <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
-        </a>
-      </nav>
-
       {/* Content */}
       <div style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
