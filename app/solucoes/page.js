@@ -278,7 +278,7 @@ export default function SolucoesPage() {
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
 
       {/* ── MAIN CONTENT ── */}
-      <div style={{ padding: "32px 48px" }}>
+      <div style={{ padding: "80px 48px 32px" }}>
 
         {/* Header row */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
