@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import NavbarDashboard from "../../components/NavbarDashboard";
 
-const CRIADOR_TABS = ["Dashboard", "Minhas Soluções", "Vendas", "Configurações", "Analytics"];
+const CRIADOR_TABS = [
+  { label: "Dashboard",       key: "dashboard"     },
+  { label: "Minhas Soluções", key: "solucoes"      },
+  { label: "Vendas",          key: "vendas"         },
+  { label: "Configurações",   key: "configuracoes"  },
+  { label: "Analytics",       key: "analytics"      },
+];
 
 const fmtBRL = v =>
   `R$ ${Number(v || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -146,7 +152,6 @@ export default function CriadorPage() {
     );
   }
 
-  const isTabActive = (i) => (i === 0 && activeView === "dashboard") || (i === 4 && activeView === "analytics");
   const MONTHS_PT_C = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
   const analyticsLast6 = Array.from({ length: 6 }, (_, j) => {
     const d = new Date(); d.setMonth(d.getMonth() - 5 + j);
@@ -175,19 +180,13 @@ export default function CriadorPage() {
 
       {/* TABS ROW */}
       <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 32px", display: "flex", gap: 0 }}>
-        {CRIADOR_TABS.map((tab, i) => (
-          <button key={tab}
-            onClick={() => {
-              if (i === 0) setActiveView("dashboard");
-              else if (i === 1) router.push("/dashboard/criador/solucoes");
-              else if (i === 2) router.push("/dashboard/criador/vendas");
-              else if (i === 3) router.push("/dashboard/criador/configuracoes");
-              else if (i === 4) setActiveView("analytics");
-            }}
-            onMouseEnter={() => setHoveredTab(i)}
+        {CRIADOR_TABS.map((tab) => (
+          <button key={tab.key}
+            onClick={() => setActiveView(tab.key)}
+            onMouseEnter={() => setHoveredTab(tab.key)}
             onMouseLeave={() => setHoveredTab(null)}
-            style={{ fontSize: 14, padding: "14px 20px 14px 0", marginRight: 8, cursor: "pointer", display: "inline-flex", alignItems: "center", border: "none", borderBottom: isTabActive(i) ? "2px solid #111827" : "2px solid transparent", background: "transparent", color: isTabActive(i) ? "#111827" : hoveredTab === i ? "#374151" : "#6b7280", fontWeight: isTabActive(i) ? 600 : 400, marginBottom: -1, transition: "color 0.15s ease", fontFamily: "inherit", whiteSpace: "nowrap" }}
-          >{tab}</button>
+            style={{ fontSize: 14, padding: "14px 20px 14px 0", marginRight: 8, cursor: "pointer", display: "inline-flex", alignItems: "center", border: "none", borderBottom: activeView === tab.key ? "2px solid #6366F1" : "2px solid transparent", background: "transparent", color: activeView === tab.key ? "#6366F1" : hoveredTab === tab.key ? "#374151" : "#6B7280", fontWeight: activeView === tab.key ? 600 : 400, marginBottom: -1, transition: "color 0.15s ease", fontFamily: "inherit", whiteSpace: "nowrap" }}
+          >{tab.label}</button>
         ))}
       </div>
 
@@ -328,6 +327,111 @@ export default function CriadorPage() {
           )}
         </div>
         </>}
+
+        {/* ── MINHAS SOLUÇÕES ── */}
+        {activeView === "solucoes" && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+              <div>
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Minhas Soluções</h1>
+                <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Gerencie suas soluções publicadas e rascunhos.</p>
+              </div>
+              <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", borderRadius: 8, padding: "9px 18px", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
+                + Nova Solução
+              </button>
+            </div>
+            <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb" }}>
+              <div style={{ padding: "16px 24px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: "#111827" }}>Todas as Soluções</span>
+                <span style={{ background: "#EEF2FF", color: "#6366F1", fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 99 }}>{approvedCount + pendingCount}</span>
+              </div>
+              {recentSolutions.length === 0 ? (
+                <div style={{ padding: "64px 24px", textAlign: "center" }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Nenhuma solução publicada ainda.</div>
+                  <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer", marginTop: 8 }}>+ Criar primeira solução</button>
+                </div>
+              ) : (
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead><tr>{["SOLUÇÃO","CATEGORIA","PREÇO","DATA","STATUS"].map(col => <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>)}</tr></thead>
+                  <tbody>{recentSolutions.map((sol, i) => {
+                    const badge = STATUS_BADGE[sol.status] || STATUS_BADGE.draft;
+                    return (
+                      <tr key={sol.id} onMouseEnter={() => setHoveredRow(i)} onMouseLeave={() => setHoveredRow(null)}
+                        style={{ background: hoveredRow === i ? "#f8faff" : "transparent", transition: "background 0.15s", cursor: "pointer" }}
+                        onClick={() => router.push("/dashboard/criador/solucoes")}>
+                        <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", fontWeight: 500, borderBottom: "1px solid #f9fafb" }}>{sol.titulo}</td>
+                        <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{sol.categoria || "—"}</td>
+                        <td style={{ padding: "12px 20px", fontSize: 13, color: "#111827", fontWeight: 600, borderBottom: "1px solid #f9fafb" }}>{fmtBRL(sol.preco)}</td>
+                        <td style={{ padding: "12px 20px", fontSize: 13, color: "#6b7280", borderBottom: "1px solid #f9fafb" }}>{fmtDate(sol.created_at)}</td>
+                        <td style={{ padding: "12px 20px", borderBottom: "1px solid #f9fafb" }}><span style={{ borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 600, background: badge.background, color: badge.color }}>{badge.label}</span></td>
+                      </tr>
+                    );
+                  })}</tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── VENDAS ── */}
+        {activeView === "vendas" && (
+          <div>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Vendas</h1>
+              <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Histórico de vendas das suas soluções.</p>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
+              <MetricCard iconBg="#6366F1" icon={<svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>}
+                label="Receita Total" value="R$ 0,00" sub="disponível em breve" subColor="#9ca3af" />
+              <MetricCard iconBg="#6366F1" icon={<svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>}
+                label="Total de Clientes" value={criadorSubs.length} sub={`${criadorSubs.length} assinatura${criadorSubs.length !== 1 ? "s" : ""}`} subColor="#6b7280" />
+              <MetricCard iconBg="#6366F1" icon={<svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>}
+                label="Soluções Vendidas" value={approvedCount} sub={`${approvedCount} no catálogo`} subColor="#6b7280" />
+            </div>
+            <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: "64px 24px", textAlign: "center" }}>
+              {criadorSubs.length === 0 ? (
+                <>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Nenhuma venda registrada ainda.</div>
+                  <div style={{ fontSize: 13, color: "#9ca3af", marginBottom: 20 }}>Suas vendas aparecerão aqui após a primeira compra.</div>
+                  <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>+ Publicar solução</button>
+                </>
+              ) : (
+                <div style={{ fontSize: 14, color: "#6b7280" }}>Detalhes de vendas disponíveis na aba Analytics.</div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── CONFIGURAÇÕES ── */}
+        {activeView === "configuracoes" && (
+          <div>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Configurações</h1>
+              <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Gerencie sua conta e preferências.</p>
+            </div>
+            <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32, maxWidth: 560 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 24 }}>Perfil do Criador</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Nome</label>
+                  <input defaultValue={userName} readOnly style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, color: "#111827", background: "#f9fafb", boxSizing: "border-box", fontFamily: "inherit" }} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Soluções publicadas</label>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f9fafb" }}>
+                    <span style={{ fontSize: 14, color: "#111827" }}>{approvedCount} aprovada{approvedCount !== 1 ? "s" : ""}, {pendingCount} pendente{pendingCount !== 1 ? "s" : ""}</span>
+                    <button onClick={() => setActiveView("solucoes")} style={{ fontSize: 13, color: "#6366F1", fontWeight: 600, background: "none", border: "none", cursor: "pointer", padding: 0 }}>Ver soluções →</button>
+                  </div>
+                </div>
+                <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 20 }}>
+                  <button onClick={() => router.push("/dashboard/criador/configuracoes")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
+                    Configurações avançadas →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {activeView === "analytics" && (
           <>
