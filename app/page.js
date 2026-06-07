@@ -465,7 +465,7 @@ function ForCreators() {
 /* ─── Page ───────────────────────────────────────────────────────── */
 export default function Home() {
   return (
-    <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+    <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", overflowX: "hidden" }}>
       <PageStyles />
       <Navbar />
       <FloatingIconsHero />

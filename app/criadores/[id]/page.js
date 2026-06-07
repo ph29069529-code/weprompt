@@ -226,6 +226,15 @@ export default function CriadorProfilePage() {
   const params = useParams();
   const id = params?.id;
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const [activeTab, setActiveTab] = useState(0);
   const [hoveredTab, setHoveredTab] = useState(null);
   const [activeCategory, setActiveCategory] = useState("all");
@@ -406,7 +415,7 @@ export default function CriadorProfilePage() {
   // ── RENDER ────────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+    <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", overflowX: "hidden" }}>
 
       <style>{`
         @keyframes pulse {
@@ -421,9 +430,9 @@ export default function CriadorProfilePage() {
       {/* ── PROFILE BANNER ────────────────────────────────────────────── */}
       <div style={{
         background: "linear-gradient(135deg, #1e3a5f 0%, #2563EB 100%)",
-        padding: "48px 48px 0", position: "relative",
+        padding: isMobile ? "24px 16px 0" : "48px 48px 0", position: "relative",
       }}>
-        <div style={{ position: "absolute", top: 48, right: 48, display: "flex", gap: 12 }}>
+        <div style={{ position: isMobile ? "static" : "absolute", top: 48, right: 48, display: "flex", gap: 12, marginBottom: isMobile ? 16 : 0, justifyContent: isMobile ? "flex-end" : "initial" }}>
           <button
             onClick={() => router.push("/dashboard/criador/configuracoes")}
             style={{
@@ -442,7 +451,7 @@ export default function CriadorProfilePage() {
           >Compartilhar ↗</button>
         </div>
 
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 28 }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "center" : "flex-end", gap: 28, textAlign: isMobile ? "center" : "left" }}>
           {/* Avatar */}
           <div style={{
             width: 120, height: 120, borderRadius: 999,
@@ -541,8 +550,9 @@ export default function CriadorProfilePage() {
       {/* ── TABS ──────────────────────────────────────────────────────── */}
       <div style={{
         background: "white", borderBottom: "1px solid #e5e7eb",
-        padding: "0 48px", display: "flex", gap: 0,
+        padding: isMobile ? "0 16px" : "0 48px", display: "flex", gap: 0,
         position: "sticky", top: 60, zIndex: 10,
+        overflowX: "auto", WebkitOverflowScrolling: "touch",
       }}>
         {displayTabs.map((tab, i) => (
           <button key={tab}
@@ -564,7 +574,7 @@ export default function CriadorProfilePage() {
       </div>
 
       {/* ── CONTENT ───────────────────────────────────────────────────── */}
-      <div style={{ background: "#f9fafb", padding: "32px 48px" }}>
+      <div style={{ background: "#f9fafb", padding: isMobile ? "16px" : "32px 48px" }}>
 
         {/* ═══ SOLUÇÕES ═══ */}
         {activeTab === 0 && (
@@ -602,7 +612,7 @@ export default function CriadorProfilePage() {
 
             {loading
               ? (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
                   {[1, 2, 3, 4, 5, 6].map(i => (
                     <div key={i} style={{ background: "white", borderRadius: 16, border: "1px solid #e5e7eb", overflow: "hidden" }}>
                       <Skeleton w="100%" h={160} radius={0} />
@@ -624,7 +634,7 @@ export default function CriadorProfilePage() {
                   <div style={{ fontSize: 14, color: "#6b7280" }}>Este criador ainda não publicou soluções.</div>
                 </div>
               ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
                   {filteredSolutions.map((sol, i) => <SolutionCard key={i} sol={sol} />)}
                 </div>
               )
@@ -634,7 +644,7 @@ export default function CriadorProfilePage() {
 
         {/* ═══ AVALIAÇÕES ═══ */}
         {activeTab === 1 && (
-          <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 24, alignItems: "flex-start" }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "280px 1fr", gap: 24, alignItems: "flex-start" }}>
             <div style={{
               background: "white", borderRadius: 12, border: "1px solid #e5e7eb",
               padding: 24, position: "sticky", top: 120,

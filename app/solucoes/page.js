@@ -244,6 +244,14 @@ export default function SolucoesPage() {
   const [loading, setLoading]               = useState(true);
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [searchQuery, setSearchQuery]       = useState("");
+  const [isMobile, setIsMobile]             = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   /* ── Supabase queries (unchanged) ── */
   useEffect(() => {
@@ -273,15 +281,15 @@ export default function SolucoesPage() {
   });
 
   return (
-    <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+    <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", overflowX: "hidden" }}>
       <Navbar />
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }`}</style>
 
       {/* ── MAIN CONTENT ── */}
-      <div style={{ padding: "80px 48px 32px" }}>
+      <div style={{ padding: isMobile ? "80px 16px 32px" : "80px 48px 32px" }}>
 
         {/* Header row */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", marginBottom: 32, gap: isMobile ? 16 : 0 }}>
           <div>
             <h1 style={{ fontSize: 24, fontWeight: 700, color: "#111827", margin: 0 }}>Soluções de IA</h1>
             <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>
@@ -296,7 +304,7 @@ export default function SolucoesPage() {
             placeholder="Buscar soluções..."
             style={{
               background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8,
-              padding: "9px 16px", width: 320, fontSize: 14,
+              padding: "9px 16px", width: isMobile ? "100%" : 320, fontSize: 14,
               color: "#111827", outline: "none", fontFamily: "inherit",
               transition: "border-color 0.15s, box-shadow 0.15s",
             }}
@@ -341,7 +349,7 @@ export default function SolucoesPage() {
 
         {/* Grid */}
         {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
             {[1, 2, 3, 4, 5, 6].map(n => <SkeletonCard key={n} />)}
           </div>
         ) : filtered.length === 0 ? (
@@ -380,7 +388,7 @@ export default function SolucoesPage() {
             )}
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
             {filtered.map(s => <SolutionCard key={s.id} solution={s} />)}
           </div>
         )}

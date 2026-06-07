@@ -318,14 +318,14 @@ export default function PrecosPage() {
       <Navbar />
 
       {/* ── MAIN CONTENT ── */}
-      <div style={{ padding: "40px 48px", maxWidth: 1200, margin: "0 auto" }}>
+      <div style={{ padding: isMobile ? "40px 16px" : "40px 48px", maxWidth: 1200, margin: "0 auto" }}>
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "6px 16px", fontSize: 13, fontWeight: 600, display: "inline-block" }}>
             PLANOS E PREÇOS
           </div>
-          <h1 style={{ fontSize: 48, fontWeight: 800, color: "#111827", marginTop: 16, marginBottom: 0 }}>Simples e transparente</h1>
+          <h1 style={{ fontSize: isMobile ? 32 : 48, fontWeight: 800, color: "#111827", marginTop: 16, marginBottom: 0 }}>Simples e transparente</h1>
           <p style={{ fontSize: 18, color: "#6b7280", marginTop: 12, marginBottom: 0 }}>Comece gratuitamente. Escale quando precisar.</p>
         </div>
 
@@ -376,7 +376,7 @@ export default function PrecosPage() {
         </div>
 
         {/* Pricing grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginBottom: 32 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20, marginBottom: 32 }}>
           {plans.map(plan => (
             <PlanCard key={plan.name} plan={plan} billing={billing} router={router} />
           ))}
@@ -406,7 +406,8 @@ export default function PrecosPage() {
             <p style={{ padding: "12px 24px 0", fontSize: 14, color: "#6b7280", margin: 0 }}>
               A WePrompt retém uma comissão sobre cada venda. O valor varia conforme o seu plano.
             </p>
-            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 8 }}>
+            <div className="scroll-x">
+            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 8, minWidth: 400 }}>
               <thead>
                 <tr>
                   {["PLANO", "COMISSÃO", "EXEMPLO R$ 100", "VOCÊ RECEBE"].map(h => (
@@ -429,6 +430,7 @@ export default function PrecosPage() {
                 ))}
               </tbody>
             </table>
+            </div>
             <p style={{ padding: "12px 24px", fontSize: 13, color: "#9ca3af", margin: 0, textAlign: "center" }}>
               Repasse via PIX em até 30 dias após venda confirmada. Saque mínimo de R$ 50.
             </p>
@@ -442,7 +444,8 @@ export default function PrecosPage() {
               <div style={{ fontSize: 16, fontWeight: 700, color: "#111827" }}>Compare os planos</div>
               <div style={{ fontSize: 14, color: "#6b7280", marginTop: 4 }}>Escolha o plano ideal para o tamanho e necessidades da sua empresa.</div>
             </div>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <div className="scroll-x">
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 480 }}>
               <thead>
                 <tr>
                   {["Funcionalidade", "Free", "Business", "Enterprise"].map((h, i) => (
@@ -471,6 +474,7 @@ export default function PrecosPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
 

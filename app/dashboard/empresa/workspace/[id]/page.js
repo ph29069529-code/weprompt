@@ -89,6 +89,20 @@ export default function WorkspacePage() {
   const { id } = useParams();
   const router  = useRouter();
 
+  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) setSidebarVisible(true);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const [user,        setUser]        = useState(null);
   const [solution,    setSolution]    = useState(null);
   const [creator,     setCreator]     = useState(null);
@@ -300,7 +314,10 @@ export default function WorkspacePage() {
       `}</style>
 
       {/* ══════════ SIDEBAR ══════════ */}
-      <aside style={{ width: 260, flexShrink: 0, background: "white", borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
+      {isMobile && sidebarVisible && (
+        <div onClick={() => setSidebarVisible(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 49 }} />
+      )}
+      <aside style={{ width: 260, flexShrink: 0, background: "white", borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", position: isMobile ? "fixed" : "relative", top: 0, left: isMobile && !sidebarVisible ? -260 : 0, zIndex: isMobile ? 50 : "auto", transition: "left 0.25s ease" }}>
 
         {/* Back button */}
         <div style={{ padding: "14px 16px", borderBottom: "1px solid #F3F4F6" }}>
@@ -398,8 +415,13 @@ export default function WorkspacePage() {
       <main style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8F9FB", minWidth: 0, overflow: "hidden" }}>
 
         {/* Top bar */}
-        <div style={{ background: "white", borderBottom: "1px solid #E5E7EB", padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+        <div style={{ background: "white", borderBottom: "1px solid #E5E7EB", padding: isMobile ? "10px 16px" : "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, height: isMobile ? 52 : 64 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {isMobile && (
+              <button onClick={() => setSidebarVisible(v => !v)} style={{ background: "none", border: "1px solid #E5E7EB", borderRadius: 8, padding: "6px 8px", cursor: "pointer", color: "#374151", fontSize: 16, lineHeight: 1 }}>
+                ☰
+              </button>
+            )}
             <div style={{ width: 36, height: 36, borderRadius: 10, background: "#6366F1", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 15, fontWeight: 700 }}>
               {solInitials}
             </div>
@@ -474,14 +496,14 @@ export default function WorkspacePage() {
         </div>
 
         {/* Input area */}
-        <div style={{ background: "white", borderTop: "1px solid #E5E7EB", padding: "16px 24px", flexShrink: 0 }}>
+        <div style={{ background: "white", borderTop: "1px solid #E5E7EB", padding: isMobile ? "12px 16px" : "16px 24px", flexShrink: 0 }}>
           <div style={{ position: "relative", display: "flex", alignItems: "flex-end", gap: 10 }}>
             <textarea
               ref={textareaRef}
               value={input}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
-              placeholder="Digite sua mensagem… (Enter para enviar, Shift+Enter para nova linha)"
+              placeholder="Digite sua mensagem…"
               rows={1}
               style={{
                 flex: 1, padding: "12px 52px 12px 16px",
@@ -489,6 +511,7 @@ export default function WorkspacePage() {
                 fontSize: 14, color: "#111827", background: "white",
                 outline: "none", resize: "none", lineHeight: 1.5,
                 fontFamily: "inherit", maxHeight: 120, overflowY: "auto",
+                minHeight: 52,
                 transition: "border-color 0.15s, box-shadow 0.15s",
               }}
               onFocus={e => { e.target.style.borderColor = "#6366F1"; e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.1)"; }}
@@ -538,7 +561,7 @@ function MessageBubble({ msg, index, solInitials, copiedId, onCopy }) {
         </div>
       )}
 
-      <div style={{ maxWidth: "70%", display: "flex", flexDirection: "column", alignItems: isUser ? "flex-end" : "flex-start", gap: 4 }}>
+      <div style={{ maxWidth: "min(70%, 320px)", display: "flex", flexDirection: "column", alignItems: isUser ? "flex-end" : "flex-start", gap: 4 }}>
         <div style={{
           background: isUser ? "#0A0F1E" : "white",
           color: isUser ? "white" : "#0A0F1E",

@@ -184,7 +184,7 @@ function DashboardTab({ solutions, profiles, subscriptions, onNavigate }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
       {/* KPI grid — 4 columns × 2 rows */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
         {kpiCards.map(c => (
           <div key={c.label} style={{ background: "#fff", borderRadius: 12, border: `1px solid ${BORDER}`, padding: 20, display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ fontSize: 13, color: GRAY_TEXT }}>{c.label}</div>

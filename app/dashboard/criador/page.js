@@ -57,6 +57,7 @@ function MetricCard({ iconBg, icon, label, value, sub, subColor, onClick, hovere
 
 export default function CriadorPage() {
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
   const [hoveredTab, setHoveredTab] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [hoveredMetric, setHoveredMetric] = useState(null);
@@ -72,6 +73,13 @@ export default function CriadorPage() {
   const [approvedCount, setApprovedCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
   const [recentSolutions, setRecentSolutions] = useState([]);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     async function init() {
@@ -179,7 +187,7 @@ export default function CriadorPage() {
       <NavbarDashboard />
 
       {/* TABS ROW */}
-      <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 32px", display: "flex", gap: 0 }}>
+      <div className="scroll-x" style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: isMobile ? "0 16px" : "0 32px", display: "flex", gap: 0 }}>
         {CRIADOR_TABS.map((tab) => (
           <button key={tab.key}
             onClick={() => setActiveView(tab.key)}
@@ -191,7 +199,7 @@ export default function CriadorPage() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div style={{ padding: "24px 32px" }}>
+      <div style={{ padding: isMobile ? "16px" : "24px 32px" }}>
 
         {activeView === "dashboard" && <>
         {/* TITLE ROW */}
@@ -216,7 +224,7 @@ export default function CriadorPage() {
         )}
 
         {/* TWO COLUMN LAYOUT */}
-        <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 24, alignItems: "flex-start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "300px 1fr", gap: 24, alignItems: "flex-start" }}>
 
           {/* LEFT: Metrics */}
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -296,7 +304,7 @@ export default function CriadorPage() {
               </button>
             </div>
           ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <div className="scroll-x"><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>
               <thead>
                 <tr>
                   {["SOLUÇÃO", "CATEGORIA", "PREÇO", "DATA", "STATUS"].map(col => (
@@ -323,7 +331,7 @@ export default function CriadorPage() {
                   );
                 })}
               </tbody>
-            </table>
+            </table></div>
           )}
         </div>
         </>}

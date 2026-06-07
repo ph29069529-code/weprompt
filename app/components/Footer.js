@@ -105,7 +105,11 @@ export default function Footer() {
                   style={{
                     color: '#9CA3AF',
                     transition: 'color 0.2s, transform 0.2s',
-                    display: 'block',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 44,
+                    height: 44,
                     position: 'relative',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#6366F1'; e.currentTarget.style.transform = 'scale(1.1)'; }}

@@ -94,7 +94,7 @@ function ReviewsTab({ solutionId, user, alreadyOwned }) {
   return (
     <div>
       {reviews.length > 0 ? (
-        <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", gap: 24, marginBottom: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24, marginBottom: 24 }}>
           {/* Rating summary */}
           <div style={{ background: "#f9fafb", borderRadius: 12, padding: 20, textAlign: "center" }}>
             <div style={{ fontSize: 56, fontWeight: 900, color: "#111827", lineHeight: 1 }}>{avg.toFixed(1)}</div>
@@ -269,7 +269,7 @@ const FAQ_ITEMS = [
 function FAQSection() {
   const [openFaq, setOpenFaq] = useState(null);
   return (
-    <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb", padding: 32, margin: "32px 48px 0" }}>
+    <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb", padding: 32, margin: "32px 16px 0" }}>
       <div style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 20 }}>Perguntas frequentes</div>
       {FAQ_ITEMS.map((item, i) => (
         <div key={i}
@@ -308,6 +308,14 @@ function SolutionDetail() {
   const [shared,       setShared]       = useState(false);
   const [fav,          setFav]          = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -400,7 +408,7 @@ function SolutionDetail() {
   return (
     <div>
       {/* Breadcrumb */}
-      <div style={{ padding: "16px 48px", fontSize: 13, color: "#6b7280", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      <div style={{ padding: isMobile ? "16px" : "16px 48px", fontSize: 13, color: "#6b7280", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         <span onClick={() => router.push("/solucoes")} style={{ color: "#6b7280", cursor: "pointer" }}
           onMouseEnter={e => e.currentTarget.style.color = "#111827"}
           onMouseLeave={e => e.currentTarget.style.color = "#6b7280"}>
@@ -418,7 +426,7 @@ function SolutionDetail() {
       </div>
 
       {/* Two-column layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 420px", gap: 32, padding: "0 48px", alignItems: "flex-start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 420px", gap: 32, padding: isMobile ? "0 16px" : "0 48px", alignItems: "flex-start" }}>
 
         {/* ── LEFT COLUMN ── */}
         <div>
@@ -476,7 +484,7 @@ function SolutionDetail() {
           </div>
 
           {/* Cover image */}
-          <div style={{ borderRadius: 16, overflow: "hidden", marginTop: 20, height: 460, width: "100%" }}>
+          <div style={{ borderRadius: 16, overflow: "hidden", marginTop: 20, height: isMobile ? 240 : 460, width: "100%" }}>
             {solution.cover_url ? (
               <img src={solution.cover_url} alt={solution.titulo} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
             ) : (
@@ -487,7 +495,7 @@ function SolutionDetail() {
           </div>
 
           {/* Tabs row */}
-          <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #e5e7eb", marginTop: 28, background: "#fff", borderRadius: "12px 12px 0 0", padding: "0 24px" }}>
+          <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #e5e7eb", marginTop: 28, background: "#fff", borderRadius: "12px 12px 0 0", padding: "0 24px", overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
             {tabs.map((tab, i) => (
               <button key={i} onClick={() => setActiveTab(i)} style={{
                 fontSize: 14,
@@ -577,12 +585,12 @@ function SolutionDetail() {
         </div>
 
         {/* ── RIGHT COLUMN ── */}
-        <div style={{ position: "sticky", top: 80 }}>
+        <div style={{ position: isMobile ? "static" : "sticky", top: 80 }}>
           <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb", padding: 28, boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
 
             {/* Price */}
             <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 42, fontWeight: 900, color: "#111827", letterSpacing: "-1.5px", lineHeight: 1 }}>{priceLabel}</span>
+              <span style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: "#111827", letterSpacing: "-1.5px", lineHeight: 1 }}>{priceLabel}</span>
               {solution.preco != null && (
                 <span style={{ fontSize: 14, color: "#6b7280", marginLeft: 8 }}>{isOneTime ? "pagamento único" : "por mês"}</span>
               )}
@@ -596,7 +604,7 @@ function SolutionDetail() {
               </div>
             ) : (
               <button onClick={handleCheckout} disabled={checkoutLoading}
-                style={{ width: "100%", background: checkoutLoading ? "rgba(17,24,39,0.5)" : "#111827", color: "#fff", borderRadius: 10, padding: "14px", fontSize: 16, fontWeight: 700, marginTop: 16, border: "none", cursor: checkoutLoading ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
+                style={{ width: "100%", background: checkoutLoading ? "rgba(17,24,39,0.5)" : "#111827", color: "#fff", borderRadius: 10, padding: "14px", fontSize: 16, fontWeight: 700, marginTop: 16, border: "none", cursor: checkoutLoading ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s", minHeight: 52 }}
                 onMouseEnter={e => { if (!checkoutLoading) e.currentTarget.style.background = "#374151"; }}
                 onMouseLeave={e => { if (!checkoutLoading) e.currentTarget.style.background = "#111827"; }}>
                 {checkoutLoading ? "Redirecionando…" : solution.preco != null
@@ -688,7 +696,7 @@ function SolutionDetail() {
 
 export default function SolutionPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
+    <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827", overflowX: "hidden" }}>
       <Navbar />
       <style>{`@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.45} }`}</style>
       <Suspense fallback={<Skeleton />}>

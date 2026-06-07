@@ -43,6 +43,7 @@ function MetricCard({ iconBg, icon, label, value, sub, subColor }) {
 
 export default function EmpresaDashboard() {
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState('inicio');
   const [hoveredTab, setHoveredTab] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
@@ -59,6 +60,13 @@ export default function EmpresaDashboard() {
   const [reviewComment, setReviewComment] = useState("");
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewedIds,   setReviewedIds]   = useState(new Set());
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     async function init() {
@@ -159,7 +167,7 @@ export default function EmpresaDashboard() {
       <NavbarDashboard />
 
       {/* TABS ROW */}
-      <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 32px", display: "flex", gap: 0, overflowX: "auto" }}>
+      <div className="scroll-x" style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: isMobile ? "0 16px" : "0 32px", display: "flex", gap: 0 }}>
         {TABS.map((tab) => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)} onMouseEnter={() => setHoveredTab(tab.key)} onMouseLeave={() => setHoveredTab(null)}
             style={{ fontSize: 14, padding: "14px 0", paddingRight: 20, cursor: "pointer", display: "inline-flex", alignItems: "center", border: "none", borderBottom: activeTab === tab.key ? "2px solid #6366F1" : "2px solid transparent", background: "transparent", color: activeTab === tab.key ? "#6366F1" : hoveredTab === tab.key ? "#374151" : "#6B7280", fontWeight: activeTab === tab.key ? 600 : 400, marginBottom: -1, transition: "color 0.15s ease", whiteSpace: "nowrap", fontFamily: "inherit" }}>
@@ -169,7 +177,7 @@ export default function EmpresaDashboard() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div style={{ padding: "24px 32px" }}>
+      <div style={{ padding: isMobile ? "16px" : "24px 32px" }}>
 
         {/* TITLE ROW */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
@@ -227,7 +235,7 @@ export default function EmpresaDashboard() {
               <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Explorar catálogo →</a>
             </div>
           ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <div className="scroll-x"><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
               <thead><tr>{["SOLUÇÃO","CATEGORIA","VALOR","DESDE","AÇÃO","AVALIAR"].map(col => <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>)}</tr></thead>
               <tbody>{subscriptions.map((sub, i) => (
                 <tr key={sub.id} onMouseEnter={() => setHoveredRow(i)} onMouseLeave={() => setHoveredRow(null)} style={{ background: hoveredRow === i ? "#f8faff" : "transparent", transition: "background 0.15s" }}>
@@ -250,7 +258,7 @@ export default function EmpresaDashboard() {
                   </td>
                 </tr>
               ))}</tbody>
-            </table>
+            </table></div>
           )}
         </div>
 
@@ -290,7 +298,7 @@ export default function EmpresaDashboard() {
                 <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", marginTop: 12 }}>Explorar catálogo →</a>
               </div>
             ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <div className="scroll-x"><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>
                 <thead><tr>{["SOLUÇÃO","CATEGORIA","VALOR","DESDE","AÇÃO"].map(col => <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>)}</tr></thead>
                 <tbody>{subscriptions.map((sub, i) => (
                   <tr key={sub.id} onMouseEnter={() => setHoveredRow(i)} onMouseLeave={() => setHoveredRow(null)} style={{ background: hoveredRow === i ? "#f8faff" : "transparent", transition: "background 0.15s" }}>
@@ -306,7 +314,7 @@ export default function EmpresaDashboard() {
                     </td>
                   </tr>
                 ))}</tbody>
-              </table>
+              </table></div>
             )}
           </div>
         )}
@@ -339,7 +347,7 @@ export default function EmpresaDashboard() {
                 <div style={{ fontSize: 13, color: "#9ca3af" }}>Suas aquisições aparecerão aqui.</div>
               </div>
             ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <div className="scroll-x"><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>
                 <thead><tr>{["DATA","SOLUÇÃO","CATEGORIA","VALOR","STATUS"].map(col => <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>)}</tr></thead>
                 <tbody>{[...subscriptions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((sub, i) => (
                   <tr key={sub.id} onMouseEnter={() => setHoveredRow(i)} onMouseLeave={() => setHoveredRow(null)} style={{ background: hoveredRow === i ? "#f8faff" : "transparent", transition: "background 0.15s" }}>
@@ -352,7 +360,7 @@ export default function EmpresaDashboard() {
                     </td>
                   </tr>
                 ))}</tbody>
-              </table>
+              </table></div>
             )}
           </div>
         )}
