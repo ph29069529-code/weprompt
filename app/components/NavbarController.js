@@ -8,7 +8,8 @@ const DASHBOARD_PREFIXES = ["/dashboard"];
 
 export default function NavbarController() {
   const pathname = usePathname();
-  if (HIDDEN_PREFIXES.some((p) => pathname?.startsWith(p))) return null;
-  if (DASHBOARD_PREFIXES.some((p) => pathname?.startsWith(p))) return <NavbarDashboard />;
+  if (!pathname) return null;
+  if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
+  if (DASHBOARD_PREFIXES.some((p) => pathname.startsWith(p))) return <NavbarDashboard />;
   return <Navbar />;
 }
