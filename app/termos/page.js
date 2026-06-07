@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Navbar from "../components/Navbar";
 
 const H = "#0A0F1E";
 const B = "#374151";
@@ -22,6 +23,7 @@ export default function Termos() {
 
   return (
     <div style={{ background: "#fff", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+      <Navbar />
       <main style={{ paddingTop: 64 }}>
         <div style={{ maxWidth: 800, margin: "0 auto", padding: mobile ? "40px 24px 60px" : "80px 24px" }}>
 

@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { signUp, supabase } from "../lib/supabase";
 import { ShieldCheck, MessageCircle, Users } from "lucide-react";
 import Spinner from "../components/Spinner";
+import Navbar from "../components/Navbar";
 
 const NEAR_BLACK = "#0A0F1E";
 const GRAY_TEXT  = "#6B7280";
@@ -413,8 +414,11 @@ function CadastroForm() {
 
 export default function CadastroPage() {
   return (
-    <Suspense fallback={null}>
-      <CadastroForm />
-    </Suspense>
+    <>
+      <Navbar />
+      <Suspense fallback={null}>
+        <CadastroForm />
+      </Suspense>
+    </>
   );
 }

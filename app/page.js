@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import FloatingIconsHero from "./components/FloatingIconsHero";
+import Navbar from "./components/Navbar";
 
 const PlatformScrollDemo = dynamic(() => import("./components/PlatformScrollDemo"), {
   ssr: false,
@@ -466,6 +467,7 @@ export default function Home() {
   return (
     <div style={{ background: "#fff", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <PageStyles />
+      <Navbar />
       <FloatingIconsHero />
       <PlatformScrollDemo />
       <SolutionsShowcase />

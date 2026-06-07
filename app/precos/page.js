@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
+import Navbar from "../components/Navbar";
 
 function CheckIcon() {
   return (
@@ -314,6 +315,7 @@ export default function PrecosPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
+      <Navbar />
 
       {/* ── MAIN CONTENT ── */}
       <div style={{ padding: "40px 48px", maxWidth: 1200, margin: "0 auto" }}>

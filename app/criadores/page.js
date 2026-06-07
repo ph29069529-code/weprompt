@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Zap, DollarSign, Users } from "lucide-react";
+import Navbar from "../components/Navbar";
 
 const ACCENT      = "#6366F1";
 const ACCENT_HOVER = "#4F46E5";
@@ -90,6 +91,7 @@ export default function CriadoresPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: NEAR_BLACK }}>
+      <Navbar />
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section style={{ padding: "120px 24px 80px", textAlign: "center" }}>

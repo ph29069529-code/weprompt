@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import NavbarDashboard from "../../components/NavbarDashboard";
 
 const TABS = [
   { label: "Início" },
@@ -155,6 +156,7 @@ export default function EmpresaDashboard() {
 
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+      <NavbarDashboard />
 
       {/* TABS ROW */}
       <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 32px", display: "flex", gap: 0, overflowX: "auto" }}>

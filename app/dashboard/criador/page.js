@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import NavbarDashboard from "../../components/NavbarDashboard";
 
 const CRIADOR_TABS = ["Dashboard", "Minhas Soluções", "Vendas", "Configurações", "Analytics"];
 
@@ -170,6 +171,7 @@ export default function CriadorPage() {
 
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+      <NavbarDashboard />
 
       {/* TABS ROW */}
       <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 32px", display: "flex", gap: 0 }}>

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, supabase } from "../lib/supabase";
 import { ShieldCheck, MessageCircle, Users } from "lucide-react";
 import Spinner from "../components/Spinner";
+import Navbar from "../components/Navbar";
 
 const NEAR_BLACK = "#0A0F1E";
 const GRAY_TEXT  = "#6B7280";
@@ -296,8 +297,11 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={null}>
-      <LoginForm />
-    </Suspense>
+    <>
+      <Navbar />
+      <Suspense fallback={null}>
+        <LoginForm />
+      </Suspense>
+    </>
   );
 }

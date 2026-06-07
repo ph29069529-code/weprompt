@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import Navbar from "../../components/Navbar";
 
 const CATEGORY_GRADIENTS = {
   "Agentes de IA":    "linear-gradient(135deg, #1e3a5f, #2563EB)",
@@ -688,6 +689,7 @@ function SolutionDetail() {
 export default function SolutionPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
+      <Navbar />
       <style>{`@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.45} }`}</style>
       <Suspense fallback={<Skeleton />}>
         <SolutionDetail />
