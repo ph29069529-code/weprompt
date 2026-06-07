@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import NavbarDashboard from "./NavbarDashboard";
 
-const HIDDEN_PREFIXES = ["/checkout", "/obrigado", "/completar-perfil", "/admin"];
+const HIDDEN_PREFIXES = ["/checkout", "/obrigado", "/completar-perfil", "/admin", "/dashboard/admin"];
 const DASHBOARD_PREFIXES = ["/dashboard"];
 
 export default function NavbarController() {
