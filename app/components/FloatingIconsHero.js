@@ -3,19 +3,16 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
 // ── Icon data ────────────────────────────────────────────────────────
+// 8 icons — all from upload.wikimedia.org (single DNS, already preconnected)
 const icons = [
-  { id: 1,  src: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg",             name: "Slack",     className: "top-[8%] left-[8%]"      },
-  { id: 2,  src: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png",              name: "Notion",    className: "top-[15%] right-[10%]"   },
-  { id: 3,  src: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",        name: "Gmail",     className: "top-[5%] left-[35%]"     },
-  { id: 4,  src: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",                     name: "WhatsApp",  className: "top-[5%] right-[32%]"    },
-  { id: 5,  src: "https://upload.wikimedia.org/wikipedia/commons/a/ae/Google_Sheets_2020_Logo.svg",      name: "Sheets",    className: "top-[42%] left-[4%]"     },
-  { id: 6,  src: "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg", name: "Drive",     className: "bottom-[28%] left-[8%]"  },
-  { id: 7,  src: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg",                name: "Telegram",  className: "bottom-[12%] left-[28%]" },
-  { id: 8,  src: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",       name: "LinkedIn",  className: "bottom-[8%] right-[28%]" },
-  { id: 9,  src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png",               name: "Instagram", className: "bottom-[18%] right-[6%]" },
-  { id: 10, src: "https://cdn.simpleicons.org/hubspot/FF7A59",                                           name: "HubSpot",   className: "top-[42%] right-[4%]"    },
-  { id: 11, src: "https://cdn.simpleicons.org/zapier/FF4A00",                                            name: "Zapier",    className: "top-[22%] left-[20%]"    },
-  { id: 12, src: "https://cdn.simpleicons.org/airtable/18BFFF",                                          name: "Airtable",  className: "top-[22%] right-[22%]"   },
+  { id: 1, src: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg",             name: "Slack",     className: "top-[8%] left-[8%]"      },
+  { id: 2, src: "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png",              name: "Notion",    className: "top-[15%] right-[10%]"   },
+  { id: 3, src: "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",        name: "Gmail",     className: "top-[5%] left-[35%]"     },
+  { id: 4, src: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",                     name: "WhatsApp",  className: "top-[5%] right-[32%]"    },
+  { id: 5, src: "https://upload.wikimedia.org/wikipedia/commons/a/ae/Google_Sheets_2020_Logo.svg",      name: "Sheets",    className: "top-[42%] left-[4%]"     },
+  { id: 6, src: "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg", name: "Drive",     className: "bottom-[28%] left-[8%]"  },
+  { id: 7, src: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",       name: "LinkedIn",  className: "bottom-[8%] right-[28%]" },
+  { id: 8, src: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png",               name: "Instagram", className: "bottom-[18%] right-[6%]" },
 ]
 
 // ── Main hero ────────────────────────────────────────────────────────
@@ -49,7 +46,7 @@ export default function FloatingIconsHero() {
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  const visibleIcons = isMobile ? icons.slice(0, 6) : icons
+  const visibleIcons = isMobile ? icons.slice(0, 5) : icons
 
   return (
     <section
@@ -98,21 +95,21 @@ export default function FloatingIconsHero() {
             className={icon.className}
             style={{ position: 'absolute', willChange: 'transform' }}
           >
-            <div style={{
-              animation: `float-${(i % 3) + 1} ${5 + (i % 3)}s ease-in-out infinite`,
-              willChange: 'transform',
-            }}>
+            <div
+              className="float-anim"
+              style={{ animation: `float-${(i % 3) + 1} ${5 + (i % 3)}s ease-in-out infinite` }}
+            >
               <div style={{
                 width: 72, height: 72,
                 borderRadius: 20,
-                background: 'rgba(255,255,255,0.9)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(99,102,241,0.1)',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.8) inset',
+                background: '#ffffff',
+                border: '1px solid rgba(99,102,241,0.12)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 padding: 14,
                 animation: `fadeInScale 0.6s ease-out ${i * 0.08}s both`,
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
               }}>
                 <img
                   src={icon.src}

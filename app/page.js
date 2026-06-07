@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import {
   MessageSquare,
   Mail,
@@ -28,16 +27,27 @@ const Testimonials = dynamic(() => import("./components/Testimonials"), {
   loading: () => <div style={{ height: 400 }} />,
 });
 
-/* ─── Animation helpers ──────────────────────────────────────────── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-};
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
-};
-const vp = { once: true, margin: "-80px" };
+/* ─── CSS animation hook (replaces framer-motion) ───────────────── */
+function useFadeIn(dir = 'up') {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVis(true); obs.disconnect(); } },
+      { threshold: 0.08, rootMargin: '-60px' }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  const from = dir === 'left' ? 'translateX(-32px)' : dir === 'right' ? 'translateX(32px)' : 'translateY(24px)';
+  return [ref, {
+    opacity: vis ? 1 : 0,
+    transform: vis ? 'translate(0,0)' : from,
+    transition: 'opacity 0.7s ease, transform 0.7s cubic-bezier(0.22,1,0.36,1)',
+  }];
+}
 
 /* ─── Page-level styles ───────────────────────────────────────────── */
 function PageStyles() {
@@ -86,6 +96,8 @@ function PageStyles() {
 /* ─── How It Works ───────────────────────────────────────────────── */
 function HowItWorks() {
   const [hov, setHov] = useState(null);
+  const [headerRef, headerAnim] = useFadeIn();
+  const [gridRef, gridVis] = useFadeIn();
   const steps = [
     { num: "01", title: "Encontre", desc: "Navegue pelo catálogo curado por categoria ou desafio do seu negócio." },
     { num: "02", title: "Ative", desc: "Sem instalação, sem equipe técnica. Configure em minutos e comece a usar." },
@@ -95,10 +107,7 @@ function HowItWorks() {
   return (
     <section id="como-funciona" className="section-pad" style={{ background: "#fff", padding: "80px 48px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={vp}
-          variants={fadeUp}
-          style={{ textAlign: "center", marginBottom: 80 }}>
+        <div ref={headerRef} style={{ ...headerAnim, textAlign: "center", marginBottom: 80 }}>
           <div style={{
             display: "inline-block",
             background: "rgba(99,102,241,0.06)",
@@ -126,17 +135,12 @@ function HowItWorks() {
           <p style={{ color: "#6B7280", fontSize: 18, marginTop: 16 }}>
             Do catálogo ao seu negócio funcionando.
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="grid-3"
-          initial="hidden" whileInView="visible" viewport={vp}
-          variants={stagger}
-          style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
+        <div ref={gridRef} className="grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
           {steps.map((step, i) => (
-            <motion.div
+            <div
               key={step.num}
-              variants={fadeUp}
               onMouseEnter={() => setHov(i)}
               onMouseLeave={() => setHov(null)}
               style={{
@@ -144,17 +148,18 @@ function HowItWorks() {
                 border: `1px solid ${hov === i ? "rgba(99,102,241,0.2)" : "#E5E7EB"}`,
                 borderRadius: 20, padding: 40,
                 boxShadow: hov === i ? "0 20px 40px rgba(0,0,0,0.08)" : "0 1px 3px rgba(0,0,0,0.06)",
-                transform: hov === i ? "translateY(-4px)" : "translateY(0)",
-                transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+                transform: gridVis ? (hov === i ? "translateY(-4px)" : "translateY(0)") : "translateY(24px)",
+                opacity: gridVis ? 1 : 0,
+                transition: `opacity 0.7s ease ${i * 0.1}s, transform 0.7s cubic-bezier(0.22,1,0.36,1) ${i * 0.1}s`,
               }}>
               <div style={{ fontSize: 64, fontWeight: 900, color: "#F3F4F6", lineHeight: 1, marginBottom: 24, fontFamily: "monospace" }}>
                 {step.num}
               </div>
               <div style={{ fontSize: 20, fontWeight: 700, color: "#0A0F1E", marginBottom: 12 }}>{step.title}</div>
               <div style={{ fontSize: 15, color: "#6B7280", lineHeight: 1.7 }}>{step.desc}</div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -164,6 +169,8 @@ function HowItWorks() {
 function Categories() {
   const router = useRouter();
   const [hov, setHov] = useState(null);
+  const [headerRef, headerAnim] = useFadeIn();
+  const [gridRef, gridVis] = useFadeIn();
 
   const cats = [
     { icon: <MessageSquare size={22} color="#6366F1" />, name: "Atendimento ao Cliente", desc: "Chatbots 24/7", slug: "atendimento" },
@@ -177,8 +184,7 @@ function Categories() {
   return (
     <section className="section-pad" style={{ background: "#F8F9FB", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <motion.div initial="hidden" whileInView="visible" viewport={vp} variants={fadeUp}
-          style={{ textAlign: "center", marginBottom: 64 }}>
+        <div ref={headerRef} style={{ ...headerAnim, textAlign: "center", marginBottom: 64 }}>
           <div style={{
             display: "inline-block",
             background: "rgba(99,102,241,0.06)",
@@ -202,15 +208,12 @@ function Categories() {
             }}>cada desafio.</span>
           </h2>
           <p style={{ color: "#6B7280", fontSize: 18, marginTop: 12 }}>Curadas para o mercado brasileiro.</p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="grid-2"
-          initial="hidden" whileInView="visible" viewport={vp} variants={stagger}
-          style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+        <div ref={gridRef} className="grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
           {cats.map((cat, i) => (
-            <motion.div
-              key={cat.slug} variants={fadeUp}
+            <div
+              key={cat.slug}
               onMouseEnter={() => setHov(i)}
               onMouseLeave={() => setHov(null)}
               onClick={() => router.push(`/solucoes?categoria=${cat.slug}`)}
@@ -219,8 +222,9 @@ function Categories() {
                 border: `1px solid ${hov === i ? "rgba(99,102,241,0.2)" : "#E5E7EB"}`,
                 borderRadius: 16, padding: 28, cursor: "pointer",
                 boxShadow: hov === i ? "0 20px 40px rgba(0,0,0,0.08)" : "none",
-                transform: hov === i ? "translateY(-4px)" : "translateY(0)",
-                transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+                opacity: gridVis ? 1 : 0,
+                transform: gridVis ? (hov === i ? "translateY(-4px)" : "translateY(0)") : "translateY(24px)",
+                transition: `opacity 0.6s ease ${i * 0.08}s, transform 0.6s cubic-bezier(0.22,1,0.36,1) ${i * 0.08}s, box-shadow 0.3s ease, border-color 0.3s ease`,
               }}>
               <div style={{ width: 44, height: 44, background: "#EEF2FF", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {cat.icon}
@@ -228,9 +232,9 @@ function Categories() {
               <div style={{ fontSize: 16, fontWeight: 700, color: "#0A0F1E", marginTop: 14 }}>{cat.name}</div>
               <div style={{ fontSize: 13, color: "#6B7280", marginTop: 6 }}>{cat.desc}</div>
               <div style={{ color: "#6366F1", fontSize: 13, fontWeight: 600, marginTop: 18 }}>Ver soluções →</div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -240,16 +244,15 @@ function Categories() {
 function ForCompanies() {
   const router = useRouter();
   const [hovCta, setHovCta] = useState(false);
+  const [leftRef, leftAnim] = useFadeIn('left');
+  const [rightRef, rightAnim] = useFadeIn('right');
   const solutions = ["Agente de Atendimento", "ChatBot WhatsApp", "Gerador de E-mails"];
 
   return (
     <section className="section-pad" style={{ backgroundColor: "#FAFAFA", backgroundImage: "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(99,102,241,0.03), transparent)", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div className="two-col" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
         {/* Left — mockup */}
-        <motion.div
-          initial={{ opacity: 0, x: -32 }} whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7 }} viewport={vp}
-          style={{ flex: "0 0 50%" }}>
+        <div ref={leftRef} style={{ ...leftAnim, flex: "0 0 50%" }}>
           <div style={{
             background: "#fff", border: "1px solid #E5E7EB",
             borderRadius: 20, padding: 28,
@@ -282,13 +285,10 @@ function ForCompanies() {
               ))}
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Right — text */}
-        <motion.div
-          initial={{ opacity: 0, x: 32 }} whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7 }} viewport={vp}
-          style={{ flex: "0 0 50%" }}>
+        <div ref={rightRef} style={{ ...rightAnim, flex: "0 0 50%" }}>
           <div style={{
             display: "inline-block",
             background: "rgba(99,102,241,0.06)",
@@ -339,7 +339,7 @@ function ForCompanies() {
             }}>
             Explorar o catálogo →
           </button>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -349,6 +349,8 @@ function ForCompanies() {
 function ForCreators() {
   const router = useRouter();
   const [hovCta, setHovCta] = useState(false);
+  const [leftRef, leftAnim] = useFadeIn('left');
+  const [rightRef, rightAnim] = useFadeIn('right');
   const sales = [
     { name: "Agente de Atendimento", value: "R$ 97", time: "2h atrás" },
     { name: "ChatBot WhatsApp", value: "R$ 147", time: "ontem" },
@@ -360,10 +362,7 @@ function ForCreators() {
     <section className="section-pad" style={{ background: "#fff", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div className="two-col-rev" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
         {/* Left — text */}
-        <motion.div
-          initial={{ opacity: 0, x: -32 }} whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7 }} viewport={vp}
-          style={{ flex: "0 0 50%" }}>
+        <div ref={leftRef} style={{ ...leftAnim, flex: "0 0 50%" }}>
           <div style={{
             display: "inline-block",
             background: "rgba(99,102,241,0.06)",
@@ -413,13 +412,10 @@ function ForCreators() {
             }}>
             Quero ser um criador →
           </button>
-        </motion.div>
+        </div>
 
         {/* Right — revenue card */}
-        <motion.div
-          initial={{ opacity: 0, x: 32 }} whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7 }} viewport={vp}
-          style={{ flex: "0 0 50%" }}>
+        <div ref={rightRef} style={{ ...rightAnim, flex: "0 0 50%" }}>
           <div style={{
             background: "#fff", border: "1px solid #E5E7EB",
             borderRadius: 20, padding: 28,
@@ -458,7 +454,7 @@ function ForCreators() {
               ))}
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

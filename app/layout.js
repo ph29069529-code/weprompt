@@ -55,9 +55,7 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" href="/logo-icon-white.png" />
         <meta name="theme-color" content="#6366F1" />
         <link rel="preconnect" href="https://upload.wikimedia.org" />
-        <link rel="preconnect" href="https://cdn.simpleicons.org" />
         <link rel="dns-prefetch" href="https://upload.wikimedia.org" />
-        <link rel="dns-prefetch" href="https://cdn.simpleicons.org" />
       </head>
       <body className={`${inter.variable} min-h-full flex flex-col`}>
         <NavbarController />

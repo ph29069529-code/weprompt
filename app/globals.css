@@ -121,11 +121,21 @@ body {
 
 /* RetroGrid animation */
 @keyframes grid {
-  0%   { transform: translateY(-50%); }
-  100% { transform: translateY(0); }
+  0%   { transform: translateY(-50%) translateZ(0); }
+  100% { transform: translateY(0) translateZ(0); }
 }
 .animate-grid {
   animation: grid 15s linear infinite;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* GPU compositing for floating / animated elements */
+.float-anim {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 /* Footer links */
