@@ -15,6 +15,7 @@ const HIDDEN_PREFIXES = [
 
 export default function FooterController() {
   const pathname = usePathname();
-  if (HIDDEN_PREFIXES.some((p) => pathname?.startsWith(p))) return null;
+  if (!pathname) return null;
+  if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
   return <Footer />;
 }
