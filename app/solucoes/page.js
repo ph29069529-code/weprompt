@@ -121,6 +121,18 @@ function SolutionCard({ solution }) {
             </span>
           </div>
         )}
+        {/* Oficial WePrompt badge */}
+        {solution.creator_id === "00000000-0000-0000-0000-000000000001" && (
+          <span style={{
+            position: "absolute", top: 10, right: 10,
+            fontSize: 10, fontWeight: 700, padding: "4px 10px", borderRadius: 100,
+            background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
+            color: "white", letterSpacing: "0.05em",
+            boxShadow: "0 2px 8px rgba(99,102,241,0.4)",
+          }}>
+            ✦ Oficial WePrompt
+          </span>
+        )}
         {/* Product type badge */}
         <span style={{
           position: "absolute", bottom: 10, left: 10,

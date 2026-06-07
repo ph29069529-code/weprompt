@@ -497,10 +497,23 @@ function SolutionDetail() {
             )}
           </div>
 
-          {/* Title */}
-          <h1 style={{ fontSize: 36, fontWeight: 800, color: "#111827", marginTop: 12, lineHeight: 1.2, margin: "12px 0 0" }}>
-            {solution.titulo}
-          </h1>
+          {/* Title + Oficial badge */}
+          <div style={{ marginTop: 12, display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+            <h1 style={{ fontSize: 36, fontWeight: 800, color: "#111827", lineHeight: 1.2, margin: 0 }}>
+              {solution.titulo}
+            </h1>
+            {solution.creator_id === "00000000-0000-0000-0000-000000000001" && (
+              <span style={{
+                display: "inline-flex", alignItems: "center", alignSelf: "center",
+                fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 100,
+                background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
+                color: "white", letterSpacing: "0.05em", whiteSpace: "nowrap",
+                boxShadow: "0 2px 8px rgba(99,102,241,0.4)",
+              }}>
+                ✦ Oficial WePrompt
+              </span>
+            )}
+          </div>
 
           {/* Creator row */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
