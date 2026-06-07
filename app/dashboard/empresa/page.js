@@ -6,12 +6,12 @@ import { supabase } from "../../lib/supabase";
 import NavbarDashboard from "../../components/NavbarDashboard";
 
 const TABS = [
-  { label: "Início" },
-  { label: "Soluções Adquiridas" },
-  { label: "Explorar Catálogo" },
-  { label: "Histórico de Compras" },
-  { label: "Configurações" },
-  { label: "Analytics" },
+  { label: "Início",               key: "inicio"        },
+  { label: "Soluções Adquiridas",  key: "solucoes"      },
+  { label: "Explorar Catálogo",    key: "catalogo"      },
+  { label: "Histórico de Compras", key: "historico"     },
+  { label: "Configurações",        key: "configuracoes" },
+  { label: "Analytics",            key: "analytics"     },
 ];
 
 const PLAN_FEATURES = [
@@ -43,7 +43,7 @@ function MetricCard({ iconBg, icon, label, value, sub, subColor }) {
 
 export default function EmpresaDashboard() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState('inicio');
   const [hoveredTab, setHoveredTab] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -160,9 +160,9 @@ export default function EmpresaDashboard() {
 
       {/* TABS ROW */}
       <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 32px", display: "flex", gap: 0, overflowX: "auto" }}>
-        {TABS.map((tab, i) => (
-          <button key={tab.label} onClick={() => setActiveTab(i)} onMouseEnter={() => setHoveredTab(i)} onMouseLeave={() => setHoveredTab(null)}
-            style={{ fontSize: 14, padding: "14px 0", paddingRight: 20, cursor: "pointer", display: "inline-flex", alignItems: "center", border: "none", borderBottom: activeTab === i ? "2px solid #111827" : "2px solid transparent", background: "transparent", color: activeTab === i ? "#111827" : hoveredTab === i ? "#374151" : "#6b7280", fontWeight: activeTab === i ? 600 : 400, marginBottom: -1, transition: "color 0.15s ease", whiteSpace: "nowrap", fontFamily: "inherit" }}>
+        {TABS.map((tab) => (
+          <button key={tab.key} onClick={() => setActiveTab(tab.key)} onMouseEnter={() => setHoveredTab(tab.key)} onMouseLeave={() => setHoveredTab(null)}
+            style={{ fontSize: 14, padding: "14px 0", paddingRight: 20, cursor: "pointer", display: "inline-flex", alignItems: "center", border: "none", borderBottom: activeTab === tab.key ? "2px solid #6366F1" : "2px solid transparent", background: "transparent", color: activeTab === tab.key ? "#6366F1" : hoveredTab === tab.key ? "#374151" : "#6B7280", fontWeight: activeTab === tab.key ? 600 : 400, marginBottom: -1, transition: "color 0.15s ease", whiteSpace: "nowrap", fontFamily: "inherit" }}>
             {tab.label}
           </button>
         ))}
@@ -195,7 +195,8 @@ export default function EmpresaDashboard() {
           </div>
         )}
 
-        {activeTab !== 5 && <>
+        {/* ── INÍCIO ── */}
+        {activeTab === 'inicio' && <>
         {/* METRICS ROW */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 24, maxWidth: 620 }}>
           <MetricCard
@@ -216,71 +217,39 @@ export default function EmpresaDashboard() {
 
         {/* SOLUÇÕES ADQUIRIDAS */}
         <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb" }}>
-          <div style={{ padding: "16px 24px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ padding: "16px 24px", borderBottom: "1px solid #e5e7eb" }}>
             <span style={{ fontSize: 15, fontWeight: 600, color: "#111827" }}>Soluções Adquiridas</span>
           </div>
-
           {subscriptions.length === 0 ? (
             <div style={{ padding: "64px 24px", textAlign: "center" }}>
-              <svg width="48" height="48" fill="none" stroke="#d1d5db" strokeWidth="1.5" viewBox="0 0 24 24" style={{ margin: "0 auto 16px", display: "block" }}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-              </svg>
-              <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                Você ainda não adquiriu nenhuma solução.
-              </div>
-              <div style={{ fontSize: 13, color: "#9ca3af", marginBottom: 20, lineHeight: 1.5 }}>
-                Explore o catálogo e encontre a ideal para seu negócio.
-              </div>
-              <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
-                Explorar catálogo →
-              </a>
+              <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Você ainda não adquiriu nenhuma solução.</div>
+              <div style={{ fontSize: 13, color: "#9ca3af", marginBottom: 20 }}>Explore o catálogo e encontre a ideal para seu negócio.</div>
+              <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Explorar catálogo →</a>
             </div>
           ) : (
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr>
-                  {["SOLUÇÃO", "CATEGORIA", "VALOR", "DESDE", "AÇÃO", "AVALIAR"].map(col => (
-                    <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>
-                  ))}
+              <thead><tr>{["SOLUÇÃO","CATEGORIA","VALOR","DESDE","AÇÃO","AVALIAR"].map(col => <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>)}</tr></thead>
+              <tbody>{subscriptions.map((sub, i) => (
+                <tr key={sub.id} onMouseEnter={() => setHoveredRow(i)} onMouseLeave={() => setHoveredRow(null)} style={{ background: hoveredRow === i ? "#f8faff" : "transparent", transition: "background 0.15s" }}>
+                  <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", fontWeight: 500, borderBottom: "1px solid #f9fafb" }}>{sub.solutions?.titulo || "—"}</td>
+                  <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{sub.solutions?.categoria || "—"}</td>
+                  <td style={{ padding: "12px 20px", fontSize: 13, color: "#111827", fontWeight: 600, borderBottom: "1px solid #f9fafb" }}>{fmtBRL(sub.solutions?.preco)}</td>
+                  <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{fmtDate(sub.created_at)}</td>
+                  <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
+                    {sub.solutions?.tipo === "prompt_pack" || sub.solutions?.tipo === "prompt"
+                      ? <a href={`/dashboard/empresa/solucoes/${sub.solutions.id}`} style={{ color: "#6366F1", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Ver Prompts →</a>
+                      : <a href={`/dashboard/empresa/workspace/${sub.solutions?.id}`} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "5px 12px", borderRadius: 7, background: "#6366F1", color: "white", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>Abrir Workspace →</a>
+                    }
+                  </td>
+                  <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
+                    {sub.solutions?.creator_id && !reviewedIds.has(sub.id)
+                      ? <button onClick={() => setReviewModal({ sub_id: sub.id, creator_id: sub.solutions.creator_id, solution_id: sub.solutions.id, title: sub.solutions.titulo })} style={{ padding: "5px 12px", borderRadius: 7, border: "1px solid #c7d2fe", background: "#eef2ff", color: "#4338CA", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>Avaliar criador</button>
+                      : reviewedIds.has(sub.id) ? <span style={{ fontSize: 12, color: "#16a34a", fontWeight: 600 }}>✓ Avaliado</span>
+                      : <span style={{ color: "#9ca3af" }}>—</span>
+                    }
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {subscriptions.map((sub, i) => (
-                  <tr key={sub.id} onMouseEnter={() => setHoveredRow(i)} onMouseLeave={() => setHoveredRow(null)}
-                    style={{ background: hoveredRow === i ? "#f8faff" : "transparent", transition: "background 0.15s", cursor: "pointer" }}>
-                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", fontWeight: 500, borderBottom: "1px solid #f9fafb" }}>{sub.solutions?.titulo || "—"}</td>
-                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{sub.solutions?.categoria || "—"}</td>
-                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#111827", fontWeight: 600, borderBottom: "1px solid #f9fafb" }}>{fmtBRL(sub.solutions?.preco)}</td>
-                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{fmtDate(sub.created_at)}</td>
-                    <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
-                      {sub.solutions?.tipo === "prompt_pack" || sub.solutions?.tipo === "prompt" ? (
-                        <a href={`/dashboard/empresa/solucoes/${sub.solutions.id}`}
-                          style={{ color: "#6366F1", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
-                          Ver Prompts →
-                        </a>
-                      ) : (
-                        <a href={`/dashboard/empresa/workspace/${sub.solutions?.id}`}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "5px 12px", borderRadius: 7, border: "none", background: "#6366F1", color: "white", fontSize: 12, fontWeight: 600, textDecoration: "none", cursor: "pointer" }}>
-                          Abrir Workspace →
-                        </a>
-                      )}
-                    </td>
-                    <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
-                      {sub.solutions?.creator_id && !reviewedIds.has(sub.id) ? (
-                        <button
-                          onClick={() => setReviewModal({ sub_id: sub.id, creator_id: sub.solutions.creator_id, solution_id: sub.solutions.id, title: sub.solutions.titulo })}
-                          style={{ padding: "5px 12px", borderRadius: 7, border: "1px solid #c7d2fe", background: "#eef2ff", color: "#4338CA", fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
-                          Avaliar criador
-                        </button>
-                      ) : reviewedIds.has(sub.id) ? (
-                        <span style={{ fontSize: 12, color: "#16a34a", fontWeight: 600 }}>✓ Avaliado</span>
-                      ) : (
-                        <span style={{ color: "#9ca3af", fontSize: 13 }}>—</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              ))}</tbody>
             </table>
           )}
         </div>
@@ -294,26 +263,124 @@ export default function EmpresaDashboard() {
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {PLAN_FEATURES.map(f => (
                   <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#6b7280" }}>
-                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                      <circle cx="8" cy="8" r="7" fill="rgba(99,102,241,0.1)" />
-                      <path d="M5 8l2 2 4-4" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="rgba(99,102,241,0.1)" /><path d="M5 8l2 2 4-4" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     {f}
                   </div>
                 ))}
               </div>
             </div>
-            <a href="/precos" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", flexShrink: 0, transition: "background 0.15s ease" }}
-              onMouseEnter={e => e.currentTarget.style.background = "#4F46E5"}
-              onMouseLeave={e => e.currentTarget.style.background = "#6366F1"}
-            >
+            <a href="/precos" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", flexShrink: 0 }}
+              onMouseEnter={e => e.currentTarget.style.background = "#4F46E5"} onMouseLeave={e => e.currentTarget.style.background = "#6366F1"}>
               Fazer upgrade →
             </a>
           </div>
         </div>
         </>}
 
-        {activeTab === 5 && (
+        {/* ── SOLUÇÕES ADQUIRIDAS ── */}
+        {activeTab === 'solucoes' && (
+          <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb" }}>
+            <div style={{ padding: "16px 24px", borderBottom: "1px solid #e5e7eb" }}>
+              <span style={{ fontSize: 15, fontWeight: 600, color: "#111827" }}>Soluções Adquiridas</span>
+              <span style={{ marginLeft: 10, background: "#EEF2FF", color: "#6366F1", fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 99 }}>{subscriptions.length}</span>
+            </div>
+            {subscriptions.length === 0 ? (
+              <div style={{ padding: "64px 24px", textAlign: "center" }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Nenhuma solução adquirida ainda.</div>
+                <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", marginTop: 12 }}>Explorar catálogo →</a>
+              </div>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr>{["SOLUÇÃO","CATEGORIA","VALOR","DESDE","AÇÃO"].map(col => <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>)}</tr></thead>
+                <tbody>{subscriptions.map((sub, i) => (
+                  <tr key={sub.id} onMouseEnter={() => setHoveredRow(i)} onMouseLeave={() => setHoveredRow(null)} style={{ background: hoveredRow === i ? "#f8faff" : "transparent", transition: "background 0.15s" }}>
+                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", fontWeight: 500, borderBottom: "1px solid #f9fafb" }}>{sub.solutions?.titulo || "—"}</td>
+                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{sub.solutions?.categoria || "—"}</td>
+                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#111827", fontWeight: 600, borderBottom: "1px solid #f9fafb" }}>{fmtBRL(sub.solutions?.preco)}</td>
+                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{fmtDate(sub.created_at)}</td>
+                    <td style={{ padding: "12px 20px", fontSize: 13, borderBottom: "1px solid #f9fafb" }}>
+                      {sub.solutions?.tipo === "prompt_pack" || sub.solutions?.tipo === "prompt"
+                        ? <a href={`/dashboard/empresa/solucoes/${sub.solutions.id}`} style={{ color: "#6366F1", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>Ver Prompts →</a>
+                        : <a href={`/dashboard/empresa/workspace/${sub.solutions?.id}`} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "5px 12px", borderRadius: 7, background: "#6366F1", color: "white", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>Abrir Workspace →</a>
+                      }
+                    </td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            )}
+          </div>
+        )}
+
+        {/* ── EXPLORAR CATÁLOGO ── */}
+        {activeTab === 'catalogo' && (
+          <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 40, textAlign: "center" }}>
+            <svg width="48" height="48" fill="none" stroke="#6366F1" strokeWidth="1.5" viewBox="0 0 24 24" style={{ margin: "0 auto 16px", display: "block" }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#111827", marginBottom: 8 }}>Explore o Catálogo de Soluções</div>
+            <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 24, maxWidth: 480, margin: "0 auto 24px" }}>
+              Encontre agentes de IA, prompt packs e automações prontas para transformar seu negócio.
+            </div>
+            <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#6366F1", color: "white", borderRadius: 10, padding: "12px 28px", fontSize: 15, fontWeight: 700, textDecoration: "none" }}>
+              Abrir catálogo →
+            </a>
+          </div>
+        )}
+
+        {/* ── HISTÓRICO DE COMPRAS ── */}
+        {activeTab === 'historico' && (
+          <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb" }}>
+            <div style={{ padding: "16px 24px", borderBottom: "1px solid #e5e7eb" }}>
+              <span style={{ fontSize: 15, fontWeight: 600, color: "#111827" }}>Histórico de Compras</span>
+            </div>
+            {subscriptions.length === 0 ? (
+              <div style={{ padding: "64px 24px", textAlign: "center" }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Nenhuma compra realizada ainda.</div>
+                <div style={{ fontSize: 13, color: "#9ca3af" }}>Suas aquisições aparecerão aqui.</div>
+              </div>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead><tr>{["DATA","SOLUÇÃO","CATEGORIA","VALOR","STATUS"].map(col => <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>)}</tr></thead>
+                <tbody>{[...subscriptions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((sub, i) => (
+                  <tr key={sub.id} onMouseEnter={() => setHoveredRow(i)} onMouseLeave={() => setHoveredRow(null)} style={{ background: hoveredRow === i ? "#f8faff" : "transparent", transition: "background 0.15s" }}>
+                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{fmtDate(sub.created_at)}</td>
+                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", fontWeight: 500, borderBottom: "1px solid #f9fafb" }}>{sub.solutions?.titulo || "—"}</td>
+                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", borderBottom: "1px solid #f9fafb" }}>{sub.solutions?.categoria || "—"}</td>
+                    <td style={{ padding: "12px 20px", fontSize: 13, color: "#111827", fontWeight: 600, borderBottom: "1px solid #f9fafb" }}>{fmtBRL(sub.solutions?.preco)}</td>
+                    <td style={{ padding: "12px 20px", borderBottom: "1px solid #f9fafb" }}>
+                      <span style={{ background: "rgba(22,163,74,0.1)", color: "#16a34a", fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 99 }}>Ativa</span>
+                    </td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            )}
+          </div>
+        )}
+
+        {/* ── CONFIGURAÇÕES ── */}
+        {activeTab === 'configuracoes' && (
+          <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32, maxWidth: 560 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 24 }}>Configurações da conta</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Nome</label>
+                <input defaultValue={userName} readOnly style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, color: "#111827", background: "#f9fafb", boxSizing: "border-box", fontFamily: "inherit" }} />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Plano atual</label>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f9fafb" }}>
+                  <span style={{ fontSize: 14, color: "#111827", fontWeight: 600 }}>Free</span>
+                  <a href="/precos" style={{ fontSize: 13, color: "#6366F1", fontWeight: 600, textDecoration: "none" }}>Fazer upgrade →</a>
+                </div>
+              </div>
+              <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 20 }}>
+                <div style={{ fontSize: 13, color: "#9ca3af" }}>Para alterar email ou senha, acesse as configurações da sua conta.</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'analytics' && (
           <>
             <div style={{ marginBottom: 28 }}>
               <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Analytics</h1>
