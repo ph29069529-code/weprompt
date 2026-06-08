@@ -133,11 +133,15 @@ export default function CriadorPage() {
     });
     return (
       <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, sans-serif" }}>
+        <style>{`
+          .sk-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+          @media (min-width: 768px) { .sk-grid { grid-template-columns: 300px 1fr; } }
+        `}</style>
         <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", height: 60 }} />
         <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", height: 44 }} />
-        <div style={{ padding: "24px 32px", maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ padding: "24px 16px", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ ...sk(28), width: 240, marginBottom: 28, borderRadius: 8 }} />
-          <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 24 }}>
+          <div className="sk-grid">
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={sk(80)} />
               <div style={sk(80)} />
