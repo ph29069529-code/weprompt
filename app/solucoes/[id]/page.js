@@ -492,7 +492,16 @@ function SolutionDetail() {
           </div>
 
           {/* Tabs row */}
-          <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #e5e7eb", marginTop: 28, background: "#fff", borderRadius: "12px 12px 0 0", padding: "0 24px", overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+          <div
+            className="sol-tabs-row"
+            style={{
+              display: "flex", gap: 0, borderBottom: "1px solid #e5e7eb",
+              marginTop: 28, background: "#fff", borderRadius: "12px 12px 0 0",
+              padding: "0 0 0 24px",
+              overflowX: "auto", WebkitOverflowScrolling: "touch",
+              scrollbarWidth: "none", msOverflowStyle: "none",
+            }}
+          >
             {tabs.map((tab, i) => (
               <button key={i} onClick={() => setActiveTab(i)} style={{
                 fontSize: 14,
@@ -508,10 +517,13 @@ function SolutionDetail() {
                 fontFamily: "inherit",
                 whiteSpace: "nowrap",
                 transition: "color 0.15s",
+                flexShrink: 0,
               }}>
                 {tab}
               </button>
             ))}
+            {/* spacer so last tab isn't clipped on scroll (padding-right doesn't work in WebKit flex scroll) */}
+            <div style={{ minWidth: 24, flexShrink: 0 }} />
           </div>
 
           {/* Tab content */}
@@ -521,11 +533,11 @@ function SolutionDetail() {
             {activeTab === 0 && (
               <div>
                 <p style={{ fontSize: 15, color: "#374151", lineHeight: 1.8, margin: 0, whiteSpace: "pre-line" }}>{solution.descricao}</p>
-                <div style={{ marginTop: 24 }}>
+                <div style={{ marginTop: 24, overflow: "hidden" }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", marginBottom: 10 }}>Ideal para</div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                     {["Pequenas e médias empresas", "Equipes de marketing", "Empreendedores", "Startups"].map(tag => (
-                      <span key={tag} style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "5px 14px", fontSize: 13, display: "inline-block", marginBottom: 4 }}>{tag}</span>
+                      <span key={tag} style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "5px 14px", fontSize: 13, display: "inline-block", marginBottom: 4, maxWidth: "100%", boxSizing: "border-box" }}>{tag}</span>
                     ))}
                   </div>
                 </div>
@@ -707,6 +719,7 @@ export default function SolutionPage() {
         @media (min-width: 768px) { .sol-purchase-card { position: sticky; top: 80px; } }
         .sol-price { font-size: 28px; }
         @media (min-width: 768px) { .sol-price { font-size: 42px; } }
+        .sol-tabs-row::-webkit-scrollbar { display: none; }
       `}</style>
       <Suspense fallback={<Skeleton />}>
         <SolutionDetail />
