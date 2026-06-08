@@ -153,6 +153,11 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  // Ensure overflow is always restored on unmount regardless of mobileOpen state
+  useEffect(() => {
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
   // Close mobile when switching to desktop
   useEffect(() => {
     if (!isMobile) setMobileOpen(false);
@@ -160,8 +165,8 @@ export default function Navbar() {
 
   // Scroll detection — threshold 10px triggers the pill/blur effect
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll);
+    const onScroll = () => setScrolled((window.scrollY || document.documentElement.scrollTop) > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
