@@ -112,7 +112,7 @@ function LoginForm() {
     e.preventDefault();
     setError(""); setSuccess(""); setLoading(true);
 
-    const { data, error } = await signIn(email, password);
+    const { error } = await signIn(email, password);
     if (error) {
       setError("Email ou senha incorretos. Tente novamente.");
       setLoading(false);
@@ -121,15 +121,23 @@ function LoginForm() {
 
     setSuccess("Login realizado com sucesso! Redirecionando…");
 
+    // Use getUser() to get the authenticated user reliably after login
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push("/completar-perfil");
+      return;
+    }
+
     const { data: profile } = await supabase
-      .from("profiles").select("role").eq("id", data.user.id).single();
+      .from("profiles").select("role").eq("id", user.id).single();
 
     if (!profile) {
       const pending = localStorage.getItem("weprompt_pending_profile");
       if (pending) {
         const { nome, role: pendingRole } = JSON.parse(pending);
         const { error: profileError } = await supabase
-          .from("profiles").insert({ id: data.user.id, nome, role: pendingRole });
+          .from("profiles").insert({ id: user.id, nome, role: pendingRole });
         if (profileError) console.error("[login] profile insert error:", profileError);
         else localStorage.removeItem("weprompt_pending_profile");
         router.push(redirectTo || (pendingRole === "empresa" ? "/dashboard/empresa" : "/dashboard/criador"));
@@ -140,10 +148,17 @@ function LoginForm() {
     }
 
     const role = profile.role;
-    if (redirectTo) router.push(redirectTo);
-    else if (role === "criador" || role === "creator") router.push("/dashboard/criador");
-    else if (role === "empresa" || role === "business") router.push("/dashboard/empresa");
-    else router.push("/dashboard/criador");
+    if (redirectTo) {
+      router.push(redirectTo);
+    } else if (role === "admin") {
+      router.push("/dashboard/admin");
+    } else if (role === "criador" || role === "creator") {
+      router.push("/dashboard/criador");
+    } else if (role === "empresa" || role === "business") {
+      router.push("/dashboard/empresa");
+    } else {
+      router.push("/dashboard/empresa");
+    }
     setLoading(false);
   }
 
