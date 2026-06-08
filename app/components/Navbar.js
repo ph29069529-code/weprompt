@@ -267,14 +267,20 @@ export default function Navbar() {
         }
       `}</style>
 
-      {/* Sticky wrapper — full width, transparent, always at top */}
+      {/* Spacer — reserves 64px in the normal document flow so content
+          doesn't hide behind the fixed navbar */}
+      <div style={{ height: 64, flexShrink: 0 }} />
+
+      {/* Fixed wrapper — always pinned to the top of the viewport */}
       <div style={{
-        position: "sticky",
+        position: "fixed",
         top: 0,
-        zIndex: 50,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
         width: "100%",
-        padding: scrolled && isDesktop ? "16px 16px 0" : 0,
-        transition: "padding 0.3s ease-out",
+        padding: scrolled && isDesktop ? "16px 16px 0" : "0",
+        transition: "all 0.3s ease-out",
         pointerEvents: "none",
       }}>
         {/* ── Header pill ── */}
