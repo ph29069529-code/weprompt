@@ -51,7 +51,18 @@ export default function EmpresaDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState("usuário");
+  const [userId, setUserId] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
+
+  /* perfil */
+  const [profNome, setProfNome] = useState("");
+  const [profCidade, setProfCidade] = useState("");
+  const [profAvatarUrl, setProfAvatarUrl] = useState("");
+  const [profAvatarFile, setProfAvatarFile] = useState(null);
+  const [profAvatarPreview, setProfAvatarPreview] = useState("");
+  const [profSaving, setProfSaving] = useState(false);
+  const [profSaveOk, setProfSaveOk] = useState(false);
+  const [profSaveErr, setProfSaveErr] = useState("");
 
   /* review modal */
   const [reviewModal,   setReviewModal]   = useState(null);
@@ -66,13 +77,14 @@ export default function EmpresaDashboard() {
       if (!session) { router.replace("/login"); return; }
 
       const uid = session.user.id;
+      setUserId(uid);
 
       // RLS note — run once in Supabase SQL Editor if subscriptions return empty:
       // CREATE POLICY "Empresas can read own subscriptions" ON subscriptions
       //   FOR SELECT USING (auth.uid() = business_id);
       try {
         const [profileRes, subsRes] = await Promise.all([
-          supabase.from("profiles").select("nome").eq("id", uid).single(),
+          supabase.from("profiles").select("nome, cidade, avatar_url").eq("id", uid).single(),
           supabase.from("subscriptions")
             .select("id, status, created_at, solutions(id, titulo, categoria, preco, access_url, creator_id, tipo)")
             .eq("business_id", uid)   // fixed: was incorrectly "user_id"
@@ -81,6 +93,9 @@ export default function EmpresaDashboard() {
         ]);
 
         if (profileRes.data?.nome) setUserName(profileRes.data.nome);
+        setProfNome(profileRes.data?.nome || "");
+        setProfCidade(profileRes.data?.cidade || "");
+        setProfAvatarUrl(profileRes.data?.avatar_url || "");
         setSubscriptions(subsRes.data || []);
       } catch {
         setError("Não foi possível carregar os dados. Tente recarregar a página.");
@@ -112,6 +127,40 @@ export default function EmpresaDashboard() {
   const totalInvestment = subscriptions.reduce((sum, s) => sum + (s.solutions?.preco || 0), 0);
   const firstName = userName.split(" ")[0];
   const initials = userName?.trim().split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase() || "E";
+
+  async function handleSavePerfilEmpresa() {
+    if (!userId) return;
+    setProfSaving(true);
+    setProfSaveOk(false);
+    setProfSaveErr("");
+    try {
+      let avatarUrl = profAvatarUrl;
+      if (profAvatarFile) {
+        const ext = profAvatarFile.name.split(".").pop();
+        const path = `${userId}/avatar.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("avatars")
+          .upload(path, profAvatarFile, { upsert: true });
+        if (upErr) throw upErr;
+        const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+        avatarUrl = publicUrl;
+        setProfAvatarUrl(publicUrl);
+        setProfAvatarFile(null);
+      }
+      const { error: updateErr } = await supabase
+        .from("profiles")
+        .update({ nome: profNome.trim(), cidade: profCidade.trim(), avatar_url: avatarUrl })
+        .eq("id", userId);
+      if (updateErr) throw updateErr;
+      setUserName(profNome.trim());
+      setProfSaveOk(true);
+      setTimeout(() => setProfSaveOk(false), 4000);
+    } catch {
+      setProfSaveErr("Erro ao salvar. Verifique sua conexão e tente novamente.");
+    } finally {
+      setProfSaving(false);
+    }
+  }
 
   if (loading) {
     const sk = (h = 72) => ({
@@ -363,22 +412,101 @@ export default function EmpresaDashboard() {
 
         {/* ── CONFIGURAÇÕES ── */}
         {activeTab === 'configuracoes' && (
-          <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32, maxWidth: 560 }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 24 }}>Configurações da conta</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Nome</label>
-                <input defaultValue={userName} readOnly style={{ width: "100%", padding: "10px 14px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, color: "#111827", background: "#f9fafb", boxSizing: "border-box", fontFamily: "inherit" }} />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Plano atual</label>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f9fafb" }}>
-                  <span style={{ fontSize: 14, color: "#111827", fontWeight: 600 }}>Free</span>
-                  <a href="/precos" style={{ fontSize: 13, color: "#6366F1", fontWeight: 600, textDecoration: "none" }}>Fazer upgrade →</a>
+          <div>
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Configurações</h1>
+              <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Gerencie o perfil da sua empresa.</p>
+            </div>
+            <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32, maxWidth: 560, boxSizing: "border-box" }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 24 }}>Perfil da Empresa</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+                {/* Foto/logo */}
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 10 }}>Foto / Logo da empresa</label>
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                    <div style={{ width: 72, height: 72, borderRadius: 999, overflow: "hidden", background: "#f3f4f6", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #e5e7eb" }}>
+                      {(profAvatarPreview || profAvatarUrl) ? (
+                        <img src={profAvatarPreview || profAvatarUrl} alt="Logo" style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+                      ) : (
+                        <span style={{ fontSize: 24, fontWeight: 700, color: "#9ca3af" }}>{initials}</span>
+                      )}
+                    </div>
+                    <div>
+                      <label htmlFor="empresa-avatar-upload" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#f3f4f6", color: "#374151", borderRadius: 8, padding: "10px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", border: "1px solid #e5e7eb", minHeight: 40 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                        {profAvatarFile ? "Trocar imagem" : "Enviar imagem"}
+                      </label>
+                      <input id="empresa-avatar-upload" type="file" accept="image/*" style={{ display: "none" }} onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setProfAvatarFile(file);
+                        setProfAvatarPreview(URL.createObjectURL(file));
+                      }} />
+                      {profAvatarFile && <div style={{ fontSize: 12, color: "#6b7280", marginTop: 6 }}>{profAvatarFile.name}</div>}
+                      <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>JPG, PNG ou WebP. Máx. 2MB.</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 20 }}>
-                <div style={{ fontSize: 13, color: "#9ca3af" }}>Para alterar email ou senha, acesse as configurações da sua conta.</div>
+
+                {/* Nome da empresa */}
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Nome da empresa</label>
+                  <input
+                    type="text"
+                    value={profNome}
+                    onChange={e => setProfNome(e.target.value)}
+                    placeholder="Nome da sua empresa"
+                    style={{ width: "100%", padding: "12px 14px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, color: "#111827", background: "#fff", boxSizing: "border-box", fontFamily: "inherit", minHeight: 44, outline: "none" }}
+                    onFocus={e => e.target.style.borderColor = "#6366F1"}
+                    onBlur={e => e.target.style.borderColor = "#e5e7eb"}
+                  />
+                </div>
+
+                {/* Cidade */}
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Cidade</label>
+                  <input
+                    type="text"
+                    value={profCidade}
+                    onChange={e => setProfCidade(e.target.value)}
+                    placeholder="Ex: Belo Horizonte, MG"
+                    style={{ width: "100%", padding: "12px 14px", borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 14, color: "#111827", background: "#fff", boxSizing: "border-box", fontFamily: "inherit", minHeight: 44, outline: "none" }}
+                    onFocus={e => e.target.style.borderColor = "#6366F1"}
+                    onBlur={e => e.target.style.borderColor = "#e5e7eb"}
+                  />
+                </div>
+
+                {/* Plano */}
+                <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 20 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Plano atual</div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f9fafb" }}>
+                    <span style={{ fontSize: 14, color: "#111827", fontWeight: 600 }}>Free</span>
+                    <a href="/precos" style={{ fontSize: 13, color: "#6366F1", fontWeight: 600, textDecoration: "none" }}>Fazer upgrade →</a>
+                  </div>
+                </div>
+
+                {/* Feedback */}
+                {profSaveOk && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", background: "rgba(5,150,105,0.07)", border: "1px solid rgba(5,150,105,0.2)", borderRadius: 10 }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="rgba(5,150,105,0.2)" /><path d="M7 12l3 3 7-7" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "#059669" }}>Perfil atualizado com sucesso!</span>
+                  </div>
+                )}
+                {profSaveErr && (
+                  <div style={{ padding: "12px 16px", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, fontSize: 14, color: "#B91C1C" }}>
+                    {profSaveErr}
+                  </div>
+                )}
+
+                {/* Salvar */}
+                <button
+                  onClick={handleSavePerfilEmpresa}
+                  disabled={profSaving}
+                  style={{ background: profSaving ? "rgba(99,102,241,0.5)" : "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, border: "none", cursor: profSaving ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
+                >
+                  {profSaving ? "Salvando…" : "Salvar alterações"}
+                </button>
               </div>
             </div>
           </div>
