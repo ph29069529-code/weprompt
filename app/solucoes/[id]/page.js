@@ -240,8 +240,14 @@ function RelatedSolutions({ categoria, currentId }) {
 /* ── Skeleton ── */
 function Skeleton() {
   return (
-    <div style={{ padding: "24px 48px", animation: "shimmer 1.5s ease-in-out infinite" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 420px", gap: 32 }}>
+    <div className="sk-sol-wrap" style={{ animation: "shimmer 1.5s ease-in-out infinite" }}>
+      <style>{`
+        .sk-sol-wrap { padding: 24px 16px; }
+        @media (min-width: 768px) { .sk-sol-wrap { padding: 24px 48px; } }
+        .sk-sol-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+        @media (min-width: 768px) { .sk-sol-grid { grid-template-columns: 1fr 420px; } }
+      `}</style>
+      <div className="sk-sol-grid">
         <div>
           <div style={{ width: 220, height: 12, borderRadius: 4, background: "#e5e7eb", marginBottom: 20 }} />
           <div style={{ width: 90, height: 22, borderRadius: 99, background: "#e5e7eb", marginBottom: 14 }} />
