@@ -306,7 +306,7 @@ export default function SolucoesPage() {
             placeholder="Buscar soluções..."
             style={{
               background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8,
-              padding: "9px 16px", fontSize: 14,
+              padding: "12px 16px", fontSize: 14, minHeight: 44, boxSizing: "border-box",
               color: "#111827", outline: "none", fontFamily: "inherit",
               transition: "border-color 0.15s, box-shadow 0.15s",
             }}
@@ -324,12 +324,12 @@ export default function SolucoesPage() {
                 key={cat.nome}
                 onClick={() => setActiveCategory(cat.nome)}
                 style={{
-                  padding: "7px 18px", borderRadius: 999,
+                  padding: "12px 18px", borderRadius: 999, minHeight: 44,
                   fontFamily: "inherit", fontSize: 14, fontWeight: 600,
                   cursor: "pointer", border: isActive ? "none" : "1px solid #e5e7eb",
                   background: isActive ? "#111827" : "#fff",
                   color: isActive ? "#fff" : "#374151",
-                  transition: "all 0.15s",
+                  transition: "all 0.15s", display: "inline-flex", alignItems: "center",
                 }}
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#f9fafb"; }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "#fff"; }}
