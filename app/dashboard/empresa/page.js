@@ -157,6 +157,10 @@ export default function EmpresaDashboard() {
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <NavbarDashboard />
+      <style>{`
+        .dash-header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+        @media (min-width: 640px) { .dash-header { flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 0; } }
+      `}</style>
 
       {/* TABS ROW */}
       <div className="scroll-x" style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 16px", display: "flex", gap: 0 }}>
@@ -172,7 +176,7 @@ export default function EmpresaDashboard() {
       <div style={{ padding: "16px" }}>
 
         {/* TITLE ROW */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
+        <div className="dash-header">
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Olá, {firstName}</h1>
             <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>

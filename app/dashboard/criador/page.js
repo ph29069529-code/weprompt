@@ -177,6 +177,12 @@ export default function CriadorPage() {
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <NavbarDashboard />
+      <style>{`
+        .dash-header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+        @media (min-width: 640px) { .dash-header { flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 0; } }
+        .dash-vendas-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
+        @media (min-width: 640px) { .dash-vendas-grid { grid-template-columns: repeat(3, 1fr); } }
+      `}</style>
 
       {/* TABS ROW */}
       <div className="scroll-x" style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 16px", display: "flex", gap: 0 }}>
@@ -195,7 +201,7 @@ export default function CriadorPage() {
 
         {activeView === "dashboard" && <>
         {/* TITLE ROW */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
+        <div className="dash-header">
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Dashboard</h1>
             <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>
@@ -331,7 +337,7 @@ export default function CriadorPage() {
         {/* ── MINHAS SOLUÇÕES ── */}
         {activeView === "solucoes" && (
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+            <div className="dash-header" style={{ marginBottom: 24 }}>
               <div>
                 <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Minhas Soluções</h1>
                 <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Gerencie suas soluções publicadas e rascunhos.</p>
@@ -351,7 +357,7 @@ export default function CriadorPage() {
                   <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer", marginTop: 8 }}>+ Criar primeira solução</button>
                 </div>
               ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <div className="scroll-x"><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 480 }}>
                   <thead><tr>{["SOLUÇÃO","CATEGORIA","PREÇO","DATA","STATUS"].map(col => <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>{col}</th>)}</tr></thead>
                   <tbody>{recentSolutions.map((sol, i) => {
                     const badge = STATUS_BADGE[sol.status] || STATUS_BADGE.draft;
@@ -367,7 +373,7 @@ export default function CriadorPage() {
                       </tr>
                     );
                   })}</tbody>
-                </table>
+                </table></div>
               )}
             </div>
           </div>
@@ -380,7 +386,7 @@ export default function CriadorPage() {
               <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Vendas</h1>
               <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Histórico de vendas das suas soluções.</p>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
+            <div className="dash-vendas-grid">
               <MetricCard iconBg="#6366F1" icon={<svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>}
                 label="Receita Total" value="R$ 0,00" sub="disponível em breve" subColor="#9ca3af" />
               <MetricCard iconBg="#6366F1" icon={<svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>}
