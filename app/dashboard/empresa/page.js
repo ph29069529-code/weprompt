@@ -184,10 +184,10 @@ export default function EmpresaDashboard() {
             </p>
           </div>
           <div style={{ display: "flex", gap: 12 }}>
-            <a href="/solucoes" style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px 18px", fontSize: 14, color: "#374151", display: "flex", alignItems: "center", gap: 6, background: "white", cursor: "pointer", textDecoration: "none" }}>
+            <a href="/solucoes" style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "12px 18px", minHeight: 44, fontSize: 14, color: "#374151", display: "flex", alignItems: "center", gap: 6, background: "white", cursor: "pointer", textDecoration: "none" }}>
               Explorar Catálogo ↗
             </a>
-            <a href="/solucoes" style={{ background: "#6366F1", color: "white", borderRadius: 8, padding: "9px 18px", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <a href="/solucoes" style={{ background: "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", textDecoration: "none", display: "flex", alignItems: "center" }}>
               Adquirir Solução +
             </a>
           </div>
@@ -228,7 +228,7 @@ export default function EmpresaDashboard() {
             <div style={{ padding: "64px 24px", textAlign: "center" }}>
               <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Você ainda não adquiriu nenhuma solução.</div>
               <div style={{ fontSize: 13, color: "#9ca3af", marginBottom: 20 }}>Explore o catálogo e encontre a ideal para seu negócio.</div>
-              <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Explorar catálogo →</a>
+              <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Explorar catálogo →</a>
             </div>
           ) : (
             <div className="scroll-x"><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 600 }}>
@@ -273,7 +273,7 @@ export default function EmpresaDashboard() {
                 ))}
               </div>
             </div>
-            <a href="/precos" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", flexShrink: 0 }}
+            <a href="/precos" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, textDecoration: "none", flexShrink: 0 }}
               onMouseEnter={e => e.currentTarget.style.background = "#4F46E5"} onMouseLeave={e => e.currentTarget.style.background = "#6366F1"}>
               Fazer upgrade →
             </a>
@@ -291,7 +291,7 @@ export default function EmpresaDashboard() {
             {subscriptions.length === 0 ? (
               <div style={{ padding: "64px 24px", textAlign: "center" }}>
                 <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Nenhuma solução adquirida ainda.</div>
-                <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, textDecoration: "none", marginTop: 12 }}>Explorar catálogo →</a>
+                <a href="/solucoes" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, textDecoration: "none", marginTop: 12 }}>Explorar catálogo →</a>
               </div>
             ) : (
               <div className="scroll-x"><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>

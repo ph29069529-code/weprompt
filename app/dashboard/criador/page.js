@@ -213,7 +213,7 @@ export default function CriadorPage() {
             </p>
           </div>
           <div style={{ display: "flex", gap: 12 }}>
-            <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", borderRadius: 8, padding: "9px 18px", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
+            <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
               + Nova Solução
             </button>
           </div>
@@ -282,7 +282,7 @@ export default function CriadorPage() {
               Publique sua primeira solução para começar a acompanhar suas vendas aqui.
             </div>
             {approvedCount === 0 && (
-              <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ marginTop: 20, background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ marginTop: 20, background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
                 + Nova Solução
               </button>
             )}
@@ -301,7 +301,7 @@ export default function CriadorPage() {
           {recentSolutions.length === 0 ? (
             <div style={{ padding: "48px 24px", textAlign: "center" }}>
               <div style={{ fontSize: 14, color: "#9ca3af", marginBottom: 16 }}>Você ainda não publicou nenhuma solução.</div>
-              <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
                 + Criar primeira solução
               </button>
             </div>
@@ -346,7 +346,7 @@ export default function CriadorPage() {
                 <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Minhas Soluções</h1>
                 <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Gerencie suas soluções publicadas e rascunhos.</p>
               </div>
-              <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", borderRadius: 8, padding: "9px 18px", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
+              <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
                 + Nova Solução
               </button>
             </div>
@@ -358,7 +358,7 @@ export default function CriadorPage() {
               {recentSolutions.length === 0 ? (
                 <div style={{ padding: "64px 24px", textAlign: "center" }}>
                   <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Nenhuma solução publicada ainda.</div>
-                  <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer", marginTop: 8 }}>+ Criar primeira solução</button>
+                  <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, cursor: "pointer", marginTop: 8 }}>+ Criar primeira solução</button>
                 </div>
               ) : (
                 <div className="scroll-x"><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 480 }}>
@@ -403,7 +403,7 @@ export default function CriadorPage() {
                 <>
                   <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Nenhuma venda registrada ainda.</div>
                   <div style={{ fontSize: 13, color: "#9ca3af", marginBottom: 20 }}>Suas vendas aparecerão aqui após a primeira compra.</div>
-                  <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>+ Publicar solução</button>
+                  <button onClick={() => router.push("/dashboard/criador/nova-solucao")} style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>+ Publicar solução</button>
                 </>
               ) : (
                 <div style={{ fontSize: 14, color: "#6b7280" }}>Detalhes de vendas disponíveis na aba Analytics.</div>
@@ -434,7 +434,7 @@ export default function CriadorPage() {
                   </div>
                 </div>
                 <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 20 }}>
-                  <button onClick={() => router.push("/dashboard/criador/configuracoes")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "10px 20px", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
+                  <button onClick={() => router.push("/dashboard/criador/configuracoes")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
                     Configurações avançadas →
                   </button>
                 </div>
