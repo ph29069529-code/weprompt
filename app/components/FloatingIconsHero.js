@@ -53,7 +53,8 @@ export default function FloatingIconsHero() {
       style={{
         position: 'relative',
         width: '100%',
-        minHeight: '100vh', maxHeight: '100vh', overflow: 'hidden',
+        minHeight: '100vh',
+        overflow: 'visible',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -81,7 +82,7 @@ export default function FloatingIconsHero() {
       }} />
 
       {/* ── Floating icons ── */}
-      <div style={{ position: 'absolute', inset: 0 }}>
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
         {visibleIcons.map((icon, i) => (
           /*
            * Three-layer structure to avoid transform conflicts:
