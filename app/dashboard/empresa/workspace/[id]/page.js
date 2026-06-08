@@ -434,6 +434,23 @@ export default function WorkspacePage() {
           </button>
         </div>
 
+        {/* Maintenance banner */}
+        <div style={{
+          background: "#FEF9C3",
+          border: "1px solid #FDE047",
+          color: "#854D0E",
+          fontSize: 13,
+          padding: "10px 16px",
+          borderRadius: 8,
+          margin: 12,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          flexShrink: 0,
+        }}>
+          ⚠️ O Workspace está em manutenção e ficará disponível em breve. Sua assinatura já está ativa.
+        </div>
+
         {/* Messages area */}
         <div style={{ flex: 1, overflowY: "auto", padding: "24px", display: "flex", flexDirection: "column", gap: 16 }}>
 
