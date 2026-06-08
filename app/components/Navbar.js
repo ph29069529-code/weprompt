@@ -161,7 +161,7 @@ export default function Navbar() {
   // Scroll detection — threshold 10px triggers the pill/blur effect
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", onScroll);
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -283,7 +283,7 @@ export default function Navbar() {
             background: scrolled ? "rgba(255,255,255,0.95)" : "transparent",
             backdropFilter: scrolled ? "blur(16px)" : "none",
             WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
-            border: scrolled ? "1px solid rgba(0,0,0,0.08)" : "none",
+            border: scrolled && isDesktop ? "1px solid rgba(0,0,0,0.08)" : "none",
             borderBottom: scrolled && !isDesktop ? "1px solid rgba(0,0,0,0.08)" : undefined,
             boxShadow: scrolled ? "0 1px 20px rgba(0,0,0,0.06)" : "none",
             height: scrolled ? 52 : 64,
