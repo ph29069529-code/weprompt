@@ -282,6 +282,7 @@ export default function Navbar() {
         padding: scrolled && isDesktop ? "16px 16px 0" : "0",
         transition: "all 0.3s ease-out",
         pointerEvents: "none",
+        opacity: mobileOpen && isMobile ? 0 : 1,
       }}>
         {/* ── Header pill ── */}
         <header
@@ -423,7 +424,7 @@ export default function Navbar() {
       {/* ── Mobile full-screen overlay ── */}
       {isMobile && mobileOpen && (
         <div style={{
-          position: "fixed", inset: 0, zIndex: 100,
+          position: "fixed", inset: 0, zIndex: 1100,
           background: "white", display: "flex", flexDirection: "column",
           animation: "mobileIn 0.18s ease",
         }}>
