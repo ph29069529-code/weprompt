@@ -15,10 +15,6 @@ import dynamic from "next/dynamic";
 import FloatingIconsHero from "./components/FloatingIconsHero";
 import Navbar from "./components/Navbar";
 
-const PlatformScrollDemo = dynamic(() => import("./components/PlatformScrollDemo"), {
-  ssr: false,
-  loading: () => <div style={{ height: 600 }} />,
-});
 const SolutionsShowcase = dynamic(() => import("./components/SolutionsShowcase"), {
   ssr: false,
   loading: () => <div style={{ height: 500 }} />,
@@ -465,7 +461,6 @@ export default function Home() {
       <PageStyles />
       <Navbar />
       <FloatingIconsHero />
-      <PlatformScrollDemo />
       <SolutionsShowcase />
 
       <HowItWorks />
