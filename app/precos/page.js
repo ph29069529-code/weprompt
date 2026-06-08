@@ -302,15 +302,6 @@ export default function PrecosPage() {
   const router = useRouter();
   const [activeAudience, setActiveAudience] = useState("criadores");
   const [billing, setBilling] = useState("mensal");
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
   const plans = activeAudience === "criadores" ? CRIADOR_PLANS(billing) : EMPRESA_PLANS(billing);
 
   return (
@@ -318,14 +309,22 @@ export default function PrecosPage() {
       <Navbar />
 
       {/* ── MAIN CONTENT ── */}
-      <div style={{ padding: isMobile ? "40px 16px" : "40px 48px", maxWidth: 1200, margin: "0 auto" }}>
+      <style>{`
+        .precos-container { padding: 40px 16px; max-width: 1200px; margin: 0 auto; }
+        @media (min-width: 768px) { .precos-container { padding: 40px 48px; } }
+        .precos-heading { font-size: 32px; }
+        @media (min-width: 768px) { .precos-heading { font-size: 48px; } }
+        .precos-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 32px; }
+        @media (min-width: 768px) { .precos-grid { grid-template-columns: repeat(3, 1fr); } }
+      `}</style>
+      <div className="precos-container">
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "6px 16px", fontSize: 13, fontWeight: 600, display: "inline-block" }}>
             PLANOS E PREÇOS
           </div>
-          <h1 style={{ fontSize: isMobile ? 32 : 48, fontWeight: 800, color: "#111827", marginTop: 16, marginBottom: 0 }}>Simples e transparente</h1>
+          <h1 className="precos-heading" style={{ fontWeight: 800, color: "#111827", marginTop: 16, marginBottom: 0 }}>Simples e transparente</h1>
           <p style={{ fontSize: 18, color: "#6b7280", marginTop: 12, marginBottom: 0 }}>Comece gratuitamente. Escale quando precisar.</p>
         </div>
 
@@ -376,7 +375,7 @@ export default function PrecosPage() {
         </div>
 
         {/* Pricing grid */}
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20, marginBottom: 32 }}>
+        <div className="precos-grid">
           {plans.map(plan => (
             <PlanCard key={plan.name} plan={plan} billing={billing} router={router} />
           ))}

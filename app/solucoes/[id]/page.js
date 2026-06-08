@@ -308,15 +308,6 @@ function SolutionDetail() {
   const [shared,       setShared]       = useState(false);
   const [fav,          setFav]          = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
   useEffect(() => {
     if (!id) return;
     async function init() {
@@ -408,7 +399,7 @@ function SolutionDetail() {
   return (
     <div>
       {/* Breadcrumb */}
-      <div style={{ padding: isMobile ? "16px" : "16px 48px", fontSize: 13, color: "#6b7280", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      <div className="sol-breadcrumb" style={{ fontSize: 13, color: "#6b7280", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         <span onClick={() => router.push("/solucoes")} style={{ color: "#6b7280", cursor: "pointer" }}
           onMouseEnter={e => e.currentTarget.style.color = "#111827"}
           onMouseLeave={e => e.currentTarget.style.color = "#6b7280"}>
@@ -426,7 +417,7 @@ function SolutionDetail() {
       </div>
 
       {/* Two-column layout */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 420px", gap: 32, padding: isMobile ? "0 16px" : "0 48px", alignItems: "flex-start" }}>
+      <div className="sol-layout" style={{ gap: 32 }}>
 
         {/* ── LEFT COLUMN ── */}
         <div>
@@ -484,7 +475,7 @@ function SolutionDetail() {
           </div>
 
           {/* Cover image */}
-          <div style={{ borderRadius: 16, overflow: "hidden", marginTop: 20, height: isMobile ? 240 : 460, width: "100%" }}>
+          <div className="sol-cover" style={{ borderRadius: 16, overflow: "hidden", marginTop: 20, width: "100%" }}>
             {solution.cover_url ? (
               <img src={solution.cover_url} alt={solution.titulo} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
             ) : (
@@ -585,12 +576,12 @@ function SolutionDetail() {
         </div>
 
         {/* ── RIGHT COLUMN ── */}
-        <div style={{ position: isMobile ? "static" : "sticky", top: 80 }}>
+        <div className="sol-purchase-card">
           <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb", padding: 28, boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
 
             {/* Price */}
             <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-              <span style={{ fontSize: isMobile ? 28 : 42, fontWeight: 900, color: "#111827", letterSpacing: "-1.5px", lineHeight: 1 }}>{priceLabel}</span>
+              <span className="sol-price" style={{ fontWeight: 900, color: "#111827", letterSpacing: "-1.5px", lineHeight: 1 }}>{priceLabel}</span>
               {solution.preco != null && (
                 <span style={{ fontSize: 14, color: "#6b7280", marginLeft: 8 }}>{isOneTime ? "pagamento único" : "por mês"}</span>
               )}
@@ -698,7 +689,19 @@ export default function SolutionPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827", overflowX: "hidden" }}>
       <Navbar />
-      <style>{`@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.45} }`}</style>
+      <style>{`
+        @keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.45} }
+        .sol-breadcrumb { padding: 16px; }
+        @media (min-width: 768px) { .sol-breadcrumb { padding: 16px 48px; } }
+        .sol-layout { display: grid; grid-template-columns: 1fr; gap: 32px; padding: 0 16px; align-items: flex-start; }
+        @media (min-width: 768px) { .sol-layout { grid-template-columns: 1fr 420px; padding: 0 48px; } }
+        .sol-cover { height: 240px; }
+        @media (min-width: 768px) { .sol-cover { height: 460px; } }
+        .sol-purchase-card { position: static; }
+        @media (min-width: 768px) { .sol-purchase-card { position: sticky; top: 80px; } }
+        .sol-price { font-size: 28px; }
+        @media (min-width: 768px) { .sol-price { font-size: 42px; } }
+      `}</style>
       <Suspense fallback={<Skeleton />}>
         <SolutionDetail />
       </Suspense>

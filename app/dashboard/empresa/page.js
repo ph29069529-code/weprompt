@@ -43,7 +43,6 @@ function MetricCard({ iconBg, icon, label, value, sub, subColor }) {
 
 export default function EmpresaDashboard() {
   const router = useRouter();
-  const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState('inicio');
   const [hoveredTab, setHoveredTab] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
@@ -60,13 +59,6 @@ export default function EmpresaDashboard() {
   const [reviewComment, setReviewComment] = useState("");
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewedIds,   setReviewedIds]   = useState(new Set());
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
 
   useEffect(() => {
     async function init() {
@@ -167,7 +159,7 @@ export default function EmpresaDashboard() {
       <NavbarDashboard />
 
       {/* TABS ROW */}
-      <div className="scroll-x" style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: isMobile ? "0 16px" : "0 32px", display: "flex", gap: 0 }}>
+      <div className="scroll-x" style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 16px", display: "flex", gap: 0 }}>
         {TABS.map((tab) => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)} onMouseEnter={() => setHoveredTab(tab.key)} onMouseLeave={() => setHoveredTab(null)}
             style={{ fontSize: 14, padding: "14px 0", paddingRight: 20, cursor: "pointer", display: "inline-flex", alignItems: "center", border: "none", borderBottom: activeTab === tab.key ? "2px solid #6366F1" : "2px solid transparent", background: "transparent", color: activeTab === tab.key ? "#6366F1" : hoveredTab === tab.key ? "#374151" : "#6B7280", fontWeight: activeTab === tab.key ? 600 : 400, marginBottom: -1, transition: "color 0.15s ease", whiteSpace: "nowrap", fontFamily: "inherit" }}>
@@ -177,7 +169,7 @@ export default function EmpresaDashboard() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div style={{ padding: isMobile ? "16px" : "24px 32px" }}>
+      <div style={{ padding: "16px" }}>
 
         {/* TITLE ROW */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>

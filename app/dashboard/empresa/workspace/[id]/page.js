@@ -89,19 +89,7 @@ export default function WorkspacePage() {
   const { id } = useParams();
   const router  = useRouter();
 
-  const [isMobile, setIsMobile] = useState(false);
   const [sidebarVisible, setSidebarVisible] = useState(false);
-
-  useEffect(() => {
-    const check = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (!mobile) setSidebarVisible(true);
-    };
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
 
   const [user,        setUser]        = useState(null);
   const [solution,    setSolution]    = useState(null);
@@ -307,17 +295,27 @@ export default function WorkspacePage() {
     <div style={{ display: "flex", height: "100vh", overflow: "hidden", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
 
       <style>{`
-        @keyframes dotBounce {
-          0%, 80%, 100% { transform: translateY(0); }
-          40%           { transform: translateY(-8px); }
+        @keyframes dotBounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-8px); } }
+        .ws-sidebar { position: fixed; top: 0; bottom: 0; left: 0; z-index: 50; transform: translateX(-260px); transition: transform 0.25s ease; }
+        .ws-sidebar.open { transform: translateX(0); }
+        .ws-backdrop { display: block; }
+        .ws-hamburger { display: flex; }
+        @media (min-width: 768px) {
+          .ws-sidebar { position: relative !important; transform: none !important; z-index: auto !important; }
+          .ws-backdrop { display: none !important; }
+          .ws-hamburger { display: none !important; }
         }
+        .ws-topbar { padding: 10px 16px; height: 52px; }
+        @media (min-width: 768px) { .ws-topbar { padding: 14px 24px; height: 64px; } }
+        .ws-input-area { padding: 12px 16px; }
+        @media (min-width: 768px) { .ws-input-area { padding: 16px 24px; } }
       `}</style>
 
       {/* ══════════ SIDEBAR ══════════ */}
-      {isMobile && sidebarVisible && (
-        <div onClick={() => setSidebarVisible(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 49 }} />
+      {sidebarVisible && (
+        <div className="ws-backdrop" onClick={() => setSidebarVisible(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 49 }} />
       )}
-      <aside style={{ width: 260, flexShrink: 0, background: "white", borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", position: isMobile ? "fixed" : "relative", top: 0, left: isMobile && !sidebarVisible ? -260 : 0, zIndex: isMobile ? 50 : "auto", transition: "left 0.25s ease" }}>
+      <aside className={`ws-sidebar${sidebarVisible ? " open" : ""}`} style={{ width: 260, flexShrink: 0, background: "white", borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
 
         {/* Back button */}
         <div style={{ padding: "14px 16px", borderBottom: "1px solid #F3F4F6" }}>
@@ -415,13 +413,11 @@ export default function WorkspacePage() {
       <main style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8F9FB", minWidth: 0, overflow: "hidden" }}>
 
         {/* Top bar */}
-        <div style={{ background: "white", borderBottom: "1px solid #E5E7EB", padding: isMobile ? "10px 16px" : "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, height: isMobile ? 52 : 64 }}>
+        <div className="ws-topbar" style={{ background: "white", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            {isMobile && (
-              <button onClick={() => setSidebarVisible(v => !v)} style={{ background: "none", border: "1px solid #E5E7EB", borderRadius: 8, padding: "6px 8px", cursor: "pointer", color: "#374151", fontSize: 16, lineHeight: 1 }}>
-                ☰
-              </button>
-            )}
+            <button className="ws-hamburger" onClick={() => setSidebarVisible(v => !v)} style={{ background: "none", border: "1px solid #E5E7EB", borderRadius: 8, padding: "6px 8px", cursor: "pointer", color: "#374151", fontSize: 16, lineHeight: 1, minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }}>
+              ☰
+            </button>
             <div style={{ width: 36, height: 36, borderRadius: 10, background: "#6366F1", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 15, fontWeight: 700 }}>
               {solInitials}
             </div>
@@ -496,7 +492,7 @@ export default function WorkspacePage() {
         </div>
 
         {/* Input area */}
-        <div style={{ background: "white", borderTop: "1px solid #E5E7EB", padding: isMobile ? "12px 16px" : "16px 24px", flexShrink: 0 }}>
+        <div className="ws-input-area" style={{ background: "white", borderTop: "1px solid #E5E7EB", flexShrink: 0 }}>
           <div style={{ position: "relative", display: "flex", alignItems: "flex-end", gap: 10 }}>
             <textarea
               ref={textareaRef}
