@@ -23,10 +23,6 @@ const SolutionsShowcase = dynamic(() => import("./components/SolutionsShowcase")
   ssr: false,
   loading: () => <div style={{ height: 500 }} />,
 });
-const Testimonials = dynamic(() => import("./components/Testimonials"), {
-  ssr: false,
-  loading: () => <div style={{ height: 400 }} />,
-});
 
 /* ─── CSS animation hook (replaces framer-motion) ───────────────── */
 function useFadeIn(dir = 'up') {
@@ -471,7 +467,7 @@ export default function Home() {
       <FloatingIconsHero />
       <PlatformScrollDemo />
       <SolutionsShowcase />
-      <Testimonials />
+
       <HowItWorks />
       <ForCompanies />
       <ForCreators />
