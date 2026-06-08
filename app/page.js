@@ -239,8 +239,6 @@ function ForCompanies() {
   const [hovCta, setHovCta] = useState(false);
   const [leftRef, leftAnim] = useFadeIn('left');
   const [rightRef, rightAnim] = useFadeIn('right');
-  const solutions = ["Agente de Atendimento", "ChatBot WhatsApp", "Gerador de E-mails"];
-
   return (
     <section className="section-pad" style={{ backgroundColor: "#FAFAFA", backgroundImage: "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(99,102,241,0.03), transparent)", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div className="two-col" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
@@ -256,26 +254,15 @@ function ForCompanies() {
               <div style={{ background: "#EEF2FF", color: "#4F46E5", borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 600 }}>Empresa</div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginTop: 20 }}>
-              {[{ val: "3", label: "Soluções ativas" }, { val: "R$291", label: "Este mês" }, { val: "24h", label: "Suporte" }].map((m) => (
+              {[{ val: "—", label: "Soluções ativas" }, { val: "—", label: "Este mês" }, { val: "Suporte", label: "Incluído" }].map((m) => (
                 <div key={m.label} style={{ background: "#F8F9FB", borderRadius: 12, padding: 16 }}>
                   <div style={{ color: "#0A0F1E", fontSize: 20, fontWeight: 800 }}>{m.val}</div>
                   <div style={{ color: "#6B7280", fontSize: 12, marginTop: 2 }}>{m.label}</div>
                 </div>
               ))}
             </div>
-            <div style={{ marginTop: 20 }}>
-              {solutions.map((name, i) => (
-                <div key={name} style={{
-                  display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "12px 0", borderBottom: i < solutions.length - 1 ? "1px solid #F3F4F6" : "none",
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#6366F1", flexShrink: 0 }} />
-                    <span style={{ color: "#0A0F1E", fontSize: 14 }}>{name}</span>
-                  </div>
-                  <div style={{ background: "#EEF2FF", color: "#4F46E5", fontSize: 11, fontWeight: 600, borderRadius: 999, padding: "2px 8px" }}>Ativo</div>
-                </div>
-              ))}
+            <div style={{ marginTop: 20, padding: "20px 0", borderTop: "1px solid #F3F4F6", textAlign: "center" }}>
+              <span style={{ color: "#9CA3AF", fontSize: 13 }}>Suas soluções aparecerão aqui</span>
             </div>
           </div>
         </div>
@@ -344,12 +331,7 @@ function ForCreators() {
   const [hovCta, setHovCta] = useState(false);
   const [leftRef, leftAnim] = useFadeIn('left');
   const [rightRef, rightAnim] = useFadeIn('right');
-  const sales = [
-    { name: "Agente de Atendimento", value: "R$ 97", time: "2h atrás" },
-    { name: "ChatBot WhatsApp", value: "R$ 147", time: "ontem" },
-    { name: "Gerador de Posts", value: "R$ 67", time: "3 dias atrás" },
-  ];
-  const bars = [20, 28, 22, 36, 48];
+  const bars = [32, 32, 32, 32, 32];
 
   return (
     <section className="section-pad" style={{ background: "#fff", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
@@ -419,32 +401,20 @@ function ForCreators() {
               <div style={{ background: "#EEF2FF", color: "#4F46E5", borderRadius: 999, padding: "3px 10px", fontSize: 11, fontWeight: 600 }}>Criador Pro</div>
             </div>
             <div style={{ marginTop: 16 }}>
-              <div style={{ color: "#0A0F1E", fontSize: 36, fontWeight: 800 }}>R$ 2.840</div>
-              <div style={{ color: "#6B7280", fontSize: 13, marginTop: 4 }}>Este mês</div>
-              <div style={{ color: "#6366F1", fontSize: 13, fontWeight: 600, marginTop: 8 }}>↑ +34% vs. mês anterior</div>
+              <div style={{ color: "#0A0F1E", fontSize: 36, fontWeight: 800 }}>Suas vendas</div>
             </div>
             <div style={{ marginTop: 20, display: "flex", gap: 6, alignItems: "flex-end", height: 48 }}>
               {bars.map((h, i) => (
                 <div key={i} style={{
                   width: 20, height: h,
-                  background: i === bars.length - 1 ? "#6366F1" : "#E5E7EB",
+                  background: "#E5E7EB",
+                  opacity: 0.5,
                   borderRadius: "4px 4px 0 0",
                 }} />
               ))}
             </div>
-            <div style={{ marginTop: 20 }}>
-              {sales.map((sale, i) => (
-                <div key={sale.name} style={{
-                  display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "10px 0", borderBottom: i < sales.length - 1 ? "1px solid #F3F4F6" : "none",
-                }}>
-                  <span style={{ color: "#0A0F1E", fontSize: 13 }}>{sale.name}</span>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <span style={{ color: "#6366F1", fontSize: 13, fontWeight: 600 }}>{sale.value}</span>
-                    <span style={{ color: "#9CA3AF", fontSize: 12, marginLeft: 8 }}>{sale.time}</span>
-                  </div>
-                </div>
-              ))}
+            <div style={{ marginTop: 20, padding: "20px 0", borderTop: "1px solid #F3F4F6", textAlign: "center" }}>
+              <span style={{ color: "#9CA3AF", fontSize: 13 }}>Suas vendas aparecerão aqui</span>
             </div>
           </div>
         </div>
