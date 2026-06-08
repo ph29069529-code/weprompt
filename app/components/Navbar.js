@@ -165,10 +165,23 @@ export default function Navbar() {
 
   // Scroll detection — threshold 10px triggers the pill/blur effect
   useEffect(() => {
-    const onScroll = () => setScrolled((window.scrollY || document.documentElement.scrollTop) > 10);
+    const onScroll = () => {
+      const scrollY = window.scrollY ||
+                      window.pageYOffset ||
+                      document.documentElement.scrollTop ||
+                      document.body.scrollTop ||
+                      0;
+      setScrolled(scrollY > 10);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   function openDropdown(key) {
