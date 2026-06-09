@@ -60,8 +60,11 @@ export default function NavbarDashboard() {
         }
       `}</style>
 
+      {/* Spacer pushes page content below the fixed navbar */}
+      <div style={{ height: 60, flexShrink: 0 }} />
+
       <div style={{
-        position: "sticky", top: 0, zIndex: 50, width: "100%",
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
         padding: scrolled ? "12px 16px 0" : 0,
         transition: "padding 0.3s ease-out",
         pointerEvents: "none",
