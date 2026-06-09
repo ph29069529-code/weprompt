@@ -126,7 +126,7 @@ function ReviewsTab({ solutionId, user, alreadyOwned }) {
           {/* Reviews list */}
           <div>
             {reviews.map((r, i) => (
-              <div key={r.id || i} style={{ background: "#f9fafb", borderRadius: 12, padding: 16, marginBottom: 12 }}>
+              <div key={r.id || i} style={{ background: "#fff", borderRadius: 16, border: "1px solid #E5E7EB", padding: 16, marginBottom: 12 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 32, height: 32, borderRadius: 999, background: "#e5e7eb", color: "#374151", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -182,14 +182,14 @@ function ReviewsTab({ solutionId, user, alreadyOwned }) {
             </div>
             <textarea rows={4} value={comment} onChange={e => setComment(e.target.value)}
               placeholder="Conte sua experiência com esta solução..."
-              style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", borderRadius: 10, border: "1.5px solid #e5e7eb", fontSize: 14, color: "#111827", background: "#fff", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, outline: "none" }}
-              onFocus={e => e.target.style.borderColor = "#111827"}
-              onBlur={e => e.target.style.borderColor = "#e5e7eb"} />
+              style={{ width: "100%", boxSizing: "border-box", padding: "12px 14px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, color: "#111827", background: "#fff", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, outline: "none" }}
+              onFocus={e => e.target.style.borderColor = "#6366F1"}
+              onBlur={e => e.target.style.borderColor = "#E5E7EB"} />
             {formError && <div style={{ fontSize: 13, color: "#dc2626", marginTop: 8 }}>{formError}</div>}
             <button onClick={handleSubmit} disabled={submitting}
-              style={{ marginTop: 12, height: 44, padding: "0 24px", borderRadius: 10, border: "none", background: submitting ? "rgba(17,24,39,0.5)" : "#111827", color: "#fff", fontSize: 14, fontWeight: 700, cursor: submitting ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
-              onMouseEnter={e => { if (!submitting) e.currentTarget.style.background = "#374151"; }}
-              onMouseLeave={e => { if (!submitting) e.currentTarget.style.background = "#111827"; }}>
+              style={{ marginTop: 12, height: 44, padding: "0 24px", borderRadius: 999, border: "none", background: submitting ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff", fontSize: 14, fontWeight: 700, cursor: submitting ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: submitting ? "none" : "0 4px 16px rgba(99,102,241,0.35)", transition: "opacity 0.15s" }}
+              onMouseEnter={e => { if (!submitting) e.currentTarget.style.opacity = "0.9"; }}
+              onMouseLeave={e => { if (!submitting) e.currentTarget.style.opacity = "1"; }}>
               {submitting ? "Publicando…" : "Publicar avaliação"}
             </button>
           </div>
@@ -458,7 +458,7 @@ function SolutionDetail() {
 
           {/* Title + Oficial badge */}
           <div style={{ marginTop: 12, display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
-            <h1 style={{ fontSize: 36, fontWeight: 800, color: "#111827", lineHeight: 1.2, margin: 0 }}>
+            <h1 style={{ fontSize: 36, fontWeight: 900, color: "#0A0F1E", lineHeight: 1.2, margin: 0, letterSpacing: "-0.04em" }}>
               {solution.titulo}
             </h1>
             {solution.creator_id === "00000000-0000-0000-0000-000000000001" && (
@@ -522,9 +522,9 @@ function SolutionDetail() {
                 marginRight: 8,
                 cursor: "pointer",
                 border: "none",
-                borderBottom: activeTab === i ? "2px solid #111827" : "2px solid transparent",
+                borderBottom: activeTab === i ? "2px solid #6366F1" : "2px solid transparent",
                 background: "transparent",
-                color: activeTab === i ? "#111827" : "#6b7280",
+                color: activeTab === i ? "#6366F1" : "#6b7280",
                 fontWeight: activeTab === i ? 600 : 400,
                 marginBottom: -1,
                 fontFamily: "inherit",
@@ -625,7 +625,7 @@ function SolutionDetail() {
                     "Em caso de dúvidas, acesse o suporte direto com o criador pela plataforma.",
                   ].map((step, i) => (
                     <div key={i} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 999, background: "#111827", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: 999, background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                         {i + 1}
                       </div>
                       <span style={{ fontSize: 14, color: "#374151", lineHeight: 1.6, paddingTop: 4 }}>{step}</span>
@@ -663,7 +663,7 @@ function SolutionDetail() {
 
         {/* ── RIGHT COLUMN ── */}
         <div className="sol-purchase-card">
-          <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb", padding: 28, boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
+          <div style={{ background: "#fff", borderRadius: 20, border: "1px solid #e5e7eb", padding: 28, boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
 
             {/* Price */}
             <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
@@ -681,9 +681,9 @@ function SolutionDetail() {
               </div>
             ) : (
               <button onClick={handleCheckout} disabled={checkoutLoading}
-                style={{ width: "100%", background: checkoutLoading ? "rgba(17,24,39,0.5)" : "#111827", color: "#fff", borderRadius: 10, padding: "14px", fontSize: 16, fontWeight: 700, marginTop: 16, border: "none", cursor: checkoutLoading ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s", minHeight: 52 }}
-                onMouseEnter={e => { if (!checkoutLoading) e.currentTarget.style.background = "#374151"; }}
-                onMouseLeave={e => { if (!checkoutLoading) e.currentTarget.style.background = "#111827"; }}>
+                style={{ width: "100%", background: checkoutLoading ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff", borderRadius: 999, padding: "14px", fontSize: 16, fontWeight: 700, marginTop: 16, border: "none", cursor: checkoutLoading ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: checkoutLoading ? "none" : "0 4px 20px rgba(99,102,241,0.4)", transition: "opacity 0.15s", minHeight: 52 }}
+                onMouseEnter={e => { if (!checkoutLoading) e.currentTarget.style.opacity = "0.9"; }}
+                onMouseLeave={e => { if (!checkoutLoading) e.currentTarget.style.opacity = "1"; }}>
                 {checkoutLoading ? "Redirecionando…" : solution.preco != null
                   ? (solution.tipo === "prompt_pack" || solution.tipo === "prompt" ? "Adquirir Prompt Pack →" : "Adquirir solução →")
                   : "Começar gratuitamente →"}
@@ -700,15 +700,15 @@ function SolutionDetail() {
             {/* Secondary buttons */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
               <button onClick={handleShare}
-                style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px", fontSize: 13, color: "#374151", cursor: "pointer", background: "#fff", fontFamily: "inherit" }}
-                onMouseEnter={e => e.currentTarget.style.background = "#f9fafb"}
-                onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
+                style={{ border: "1.5px solid #6366F1", borderRadius: 999, padding: "9px", fontSize: 13, color: "#6366F1", cursor: "pointer", background: "transparent", fontFamily: "inherit", transition: "background 0.15s" }}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(99,102,241,0.06)"}
+                onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                 {shared ? "✓ Copiado!" : "↑ Compartilhar"}
               </button>
               <button onClick={() => setFav(f => !f)}
-                style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "9px", fontSize: 13, color: fav ? "#f43f5e" : "#374151", cursor: "pointer", background: "#fff", fontFamily: "inherit" }}
-                onMouseEnter={e => e.currentTarget.style.background = "#f9fafb"}
-                onMouseLeave={e => e.currentTarget.style.background = "#fff"}>
+                style={{ border: `1.5px solid ${fav ? "#f43f5e" : "#6366F1"}`, borderRadius: 999, padding: "9px", fontSize: 13, color: fav ? "#f43f5e" : "#6366F1", cursor: "pointer", background: "transparent", fontFamily: "inherit", transition: "background 0.15s" }}
+                onMouseEnter={e => e.currentTarget.style.background = fav ? "rgba(244,63,94,0.06)" : "rgba(99,102,241,0.06)"}
+                onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                 {fav ? "♥ Favoritado" : "♡ Favoritar"}
               </button>
             </div>
@@ -773,7 +773,7 @@ function SolutionDetail() {
 
 export default function SolutionPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827", overflowX: "hidden" }}>
+    <div style={{ minHeight: "100vh", background: "#F8F7FF", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827", overflowX: "hidden" }}>
       <Navbar />
       <style>{`
         @keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.45} }
