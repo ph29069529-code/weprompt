@@ -1204,6 +1204,184 @@ function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
   );
 }
 
+/* ── SolutionDetailModal ── */
+function SolutionDetailModal({ solution, onClose, onApprove, onConfirmReject }) {
+  const width    = useWindowSize();
+  const isMobile = width < 768;
+
+  const [rejecting,     setRejecting]     = useState(false);
+  const [rejectReason,  setRejectReason]  = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const isAgent      = solution.tipo === "agente" || solution.tipo === "agent";
+  const isPromptPack = solution.tipo === "prompt_pack" || solution.tipo === "prompt";
+
+  const priceLabel = solution.preco != null
+    ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}${solution.payment_type === "subscription" ? "/mês" : " (único)"}`
+    : "Gratuito";
+
+  async function handleApprove() {
+    setActionLoading(true);
+    await onApprove(solution.id);
+    setActionLoading(false);
+    onClose();
+  }
+
+  async function handleReject() {
+    if (!rejectReason.trim()) return;
+    setActionLoading(true);
+    await onConfirmReject(solution, rejectReason.trim());
+    setActionLoading(false);
+    onClose();
+  }
+
+  const modalStyle = isMobile
+    ? { bottom: 0, left: 0, right: 0, borderRadius: "16px 16px 0 0", maxHeight: "92vh", animation: "sol-modal-slide 0.2s ease" }
+    : { top: "50%", left: "50%", transform: "translate(-50%, -50%)", borderRadius: 16, maxWidth: 640, width: "92vw", maxHeight: "85vh", animation: "sol-modal-fade 0.2s ease" };
+
+  return (
+    <>
+      <style>{`
+        @keyframes sol-modal-fade  { from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        @keyframes sol-modal-slide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
+
+      {/* Overlay */}
+      <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200 }} />
+
+      {/* Modal */}
+      <div style={{ position: "fixed", background: "#fff", zIndex: 201, overflowY: "auto", padding: isMobile ? "24px 20px 32px" : 32, boxSizing: "border-box", boxShadow: "0 24px 80px rgba(0,0,0,0.2)", ...modalStyle }}>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20, gap: 12 }}>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: NEAR_BLACK, margin: 0, lineHeight: 1.3, flex: 1, minWidth: 0 }}>
+            {solution.titulo || solution.nome || "—"}
+          </h2>
+          <button onClick={onClose} style={{ flexShrink: 0, background: "#f3f4f6", border: "none", borderRadius: 8, width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 16, color: GRAY_TEXT, fontFamily: "inherit" }}>
+            ✕
+          </button>
+        </div>
+
+        {/* Badges */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+          {solution.categoria && (
+            <span style={{ background: "#EEF2FF", color: BLUE, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>{solution.categoria}</span>
+          )}
+          {isAgent && (
+            <span style={{ background: "#EEF2FF", color: "#4338CA", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>🤖 Agente IA</span>
+          )}
+          {isPromptPack && (
+            <span style={{ background: "#F3E8FF", color: "#7C3AED", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>📄 Prompt Pack</span>
+          )}
+          <span style={{ background: "#f3f4f6", color: NEAR_BLACK, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>{priceLabel}</span>
+        </div>
+
+        {/* Creator + date */}
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 20, fontSize: 13, color: GRAY_TEXT }}>
+          {solution.profiles?.nome && (
+            <span>Criador: <strong style={{ color: NEAR_BLACK }}>{solution.profiles.nome}</strong></span>
+          )}
+          {solution.created_at && (
+            <span>Publicado em: <strong style={{ color: NEAR_BLACK }}>{formatDate(solution.created_at)}</strong></span>
+          )}
+        </div>
+
+        {/* Cover image */}
+        {solution.imagem_capa && (
+          <div style={{ borderRadius: 12, overflow: "hidden", marginBottom: 20, maxHeight: 200 }}>
+            <img src={solution.imagem_capa} alt={solution.titulo} style={{ width: "100%", height: 200, objectFit: "cover", display: "block" }} loading="lazy" />
+          </div>
+        )}
+
+        {/* Description */}
+        {solution.descricao && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Descrição</div>
+            <p style={{ fontSize: 14, color: NEAR_BLACK, lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>{solution.descricao}</p>
+          </div>
+        )}
+
+        {/* System prompt — agente */}
+        {isAgent && solution.system_prompt && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>System Prompt</div>
+            <textarea
+              readOnly
+              value={solution.system_prompt}
+              rows={8}
+              style={{ width: "100%", padding: "14px 16px", borderRadius: 10, border: "none", background: "#0A0F1E", color: "#E2E8F0", fontSize: 13, fontFamily: "'Fira Code', 'Courier New', monospace", lineHeight: 1.6, resize: "vertical", outline: "none", boxSizing: "border-box" }}
+            />
+          </div>
+        )}
+
+        {/* Conteúdo do pack — prompt_pack */}
+        {isPromptPack && solution.conteudo_pack && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Conteúdo do Pack</div>
+            <textarea
+              readOnly
+              value={solution.conteudo_pack}
+              rows={8}
+              style={{ width: "100%", padding: "14px 16px", borderRadius: 10, border: `1.5px solid ${BORDER}`, background: "#f9fafb", color: NEAR_BLACK, fontSize: 13, fontFamily: "inherit", lineHeight: 1.6, resize: "vertical", outline: "none", boxSizing: "border-box" }}
+            />
+          </div>
+        )}
+
+        {/* Reject reason form */}
+        {rejecting && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: NEAR_BLACK, marginBottom: 8 }}>Motivo da reprovação</div>
+            <textarea
+              autoFocus
+              rows={3}
+              placeholder="Informe o motivo da reprovação…"
+              value={rejectReason}
+              onChange={e => setRejectReason(e.target.value)}
+              style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "1.5px solid rgba(220,38,38,0.35)", fontSize: 14, color: NEAR_BLACK, background: "#fff", outline: "none", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box", fontFamily: "inherit" }}
+              onFocus={e => (e.target.style.borderColor = DANGER)}
+              onBlur={e => (e.target.style.borderColor = "rgba(220,38,38,0.35)")}
+            />
+          </div>
+        )}
+
+        {/* Divider */}
+        <div style={{ height: 1, background: BORDER, margin: "8px 0 20px" }} />
+
+        {/* Actions */}
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          {!rejecting ? (
+            <>
+              <button onClick={handleApprove} disabled={actionLoading}
+                style={{ flex: 1, minWidth: 120, padding: "11px 20px", borderRadius: 10, border: "none", background: actionLoading ? "rgba(99,102,241,0.4)" : BLUE, color: "#fff", fontSize: 14, fontWeight: 700, cursor: actionLoading ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}>
+                {actionLoading ? "Aprovando…" : "✓ Aprovar"}
+              </button>
+              <button onClick={() => { setRejecting(true); setRejectReason(""); }} disabled={actionLoading}
+                style={{ flex: 1, minWidth: 120, padding: "11px 20px", borderRadius: 10, border: `1.5px solid rgba(220,38,38,0.3)`, background: "transparent", color: DANGER, fontSize: 14, fontWeight: 700, cursor: actionLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+                ✕ Reprovar
+              </button>
+              <button onClick={onClose}
+                style={{ padding: "11px 20px", borderRadius: 10, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                Fechar
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={handleReject} disabled={!rejectReason.trim() || actionLoading}
+                style={{ flex: 1, minWidth: 160, padding: "11px 20px", borderRadius: 10, border: "none", background: !rejectReason.trim() || actionLoading ? "rgba(220,38,38,0.3)" : DANGER, color: "#fff", fontSize: 14, fontWeight: 700, cursor: !rejectReason.trim() || actionLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+                {actionLoading ? "Reprovando…" : "Confirmar reprovação"}
+              </button>
+              <button onClick={() => { setRejecting(false); setRejectReason(""); }}
+                style={{ padding: "11px 20px", borderRadius: 10, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                Cancelar
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
 /* ════════════════════════════════════════
    MAIN PAGE
 ════════════════════════════════════════ */
@@ -1436,6 +1614,16 @@ export default function AdminDashboard() {
           userEmail={user?.email}
           onClose={() => setProfileOpen(false)}
           onSaved={updated => setProfile(updated)}
+        />
+      )}
+
+      {/* Solution detail modal */}
+      {selectedSolution && (
+        <SolutionDetailModal
+          solution={selectedSolution}
+          onClose={() => setSelectedSolution(null)}
+          onApprove={async (id) => { await handleApprove(id); setSelectedSolution(null); }}
+          onConfirmReject={async (sol, reason) => { await handleConfirmReject(sol, reason); setSelectedSolution(null); }}
         />
       )}
 
