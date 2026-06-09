@@ -156,8 +156,8 @@ function PlanCard({ plan, billing, router }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         background: "white",
-        borderRadius: 16,
-        border: plan.popular ? "2px solid #111827" : "1px solid #e5e7eb",
+        borderRadius: 20,
+        border: plan.popular ? "2px solid #6366F1" : "1px solid #e5e7eb",
         padding: 32,
         position: "relative",
         boxShadow: plan.popular
@@ -171,7 +171,7 @@ function PlanCard({ plan, billing, router }) {
       {plan.popular && (
         <div style={{
           position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
-          background: "#111827", color: "white", borderRadius: 999,
+          background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white", borderRadius: 999,
           padding: "4px 16px", fontSize: 12, fontWeight: 700, whiteSpace: "nowrap",
         }}>POPULAR</div>
       )}
@@ -189,13 +189,13 @@ function PlanCard({ plan, billing, router }) {
       )}
 
       {/* Plan name + tagline */}
-      <div style={{ fontSize: 22, fontWeight: 800, color: "#111827" }}>{plan.name}</div>
+      <div style={{ fontSize: 22, fontWeight: 900, color: "#0A0F1E" }}>{plan.name}</div>
       <div style={{ fontSize: 13, color: "#6b7280", marginTop: 4, marginBottom: 16, lineHeight: 1.5 }}>{plan.tagline}</div>
 
       {/* Commission (criadores only) */}
       {plan.commission && (
         <div style={{ display: "inline-flex", alignItems: "baseline", gap: 4, marginBottom: 12 }}>
-          <span style={{ fontSize: 22, fontWeight: 800, color: "#0369A1" }}>{plan.commission}</span>
+          <span style={{ fontSize: 22, fontWeight: 800, color: "#6366F1" }}>{plan.commission}</span>
           <span style={{ fontSize: 12, color: "#6b7280" }}>de comissão</span>
         </div>
       )}
@@ -243,12 +243,14 @@ function PlanCard({ plan, billing, router }) {
       <button
         onClick={() => router.push(plan.ctaRoute)}
         style={{
-          width: "100%", padding: "14px", borderRadius: 10, fontSize: 15, fontWeight: 700,
+          width: "100%", padding: "14px", borderRadius: 999, fontSize: 15, fontWeight: 700,
           marginTop: 8, marginBottom: 24, cursor: "pointer",
-          background: isFree ? "#6366F1" : "#111827",
+          background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
           color: "white",
           border: "none",
           fontFamily: "inherit",
+          boxShadow: "0 4px 16px rgba(99,102,241,0.35)",
+          transition: "opacity 0.15s",
         }}
       >{plan.cta}</button>
 
@@ -271,7 +273,7 @@ function PlanCard({ plan, billing, router }) {
 function FAQAccordion() {
   const [open, setOpen] = useState(null);
   return (
-    <div style={{ background: "white", borderRadius: 16, border: "1px solid #e5e7eb", padding: 32, marginBottom: 48 }}>
+    <div style={{ background: "white", borderRadius: 20, border: "1px solid #e5e7eb", padding: 32, marginBottom: 48 }}>
       <div style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 20 }}>Perguntas frequentes</div>
       {FAQ_ITEMS.map((item, i) => (
         <div key={i} style={{ borderTop: i === 0 ? "none" : "1px solid #f3f4f6" }}>
@@ -305,7 +307,7 @@ export default function PrecosPage() {
   const plans = activeAudience === "criadores" ? CRIADOR_PLANS(billing) : EMPRESA_PLANS(billing);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f9fafb", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
+    <div style={{ minHeight: "100vh", background: "#F8F7FF", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: "#111827" }}>
       <Navbar />
 
       {/* ── MAIN CONTENT ── */}
@@ -321,10 +323,10 @@ export default function PrecosPage() {
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <div style={{ background: "#f3f4f6", color: "#374151", borderRadius: 999, padding: "6px 16px", fontSize: 13, fontWeight: 600, display: "inline-block" }}>
+          <div style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))", color: "#6366F1", borderRadius: 999, padding: "6px 16px", fontSize: 13, fontWeight: 700, display: "inline-block", border: "1px solid rgba(99,102,241,0.2)" }}>
             PLANOS E PREÇOS
           </div>
-          <h1 className="precos-heading" style={{ fontWeight: 800, color: "#111827", marginTop: 16, marginBottom: 0 }}>Simples e transparente</h1>
+          <h1 className="precos-heading" style={{ fontWeight: 900, letterSpacing: "-0.04em", color: "#0A0F1E", marginTop: 16, marginBottom: 0 }}>Simples e transparente</h1>
           <p style={{ fontSize: 18, color: "#6b7280", marginTop: 12, marginBottom: 0 }}>Comece gratuitamente. Escale quando precisar.</p>
         </div>
 
@@ -385,10 +387,10 @@ export default function PrecosPage() {
         {activeAudience === "criadores" && (
           <div style={{
             marginBottom: 48, padding: "16px 24px",
-            background: "rgba(3,105,161,0.05)", border: "1px solid rgba(3,105,161,0.15)",
-            borderRadius: 14, textAlign: "center", fontSize: 13, color: "#6b7280", lineHeight: 1.8,
+            background: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.15)",
+            borderRadius: 20, textAlign: "center", fontSize: 13, color: "#6b7280", lineHeight: 1.8,
           }}>
-            <strong style={{ color: "#0369A1" }}>
+            <strong style={{ color: "#6366F1" }}>
               <Star size={12} color="#92400e" style={{ flexShrink: 0, verticalAlign: "middle" }} /> Oferta de Criadores Fundadores:
             </strong>{" "}
             Os primeiros 100 criadores ganham 1 mês grátis no plano Pro.
@@ -398,7 +400,7 @@ export default function PrecosPage() {
 
         {/* Commission table — criadores only */}
         {activeAudience === "criadores" && (
-          <div style={{ background: "white", borderRadius: 16, border: "1px solid #e5e7eb", marginBottom: 48, overflow: "hidden" }}>
+          <div style={{ background: "white", borderRadius: 20, border: "1px solid #e5e7eb", marginBottom: 48, overflow: "hidden" }}>
             <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb", fontSize: 16, fontWeight: 700, color: "#111827" }}>
               Como funciona a comissão?
             </div>
@@ -422,7 +424,7 @@ export default function PrecosPage() {
                 ].map((row, i) => (
                   <tr key={row.plan} style={{ background: i % 2 === 1 ? "#f9fafb" : "white" }}>
                     <td style={{ padding: "14px 24px", fontSize: 14, color: "#374151", borderBottom: "1px solid #f3f4f6", fontWeight: 600 }}>Plano {row.plan}</td>
-                    <td style={{ padding: "14px 24px", fontSize: 22, color: "#0369A1", borderBottom: "1px solid #f3f4f6", fontWeight: 800 }}>{row.commission}</td>
+                    <td style={{ padding: "14px 24px", fontSize: 22, color: "#6366F1", borderBottom: "1px solid #f3f4f6", fontWeight: 800 }}>{row.commission}</td>
                     <td style={{ padding: "14px 24px", fontSize: 14, color: "#6b7280", borderBottom: "1px solid #f3f4f6" }}>{row.example}</td>
                     <td style={{ padding: "14px 24px", fontSize: 15, color: "#15803d", borderBottom: "1px solid #f3f4f6", fontWeight: 700 }}>{row.receive}</td>
                   </tr>
@@ -438,7 +440,7 @@ export default function PrecosPage() {
 
         {/* Comparison table — empresas only */}
         {activeAudience === "empresas" && (
-          <div style={{ background: "white", borderRadius: 16, border: "1px solid #e5e7eb", marginBottom: 48, overflow: "hidden" }}>
+          <div style={{ background: "white", borderRadius: 20, border: "1px solid #e5e7eb", marginBottom: 48, overflow: "hidden" }}>
             <div style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb" }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: "#111827" }}>Compare os planos</div>
               <div style={{ fontSize: 14, color: "#6b7280", marginTop: 4 }}>Escolha o plano ideal para o tamanho e necessidades da sua empresa.</div>
@@ -451,7 +453,7 @@ export default function PrecosPage() {
                     <th key={h} style={{
                       padding: "12px 24px", fontSize: 12, fontWeight: 600, textAlign: i === 0 ? "left" : "center",
                       borderBottom: "1px solid #f3f4f6", background: "#f9fafb",
-                      color: h === "Business" ? "#0369A1" : "#9ca3af",
+                      color: h === "Business" ? "#6366F1" : "#9ca3af",
                       textTransform: "uppercase", letterSpacing: "0.05em",
                     }}>{h}</th>
                   ))}
@@ -481,21 +483,21 @@ export default function PrecosPage() {
         <FAQAccordion />
 
         {/* Bottom CTA */}
-        <div style={{ background: "#111827", borderRadius: 16, padding: 48, textAlign: "center", marginBottom: 48 }}>
-          <div style={{ fontSize: 28, fontWeight: 800, color: "white" }}>Ainda tem dúvidas?</div>
+        <div style={{ background: "#0A0F1E", borderRadius: 20, padding: 48, textAlign: "center", marginBottom: 48 }}>
+          <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.04em", color: "white" }}>Ainda tem dúvidas?</div>
           <div style={{ fontSize: 16, color: "rgba(255,255,255,0.7)", marginTop: 8 }}>
             Nossa equipe está pronta para ajudar você a escolher o melhor plano.
           </div>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 24, flexWrap: "wrap" }}>
             <button
               onClick={() => router.push(activeAudience === "criadores" ? "/cadastro?role=criador" : "/cadastro")}
-              style={{ background: "#6366F1", color: "white", borderRadius: 10, padding: "14px 28px", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none", fontFamily: "inherit", transition: "background 0.15s" }}
-              onMouseEnter={e => (e.currentTarget.style.background = "#4F46E5")}
-              onMouseLeave={e => (e.currentTarget.style.background = "#6366F1")}
+              style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white", borderRadius: 999, padding: "14px 28px", fontSize: 15, fontWeight: 700, cursor: "pointer", border: "none", fontFamily: "inherit", boxShadow: "0 4px 20px rgba(99,102,241,0.4)", transition: "opacity 0.15s" }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "0.9")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
             >Começar grátis</button>
             <button
               onClick={() => router.push("/contato")}
-              style={{ border: "1.5px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 10, padding: "14px 28px", fontSize: 15, fontWeight: 600, cursor: "pointer", background: "transparent", fontFamily: "inherit", transition: "border-color 0.15s" }}
+              style={{ border: "1.5px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 999, padding: "14px 28px", fontSize: 15, fontWeight: 600, cursor: "pointer", background: "transparent", fontFamily: "inherit", transition: "border-color 0.15s" }}
               onMouseEnter={e => (e.currentTarget.style.borderColor = "white")}
               onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)")}
             >Falar com a equipe</button>
