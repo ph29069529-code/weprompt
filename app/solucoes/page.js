@@ -138,10 +138,17 @@ function SolutionCard({ solution }) {
           position: "absolute", bottom: 10, left: 10,
           fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 99,
           background: solution.tipo === "prompt_pack" || solution.tipo === "prompt"
-            ? "rgba(124,58,237,0.85)" : "rgba(99,102,241,0.85)",
+            ? "rgba(124,58,237,0.85)"
+            : solution.tipo === "agente_integracao"
+              ? "rgba(109,40,217,0.9)"
+              : "rgba(99,102,241,0.85)",
           color: "white", backdropFilter: "blur(4px)",
         }}>
-          {solution.tipo === "prompt_pack" || solution.tipo === "prompt" ? "📄 Prompt Pack" : "🤖 Agente IA"}
+          {solution.tipo === "prompt_pack" || solution.tipo === "prompt"
+            ? "📄 Prompt Pack"
+            : solution.tipo === "agente_integracao"
+              ? "⚡ Agente com Integração"
+              : "🤖 Agente IA"}
         </span>
       </div>
 
@@ -244,6 +251,7 @@ export default function SolucoesPage() {
   const [loading, setLoading]               = useState(true);
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [searchQuery, setSearchQuery]       = useState("");
+  const [tipoFilter, setTipoFilter]         = useState("");
   /* ── Supabase queries (unchanged) ── */
   useEffect(() => {
     supabase.from("categories").select("nome, icone, cor").order("nome")
@@ -264,11 +272,12 @@ export default function SolucoesPage() {
 
   const filtered = solutions.filter(s => {
     const matchCat = activeCategory === "Todos" || s.categoria === activeCategory;
+    const matchTipo = !tipoFilter || s.tipo === tipoFilter;
     const q = searchQuery.trim().toLowerCase();
     const matchSearch = !q
       || s.titulo?.toLowerCase().includes(q)
       || s.descricao?.toLowerCase().includes(q);
-    return matchCat && matchSearch;
+    return matchCat && matchTipo && matchSearch;
   });
 
   return (
@@ -317,12 +326,35 @@ export default function SolucoesPage() {
 
         {/* Filter pills */}
         <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
+          {/* Tipo filter — Agente com Integração */}
+          {(() => {
+            const isActive = tipoFilter === "agente_integracao";
+            return (
+              <button
+                onClick={() => { setTipoFilter(isActive ? "" : "agente_integracao"); setActiveCategory("Todos"); }}
+                style={{
+                  padding: "12px 18px", borderRadius: 999, minHeight: 44,
+                  fontFamily: "inherit", fontSize: 14, fontWeight: 600,
+                  cursor: "pointer", border: isActive ? "none" : "1px solid #DDD6FE",
+                  background: isActive ? "#7C3AED" : "#F5F3FF",
+                  color: isActive ? "#fff" : "#7C3AED",
+                  transition: "all 0.15s", display: "inline-flex", alignItems: "center",
+                }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#EDE9FE"; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "#F5F3FF"; }}
+              >
+                ⚡ Agente com Integração
+              </button>
+            );
+          })()}
+
+          {/* Category pills */}
           {[{ nome: "Todos" }, ...categories].map(cat => {
-            const isActive = activeCategory === cat.nome;
+            const isActive = activeCategory === cat.nome && !tipoFilter;
             return (
               <button
                 key={cat.nome}
-                onClick={() => setActiveCategory(cat.nome)}
+                onClick={() => { setActiveCategory(cat.nome); setTipoFilter(""); }}
                 style={{
                   padding: "12px 18px", borderRadius: 999, minHeight: 44,
                   fontFamily: "inherit", fontSize: 14, fontWeight: 600,
@@ -374,9 +406,9 @@ export default function SolucoesPage() {
                   ? "Em breve teremos soluções incríveis de IA para você explorar."
                   : "Tente outra categoria ou explore todas as soluções disponíveis."}
             </p>
-            {(activeCategory !== "Todos" || searchQuery.trim()) && (
+            {(activeCategory !== "Todos" || searchQuery.trim() || tipoFilter) && (
               <button
-                onClick={() => { setActiveCategory("Todos"); setSearchQuery(""); }}
+                onClick={() => { setActiveCategory("Todos"); setSearchQuery(""); setTipoFilter(""); }}
                 style={{
                   background: "#111827", color: "#fff", border: "none",
                   borderRadius: 8, padding: "10px 24px",

@@ -301,6 +301,168 @@ export default function WorkspacePage() {
 
   const suggestions = getSuggestions(solution?.categoria);
   const solInitials = solution?.titulo ? initials(solution.titulo) : "IA";
+  const isIntegracao = solution?.tipo === "agente_integracao";
+
+  /* ── Integration setup panel (for agente_integracao) ── */
+  if (isIntegracao) {
+    return (
+      <div style={{ display: "flex", height: "100vh", overflow: "hidden", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+        <style>{`
+          @keyframes ws-tut-fade { from { opacity: 0; } to { opacity: 1; } }
+          .ws-sidebar { position: fixed; top: 0; bottom: 0; left: 0; z-index: 50; transform: translateX(-260px); transition: transform 0.25s ease; }
+          .ws-sidebar.open { transform: translateX(0); }
+          .ws-backdrop { display: block; }
+          .ws-hamburger { display: flex; }
+          @media (min-width: 768px) {
+            .ws-sidebar { position: relative !important; transform: none !important; z-index: auto !important; }
+            .ws-backdrop { display: none !important; }
+            .ws-hamburger { display: none !important; }
+          }
+        `}</style>
+
+        {sidebarVisible && (
+          <div className="ws-backdrop" onClick={() => setSidebarVisible(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 49 }} />
+        )}
+
+        {/* Sidebar */}
+        <aside className={`ws-sidebar${sidebarVisible ? " open" : ""}`} style={{ width: 260, flexShrink: 0, background: "white", borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
+          <div style={{ padding: "14px 16px", borderBottom: "1px solid #F3F4F6" }}>
+            <button onClick={() => router.push("/dashboard/empresa")}
+              style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#6B7280", background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
+              ← Minhas Soluções
+            </button>
+          </div>
+          <div style={{ padding: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+              {solution?.cover_url ? (
+                <img src={solution.cover_url} alt={solution.titulo} width={48} height={48}
+                  style={{ width: 48, height: 48, borderRadius: 12, objectFit: "cover", flexShrink: 0 }} />
+              ) : (
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: "#7C3AED", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 18, fontWeight: 700, flexShrink: 0 }}>
+                  {solInitials}
+                </div>
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{solution?.titulo}</div>
+                {creator && (
+                  <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 2 }}>
+                    por <Link href={`/criadores/${creator.id}`} style={{ color: "#7C3AED", textDecoration: "none", fontWeight: 600 }}>{creator.nome}</Link>
+                  </div>
+                )}
+              </div>
+            </div>
+            <span style={{ fontSize: 10, fontWeight: 700, background: "#EDE9FE", color: "#6D28D9", borderRadius: 99, padding: "2px 8px" }}>⚡ Agente com Integração</span>
+          </div>
+          <div style={{ flex: 1 }} />
+          <div style={{ padding: "12px 16px", borderTop: "1px solid #E5E7EB", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#EDE9FE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#6D28D9", flexShrink: 0 }}>
+              {initials(user?.email || "U")}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.email || "Usuário"}</div>
+            </div>
+            <button onClick={async () => { await supabase.auth.signOut(); router.replace("/login"); }}
+              style={{ fontSize: 12, color: "#9CA3AF", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+              Sair
+            </button>
+          </div>
+        </aside>
+
+        {/* Main — integration setup */}
+        <main style={{ flex: 1, display: "flex", flexDirection: "column", background: "#F8F9FB", minWidth: 0, overflow: "hidden" }}>
+          {/* Top bar */}
+          <div style={{ background: "white", borderBottom: "1px solid #E5E7EB", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <button className="ws-hamburger" onClick={() => setSidebarVisible(v => !v)} style={{ background: "none", border: "1px solid #E5E7EB", borderRadius: 8, padding: "6px 8px", cursor: "pointer", color: "#374151", fontSize: 16, lineHeight: 1, minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }}>
+                ☰
+              </button>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: "#7C3AED", display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 15, fontWeight: 700 }}>{solInitials}</div>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>{solution?.titulo}</div>
+                <span style={{ fontSize: 11, fontWeight: 600, background: "rgba(124,58,237,0.08)", color: "#7C3AED", padding: "2px 9px", borderRadius: 100 }}>⚡ Setup da Integração</span>
+              </div>
+            </div>
+            {solution?.video_tutorial && getEmbedUrl(solution.video_tutorial) && (
+              <button onClick={() => setShowTutorialModal(true)}
+                style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.2)", borderRadius: 8, padding: "6px 12px", cursor: "pointer", color: "#7C3AED", fontSize: 13, fontWeight: 600, fontFamily: "inherit" }}>
+                📺 Ver tutorial
+              </button>
+            )}
+          </div>
+
+          {/* Tutorial modal */}
+          {showTutorialModal && solution?.video_tutorial && getEmbedUrl(solution.video_tutorial) && (
+            <>
+              <style>{`@keyframes ws-tut-fade2 { from { opacity: 0; } to { opacity: 1; } }`}</style>
+              <div onClick={() => setShowTutorialModal(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 300, animation: "ws-tut-fade2 0.2s ease", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+                <div onClick={e => e.stopPropagation()} style={{ width: "100%", maxWidth: 800, background: "#111827", borderRadius: 16, overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.5)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "white" }}>📺 Tutorial de integração — {solution.titulo}</span>
+                    <button onClick={() => setShowTutorialModal(false)} style={{ background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", color: "white", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                  </div>
+                  <div style={{ position: "relative", width: "100%", aspectRatio: "16/9" }}>
+                    <iframe src={getEmbedUrl(solution.video_tutorial)} title="Tutorial de integração" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }} />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Setup content */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "32px 24px" }}>
+            <div style={{ maxWidth: 720, margin: "0 auto" }}>
+
+              {/* Header */}
+              <div style={{ marginBottom: 32 }}>
+                <h1 style={{ fontSize: 24, fontWeight: 800, color: "#111827", margin: "0 0 8px" }}>Setup da Integração</h1>
+                <p style={{ fontSize: 15, color: "#6B7280", margin: 0 }}>Siga as instruções abaixo para configurar sua integração.</p>
+              </div>
+
+              {/* Apps integrados */}
+              {solution?.apps_integrados && (
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #E5E7EB", padding: 24, marginBottom: 20 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#9CA3AF", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Apps integrados</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {solution.apps_integrados.split(",").map(app => app.trim()).filter(Boolean).map(app => (
+                      <span key={app} style={{ background: "#EDE9FE", color: "#6D28D9", borderRadius: 999, padding: "6px 14px", fontSize: 14, fontWeight: 600 }}>{app}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Requisitos técnicos */}
+              {solution?.requisitos_tecnicos && (
+                <div style={{ background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 12, padding: 24, marginBottom: 20 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#92400E", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>⚠ Requisitos técnicos</div>
+                  <p style={{ fontSize: 14, color: "#78350F", lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>{solution.requisitos_tecnicos}</p>
+                </div>
+              )}
+
+              {/* Instruções de configuração */}
+              {solution?.instrucoes_configuracao && (
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #E5E7EB", padding: 24, marginBottom: 20 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#9CA3AF", letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>Como configurar</div>
+                  <div style={{ fontSize: 15, color: "#111827", lineHeight: 1.8, whiteSpace: "pre-line" }}>{solution.instrucoes_configuracao}</div>
+                </div>
+              )}
+
+              {/* Preciso de ajuda */}
+              <div style={{ background: "#F5F3FF", border: "1px solid #DDD6FE", borderRadius: 12, padding: 24, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#6D28D9", marginBottom: 4 }}>Precisa de ajuda?</div>
+                  <div style={{ fontSize: 14, color: "#7C3AED" }}>Nossa equipe está pronta para te ajudar a configurar a integração.</div>
+                </div>
+                <a href={`mailto:contato@weprompt.app.br?subject=Ajuda%20com%20integração%20-%20${encodeURIComponent(solution?.titulo || "")}`}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#7C3AED", color: "white", borderRadius: 10, padding: "12px 20px", fontSize: 14, fontWeight: 700, textDecoration: "none", flexShrink: 0 }}>
+                  ✉ Preciso de ajuda
+                </a>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>

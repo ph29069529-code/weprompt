@@ -1224,6 +1224,7 @@ function SolutionDetailModal({ solution, onClose, onApprove, onConfirmReject }) 
 
   const isAgent      = solution.tipo === "agente" || solution.tipo === "agent";
   const isPromptPack = solution.tipo === "prompt_pack" || solution.tipo === "prompt";
+  const isIntegracao = solution.tipo === "agente_integracao";
 
   const priceLabel = solution.preco != null
     ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}${solution.payment_type === "subscription" ? "/mês" : " (único)"}`
@@ -1276,11 +1277,14 @@ function SolutionDetailModal({ solution, onClose, onApprove, onConfirmReject }) 
           {solution.categoria && (
             <span style={{ background: "#EEF2FF", color: BLUE, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>{solution.categoria}</span>
           )}
-          {isAgent && (
+          {isAgent && !isIntegracao && (
             <span style={{ background: "#EEF2FF", color: "#4338CA", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>🤖 Agente IA</span>
           )}
           {isPromptPack && (
             <span style={{ background: "#F3E8FF", color: "#7C3AED", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>📄 Prompt Pack</span>
+          )}
+          {isIntegracao && (
+            <span style={{ background: "#EDE9FE", color: "#6D28D9", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>⚡ Agente com Integração</span>
           )}
           <span style={{ background: "#f3f4f6", color: NEAR_BLACK, fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 99 }}>{priceLabel}</span>
         </div>
@@ -1341,6 +1345,34 @@ function SolutionDetailModal({ solution, onClose, onApprove, onConfirmReject }) 
           <div style={{ marginBottom: 20 }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Como funciona na prática</div>
             <p style={{ fontSize: 14, color: NEAR_BLACK, lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>{solution.como_funciona}</p>
+          </div>
+        )}
+
+        {/* Campos específicos — agente_integracao */}
+        {isIntegracao && solution.apps_integrados && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Apps integrados</div>
+            <p style={{ fontSize: 14, color: NEAR_BLACK, lineHeight: 1.7, margin: 0 }}>{solution.apps_integrados}</p>
+          </div>
+        )}
+        {isIntegracao && solution.ferramenta_automacao && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Ferramenta de automação</div>
+            <p style={{ fontSize: 14, color: NEAR_BLACK, lineHeight: 1.7, margin: 0 }}>{solution.ferramenta_automacao}</p>
+          </div>
+        )}
+        {isIntegracao && solution.instrucoes_configuracao && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Instruções de configuração</div>
+            <div style={{ background: "#F5F3FF", border: "1px solid #DDD6FE", borderRadius: 8, padding: "12px 14px" }}>
+              <p style={{ fontSize: 13, color: NEAR_BLACK, lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>{solution.instrucoes_configuracao}</p>
+            </div>
+          </div>
+        )}
+        {isIntegracao && solution.requisitos_tecnicos && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Requisitos técnicos</div>
+            <p style={{ fontSize: 14, color: NEAR_BLACK, lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>{solution.requisitos_tecnicos}</p>
           </div>
         )}
 

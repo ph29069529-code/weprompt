@@ -441,7 +441,11 @@ function SolutionDetail() {
             <span style={{ display: "inline-block", background: "#f3f4f6", color: "#374151", borderRadius: 999, fontSize: 12, fontWeight: 600, padding: "3px 10px" }}>
               {solution.categoria}
             </span>
-            {solution.tipo === "prompt_pack" || solution.tipo === "prompt" ? (
+            {solution.tipo === "agente_integracao" ? (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#EDE9FE", color: "#6D28D9", borderRadius: 999, fontSize: 12, fontWeight: 700, padding: "4px 12px", boxShadow: "0 1px 4px rgba(109,40,217,0.15)" }}>
+                ⚡ Agente com Integração
+              </span>
+            ) : solution.tipo === "prompt_pack" || solution.tipo === "prompt" ? (
               <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "#F3E8FF", color: "#7C3AED", borderRadius: 999, fontSize: 12, fontWeight: 700, padding: "3px 10px" }}>
                 📄 Prompt Pack
               </span>
@@ -549,6 +553,36 @@ function SolutionDetail() {
                     <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 10 }}>Como funciona</div>
                     <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.8, margin: 0, whiteSpace: "pre-line" }}>{solution.como_funciona}</p>
                   </div>
+                )}
+
+                {/* Integração — seções específicas para agente_integracao */}
+                {solution.tipo === "agente_integracao" && (
+                  <>
+                    {solution.apps_integrados && (
+                      <div style={{ marginTop: 24 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 8 }}>Apps integrados</div>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                          {solution.apps_integrados.split(",").map(app => app.trim()).filter(Boolean).map(app => (
+                            <span key={app} style={{ background: "#EDE9FE", color: "#6D28D9", borderRadius: 999, padding: "4px 12px", fontSize: 13, fontWeight: 600 }}>{app}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {solution.requisitos_tecnicos && (
+                      <div style={{ marginTop: 24 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 8 }}>Requisitos técnicos</div>
+                        <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>{solution.requisitos_tecnicos}</p>
+                      </div>
+                    )}
+                    {solution.instrucoes_configuracao && (
+                      <div style={{ marginTop: 24 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 8 }}>Como configurar</div>
+                        <div style={{ background: "#F5F3FF", border: "1px solid #DDD6FE", borderRadius: 10, padding: 16 }}>
+                          <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.8, margin: 0, whiteSpace: "pre-line" }}>{solution.instrucoes_configuracao}</p>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {/* Ver em ação */}

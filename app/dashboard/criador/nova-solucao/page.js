@@ -107,6 +107,10 @@ export default function NovaSolucaoPage() {
     video_demo: '',
     video_tutorial: '',
     video_curadoria: '',
+    apps_integrados: '',
+    ferramenta_automacao: '',
+    instrucoes_configuracao: '',
+    requisitos_tecnicos: '',
   })
   const [coverFile, setCoverFile] = useState(null)
   const [coverPreview, setCoverPreview] = useState(null)
@@ -247,36 +251,99 @@ export default function NovaSolucaoPage() {
         </div>
 
         {/* ── Tipo de Produto ── */}
-        {/* SQL (run once in Supabase):
-            ALTER TABLE solutions ADD COLUMN IF NOT EXISTS tipo TEXT DEFAULT 'agente';
-            ALTER TABLE solutions ADD COLUMN IF NOT EXISTS conteudo_pack TEXT; */}
         <div style={{ marginBottom: 20 }}>
           <label style={{ ...lbl, marginBottom: 10, display: 'block' }}>Tipo de Produto *</label>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
             {[
-              { key: 'agente',      icon: '🤖', title: 'Agente IA',    desc: 'Solução que roda dentro do Workspace WePrompt', badge: 'Requer Workspace' },
-              { key: 'prompt_pack', icon: '📄', title: 'Prompt Pack',  desc: 'Coleção de prompts para usar em qualquer IA',   badge: 'Entrega digital' },
+              { key: 'agente',            icon: '🤖', title: 'Agente IA',              desc: 'Solução que roda dentro do Workspace WePrompt',                          badge: 'Requer Workspace', accentColor: ACCENT },
+              { key: 'prompt_pack',       icon: '📄', title: 'Prompt Pack',            desc: 'Coleção de prompts para usar em qualquer IA',                            badge: 'Entrega digital',  accentColor: '#7C3AED' },
+              { key: 'agente_integracao', icon: '⚡', title: 'Agente com Integração',  desc: 'Agente que executa ações em apps externos (WhatsApp, Instagram, Gmail…)', badge: 'Integração externa', accentColor: '#7C3AED' },
             ].map(opt => (
               <button key={opt.key} type="button" onClick={() => set('tipo', opt.key)}
                 style={{
-                  border: form.tipo === opt.key ? `2px solid ${ACCENT}` : `1px solid ${BORDER}`,
-                  background: form.tipo === opt.key ? 'rgba(99,102,241,0.04)' : 'white',
+                  border: form.tipo === opt.key ? `2px solid ${opt.accentColor}` : `1px solid ${BORDER}`,
+                  background: form.tipo === opt.key ? `${opt.accentColor}08` : 'white',
                   borderRadius: 12, padding: 20, textAlign: 'left', cursor: 'pointer',
                   transition: 'all 0.15s', fontFamily: 'inherit',
                 }}
               >
                 <div style={{ fontSize: 28, marginBottom: 10 }}>{opt.icon}</div>
-                <div style={{ fontWeight: 700, color: '#111827', fontSize: 15, marginBottom: 4 }}>{opt.title}</div>
-                <div style={{ color: '#6b7280', fontSize: 13, lineHeight: 1.5, marginBottom: 10 }}>{opt.desc}</div>
+                <div style={{ fontWeight: 700, color: '#111827', fontSize: 14, marginBottom: 4 }}>{opt.title}</div>
+                <div style={{ color: '#6b7280', fontSize: 12, lineHeight: 1.5, marginBottom: 10 }}>{opt.desc}</div>
                 <span style={{
                   fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 99,
-                  background: form.tipo === opt.key ? '#EEF2FF' : '#f3f4f6',
-                  color: form.tipo === opt.key ? ACCENT : '#6b7280',
+                  background: form.tipo === opt.key ? `${opt.accentColor}18` : '#f3f4f6',
+                  color: form.tipo === opt.key ? opt.accentColor : '#6b7280',
                 }}>{opt.badge}</span>
               </button>
             ))}
           </div>
         </div>
+
+        {/* ── Agente com Integração — campos específicos ── */}
+        {form.tipo === 'agente_integracao' && (
+          <SectionCard title="Configuração da Integração">
+            <div style={{ marginBottom: 18 }}>
+              <label style={lbl}>Apps que integra *</label>
+              <input
+                value={form.apps_integrados}
+                onChange={e => set('apps_integrados', e.target.value)}
+                placeholder="Ex: WhatsApp Business, Instagram, Gmail"
+                style={inputStyle(false)}
+                onFocus={onFocus}
+                onBlur={e => onBlur(e, false)}
+              />
+              <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6 }}>Liste os apps separados por vírgula</p>
+            </div>
+
+            <div style={{ marginBottom: 18 }}>
+              <label style={lbl}>Ferramenta de automação</label>
+              <select
+                value={form.ferramenta_automacao}
+                onChange={e => set('ferramenta_automacao', e.target.value)}
+                style={{ ...inputStyle(false), cursor: 'pointer' }}
+                onFocus={onFocus}
+                onBlur={e => onBlur(e, false)}
+              >
+                <option value="">Selecione…</option>
+                <option value="n8n">n8n</option>
+                <option value="Zapier">Zapier</option>
+                <option value="Make">Make</option>
+                <option value="API direta">API direta</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: 18 }} data-error={!form.instrucoes_configuracao ? undefined : undefined}>
+              <label style={lbl}>Instruções de configuração *</label>
+              <textarea
+                rows={6}
+                value={form.instrucoes_configuracao}
+                onChange={e => set('instrucoes_configuracao', e.target.value)}
+                placeholder={"Explique passo a passo como o comprador deve configurar a integração:\n\n1. Acesse...\n2. Gere a chave de API em...\n3. No n8n, importe o workflow..."}
+                style={{ ...inputStyle(false), resize: 'vertical', lineHeight: 1.65 }}
+                onFocus={onFocus}
+                onBlur={e => onBlur(e, false)}
+              />
+              <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6 }}>
+                Essas instruções serão exibidas no Workspace do comprador após a compra.
+              </p>
+            </div>
+
+            <div>
+              <label style={lbl}>Requisitos técnicos (opcional)</label>
+              <textarea
+                rows={3}
+                value={form.requisitos_tecnicos}
+                onChange={e => set('requisitos_tecnicos', e.target.value)}
+                placeholder="Ex: Conta WhatsApp Business API aprovada pela Meta, acesso de admin ao Instagram Business..."
+                style={{ ...inputStyle(false), resize: 'vertical', lineHeight: 1.65 }}
+                onFocus={onFocus}
+                onBlur={e => onBlur(e, false)}
+              />
+            </div>
+          </SectionCard>
+        )}
 
         {/* ── Conteúdo do Pack (only for prompt_pack) ── */}
         {form.tipo === 'prompt_pack' && (

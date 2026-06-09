@@ -47,6 +47,10 @@ export async function POST(request) {
       video_demo: body.video_demo || null,
       video_tutorial: body.video_tutorial || null,
       video_curadoria: body.video_curadoria || null,
+      apps_integrados: body.apps_integrados || null,
+      ferramenta_automacao: body.ferramenta_automacao || null,
+      instrucoes_configuracao: body.instrucoes_configuracao || null,
+      requisitos_tecnicos: body.requisitos_tecnicos || null,
       status: 'pending'
     })
     .select()
