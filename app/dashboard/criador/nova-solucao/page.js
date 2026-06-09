@@ -42,8 +42,8 @@ const lbl = {
 
 function inputStyle(hasError) {
   return {
-    width: '100%', padding: '10px 14px', borderRadius: 8,
-    border: `1px solid ${hasError ? ERROR : INPUT_BORDER}`,
+    width: '100%', padding: '10px 14px', borderRadius: 12,
+    border: `1.5px solid ${hasError ? ERROR : '#E5E7EB'}`,
     fontSize: 15, color: '#111827', background: 'white',
     outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
     transition: 'border-color 0.15s, box-shadow 0.15s',
@@ -720,15 +720,15 @@ export default function NovaSolucaoPage() {
             onClick={() => handleSubmit('draft')}
             disabled={isLoading}
             style={{
-              padding: '14px 28px', borderRadius: 10,
-              border: `1.5px solid ${BORDER}`,
+              padding: '14px 28px', borderRadius: 999,
+              border: '1.5px solid #6366F1',
               background: 'transparent', fontSize: 14, fontWeight: 600,
-              color: LABEL_COLOR, cursor: isLoading ? 'not-allowed' : 'pointer',
+              color: '#6366F1', cursor: isLoading ? 'not-allowed' : 'pointer',
               fontFamily: 'inherit', opacity: loadingDraft ? 0.6 : 1,
               transition: 'background 0.15s',
               display: 'flex', alignItems: 'center', gap: 8,
             }}
-            onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = '#F3F4F6' }}
+            onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = 'rgba(99,102,241,0.06)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
           >
             {loadingDraft && <Spinner />}
@@ -739,16 +739,17 @@ export default function NovaSolucaoPage() {
             onClick={() => handleSubmit('pending')}
             disabled={isLoading}
             style={{
-              padding: '14px 28px', borderRadius: 10, border: 'none',
-              background: loadingSubmit ? ACCENT_HOVER : ACCENT,
+              padding: '14px 28px', borderRadius: 999, border: 'none',
+              background: loadingSubmit ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg, #6366F1, #8B5CF6)',
               color: 'white', fontSize: 14, fontWeight: 700,
               cursor: isLoading ? 'not-allowed' : 'pointer',
               fontFamily: 'inherit', opacity: loadingSubmit ? 0.8 : 1,
-              transition: 'background 0.15s',
+              boxShadow: loadingSubmit ? 'none' : '0 4px 16px rgba(99,102,241,0.35)',
+              transition: 'opacity 0.15s',
               display: 'flex', alignItems: 'center', gap: 8,
             }}
-            onMouseEnter={e => { if (!isLoading) e.currentTarget.style.background = ACCENT_HOVER }}
-            onMouseLeave={e => { if (!isLoading) e.currentTarget.style.background = ACCENT }}
+            onMouseEnter={e => { if (!isLoading) e.currentTarget.style.opacity = '0.9' }}
+            onMouseLeave={e => { if (!isLoading) e.currentTarget.style.opacity = '1' }}
           >
             {loadingSubmit && <Spinner />}
             {loadingSubmit ? 'Enviando…' : 'Enviar para aprovação →'}

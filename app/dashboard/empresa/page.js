@@ -233,10 +233,10 @@ export default function EmpresaDashboard() {
             </p>
           </div>
           <div style={{ display: "flex", gap: 12 }}>
-            <a href="/solucoes" style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "12px 18px", minHeight: 44, fontSize: 14, color: "#374151", display: "flex", alignItems: "center", gap: 6, background: "white", cursor: "pointer", textDecoration: "none" }}>
+            <a href="/solucoes" style={{ border: "1.5px solid #6366F1", borderRadius: 999, padding: "12px 18px", minHeight: 44, fontSize: 14, color: "#6366F1", display: "flex", alignItems: "center", gap: 6, background: "transparent", cursor: "pointer", textDecoration: "none" }}>
               Explorar Catálogo ↗
             </a>
-            <a href="/solucoes" style={{ background: "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <a href="/solucoes" style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white", borderRadius: 999, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", textDecoration: "none", display: "flex", alignItems: "center", boxShadow: "0 2px 12px rgba(99,102,241,0.3)" }}>
               Adquirir Solução +
             </a>
           </div>
@@ -503,7 +503,7 @@ export default function EmpresaDashboard() {
                 <button
                   onClick={handleSavePerfilEmpresa}
                   disabled={profSaving}
-                  style={{ background: profSaving ? "rgba(99,102,241,0.5)" : "#6366F1", color: "white", borderRadius: 8, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, border: "none", cursor: profSaving ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}
+                  style={{ background: profSaving ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white", borderRadius: 999, padding: "12px 20px", minHeight: 44, fontSize: 14, fontWeight: 600, border: "none", cursor: profSaving ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: profSaving ? "none" : "0 2px 12px rgba(99,102,241,0.3)", transition: "opacity 0.15s" }}
                 >
                   {profSaving ? "Salvando…" : "Salvar alterações"}
                 </button>
@@ -610,11 +610,11 @@ export default function EmpresaDashboard() {
             </div>
 
             <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={() => setReviewModal(null)} style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "1.5px solid #e5e7eb", background: "transparent", color: "#6b7280", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+              <button onClick={() => setReviewModal(null)} style={{ flex: 1, padding: "11px 0", borderRadius: 999, border: "1.5px solid #6366F1", background: "transparent", color: "#6366F1", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                 Cancelar
               </button>
               <button onClick={submitReview} disabled={reviewLoading}
-                style={{ flex: 2, padding: "11px 0", borderRadius: 10, border: "none", background: reviewLoading ? "rgba(99,102,241,0.5)" : "#6366F1", color: "white", fontSize: 14, fontWeight: 700, cursor: reviewLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+                style={{ flex: 2, padding: "11px 0", borderRadius: 999, border: "none", background: reviewLoading ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white", fontSize: 14, fontWeight: 700, cursor: reviewLoading ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: reviewLoading ? "none" : "0 2px 12px rgba(99,102,241,0.3)" }}>
                 {reviewLoading ? "Enviando…" : "Enviar avaliação"}
               </button>
             </div>

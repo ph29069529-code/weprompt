@@ -366,17 +366,17 @@ function SolucoesTab({ solutions, onApprove, onConfirmReject, onView, actionLoad
                         <td style={{ padding: "12px 16px", color: GRAY_TEXT, whiteSpace: "nowrap" }}>{formatDate(s.created_at)}</td>
                         <td style={{ padding: "12px 16px" }}>
                           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                            <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 7, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                            <button onClick={() => onView(s)} style={{ padding: "5px 10px", borderRadius: 999, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                               Ver
                             </button>
                             {s.status === "pending" && (
                               <>
                                 <button onClick={() => { if (!isLoading) onApprove(s.id); }}
-                                  style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: "rgba(99,102,241,0.1)", color: BLUE, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, fontFamily: "inherit" }}>
+                                  style={{ padding: "5px 10px", borderRadius: 999, border: "none", background: isLoading ? "rgba(99,102,241,0.3)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff", fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, fontFamily: "inherit", boxShadow: isLoading ? "none" : "0 1px 8px rgba(99,102,241,0.25)" }}>
                                   Aprovar
                                 </button>
                                 <button onClick={() => { if (!isLoading) { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); } }}
-                                  style={{ padding: "5px 10px", borderRadius: 7, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, fontFamily: "inherit" }}>
+                                  style={{ padding: "5px 10px", borderRadius: 999, border: "none", background: isRejecting ? "rgba(220,38,38,0.18)" : "rgba(220,38,38,0.1)", color: DANGER, fontSize: 12, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", opacity: isLoading ? 0.5 : 1, fontFamily: "inherit" }}>
                                   Reprovar
                                 </button>
                               </>
@@ -474,15 +474,15 @@ function SolicitacoesTab({ solutions, onApprove, onConfirmReject, onView, action
               </div>
               <div style={{ display: "flex", gap: 8, flexShrink: 0, alignItems: "center" }}>
                 <button onClick={() => onView(s)}
-                  style={{ padding: "8px 16px", borderRadius: 9, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                  style={{ padding: "8px 16px", borderRadius: 999, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                   Ver detalhes
                 </button>
                 <button onClick={() => { if (!isLoading) onApprove(s.id); }} disabled={isLoading}
-                  style={{ padding: "8px 16px", borderRadius: 9, border: "none", background: isLoading ? "rgba(99,102,241,0.4)" : BLUE, color: "#fff", fontSize: 13, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: isLoading ? 0.7 : 1 }}>
+                  style={{ padding: "8px 16px", borderRadius: 999, border: "none", background: isLoading ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: isLoading ? 0.7 : 1, boxShadow: isLoading ? "none" : "0 1px 8px rgba(99,102,241,0.25)" }}>
                   {isLoading ? "…" : "Aprovar"}
                 </button>
                 <button onClick={() => { if (!isLoading) { setRejectingId(isRejecting ? null : s.id); setRejectReason(""); } }} disabled={isLoading}
-                  style={{ padding: "8px 16px", borderRadius: 9, border: `1.5px solid rgba(220,38,38,0.3)`, background: isRejecting ? "rgba(220,38,38,0.07)" : "transparent", color: DANGER, fontSize: 13, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: isLoading ? 0.7 : 1 }}>
+                  style={{ padding: "8px 16px", borderRadius: 999, border: `1.5px solid rgba(220,38,38,0.3)`, background: isRejecting ? "rgba(220,38,38,0.07)" : "transparent", color: DANGER, fontSize: 13, fontWeight: 600, cursor: isLoading ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: isLoading ? 0.7 : 1 }}>
                   Reprovar
                 </button>
               </div>
@@ -1196,7 +1196,7 @@ function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
 
         {/* Save */}
         <button onClick={handleSave} disabled={saving}
-          style={{ width: "100%", padding: "12px 0", borderRadius: 12, border: "none", fontFamily: "inherit", marginTop: 24, fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", transition: "background 0.2s", color: "#fff", background: saved ? "#16A34A" : saving ? "rgba(99,102,241,0.5)" : BLUE }}>
+          style={{ width: "100%", padding: "12px 0", borderRadius: 999, border: "none", fontFamily: "inherit", marginTop: 24, fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", transition: "opacity 0.2s", color: "#fff", background: saved ? "#16A34A" : saving ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", boxShadow: saved || saving ? "none" : "0 2px 12px rgba(99,102,241,0.3)" }}>
           {saved ? "✓ Perfil atualizado!" : saving ? "Salvando…" : "Salvar alterações"}
         </button>
 
@@ -1417,26 +1417,26 @@ function SolutionDetailModal({ solution, onClose, onApprove, onConfirmReject }) 
           {!rejecting ? (
             <>
               <button onClick={handleApprove} disabled={actionLoading}
-                style={{ flex: 1, minWidth: 120, padding: "11px 20px", borderRadius: 10, border: "none", background: actionLoading ? "rgba(99,102,241,0.4)" : BLUE, color: "#fff", fontSize: 14, fontWeight: 700, cursor: actionLoading ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "background 0.15s" }}>
+                style={{ flex: 1, minWidth: 120, padding: "11px 20px", borderRadius: 999, border: "none", background: actionLoading ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff", fontSize: 14, fontWeight: 700, cursor: actionLoading ? "not-allowed" : "pointer", fontFamily: "inherit", boxShadow: actionLoading ? "none" : "0 2px 12px rgba(99,102,241,0.3)", transition: "opacity 0.15s" }}>
                 {actionLoading ? "Aprovando…" : "✓ Aprovar"}
               </button>
               <button onClick={() => { setRejecting(true); setRejectReason(""); }} disabled={actionLoading}
-                style={{ flex: 1, minWidth: 120, padding: "11px 20px", borderRadius: 10, border: `1.5px solid rgba(220,38,38,0.3)`, background: "transparent", color: DANGER, fontSize: 14, fontWeight: 700, cursor: actionLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+                style={{ flex: 1, minWidth: 120, padding: "11px 20px", borderRadius: 999, border: `1.5px solid rgba(220,38,38,0.3)`, background: "transparent", color: DANGER, fontSize: 14, fontWeight: 700, cursor: actionLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
                 ✕ Reprovar
               </button>
               <button onClick={onClose}
-                style={{ padding: "11px 20px", borderRadius: 10, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                style={{ padding: "11px 20px", borderRadius: 999, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                 Fechar
               </button>
             </>
           ) : (
             <>
               <button onClick={handleReject} disabled={!rejectReason.trim() || actionLoading}
-                style={{ flex: 1, minWidth: 160, padding: "11px 20px", borderRadius: 10, border: "none", background: !rejectReason.trim() || actionLoading ? "rgba(220,38,38,0.3)" : DANGER, color: "#fff", fontSize: 14, fontWeight: 700, cursor: !rejectReason.trim() || actionLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+                style={{ flex: 1, minWidth: 160, padding: "11px 20px", borderRadius: 999, border: "none", background: !rejectReason.trim() || actionLoading ? "rgba(220,38,38,0.3)" : DANGER, color: "#fff", fontSize: 14, fontWeight: 700, cursor: !rejectReason.trim() || actionLoading ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
                 {actionLoading ? "Reprovando…" : "Confirmar reprovação"}
               </button>
               <button onClick={() => { setRejecting(false); setRejectReason(""); }}
-                style={{ padding: "11px 20px", borderRadius: 10, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                style={{ padding: "11px 20px", borderRadius: 999, border: `1px solid ${BORDER}`, background: "transparent", color: GRAY_TEXT, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                 Cancelar
               </button>
             </>

@@ -292,7 +292,7 @@ export default function WorkspacePage() {
           Você precisa ter uma assinatura ativa para acessar este workspace.
         </div>
         <button onClick={() => router.push(`/solucoes/${id}`)}
-          style={{ background: "#6366F1", color: "white", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+          style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white", border: "none", borderRadius: 999, padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 2px 12px rgba(99,102,241,0.3)" }}>
           Ver solução →
         </button>
       </div>
@@ -604,7 +604,7 @@ export default function WorkspacePage() {
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {solution?.video_tutorial && getEmbedUrl(solution.video_tutorial) && (
               <button onClick={() => setShowTutorialModal(true)}
-                style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 8, padding: "6px 12px", cursor: "pointer", color: "#6366F1", fontSize: 13, fontWeight: 600, fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 999, padding: "6px 14px", cursor: "pointer", color: "#6366F1", fontSize: 13, fontWeight: 600, fontFamily: "inherit", whiteSpace: "nowrap" }}>
                 📺 Ver tutorial de integração
               </button>
             )}
@@ -741,7 +741,7 @@ export default function WorkspacePage() {
               style={{
                 position: "absolute", right: 10, bottom: 10,
                 width: 34, height: 34, borderRadius: 8, border: "none",
-                background: chatLoading || !input.trim() ? "#E5E7EB" : "#6366F1",
+                background: chatLoading || !input.trim() ? "#E5E7EB" : "linear-gradient(135deg, #6366F1, #8B5CF6)",
                 color: chatLoading || !input.trim() ? "#9CA3AF" : "white",
                 cursor: chatLoading || !input.trim() ? "not-allowed" : "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center",
