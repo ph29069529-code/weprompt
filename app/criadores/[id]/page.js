@@ -125,10 +125,10 @@ function SolutionCard({ sol }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: "white", borderRadius: 16, border: "1px solid #e5e7eb",
+        background: "white", borderRadius: 20, border: "1px solid #e5e7eb",
         overflow: "hidden",
         transform: hovered ? "translateY(-4px)" : "translateY(0)",
-        boxShadow: hovered ? "0 12px 32px rgba(0,0,0,0.1)" : "none",
+        boxShadow: hovered ? "0 4px 24px rgba(0,0,0,0.08)" : "none",
         transition: "all 0.2s ease",
       }}
     >
@@ -149,7 +149,7 @@ function SolutionCard({ sol }) {
         </span>
       </div>
       <div style={{ padding: 16 }}>
-        <span style={{ background: "#eff6ff", color: "#2563EB", borderRadius: 999, fontSize: 11, fontWeight: 600, padding: "3px 8px" }}>
+        <span style={{ background: "#EEF2FF", color: "#4F46E5", borderRadius: 999, fontSize: 11, fontWeight: 600, padding: "3px 8px" }}>
           {sol.category}
         </span>
         <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginTop: 8 }}>{sol.name}</div>
@@ -165,10 +165,11 @@ function SolutionCard({ sol }) {
           onMouseEnter={() => setBtnHovered(true)}
           onMouseLeave={() => setBtnHovered(false)}
           style={{
-            width: "100%", background: btnHovered ? "#374151" : "#111827",
-            color: "white", borderRadius: 8, padding: "10px",
+            width: "100%", background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
+            color: "white", borderRadius: 999, padding: "10px",
             fontSize: 14, fontWeight: 600, marginTop: 12,
-            border: "none", cursor: "pointer", transition: "background 0.15s", fontFamily: "inherit",
+            border: "none", cursor: "pointer", boxShadow: "0 2px 12px rgba(99,102,241,0.3)",
+            opacity: btnHovered ? 0.88 : 1, transition: "opacity 0.15s", fontFamily: "inherit",
           }}
         >
           Adquirir Solução →
@@ -392,9 +393,10 @@ export default function CriadorProfilePage() {
         <button
           onClick={() => router.push("/criadores")}
           style={{
-            marginTop: 8, background: "#111827", color: "white",
-            border: "none", borderRadius: 8, padding: "10px 24px",
+            marginTop: 8, background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white",
+            border: "none", borderRadius: 999, padding: "12px 28px",
             fontSize: 14, fontWeight: 600, cursor: "pointer",
+            boxShadow: "0 4px 16px rgba(99,102,241,0.35)",
           }}
         >
           ← Ver todos os criadores
@@ -406,7 +408,7 @@ export default function CriadorProfilePage() {
   // ── RENDER ────────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", overflowX: "hidden" }}>
+    <div style={{ background: "#F8F7FF", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", overflowX: "hidden" }}>
 
       <style>{`
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
@@ -419,7 +421,7 @@ export default function CriadorProfilePage() {
         .cri-tabs-bar { display: flex; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 0 16px; }
         .cri-tabs-bar::-webkit-scrollbar { display: none; }
         @media (min-width: 768px) { .cri-tabs-bar { padding: 0 48px; } }
-        .cri-content { background: #f9fafb; padding: 16px; }
+        .cri-content { background: #F8F7FF; padding: 16px; }
         @media (min-width: 768px) { .cri-content { padding: 32px 48px; } }
         .cri-sol-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 768px) { .cri-sol-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -431,22 +433,22 @@ export default function CriadorProfilePage() {
       <Navbar />
 
       {/* ── PROFILE BANNER ────────────────────────────────────────────── */}
-      <div className="cri-banner" style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563EB 100%)" }}>
+      <div className="cri-banner" style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #6366F1 100%)" }}>
         <div className="cri-actions">
           <button
             onClick={() => router.push("/dashboard/criador/configuracoes")}
             style={{
               background: "rgba(255,255,255,0.15)", color: "white",
-              border: "1px solid rgba(255,255,255,0.3)", borderRadius: 8,
-              padding: "8px 16px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+              border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999,
+              padding: "8px 18px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
             }}
           >✏ Editar Perfil</button>
           <button
             onClick={handleShare}
             style={{
               background: "rgba(255,255,255,0.15)", color: "white",
-              border: "1px solid rgba(255,255,255,0.3)", borderRadius: 8,
-              padding: "8px 16px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+              border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999,
+              padding: "8px 18px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
             }}
           >Compartilhar ↗</button>
         </div>
@@ -461,7 +463,7 @@ export default function CriadorProfilePage() {
           }}>
             {creator?.avatar_url
               ? <img src={creator.avatar_url} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <span style={{ fontSize: 52, fontWeight: 900, color: "#2563EB" }}>{displayName.charAt(0)}</span>
+              : <span style={{ fontSize: 52, fontWeight: 900, color: "#6366F1" }}>{displayName.charAt(0)}</span>
             }
           </div>
 
@@ -482,7 +484,7 @@ export default function CriadorProfilePage() {
                   return (
                     <>
                       <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                        <span style={{ fontSize: 28, fontWeight: 800, color: "white" }}>{displayName}</span>
+                        <span style={{ fontSize: 28, fontWeight: 900, color: "white" }}>{displayName}</span>
                         <span style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 999, padding: "4px 14px", fontSize: 12, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}>
                           {rep.icon} {rep.label}
                         </span>
@@ -561,9 +563,9 @@ export default function CriadorProfilePage() {
               fontSize: 14, padding: "16px 24px 16px 0", marginRight: 8,
               cursor: "pointer", display: "inline-flex", alignItems: "center",
               border: "none",
-              borderBottom: activeTab === i ? "2px solid #2563EB" : "2px solid transparent",
+              borderBottom: activeTab === i ? "2px solid #6366F1" : "2px solid transparent",
               background: "transparent",
-              color: activeTab === i ? "#2563EB" : hoveredTab === i ? "#374151" : "#6b7280",
+              color: activeTab === i ? "#6366F1" : hoveredTab === i ? "#374151" : "#6b7280",
               fontWeight: activeTab === i ? 600 : 400,
               marginBottom: -1, transition: "color 0.15s ease", fontFamily: "inherit", whiteSpace: "nowrap",
             }}
@@ -586,8 +588,9 @@ export default function CriadorProfilePage() {
                         borderRadius: 999, padding: "6px 16px", fontSize: 13, fontWeight: 500,
                         cursor: "pointer",
                         border: activeCategory === c.id ? "none" : "1px solid #e5e7eb",
-                        background: activeCategory === c.id ? "#2563EB" : "white",
+                        background: activeCategory === c.id ? "linear-gradient(135deg, #6366F1, #8B5CF6)" : "white",
                         color: activeCategory === c.id ? "white" : "#374151",
+                        boxShadow: activeCategory === c.id ? "0 2px 12px rgba(99,102,241,0.3)" : "none",
                         transition: "all 0.15s ease", fontFamily: "inherit",
                       }}>{c.label}</button>
                     ))
@@ -724,7 +727,7 @@ export default function CriadorProfilePage() {
         {/* ═══ SOBRE ═══ */}
         {activeTab === 2 && (
           <div style={{ maxWidth: 720 }}>
-            <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
+            <div style={{ background: "white", borderRadius: 16, border: "1px solid #e5e7eb", padding: 24 }}>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111827", margin: "0 0 16px" }}>Sobre o Criador</h3>
               {loading
                 ? (
@@ -747,7 +750,7 @@ export default function CriadorProfilePage() {
               {displayTags.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
                   {displayTags.map(tag => (
-                    <span key={tag} style={{ background: "#eff6ff", color: "#2563EB", borderRadius: 999, padding: "4px 14px", fontSize: 13 }}>
+                    <span key={tag} style={{ background: "#EEF2FF", color: "#4F46E5", borderRadius: 999, padding: "4px 14px", fontSize: 13 }}>
                       {tag}
                     </span>
                   ))}
@@ -755,7 +758,7 @@ export default function CriadorProfilePage() {
               )}
             </div>
 
-            <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24, marginTop: 16 }}>
+            <div style={{ background: "white", borderRadius: 16, border: "1px solid #e5e7eb", padding: 24, marginTop: 16 }}>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: "#111827", margin: "0 0 4px" }}>Informações</h3>
               {[
                 ...(displayLocation ? [{
@@ -795,8 +798,8 @@ export default function CriadorProfilePage() {
       {showToast && (
         <div style={{
           position: "fixed", bottom: 24, right: 24,
-          background: "#111827", color: "white",
-          padding: "12px 20px", borderRadius: 8,
+          background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white",
+          padding: "12px 20px", borderRadius: 999,
           fontSize: 14, zIndex: 100,
         }}>
           ✓ Link copiado!
