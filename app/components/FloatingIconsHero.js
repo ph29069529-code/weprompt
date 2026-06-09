@@ -128,18 +128,6 @@ export default function FloatingIconsHero() {
       {/* ── Centre content ── */}
       <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '0 24px' }}>
 
-        {/* Badge */}
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))',
-          border: '1px solid rgba(99,102,241,0.2)',
-          borderRadius: 999, padding: '6px 18px', marginBottom: 24,
-          fontSize: 12, color: '#6366F1', fontWeight: 700, letterSpacing: '0.06em',
-          animation: 'fadeInScale 0.5s cubic-bezier(0.22,1,0.36,1) 0s both',
-        }}>
-          NOVO&nbsp;&nbsp;•&nbsp;&nbsp;O 1º marketplace de IA do Brasil
-        </div>
-
         {/* H1 — word-by-word entrance */}
         <div style={{ marginBottom: 8 }}>
           {/* Line 1 */}
@@ -157,12 +145,13 @@ export default function FloatingIconsHero() {
             ))}
           </div>
           {/* Line 2 — gradient */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0 0.28em', lineHeight: 1.0 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0 0.28em', lineHeight: 1.2 }}>
             {['para', 'o', 'seu', 'negócio.'].map((word, i) => (
               <span key={i} style={{
                 fontSize: 'clamp(44px, 6.5vw, 80px)',
-                fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.0,
+                fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.2,
                 display: 'inline-block', marginRight: '0.25em',
+                paddingBottom: '0.06em',
                 background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 40%, #A855F7 100%)',
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
                 animation: `heroWord 0.7s cubic-bezier(0.22,1,0.36,1) ${(3 + i) * 0.08}s both`,

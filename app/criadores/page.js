@@ -131,13 +131,14 @@ export default function CriadoresPage() {
           <button
             onClick={() => router.push("/cadastro?role=criador")}
             style={{
-              background: ACCENT, color: "#fff", border: "none",
-              borderRadius: 12, padding: "16px 36px",
+              background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: "#fff", border: "none",
+              borderRadius: 999, padding: "14px 32px",
               fontSize: 16, fontWeight: 700, cursor: "pointer",
-              fontFamily: "inherit", transition: "background 0.15s",
+              fontFamily: "inherit", boxShadow: '0 4px 20px rgba(99,102,241,0.35)',
+              transition: "opacity 0.15s",
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = ACCENT_HOVER)}
-            onMouseLeave={e => (e.currentTarget.style.background = ACCENT)}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           >
             Começar agora, é grátis →
           </button>
