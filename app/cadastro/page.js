@@ -26,7 +26,7 @@ const inputBase = {
   width: "100%",
   padding: "14px 16px",
   borderRadius: 12,
-  border: "1px solid #D1D5DB",
+  border: "1.5px solid #E5E7EB",
   fontSize: 15,
   color: NEAR_BLACK,
   background: "#fff",
@@ -69,8 +69,8 @@ function BrandSide() {
       <div style={{ maxWidth: 360, width: "100%" }}>
         <img src="/logo-white.png" alt="WePrompt" style={{ width: 140, height: "auto" }} />
         <p style={{
-          color: "#fff", fontSize: 32, fontWeight: 800,
-          lineHeight: 1.2, margin: "32px 0 0", letterSpacing: "-0.03em",
+          color: "#fff", fontSize: 32, fontWeight: 900,
+          lineHeight: 1.2, margin: "32px 0 0", letterSpacing: "-0.04em",
         }}>
           IA que trabalha pelo seu negócio.
         </p>
@@ -183,7 +183,7 @@ function CadastroForm() {
     e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.1)";
   };
   const blurInput = e => {
-    e.target.style.borderColor = "#D1D5DB";
+    e.target.style.borderColor = "#E5E7EB";
     e.target.style.boxShadow = "none";
   };
 
@@ -208,7 +208,7 @@ function CadastroForm() {
           </a>
 
           <h1 style={{
-            fontSize: 30, fontWeight: 800, letterSpacing: "-0.03em",
+            fontSize: 30, fontWeight: 900, letterSpacing: "-0.04em",
             color: NEAR_BLACK, marginBottom: 8,
           }}>
             {existingUser ? "Complete seu perfil" : "Crie sua conta"}
@@ -235,10 +235,11 @@ function CadastroForm() {
                     key={opt.value} type="button"
                     onClick={() => setRole(opt.value)}
                     style={{
-                      padding: "16px 14px", borderRadius: 14, textAlign: "left",
+                      padding: "16px 14px", borderRadius: 20, textAlign: "left",
                       border: `2px solid ${role === opt.value ? ACCENT : "#E5E7EB"}`,
                       background: role === opt.value ? "rgba(99,102,241,0.04)" : "#fff",
                       cursor: "pointer", fontFamily: "inherit",
+                      borderRadius: 20,
                       transition: "border-color 0.15s, background 0.15s",
                     }}
                     onMouseEnter={e => { if (role !== opt.value) e.currentTarget.style.borderColor = "rgba(99,102,241,0.35)"; }}
@@ -379,15 +380,17 @@ function CadastroForm() {
 
             <button type="submit" disabled={loading} style={{
               width: "100%", padding: "14px",
-              background: loading ? "rgba(99,102,241,0.5)" : ACCENT,
-              color: "#fff", border: "none", borderRadius: 10,
+              background: loading ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)",
+              color: "#fff", border: "none", borderRadius: 999,
               fontSize: 15, fontWeight: 700,
               cursor: loading ? "not-allowed" : "pointer",
-              fontFamily: "inherit", transition: "background 0.15s",
+              fontFamily: "inherit",
+              boxShadow: loading ? "none" : "0 4px 16px rgba(99,102,241,0.35)",
+              transition: "opacity 0.15s",
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             }}
-              onMouseEnter={e => { if (!loading) e.currentTarget.style.background = ACCENT_HOVER; }}
-              onMouseLeave={e => { if (!loading) e.currentTarget.style.background = ACCENT; }}
+              onMouseEnter={e => { if (!loading) e.currentTarget.style.opacity = "0.9"; }}
+              onMouseLeave={e => { if (!loading) e.currentTarget.style.opacity = "1"; }}
             >
               {loading && <Spinner />}
               {loading ? "Criando conta…" : "Criar conta"}
