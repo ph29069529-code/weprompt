@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import Navbar from "../components/Navbar";
 
-const BLUE   = "#0369A1";
+const BLUE   = "#6366F1";
 const BORDER = "#e5e7eb";
 
 const CATEGORY_GRADIENTS = {
@@ -56,7 +56,7 @@ function StarRating({ rating, count }) {
 function SkeletonCard() {
   return (
     <div style={{
-      background: "#fff", borderRadius: 16,
+      background: "#fff", borderRadius: 20,
       border: "1px solid #e5e7eb", overflow: "hidden",
       animation: "pulse 1.5s ease-in-out infinite",
     }}>
@@ -68,7 +68,7 @@ function SkeletonCard() {
         <div style={{ width: "65%", height: 12, borderRadius: 4, background: "rgba(0,0,0,0.04)" }} />
       </div>
       <div style={{ borderTop: "1px solid #f3f4f6", padding: "14px 20px" }}>
-        <div style={{ width: "100%", height: 36, borderRadius: 8, background: "#e0f2fe" }} />
+        <div style={{ width: "100%", height: 36, borderRadius: 999, background: "#EEF2FF" }} />
       </div>
     </div>
   );
@@ -85,7 +85,7 @@ function SolutionCard({ solution }) {
     <div
       style={{
         background: "#fff",
-        borderRadius: 16,
+        borderRadius: 20,
         border: "1px solid #e5e7eb",
         display: "flex", flexDirection: "column",
         overflow: "hidden",
@@ -93,12 +93,14 @@ function SolutionCard({ solution }) {
         cursor: "default",
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.transform = "translateY(-2px)";
-        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.08)";
+        e.currentTarget.style.transform = "translateY(-4px)";
+        e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.08)";
+        e.currentTarget.style.borderColor = "rgba(99,102,241,0.2)";
       }}
       onMouseLeave={e => {
         e.currentTarget.style.transform = "translateY(0)";
         e.currentTarget.style.boxShadow = "none";
+        e.currentTarget.style.borderColor = "#e5e7eb";
       }}
     >
       {/* Thumbnail */}
@@ -230,13 +232,14 @@ function SolutionCard({ solution }) {
           href={`/solucoes/${solution.id}`}
           style={{
             display: "block", width: "100%", boxSizing: "border-box",
-            background: "#111827", color: "#fff",
-            borderRadius: 8, padding: "10px",
+            background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff",
+            borderRadius: 999, padding: "10px",
             fontSize: 14, fontWeight: 600, textDecoration: "none",
-            textAlign: "center", transition: "background 0.15s", cursor: "pointer",
+            textAlign: "center", transition: "opacity 0.15s", cursor: "pointer",
+            boxShadow: "0 2px 12px rgba(99,102,241,0.3)",
           }}
-          onMouseEnter={e => e.currentTarget.style.background = "#374151"}
-          onMouseLeave={e => e.currentTarget.style.background = "#111827"}
+          onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
+          onMouseLeave={e => e.currentTarget.style.opacity = "1"}
         >
           Ver solução →
         </a>
@@ -281,7 +284,7 @@ export default function SolucoesPage() {
   });
 
   return (
-    <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", overflowX: "hidden" }}>
+    <div style={{ background: "#F8F7FF", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", overflowX: "hidden" }}>
       <Navbar />
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
@@ -301,8 +304,8 @@ export default function SolucoesPage() {
         {/* Header row */}
         <div className="catalog-header" style={{ marginBottom: 32 }}>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#111827", margin: 0 }}>Soluções de IA</h1>
-            <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>
+            <h1 style={{ fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 900, color: "#0A0F1E", letterSpacing: "-0.04em", margin: 0 }}>Soluções de IA</h1>
+            <p style={{ fontSize: 15, color: "#6B7280", marginTop: 6, marginBottom: 0 }}>
               Descubra ferramentas e agentes de IA curados, prontos para usar no seu negócio.
             </p>
           </div>
@@ -314,12 +317,12 @@ export default function SolucoesPage() {
             className="catalog-search"
             placeholder="Buscar soluções..."
             style={{
-              background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8,
-              padding: "12px 16px", fontSize: 14, minHeight: 44, boxSizing: "border-box",
+              background: "#fff", border: "1px solid #e5e7eb", borderRadius: 999,
+              padding: "12px 20px", fontSize: 14, minHeight: 44, boxSizing: "border-box",
               color: "#111827", outline: "none", fontFamily: "inherit",
               transition: "border-color 0.15s, box-shadow 0.15s",
             }}
-            onFocus={e => { e.target.style.borderColor = BLUE; e.target.style.boxShadow = "0 0 0 3px rgba(3,105,161,0.1)"; }}
+            onFocus={e => { e.target.style.borderColor = BLUE; e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.12)"; }}
             onBlur={e => { e.target.style.borderColor = BORDER; e.target.style.boxShadow = "none"; }}
           />
         </div>
@@ -359,11 +362,12 @@ export default function SolucoesPage() {
                   padding: "12px 18px", borderRadius: 999, minHeight: 44,
                   fontFamily: "inherit", fontSize: 14, fontWeight: 600,
                   cursor: "pointer", border: isActive ? "none" : "1px solid #e5e7eb",
-                  background: isActive ? "#111827" : "#fff",
+                  background: isActive ? "linear-gradient(135deg, #6366F1, #8B5CF6)" : "#fff",
                   color: isActive ? "#fff" : "#374151",
+                  boxShadow: isActive ? "0 2px 12px rgba(99,102,241,0.3)" : "none",
                   transition: "all 0.15s", display: "inline-flex", alignItems: "center",
                 }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#f9fafb"; }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#F5F3FF"; }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "#fff"; }}
               >
                 {cat.nome}
@@ -389,7 +393,7 @@ export default function SolucoesPage() {
         ) : filtered.length === 0 ? (
           <div style={{
             textAlign: "center", padding: "80px 24px",
-            background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb",
+            background: "#fff", borderRadius: 20, border: "1px solid #e5e7eb",
           }}>
             <div style={{ fontSize: 40, marginBottom: 16, color: BLUE, opacity: 0.2 }}>✦</div>
             <h2 style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 8 }}>
@@ -410,12 +414,14 @@ export default function SolucoesPage() {
               <button
                 onClick={() => { setActiveCategory("Todos"); setSearchQuery(""); setTipoFilter(""); }}
                 style={{
-                  background: "#111827", color: "#fff", border: "none",
-                  borderRadius: 8, padding: "10px 24px",
+                  background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff", border: "none",
+                  borderRadius: 999, padding: "12px 28px",
                   fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                  boxShadow: "0 4px 16px rgba(99,102,241,0.35)",
+                  transition: "opacity 0.15s",
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = "#374151"}
-                onMouseLeave={e => e.currentTarget.style.background = "#111827"}
+                onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
+                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
               >
                 Ver todas as soluções
               </button>
