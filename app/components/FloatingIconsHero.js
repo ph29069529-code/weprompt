@@ -105,7 +105,7 @@ export default function FloatingIconsHero() {
                 borderRadius: 20,
                 background: '#ffffff',
                 border: '1px solid rgba(99,102,241,0.12)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 padding: 14,
                 animation: `fadeInScale 0.6s ease-out ${i * 0.08}s both`,
@@ -131,10 +131,10 @@ export default function FloatingIconsHero() {
         {/* Badge */}
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: 'rgba(99,102,241,0.08)',
+          background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))',
           border: '1px solid rgba(99,102,241,0.2)',
-          borderRadius: 100, padding: '5px 16px', marginBottom: 24,
-          fontSize: 12, color: '#6366F1', fontWeight: 600, letterSpacing: '0.05em',
+          borderRadius: 999, padding: '6px 18px', marginBottom: 24,
+          fontSize: 12, color: '#6366F1', fontWeight: 700, letterSpacing: '0.06em',
           animation: 'fadeInScale 0.5s cubic-bezier(0.22,1,0.36,1) 0s both',
         }}>
           NOVO&nbsp;&nbsp;•&nbsp;&nbsp;O 1º marketplace de IA do Brasil
@@ -190,14 +190,14 @@ export default function FloatingIconsHero() {
           <button
             onClick={() => router.push('/solucoes')}
             style={{
-              background: '#0A0F1E', color: 'white',
-              padding: '15px 32px', borderRadius: 10,
+              background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: 'white',
+              padding: '15px 32px', borderRadius: 999,
               fontWeight: 700, fontSize: 15, border: 'none',
-              cursor: 'pointer', boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
-              transition: 'background 0.2s, transform 0.2s', fontFamily: 'inherit',
+              cursor: 'pointer', boxShadow: '0 4px 20px rgba(99,102,241,0.4)',
+              transition: 'opacity 0.2s, transform 0.2s', fontFamily: 'inherit',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#1a2035'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#0A0F1E'; e.currentTarget.style.transform = 'translateY(0)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)' }}
           >
             Explorar soluções →
           </button>
@@ -205,14 +205,14 @@ export default function FloatingIconsHero() {
           <button
             onClick={() => router.push('/criadores')}
             style={{
-              background: 'white', color: '#374151',
-              border: '1.5px solid #E5E7EB',
-              padding: '14px 28px', borderRadius: 10,
+              background: 'transparent', color: '#6366F1',
+              border: '1.5px solid #6366F1',
+              padding: '14px 30px', borderRadius: 999,
               fontWeight: 600, fontSize: 15, cursor: 'pointer',
-              transition: 'border-color 0.2s, color 0.2s', fontFamily: 'inherit',
+              transition: 'background 0.2s, color 0.2s', fontFamily: 'inherit',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#6366F1'; e.currentTarget.style.color = '#6366F1' }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#374151' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(99,102,241,0.06)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
           >
             Para criadores
           </button>

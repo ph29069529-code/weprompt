@@ -92,8 +92,8 @@ function SolutionCard({ solution, router }) {
           <span style={{
             background: hov ? "#4F46E5" : "#0A0F1E",
             color: "#fff",
-            borderRadius: 8,
-            padding: "8px 16px",
+            borderRadius: 999,
+            padding: "8px 18px",
             fontSize: 13,
             fontWeight: 600,
             transition: "background 0.2s",
@@ -127,7 +127,7 @@ export default function SolutionsShowcase() {
   return (
     <section style={{
       padding: "100px 48px",
-      background: "#F8F9FB",
+      background: "#F8F7FF",
       fontFamily: "'Inter', sans-serif",
     }}>
       <style>{`
@@ -150,7 +150,7 @@ export default function SolutionsShowcase() {
           </p>
           <h2 style={{
             fontSize: "clamp(32px, 4vw, 52px)",
-            fontWeight: 800,
+            fontWeight: 900,
             letterSpacing: "-0.04em",
             color: "#0A0F1E",
             marginBottom: 16,
@@ -216,19 +216,20 @@ export default function SolutionsShowcase() {
           <button
             onClick={() => router.push("/solucoes")}
             style={{
-              background: "#0A0F1E",
+              background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
               color: "#fff",
               border: "none",
-              borderRadius: 12,
+              borderRadius: 999,
               padding: "16px 40px",
               fontSize: 15,
               fontWeight: 700,
               cursor: "pointer",
               fontFamily: "inherit",
-              transition: "background 0.2s",
+              boxShadow: "0 4px 20px rgba(99,102,241,0.35)",
+              transition: "opacity 0.2s, transform 0.2s",
             }}
-            onMouseEnter={e => e.currentTarget.style.background = "#6366F1"}
-            onMouseLeave={e => e.currentTarget.style.background = "#0A0F1E"}
+            onMouseEnter={e => { e.currentTarget.style.opacity = "0.9"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "translateY(0)"; }}
           >
             Ver todas as soluções →
           </button>

@@ -98,7 +98,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="como-funciona" className="section-pad" style={{ background: "#fff", padding: "80px 48px" }}>
+    <section id="como-funciona" className="section-pad" style={{ background: "#fff", padding: "100px 48px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div ref={headerRef} style={{ ...headerAnim, textAlign: "center", marginBottom: 80 }}>
           <div style={{
@@ -115,7 +115,7 @@ function HowItWorks() {
           }}>
             COMO FUNCIONA
           </div>
-          <h2 style={{ fontSize: "clamp(36px,4vw,56px)", fontWeight: 800, color: "#0A0F1E", letterSpacing: "-0.03em", marginTop: 12, marginBottom: 0 }}>
+          <h2 style={{ fontSize: "clamp(36px,4vw,56px)", fontWeight: 900, color: "#0A0F1E", letterSpacing: "-0.04em", marginTop: 12, marginBottom: 0 }}>
             Três{" "}
             <span style={{
               background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%)",
@@ -175,7 +175,7 @@ function Categories() {
   ];
 
   return (
-    <section className="section-pad" style={{ background: "#F8F9FB", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
+    <section className="section-pad" style={{ background: "#F8F7FF", padding: "100px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         <div ref={headerRef} style={{ ...headerAnim, textAlign: "center", marginBottom: 64 }}>
           <div style={{
@@ -190,7 +190,7 @@ function Categories() {
             letterSpacing: "0.1em",
             textTransform: "uppercase",
           }}>CATEGORIAS</div>
-          <h2 style={{ fontSize: "clamp(32px,4vw,48px)", fontWeight: 800, color: "#0A0F1E", letterSpacing: "-0.03em", marginTop: 12, marginBottom: 0 }}>
+          <h2 style={{ fontSize: "clamp(32px,4vw,48px)", fontWeight: 900, color: "#0A0F1E", letterSpacing: "-0.04em", marginTop: 12, marginBottom: 0 }}>
             Uma solução para{" "}
             <span style={{
               background: "linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A855F7 100%)",
@@ -240,7 +240,7 @@ function ForCompanies() {
   const [leftRef, leftAnim] = useFadeIn('left');
   const [rightRef, rightAnim] = useFadeIn('right');
   return (
-    <section className="section-pad" style={{ backgroundColor: "#FAFAFA", backgroundImage: "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(99,102,241,0.03), transparent)", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
+    <section className="section-pad" style={{ background: "#F8F7FF", padding: "100px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div className="two-col" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
         {/* Left — mockup */}
         <div ref={leftRef} style={{ ...leftAnim, flex: "0 0 50%" }}>
@@ -281,7 +281,7 @@ function ForCompanies() {
             letterSpacing: "0.1em",
             textTransform: "uppercase",
           }}>PARA EMPRESAS</div>
-          <h2 style={{ fontSize: "clamp(28px,3vw,40px)", fontWeight: 800, color: "#0A0F1E", marginTop: 12, marginBottom: 0, lineHeight: 1.15 }}>
+          <h2 style={{ fontSize: "clamp(28px,3vw,40px)", fontWeight: 900, color: "#0A0F1E", letterSpacing: "-0.04em", marginTop: 12, marginBottom: 0, lineHeight: 1.15 }}>
             IA que trabalha pelo seu negócio.
             <br />
             <span style={{
@@ -309,13 +309,16 @@ function ForCompanies() {
             onMouseLeave={() => setHovCta(false)}
             style={{
               marginTop: 36,
-              background: hovCta ? "#1a2035" : "#0A0F1E",
+              background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
               color: "#fff",
-              border: "none", borderRadius: 10,
-              padding: "14px 28px", fontSize: 15, fontWeight: 700,
+              border: "none", borderRadius: 999,
+              padding: "15px 32px", fontSize: 15, fontWeight: 700,
               cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-              transition: "all 0.2s",
+              boxShadow: "0 4px 20px rgba(99,102,241,0.4)",
+              opacity: hovCta ? 0.9 : 1,
+              transform: hovCta ? "translateY(-1px)" : "translateY(0)",
+              transition: "opacity 0.2s, transform 0.2s",
+              fontFamily: "inherit",
             }}>
             Explorar o catálogo →
           </button>
@@ -334,7 +337,7 @@ function ForCreators() {
   const bars = [32, 32, 32, 32, 32];
 
   return (
-    <section className="section-pad" style={{ background: "#fff", padding: "80px 48px", borderTop: "1px solid #E5E7EB" }}>
+    <section className="section-pad" style={{ background: "#fff", padding: "100px 48px", borderTop: "1px solid #E5E7EB" }}>
       <div className="two-col-rev" style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 80, alignItems: "center" }}>
         {/* Left — text */}
         <div ref={leftRef} style={{ ...leftAnim, flex: "0 0 50%" }}>
@@ -350,7 +353,7 @@ function ForCreators() {
             letterSpacing: "0.1em",
             textTransform: "uppercase",
           }}>PARA CRIADORES</div>
-          <h2 style={{ fontSize: "clamp(28px,3vw,40px)", fontWeight: 800, color: "#0A0F1E", marginTop: 12, marginBottom: 0, lineHeight: 1.15 }}>
+          <h2 style={{ fontSize: "clamp(28px,3vw,40px)", fontWeight: 900, color: "#0A0F1E", letterSpacing: "-0.04em", marginTop: 12, marginBottom: 0, lineHeight: 1.15 }}>
             Monetize suas soluções.
             <br />
             <span style={{
@@ -378,12 +381,13 @@ function ForCreators() {
             onMouseLeave={() => setHovCta(false)}
             style={{
               marginTop: 36,
-              background: hovCta ? "#0A0F1E" : "transparent",
-              color: hovCta ? "#fff" : "#0A0F1E",
-              border: "2px solid #0A0F1E",
-              borderRadius: 10, padding: "14px 28px",
+              background: hovCta ? "rgba(99,102,241,0.06)" : "transparent",
+              color: "#6366F1",
+              border: "1.5px solid #6366F1",
+              borderRadius: 999, padding: "14px 30px",
               fontSize: 15, fontWeight: 600, cursor: "pointer",
-              transition: "background 0.2s, color 0.2s",
+              transition: "background 0.2s",
+              fontFamily: "inherit",
             }}>
             Quero ser um criador →
           </button>
