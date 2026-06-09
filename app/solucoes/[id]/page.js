@@ -331,12 +331,18 @@ function SolutionDetail() {
         supabase.auth.getSession(),
       ]);
 
+      // Auth gate — unauthenticated users are redirected to login
+      const sess = sessionRes.data?.session;
+      if (!sess) {
+        router.replace(`/login?redirect=/solucoes/${id}&msg=ver-solucao`);
+        return;
+      }
+
       if (solRes.error || !solRes.data) { setNotFound(true); setLoading(false); return; }
 
       const sol = solRes.data;
       setSolution(sol);
 
-      const sess = sessionRes.data?.session;
       if (sess?.user) setUser(sess.user);
 
       const [creatorRes, ownedRes] = await Promise.all([

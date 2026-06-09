@@ -99,6 +99,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
+  const msg        = searchParams.get("msg");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -187,6 +188,17 @@ function LoginForm() {
           <a href="/" style={{ textDecoration: "none", display: "inline-block", marginBottom: 40 }}>
             <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
           </a>
+
+          {msg === "ver-solucao" && (
+            <div style={{
+              background: "linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08))",
+              border: "1px solid rgba(99,102,241,0.2)",
+              borderRadius: 12, padding: "12px 16px", marginBottom: 24,
+              fontSize: 14, color: "#4F46E5", lineHeight: 1.5,
+            }}>
+              🔒 Crie sua conta gratuita para ver os detalhes desta solução.
+            </div>
+          )}
 
           <h1 style={{
             fontSize: 30, fontWeight: 900, letterSpacing: "-0.04em",
