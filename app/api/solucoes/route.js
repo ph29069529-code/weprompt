@@ -43,6 +43,10 @@ export async function POST(request) {
       tipo: body.tipo || 'agente',
       conteudo_pack: body.conteudo_pack || null,
       agent_system_prompt: body.agent_system_prompt || null,
+      como_funciona: body.como_funciona || null,
+      video_demo: body.video_demo || null,
+      video_tutorial: body.video_tutorial || null,
+      video_curadoria: body.video_curadoria || null,
       status: 'pending'
     })
     .select()

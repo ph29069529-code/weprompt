@@ -59,6 +59,15 @@ function todayPtBR() {
   return new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
 }
 
+function getEmbedUrl(url) {
+  if (!url) return null;
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if (ytMatch) return "https://www.youtube.com/embed/" + ytMatch[1];
+  const loomMatch = url.match(/loom\.com\/share\/([^?\s]+)/);
+  if (loomMatch) return "https://www.loom.com/embed/" + loomMatch[1];
+  return url;
+}
+
 function formatDate(dateStr) {
   if (!dateStr) return "—";
   return new Date(dateStr).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
@@ -1324,6 +1333,30 @@ function SolutionDetailModal({ solution, onClose, onApprove, onConfirmReject }) 
               rows={8}
               style={{ width: "100%", padding: "14px 16px", borderRadius: 10, border: `1.5px solid ${BORDER}`, background: "#f9fafb", color: NEAR_BLACK, fontSize: 13, fontFamily: "inherit", lineHeight: 1.6, resize: "vertical", outline: "none", boxSizing: "border-box" }}
             />
+          </div>
+        )}
+
+        {/* Como funciona na prática */}
+        {solution.como_funciona && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Como funciona na prática</div>
+            <p style={{ fontSize: 14, color: NEAR_BLACK, lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>{solution.como_funciona}</p>
+          </div>
+        )}
+
+        {/* Vídeo do criador (curadoria) */}
+        {solution.video_curadoria && getEmbedUrl(solution.video_curadoria) && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Vídeo do criador</div>
+            <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden" }}>
+              <iframe
+                src={getEmbedUrl(solution.video_curadoria)}
+                title="Vídeo do criador"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none", borderRadius: 12 }}
+              />
+            </div>
           </div>
         )}
 

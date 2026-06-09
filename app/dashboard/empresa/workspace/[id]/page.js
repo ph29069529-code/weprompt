@@ -83,13 +83,24 @@ function useCopy(ms = 1800) {
   return [copiedId, copy];
 }
 
+/* ── helpers ── */
+function getEmbedUrl(url) {
+  if (!url) return null;
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if (ytMatch) return "https://www.youtube.com/embed/" + ytMatch[1];
+  const loomMatch = url.match(/loom\.com\/share\/([^?\s]+)/);
+  if (loomMatch) return "https://www.loom.com/embed/" + loomMatch[1];
+  return url;
+}
+
 /* ════════════════════════════════════════ */
 
 export default function WorkspacePage() {
   const { id } = useParams();
   const router  = useRouter();
 
-  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [sidebarVisible,    setSidebarVisible]    = useState(false);
+  const [showTutorialModal, setShowTutorialModal] = useState(false);
 
   const [user,        setUser]        = useState(null);
   const [solution,    setSolution]    = useState(null);
@@ -428,11 +439,43 @@ export default function WorkspacePage() {
               </span>
             </div>
           </div>
-          <button title="Configurações (em breve)"
-            style={{ background: "none", border: "1px solid #E5E7EB", borderRadius: 8, padding: "6px 10px", cursor: "default", color: "#9CA3AF" }}>
-            ⚙
-          </button>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {solution?.video_tutorial && getEmbedUrl(solution.video_tutorial) && (
+              <button onClick={() => setShowTutorialModal(true)}
+                style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 8, padding: "6px 12px", cursor: "pointer", color: "#6366F1", fontSize: 13, fontWeight: 600, fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                📺 Ver tutorial de integração
+              </button>
+            )}
+            <button title="Configurações (em breve)"
+              style={{ background: "none", border: "1px solid #E5E7EB", borderRadius: 8, padding: "6px 10px", cursor: "default", color: "#9CA3AF" }}>
+              ⚙
+            </button>
+          </div>
         </div>
+
+        {/* Tutorial modal */}
+        {showTutorialModal && solution?.video_tutorial && getEmbedUrl(solution.video_tutorial) && (
+          <>
+            <style>{`@keyframes ws-tut-fade { from { opacity: 0; } to { opacity: 1; } }`}</style>
+            <div onClick={() => setShowTutorialModal(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 300, animation: "ws-tut-fade 0.2s ease", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+              <div onClick={e => e.stopPropagation()} style={{ width: "100%", maxWidth: 800, background: "#111827", borderRadius: 16, overflow: "hidden", boxShadow: "0 32px 80px rgba(0,0,0,0.5)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "white" }}>📺 Tutorial de integração — {solution.titulo}</span>
+                  <button onClick={() => setShowTutorialModal(false)} style={{ background: "rgba(255,255,255,0.1)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", color: "white", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                </div>
+                <div style={{ position: "relative", width: "100%", aspectRatio: "16/9" }}>
+                  <iframe
+                    src={getEmbedUrl(solution.video_tutorial)}
+                    title="Tutorial de integração"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Maintenance banner */}
         <div style={{

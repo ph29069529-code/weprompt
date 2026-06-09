@@ -14,6 +14,15 @@ const ERROR = '#EF4444'
 const LABEL_COLOR = '#374151'
 const BG = '#F8F9FB'
 
+function getEmbedUrl(url) {
+  if (!url) return null;
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if (ytMatch) return "https://www.youtube.com/embed/" + ytMatch[1];
+  const loomMatch = url.match(/loom\.com\/share\/([^?\s]+)/);
+  if (loomMatch) return "https://www.loom.com/embed/" + loomMatch[1];
+  return url;
+}
+
 const CATEGORIAS = [
   { value: 'atendimento', label: 'Atendimento ao Cliente' },
   { value: 'emails',      label: 'Automação de E-mails' },
@@ -94,6 +103,10 @@ export default function NovaSolucaoPage() {
     demo_url: '',
     conteudo_pack: '',
     agent_system_prompt: '',
+    como_funciona: '',
+    video_demo: '',
+    video_tutorial: '',
+    video_curadoria: '',
   })
   const [coverFile, setCoverFile] = useState(null)
   const [coverPreview, setCoverPreview] = useState(null)
@@ -129,6 +142,8 @@ export default function NovaSolucaoPage() {
     if (!form.descricao.trim()) errs.descricao = 'Descrição deve ter pelo menos 50 caracteres'
     else if (form.descricao.trim().length < 50) errs.descricao = 'Descrição deve ter pelo menos 50 caracteres'
     if (!form.preco || Number(form.preco) < 1) errs.preco = 'Informe um preço válido (mínimo R$1)'
+    if (!form.como_funciona.trim()) errs.como_funciona = 'Explique como funciona na prática (obrigatório)'
+    else if (form.como_funciona.trim().length < 20) errs.como_funciona = 'Use pelo menos 20 caracteres'
     return errs
   }
 
@@ -369,6 +384,77 @@ export default function NovaSolucaoPage() {
               onBlur={e => onBlur(e, !!errors.descricao)}
             />
             <FieldError msg={errors.descricao} />
+          </div>
+
+        </SectionCard>
+
+        {/* ── Como Funciona e Vídeos ── */}
+        <SectionCard title="Como Funciona e Vídeos">
+
+          {/* Como funciona na prática */}
+          <div data-error={errors.como_funciona ? "true" : undefined} style={{ marginBottom: 20 }}>
+            <label style={lbl}>Como funciona na prática *</label>
+            <textarea
+              rows={5}
+              value={form.como_funciona}
+              onChange={e => set('como_funciona', e.target.value)}
+              placeholder="Explique passo a passo como a empresa vai usar esta solução."
+              style={{ ...inputStyle(!!errors.como_funciona), resize: 'vertical', lineHeight: 1.65, minHeight: 120 }}
+              onFocus={onFocus}
+              onBlur={e => onBlur(e, !!errors.como_funciona)}
+            />
+            <FieldError msg={errors.como_funciona} />
+          </div>
+
+          {/* Vídeo de demonstração */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={lbl}>Vídeo de demonstração (opcional)</label>
+            <input
+              type="url"
+              value={form.video_demo}
+              onChange={e => set('video_demo', e.target.value)}
+              placeholder="https://youtube.com/watch?v=... ou https://loom.com/share/..."
+              style={inputStyle(false)}
+              onFocus={onFocus}
+              onBlur={e => onBlur(e, false)}
+            />
+            <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6 }}>
+              Vídeo curto mostrando o que sua solução faz. Aparece na página pública antes da compra. YouTube ou Loom.
+            </p>
+          </div>
+
+          {/* Vídeo tutorial */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={lbl}>Vídeo tutorial de integração (opcional)</label>
+            <input
+              type="url"
+              value={form.video_tutorial}
+              onChange={e => set('video_tutorial', e.target.value)}
+              placeholder="https://youtube.com/watch?v=... ou https://loom.com/share/..."
+              style={inputStyle(false)}
+              onFocus={onFocus}
+              onBlur={e => onBlur(e, false)}
+            />
+            <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6 }}>
+              Vídeo ensinando como integrar a solução no negócio. Aparece no Workspace após a compra.
+            </p>
+          </div>
+
+          {/* Vídeo de curadoria */}
+          <div>
+            <label style={lbl}>Vídeo para curadoria (opcional mas recomendado)</label>
+            <input
+              type="url"
+              value={form.video_curadoria}
+              onChange={e => set('video_curadoria', e.target.value)}
+              placeholder="https://youtube.com/watch?v=... ou https://loom.com/share/..."
+              style={inputStyle(false)}
+              onFocus={onFocus}
+              onBlur={e => onBlur(e, false)}
+            />
+            <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6, lineHeight: 1.5 }}>
+              Vídeo explicando sua solução e como ela funciona na prática. Enviado apenas para a equipe WePrompt avaliar. Aumenta muito a chance de aprovação.
+            </p>
           </div>
 
         </SectionCard>

@@ -5,6 +5,15 @@ import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import Navbar from "../../components/Navbar";
 
+function getEmbedUrl(url) {
+  if (!url) return null;
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if (ytMatch) return "https://www.youtube.com/embed/" + ytMatch[1];
+  const loomMatch = url.match(/loom\.com\/share\/([^?\s]+)/);
+  if (loomMatch) return "https://www.loom.com/embed/" + loomMatch[1];
+  return url;
+}
+
 const CATEGORY_GRADIENTS = {
   "Agentes de IA":    "linear-gradient(135deg, #1e3a5f, #2563EB)",
   "Marketing IA":     "linear-gradient(135deg, #1e1b4b, #7c3aed)",
@@ -533,6 +542,31 @@ function SolutionDetail() {
             {activeTab === 0 && (
               <div>
                 <p style={{ fontSize: 15, color: "#374151", lineHeight: 1.8, margin: 0, whiteSpace: "pre-line" }}>{solution.descricao}</p>
+
+                {/* Como funciona */}
+                {solution.como_funciona && (
+                  <div style={{ marginTop: 24 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 10 }}>Como funciona</div>
+                    <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.8, margin: 0, whiteSpace: "pre-line" }}>{solution.como_funciona}</p>
+                  </div>
+                )}
+
+                {/* Ver em ação */}
+                {solution.video_demo && getEmbedUrl(solution.video_demo) && (
+                  <div style={{ marginTop: 24 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 10 }}>Ver em ação</div>
+                    <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden" }}>
+                      <iframe
+                        src={getEmbedUrl(solution.video_demo)}
+                        title="Demonstração"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none", borderRadius: 12 }}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div style={{ marginTop: 24, overflow: "hidden" }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#111827", marginBottom: 10 }}>Ideal para</div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
