@@ -38,7 +38,7 @@ app/
 
 ## Banco de Dados (Supabase)
 - profiles: id, nome, role (admin/criador/empresa), cidade, bio
-- solutions: id, titulo, descricao, categoria, preco, tipo (agente/prompt_pack), status (pending/approved/rejected), creator_id, system_prompt, conteudo_pack, imagem_capa
+- solutions: id, titulo, descricao, categoria, preco, tipo (agente/prompt_pack/agente_integracao), status (pending/approved/rejected), creator_id, system_prompt, conteudo_pack, imagem_capa, como_funciona, video_demo, video_tutorial, video_curadoria, apps_integrados, ferramenta_automacao, instrucoes_configuracao, requisitos_tecnicos
 - subscriptions: id, business_id, solution_id, status (active), created_at
 - reviews: id, reviewer_id, creator_id, solution_id, rating, comment
 - workspace_sessions: id, user_id, solution_id, messages (JSONB)
@@ -98,3 +98,28 @@ app/
 - STRIPE_WEBHOOK_SECRET
 - RESEND_API_KEY
 - ANTHROPIC_API_KEY
+
+## Skills Disponíveis (.claude/skills/)
+Use `/skill <nome>` para carregar uma skill antes de trabalhar em uma área específica.
+
+| Skill | Pasta | Quando usar |
+|-------|-------|-------------|
+| weprompt-design | `.claude/skills/weprompt-design/` | Qualquer trabalho visual — cores, tipografia, botões, cards, badges |
+| mobile-first | `.claude/skills/mobile-first/` | Responsividade, tap targets, media queries, hydration |
+| supabase-patterns | `.claude/skills/supabase-patterns/` | Queries, RLS, schema, migrations, subscriptions |
+| security-review | `.claude/skills/security-review/` | API routes, autenticação, inputs, chaves de ambiente |
+| nextjs-patterns | `.claude/skills/nextjs-patterns/` | Arquivos .js, 'use client', imports dinâmicos, build |
+
+## Subagents Disponíveis (.claude/agents/)
+Use o Agent tool ou `@<nome>` para invocar um subagente especializado.
+
+| Agente | Arquivo | Quando usar |
+|--------|---------|-------------|
+| ui-reviewer | `agents/ui-reviewer.md` | Revisar componentes visuais, responsividade, acessibilidade |
+| security-agent | `agents/security-agent.md` | API routes, autenticação, RLS, pré-deploy |
+| db-agent | `agents/db-agent.md` | Queries complexas, migrations, otimização, RLS policies |
+| qa-agent | `agents/qa-agent.md` | Testar fluxos críticos, validar regressões antes de deploy |
+
+Agentes existentes (anteriores):
+- `uiux-reviewer` — revisão geral de UI (versão anterior do ui-reviewer)
+- `security-reviewer` — revisão de segurança (versão anterior do security-agent)
