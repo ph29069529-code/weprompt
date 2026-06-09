@@ -135,23 +135,6 @@ function SolutionCard({ solution }) {
             ✦ Oficial WePrompt
           </span>
         )}
-        {/* Product type badge */}
-        <span style={{
-          position: "absolute", bottom: 10, left: 10,
-          fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 99,
-          background: solution.tipo === "prompt_pack" || solution.tipo === "prompt"
-            ? "rgba(124,58,237,0.85)"
-            : solution.tipo === "agente_integracao"
-              ? "rgba(109,40,217,0.9)"
-              : "rgba(99,102,241,0.85)",
-          color: "white", backdropFilter: "blur(4px)",
-        }}>
-          {solution.tipo === "prompt_pack" || solution.tipo === "prompt"
-            ? "📄 Prompt Pack"
-            : solution.tipo === "agente_integracao"
-              ? "⚡ Agente com Integração"
-              : "🤖 Agente IA"}
-        </span>
       </div>
 
       {/* Body */}
