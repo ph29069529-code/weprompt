@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import FooterController from "./components/FooterController";
 import GlobalDrawers from "@/components/GlobalDrawers";
+import SessionManager from "./components/SessionManager";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -61,6 +62,7 @@ export default function RootLayout({ children }) {
         <FooterController />
         <PWAInstallPrompt />
         <GlobalDrawers />
+        <SessionManager />
       </body>
     </html>
   );
