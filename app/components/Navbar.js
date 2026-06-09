@@ -380,13 +380,13 @@ export default function Navbar() {
               <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
                 {session ? (
                   <a href={dashboardUrl} style={{
-                    background: "#0A0F1E", color: "white", border: "none",
-                    borderRadius: 8, padding: "10px 20px",
+                    background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white", border: "none",
+                    borderRadius: 999, padding: "10px 20px",
                     fontSize: 14, fontWeight: 600, textDecoration: "none", display: "inline-block",
-                    transition: "background 0.2s",
+                    boxShadow: "0 2px 12px rgba(99,102,241,0.35)", transition: "opacity 0.2s",
                   }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = "#1a2035"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = "#0A0F1E"; }}>
+                    onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.9"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}>
                     Meu Dashboard →
                   </a>
                 ) : (
@@ -400,13 +400,13 @@ export default function Navbar() {
                       Entrar
                     </a>
                     <a href="/cadastro" style={{
-                      background: "#0A0F1E", color: "white",
-                      borderRadius: 8, padding: "10px 20px",
+                      background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white",
+                      borderRadius: 999, padding: "10px 20px",
                       fontSize: 14, fontWeight: 600, textDecoration: "none", display: "inline-block",
-                      transition: "background 0.2s",
+                      boxShadow: "0 2px 12px rgba(99,102,241,0.35)", transition: "opacity 0.2s",
                     }}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = "#1a2035"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = "#0A0F1E"; }}>
+                      onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.9"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}>
                       Começar grátis
                     </a>
                   </>
@@ -545,17 +545,17 @@ export default function Navbar() {
           <div style={{ flexShrink: 0, padding: "20px 24px", borderTop: "1px solid #e5e7eb", display: "flex", flexDirection: "column", gap: 12 }}>
             {session ? (
               <a href={dashboardUrl} onClick={() => setMobileOpen(false)}
-                style={{ background: "#0A0F1E", color: "white", height: 48, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
+                style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white", height: 48, borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 600, textDecoration: "none", boxShadow: "0 2px 12px rgba(99,102,241,0.35)" }}>
                 Meu Dashboard →
               </a>
             ) : (
               <>
                 <a href="/login" onClick={() => setMobileOpen(false)}
-                  style={{ border: "2px solid #6366F1", color: "#6366F1", height: 48, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
+                  style={{ border: "1.5px solid #6366F1", color: "#6366F1", height: 48, borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
                   Entrar
                 </a>
                 <a href="/cadastro" onClick={() => setMobileOpen(false)}
-                  style={{ background: "#0A0F1E", color: "white", height: 48, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
+                  style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "white", height: 48, borderRadius: 999, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 600, textDecoration: "none", boxShadow: "0 2px 12px rgba(99,102,241,0.35)" }}>
                   Começar grátis
                 </a>
               </>

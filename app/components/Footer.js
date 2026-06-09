@@ -79,7 +79,7 @@ export default function Footer() {
               fontWeight: 800,
               color: '#0A0F1E',
               marginBottom: 8,
-              letterSpacing: '-0.02em',
+              letterSpacing: '-0.04em',
             }}>
               WePrompt
             </div>
