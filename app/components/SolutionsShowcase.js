@@ -6,10 +6,6 @@ import { supabase } from "../lib/supabase";
 function SolutionCard({ solution, router }) {
   const [hov, setHov] = useState(false);
 
-  const priceLabel = solution.preco != null
-    ? `R$ ${Number(solution.preco).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-    : "Gratuito";
-
   return (
     <div
       onMouseEnter={() => setHov(true)}
@@ -83,12 +79,9 @@ function SolutionCard({ solution, router }) {
         <div style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
           marginTop: 16,
         }}>
-          <span style={{ fontSize: 17, fontWeight: 800, color: "#0A0F1E" }}>
-            {priceLabel}
-          </span>
           <span style={{
             background: hov ? "#4F46E5" : "#0A0F1E",
             color: "#fff",
