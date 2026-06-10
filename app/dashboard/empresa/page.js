@@ -6,6 +6,11 @@ import { supabase } from "../../lib/supabase";
 import { createBrowserClient } from "@supabase/auth-helpers-nextjs";
 import NavbarDashboard from "../../components/NavbarDashboard";
 
+const authClient = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
 const TABS = [
   { label: "Início",               key: "inicio"        },
   { label: "Soluções Adquiridas",  key: "solucoes"      },
@@ -144,10 +149,6 @@ export default function EmpresaDashboard() {
     setProfSaveOk(false);
     setProfSaveErr("");
     try {
-      const authClient = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      );
       let avatarUrl = profAvatarUrl;
       if (profAvatarFile) {
         const ext = profAvatarFile.name.split(".").pop();

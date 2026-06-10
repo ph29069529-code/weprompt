@@ -6,6 +6,11 @@ import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
 import { createBrowserClient } from "@supabase/auth-helpers-nextjs";
 import WePromptLogo from "../../components/WePromptLogo";
+
+const authClient = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 import NotificationBell from "../../components/NotificationBell";
 
 /* ── Color / style constants ── */
@@ -1114,10 +1119,6 @@ function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
     setSaved(false);
     setSaveErr("");
     try {
-      const authClient = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      );
       let finalAvatarUrl = avatarUrl;
       if (avatarFile) {
         const ext = avatarFile.name.split(".").pop();
