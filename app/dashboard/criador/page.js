@@ -250,6 +250,8 @@ export default function CriadorPage() {
         @media (min-width: 640px) { .dash-header { flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 0; } }
         .dash-vendas-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
         @media (min-width: 640px) { .dash-vendas-grid { grid-template-columns: repeat(3, 1fr); } }
+        .dash-analytics-2col { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        @media (min-width: 640px) { .dash-analytics-2col { grid-template-columns: 1fr 1fr; } }
       `}</style>
 
       {/* TABS ROW */}
@@ -575,7 +577,7 @@ export default function CriadorPage() {
               )}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <div className="dash-analytics-2col">
               <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 24 }}>
                 <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 4 }}>Conversão</div>
                 <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 16 }}>Views → Compras</div>

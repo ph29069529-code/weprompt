@@ -191,7 +191,7 @@ export default function EmpresaDashboard() {
         <div style={{ background: "white", borderBottom: "1px solid #e5e7eb", height: 44 }} />
         <div style={{ padding: "24px 32px", maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ ...sk(28), width: 220, marginBottom: 28, borderRadius: 8 }} />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 24, maxWidth: 620 }}>
+          <div className="dash-metrics-2col">
             <div style={sk(80)} />
             <div style={sk(80)} />
           </div>
@@ -224,6 +224,8 @@ export default function EmpresaDashboard() {
       <style>{`
         .dash-header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
         @media (min-width: 640px) { .dash-header { flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 0; } }
+        .dash-metrics-2col { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; max-width: 620px; }
+        @media (min-width: 480px) { .dash-metrics-2col { grid-template-columns: repeat(2, 1fr); } }
       `}</style>
 
       {/* TABS ROW */}
@@ -266,7 +268,7 @@ export default function EmpresaDashboard() {
         {/* ── INÍCIO ── */}
         {activeTab === 'inicio' && <>
         {/* METRICS ROW */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 24, maxWidth: 620 }}>
+        <div className="dash-metrics-2col">
           <MetricCard
             iconBg="#6366F1"
             icon={<svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>}

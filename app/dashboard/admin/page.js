@@ -897,7 +897,9 @@ function AnalyticsTab({ solutions, profiles, subscriptions }) {
   const chartCard = { background: "#fff", borderRadius: 16, border: `1px solid ${BORDER}`, padding: "20px 24px" };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+    <>
+    <style>{`.admin-chart-grid { display: grid; grid-template-columns: 1fr; gap: 18; } @media (min-width: 640px) { .admin-chart-grid { grid-template-columns: 1fr 1fr; } }`}</style>
+    <div className="admin-chart-grid">
       <div style={chartCard}>
         <div style={{ fontSize: 14, fontWeight: 700, color: NEAR_BLACK, marginBottom: 4 }}>Crescimento de Usuários</div>
         <div style={{ fontSize: 12, color: GRAY_TEXT, marginBottom: 16 }}>Últimos 6 meses</div>
@@ -919,6 +921,7 @@ function AnalyticsTab({ solutions, profiles, subscriptions }) {
         <BarChart data={criadoresRevenue.map(c => c.revenue)} labels={criadoresRevenue.map(c => c.name)} color="#B45309" valuePrefix="R$" />
       </div>
     </div>
+    </>
   );
 }
 
