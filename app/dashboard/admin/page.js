@@ -4,6 +4,7 @@ import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase, signOut } from "../../lib/supabase";
+import { createBrowserClient } from "@supabase/auth-helpers-nextjs";
 import WePromptLogo from "../../components/WePromptLogo";
 import NotificationBell from "../../components/NotificationBell";
 
@@ -1113,21 +1114,25 @@ function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
     setSaved(false);
     setSaveErr("");
     try {
+      const authClient = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      );
       let finalAvatarUrl = avatarUrl;
       if (avatarFile) {
         const ext = avatarFile.name.split(".").pop();
         const path = `${profile.id}/avatar.${ext}`;
-        const { error: upErr } = await supabase.storage
+        const { error: upErr } = await authClient.storage
           .from("avatars")
           .upload(path, avatarFile, { upsert: true });
         if (upErr) throw upErr;
-        const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+        const { data: { publicUrl } } = authClient.storage.from("avatars").getPublicUrl(path);
         finalAvatarUrl = publicUrl;
         setAvatarUrl(publicUrl);
         setAvatarFile(null);
         setAvatarPreview("");
       }
-      const { error: updateErr } = await supabase.from("profiles")
+      const { error: updateErr } = await authClient.from("profiles")
         .update({ nome, telefone, cidade, bio, avatar_url: finalAvatarUrl })
         .eq("id", profile.id);
       if (updateErr) throw updateErr;
