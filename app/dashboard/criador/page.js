@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import { createBrowserClient } from "@supabase/auth-helpers-nextjs";
 import NavbarDashboard from "../../components/NavbarDashboard";
 
 const CRIADOR_TABS = [
@@ -153,20 +154,27 @@ export default function CriadorPage() {
     setProfSaveOk(false);
     setProfSaveErr("");
     try {
+      // createClientComponentClient sends the current user's JWT via cookies,
+      // satisfying the RLS policy (auth.uid() = id) on the profiles table.
+      const authClient = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      );
+
       let avatarUrl = profAvatarUrl;
       if (profAvatarFile) {
         const ext = profAvatarFile.name.split(".").pop();
         const path = `${userId}/avatar.${ext}`;
-        const { error: upErr } = await supabase.storage
+        const { error: upErr } = await authClient.storage
           .from("avatars")
           .upload(path, profAvatarFile, { upsert: true });
         if (upErr) throw upErr;
-        const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+        const { data: { publicUrl } } = authClient.storage.from("avatars").getPublicUrl(path);
         avatarUrl = publicUrl;
         setProfAvatarUrl(publicUrl);
         setProfAvatarFile(null);
       }
-      const { error: updateErr } = await supabase
+      const { error: updateErr } = await authClient
         .from("profiles")
         .update({ nome: profNome.trim(), bio: profBio.trim(), cidade: profCidade.trim(), avatar_url: avatarUrl })
         .eq("id", userId);
