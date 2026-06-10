@@ -336,6 +336,11 @@ export default function CriadorProfilePage() {
     setEditSaving(true);
     setEditErr("");
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.replace(`/login?redirect=/criadores/${id}`);
+        return;
+      }
       const authClient = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -343,7 +348,7 @@ export default function CriadorProfilePage() {
       let avatarUrl = creator?.avatar_url || null;
       if (editAvatarFile) {
         const ext = editAvatarFile.name.split(".").pop();
-        const path = `${id}/avatar.${ext}`;
+        const path = `${session.user.id}/avatar.${ext}`;
         const { error: upErr } = await authClient.storage
           .from("avatars")
           .upload(path, editAvatarFile, { upsert: true });
@@ -354,7 +359,7 @@ export default function CriadorProfilePage() {
       const { error: updateErr } = await authClient
         .from("profiles")
         .update({ nome: editNome.trim(), bio: editBio.trim(), cidade: editCidade.trim(), avatar_url: avatarUrl })
-        .eq("id", id);
+        .eq("id", session.user.id);
       if (updateErr) throw updateErr;
       setCreator(prev => ({ ...prev, nome: editNome.trim(), bio: editBio.trim(), cidade: editCidade.trim(), avatar_url: avatarUrl }));
       setEditAvatarFile(null);
