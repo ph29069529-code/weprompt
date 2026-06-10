@@ -1087,31 +1087,58 @@ function ConfiguracoesTab() {
 
 /* ── ProfileDrawer ── */
 function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
-  const [nome,     setNome]     = useState(profile?.nome     || "");
-  const [telefone, setTelefone] = useState(profile?.telefone || "");
-  const [cidade,   setCidade]   = useState(profile?.cidade   || "");
-  const [bio,      setBio]      = useState(profile?.bio      || "");
-  const [saving,   setSaving]   = useState(false);
-  const [saved,    setSaved]    = useState(false);
+  const [nome,          setNome]          = useState(profile?.nome      || "");
+  const [telefone,      setTelefone]      = useState(profile?.telefone  || "");
+  const [cidade,        setCidade]        = useState(profile?.cidade    || "");
+  const [bio,           setBio]           = useState(profile?.bio       || "");
+  const [avatarUrl,     setAvatarUrl]     = useState(profile?.avatar_url || "");
+  const [avatarFile,    setAvatarFile]    = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const [saving,        setSaving]        = useState(false);
+  const [saved,         setSaved]         = useState(false);
+  const [saveErr,       setSaveErr]       = useState("");
 
   useEffect(() => {
     if (profile) {
-      setNome(profile.nome     || "");
-      setTelefone(profile.telefone || "");
-      setCidade(profile.cidade   || "");
-      setBio(profile.bio      || "");
+      setNome(profile.nome      || "");
+      setTelefone(profile.telefone  || "");
+      setCidade(profile.cidade    || "");
+      setBio(profile.bio       || "");
+      setAvatarUrl(profile.avatar_url || "");
     }
   }, [profile]);
 
   async function handleSave() {
     setSaving(true);
-    await supabase.from("profiles")
-      .update({ nome, telefone, cidade, bio })
-      .eq("id", profile.id);
-    setSaving(false);
-    setSaved(true);
-    onSaved?.({ ...profile, nome, telefone, cidade, bio });
-    setTimeout(() => setSaved(false), 3000);
+    setSaved(false);
+    setSaveErr("");
+    try {
+      let finalAvatarUrl = avatarUrl;
+      if (avatarFile) {
+        const ext = avatarFile.name.split(".").pop();
+        const path = `${profile.id}/avatar.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("avatars")
+          .upload(path, avatarFile, { upsert: true });
+        if (upErr) throw upErr;
+        const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+        finalAvatarUrl = publicUrl;
+        setAvatarUrl(publicUrl);
+        setAvatarFile(null);
+        setAvatarPreview("");
+      }
+      const { error: updateErr } = await supabase.from("profiles")
+        .update({ nome, telefone, cidade, bio, avatar_url: finalAvatarUrl })
+        .eq("id", profile.id);
+      if (updateErr) throw updateErr;
+      setSaved(true);
+      onSaved?.({ ...profile, nome, telefone, cidade, bio, avatar_url: finalAvatarUrl });
+      setTimeout(() => setSaved(false), 3000);
+    } catch {
+      setSaveErr("Erro ao salvar. Verifique sua conexão e tente novamente.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleSignOutFromDrawer() {
@@ -1155,13 +1182,21 @@ function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
 
         {/* Avatar */}
         <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <div style={{ width: 80, height: 80, borderRadius: "50%", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 700, color: "#fff", margin: "0 auto 12px" }}>
-            {initials(nome || profile?.nome || "A")}
+          <div style={{ width: 80, height: 80, borderRadius: "50%", overflow: "hidden", background: BLUE, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 700, color: "#fff", margin: "0 auto 12px" }}>
+            {(avatarPreview || avatarUrl)
+              ? <img src={avatarPreview || avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+              : initials(nome || profile?.nome || "A")}
           </div>
-          <button style={{ fontSize: 13, color: BLUE, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
-            Alterar foto
-          </button>
-          <div style={{ fontSize: 11, color: GRAY_TEXT, marginTop: 4 }}>Upload de foto disponível em breve</div>
+          <label htmlFor="admin-avatar-upload" style={{ fontSize: 13, color: BLUE, fontWeight: 600, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", display: "inline-block" }}>
+            {avatarFile ? "Trocar foto" : "Alterar foto"}
+          </label>
+          <input id="admin-avatar-upload" type="file" accept="image/*" style={{ display: "none" }} onChange={e => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            setAvatarFile(file);
+            setAvatarPreview(URL.createObjectURL(file));
+          }} />
+          {avatarFile && <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 4 }}>{avatarFile.name}</div>}
         </div>
 
         {/* Form */}
@@ -1194,9 +1229,16 @@ function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
           </div>
         </div>
 
+        {/* Feedback */}
+        {saveErr && (
+          <div style={{ marginTop: 16, padding: "10px 14px", background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 8, fontSize: 13, color: "#B91C1C" }}>
+            {saveErr}
+          </div>
+        )}
+
         {/* Save */}
         <button onClick={handleSave} disabled={saving}
-          style={{ width: "100%", padding: "12px 0", borderRadius: 999, border: "none", fontFamily: "inherit", marginTop: 24, fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", transition: "opacity 0.2s", color: "#fff", background: saved ? "#16A34A" : saving ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", boxShadow: saved || saving ? "none" : "0 2px 12px rgba(99,102,241,0.3)" }}>
+          style={{ width: "100%", padding: "12px 0", borderRadius: 999, border: "none", fontFamily: "inherit", marginTop: 16, fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", transition: "opacity 0.2s", color: "#fff", background: saved ? "#16A34A" : saving ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366F1, #8B5CF6)", boxShadow: saved || saving ? "none" : "0 2px 12px rgba(99,102,241,0.3)" }}>
           {saved ? "✓ Perfil atualizado!" : saving ? "Salvando…" : "Salvar alterações"}
         </button>
 

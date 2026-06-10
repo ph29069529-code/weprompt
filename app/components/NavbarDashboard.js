@@ -19,7 +19,7 @@ function initials(session) {
   return name.slice(0, 2).toUpperCase();
 }
 
-export default function NavbarDashboard() {
+export default function NavbarDashboard({ onProfileClick }) {
   const [session, setSession] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -96,8 +96,15 @@ export default function NavbarDashboard() {
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {session ? (
                 <>
-                  {/* User avatar + name */}
-                  <Link href={`${dashboardUrl}/configuracoes`} style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
+                  {/* User avatar + name — calls onProfileClick to open settings in the host dashboard */}
+                  <button
+                    onClick={onProfileClick}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 8,
+                      background: "none", border: "none", cursor: onProfileClick ? "pointer" : "default",
+                      padding: 0, fontFamily: "inherit",
+                    }}
+                  >
                     <div style={{
                       width: 32, height: 32, borderRadius: "50%",
                       background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
@@ -109,7 +116,7 @@ export default function NavbarDashboard() {
                     <span style={{ fontSize: 14, fontWeight: 500, color: "#374151", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {userName.split(" ")[0] || "Conta"}
                     </span>
-                  </Link>
+                  </button>
 
                   {/* Divider */}
                   <div style={{ width: 1, height: 20, background: "#E5E7EB" }} />

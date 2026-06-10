@@ -205,7 +205,7 @@ export default function EmpresaDashboard() {
 
   return (
     <div style={{ background: "#f9fafb", minHeight: "100vh", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif" }}>
-      <NavbarDashboard />
+      <NavbarDashboard onProfileClick={() => setActiveTab("configuracoes")} />
       <style>{`
         .dash-header { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
         @media (min-width: 640px) { .dash-header { flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 0; } }
