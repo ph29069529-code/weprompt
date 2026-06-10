@@ -464,9 +464,30 @@ export default function CriadorPage() {
         {/* ── CONFIGURAÇÕES ── */}
         {activeView === "configuracoes" && (
           <div>
-            <div style={{ marginBottom: 24 }}>
-              <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Configurações</h1>
-              <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Gerencie seu perfil público e dados da conta.</p>
+            <div style={{ marginBottom: 24, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+              <div>
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Configurações</h1>
+                <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Gerencie seu perfil público e dados da conta.</p>
+              </div>
+              {userId && (
+                <a
+                  href={`/criadores/${userId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    border: "1.5px solid #6366F1", borderRadius: 999,
+                    padding: "8px 16px", fontSize: 13, fontWeight: 600,
+                    color: "#6366F1", textDecoration: "none",
+                    background: "transparent", transition: "background 0.15s",
+                    flexShrink: 0,
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(99,102,241,0.06)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                >
+                  Ver meu perfil público →
+                </a>
+              )}
             </div>
             <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: 32, maxWidth: 560, boxSizing: "border-box" }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", marginBottom: 24 }}>Perfil do Criador</div>
