@@ -5,6 +5,12 @@ import { supabase } from "../../lib/supabase";
 import { createBrowserClient } from "@supabase/auth-helpers-nextjs";
 import Navbar from "../../components/Navbar";
 
+// Single instance — avoids "Multiple GoTrueClient instances" warning
+const authClient = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
 // ─── MOCK FALLBACK DATA ───────────────────────────────────────────────────────
 
 const GRADIENTS = {
@@ -341,26 +347,32 @@ export default function CriadorProfilePage() {
         router.replace(`/login?redirect=/criadores/${id}`);
         return;
       }
-      const authClient = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      );
+
+      // Text update — always runs
+      const { error: updateErr } = await authClient
+        .from("profiles")
+        .update({ nome: editNome.trim(), bio: editBio.trim(), cidade: editCidade.trim() })
+        .eq("id", session.user.id);
+      if (updateErr) throw updateErr;
+
+      // Photo upload — only when a new file was selected
       let avatarUrl = creator?.avatar_url || null;
       if (editAvatarFile) {
         const ext = editAvatarFile.name.split(".").pop();
-        const path = `${session.user.id}/avatar.${ext}`;
+        const path = session.user.id + "/avatar." + ext;
         const { error: upErr } = await authClient.storage
           .from("avatars")
           .upload(path, editAvatarFile, { upsert: true });
         if (upErr) throw upErr;
         const { data: { publicUrl } } = authClient.storage.from("avatars").getPublicUrl(path);
         avatarUrl = publicUrl;
+        // Persist new avatar_url separately after successful upload
+        await authClient
+          .from("profiles")
+          .update({ avatar_url: avatarUrl })
+          .eq("id", session.user.id);
       }
-      const { error: updateErr } = await authClient
-        .from("profiles")
-        .update({ nome: editNome.trim(), bio: editBio.trim(), cidade: editCidade.trim(), avatar_url: avatarUrl })
-        .eq("id", session.user.id);
-      if (updateErr) throw updateErr;
+
       setCreator(prev => ({ ...prev, nome: editNome.trim(), bio: editBio.trim(), cidade: editCidade.trim(), avatar_url: avatarUrl }));
       setEditAvatarFile(null);
       setEditAvatarPreview("");
