@@ -546,7 +546,7 @@ function SolutionDetail() {
           </div>
 
           {/* Tab content */}
-          <div style={{ background: "#fff", borderRadius: "0 0 12px 12px", border: "1px solid #e5e7eb", borderTop: "none", padding: 28 }}>
+          <div className="sol-tab-content" style={{ background: "#fff", borderRadius: "0 0 12px 12px", border: "1px solid #e5e7eb", borderTop: "none" }}>
 
             {/* Tab 0 — Descrição */}
             {activeTab === 0 && (
@@ -706,13 +706,13 @@ function SolutionDetail() {
             {/* Secondary buttons */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
               <button onClick={handleShare}
-                style={{ border: "1.5px solid #6366F1", borderRadius: 999, padding: "9px", fontSize: 13, color: "#6366F1", cursor: "pointer", background: "transparent", fontFamily: "inherit", transition: "background 0.15s" }}
+                style={{ border: "1.5px solid #6366F1", borderRadius: 999, padding: "9px", fontSize: 13, color: "#6366F1", cursor: "pointer", background: "transparent", fontFamily: "inherit", transition: "background 0.15s", minHeight: 44 }}
                 onMouseEnter={e => e.currentTarget.style.background = "rgba(99,102,241,0.06)"}
                 onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                 {shared ? "✓ Copiado!" : "↑ Compartilhar"}
               </button>
               <button onClick={() => setFav(f => !f)}
-                style={{ border: `1.5px solid ${fav ? "#f43f5e" : "#6366F1"}`, borderRadius: 999, padding: "9px", fontSize: 13, color: fav ? "#f43f5e" : "#6366F1", cursor: "pointer", background: "transparent", fontFamily: "inherit", transition: "background 0.15s" }}
+                style={{ border: `1.5px solid ${fav ? "#f43f5e" : "#6366F1"}`, borderRadius: 999, padding: "9px", fontSize: 13, color: fav ? "#f43f5e" : "#6366F1", cursor: "pointer", background: "transparent", fontFamily: "inherit", transition: "background 0.15s", minHeight: 44 }}
                 onMouseEnter={e => e.currentTarget.style.background = fav ? "rgba(244,63,94,0.06)" : "rgba(99,102,241,0.06)"}
                 onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                 {fav ? "♥ Favoritado" : "♡ Favoritar"}
@@ -794,6 +794,8 @@ export default function SolutionPage() {
         .sol-price { font-size: 28px; }
         @media (min-width: 768px) { .sol-price { font-size: 42px; } }
         .sol-tabs-row::-webkit-scrollbar { display: none; }
+        .sol-tab-content { padding: 16px; }
+        @media (min-width: 640px) { .sol-tab-content { padding: 28px; } }
       `}</style>
       <Suspense fallback={<Skeleton />}>
         <SolutionDetail />

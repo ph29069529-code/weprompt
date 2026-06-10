@@ -538,7 +538,7 @@ export default function CriadorProfilePage() {
             <button onClick={enterEditMode} style={{
               background: "rgba(255,255,255,0.15)", color: "white",
               border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999,
-              padding: "8px 18px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+              padding: "8px 18px", fontSize: 14, cursor: "pointer", fontFamily: "inherit", minHeight: 44,
             }}>✏ Editar perfil</button>
           )}
           {editMode && (
@@ -546,7 +546,7 @@ export default function CriadorProfilePage() {
               <button onClick={handleEditSave} disabled={editSaving} style={{
                 background: editSaving ? "rgba(99,102,241,0.5)" : "linear-gradient(135deg, #6366F1, #8B5CF6)",
                 color: "white", border: "none", borderRadius: 999,
-                padding: "8px 20px", fontSize: 14, fontWeight: 600,
+                padding: "8px 20px", fontSize: 14, fontWeight: 600, minHeight: 44,
                 cursor: editSaving ? "not-allowed" : "pointer", fontFamily: "inherit",
                 boxShadow: editSaving ? "none" : "0 2px 12px rgba(99,102,241,0.4)",
               }}>
@@ -563,7 +563,7 @@ export default function CriadorProfilePage() {
             <button onClick={handleShare} style={{
               background: "rgba(255,255,255,0.15)", color: "white",
               border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999,
-              padding: "8px 18px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+              padding: "8px 18px", fontSize: 14, cursor: "pointer", fontFamily: "inherit", minHeight: 44,
             }}>Compartilhar ↗</button>
           )}
         </div>
@@ -633,7 +633,7 @@ export default function CriadorProfilePage() {
                               border: "1.5px solid rgba(255,255,255,0.5)",
                               borderRadius: 12, padding: "6px 14px",
                               outline: "none", fontFamily: "inherit",
-                              width: "100%", maxWidth: 340,
+                              width: "100%", maxWidth: "100%", boxSizing: "border-box",
                             }}
                           />
                         ) : (
@@ -667,7 +667,7 @@ export default function CriadorProfilePage() {
                       background: "rgba(255,255,255,0.15)",
                       border: "1.5px solid rgba(255,255,255,0.4)",
                       borderRadius: 8, padding: "5px 12px",
-                      outline: "none", fontFamily: "inherit", width: "100%", maxWidth: 280,
+                      outline: "none", fontFamily: "inherit", width: "100%", maxWidth: "100%", boxSizing: "border-box",
                     }}
                   />
                 ) : (
@@ -680,9 +680,10 @@ export default function CriadorProfilePage() {
               </>
             )}
 
-            {/* Stats row */}
+            {/* Stats row — scrollable on mobile so 4 stat boxes don't cause page overflow */}
+            <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch", marginTop: 16, maxWidth: "100%" }}>
             <div style={{
-              display: "inline-flex", marginTop: 16,
+              display: "inline-flex",
               background: "rgba(255,255,255,0.1)", borderRadius: 12, overflow: "hidden",
             }}>
               {loading
@@ -713,6 +714,7 @@ export default function CriadorProfilePage() {
                     </div>
                   ))
               }
+            </div>
             </div>
           </div>
         </div>

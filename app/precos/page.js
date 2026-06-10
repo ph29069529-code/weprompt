@@ -154,11 +154,11 @@ function PlanCard({ plan, billing, router }) {
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className="plan-card-inner"
       style={{
         background: "white",
         borderRadius: 20,
         border: plan.popular ? "2px solid #6366F1" : "1px solid #e5e7eb",
-        padding: 32,
         position: "relative",
         boxShadow: plan.popular
           ? "0 8px 32px rgba(0,0,0,0.1)"
@@ -244,7 +244,7 @@ function PlanCard({ plan, billing, router }) {
         onClick={() => router.push(plan.ctaRoute)}
         style={{
           width: "100%", padding: "14px", borderRadius: 999, fontSize: 15, fontWeight: 700,
-          marginTop: 8, marginBottom: 24, cursor: "pointer",
+          minHeight: 44, marginTop: 8, marginBottom: 24, cursor: "pointer",
           background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
           color: "white",
           border: "none",
@@ -318,6 +318,8 @@ export default function PrecosPage() {
         @media (min-width: 768px) { .precos-heading { font-size: 48px; } }
         .precos-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 32px; }
         @media (min-width: 768px) { .precos-grid { grid-template-columns: repeat(3, 1fr); } }
+        .plan-card-inner { padding: 20px; }
+        @media (min-width: 480px) { .plan-card-inner { padding: 32px; } }
       `}</style>
       <div className="precos-container">
 
@@ -338,7 +340,7 @@ export default function PrecosPage() {
                 key={key}
                 onClick={() => setActiveAudience(key)}
                 style={{
-                  padding: "8px 24px", fontSize: 14, fontWeight: activeAudience === key ? 600 : 400,
+                  padding: "8px 24px", fontSize: 14, minHeight: 44, fontWeight: activeAudience === key ? 600 : 400,
                   color: activeAudience === key ? "#111827" : "#6b7280",
                   background: activeAudience === key ? "white" : "transparent",
                   borderRadius: 999, border: "none", cursor: "pointer",
@@ -358,7 +360,7 @@ export default function PrecosPage() {
                 key={key}
                 onClick={() => setBilling(key)}
                 style={{
-                  padding: "8px 24px", fontSize: 14, fontWeight: billing === key ? 600 : 400,
+                  padding: "8px 24px", fontSize: 14, minHeight: 44, fontWeight: billing === key ? 600 : 400,
                   color: billing === key ? "#111827" : "#6b7280",
                   background: billing === key ? "white" : "transparent",
                   borderRadius: 999, border: "none", cursor: "pointer",
