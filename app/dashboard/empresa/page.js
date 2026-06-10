@@ -44,6 +44,15 @@ function MetricCard({ iconBg, icon, label, value, sub, subColor }) {
 export default function EmpresaDashboard() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('inicio');
+
+  // Read ?tab= from URL on mount and activate the matching tab
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab && TABS.some(t => t.key === tab)) {
+      setActiveTab(tab);
+    }
+  }, []);
   const [hoveredTab, setHoveredTab] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
