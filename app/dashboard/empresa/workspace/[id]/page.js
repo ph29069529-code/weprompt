@@ -132,6 +132,7 @@ export default function WorkspacePage() {
       if (!session) { router.replace("/login"); return; }
       setUser(session.user);
       accessTokenRef.current = session.access_token;
+      const userRole = session.user?.user_metadata?.role;
 
       /* verify subscription — business_id is the empresa user column */
       const { data: sub } = await supabase
@@ -143,7 +144,7 @@ export default function WorkspacePage() {
         .limit(1)
         .maybeSingle();
 
-      if (!sub) { setDenied(true); setPageLoading(false); return; }
+      if (!sub && userRole !== "admin") { setDenied(true); setPageLoading(false); return; }
 
       /* solution details */
       const { data: sol } = await supabase
