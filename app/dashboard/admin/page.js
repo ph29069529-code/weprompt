@@ -1094,7 +1094,6 @@ function ConfiguracoesTab() {
 /* ── ProfileDrawer ── */
 function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
   const [nome,          setNome]          = useState(profile?.nome      || "");
-  const [telefone,      setTelefone]      = useState(profile?.telefone  || "");
   const [cidade,        setCidade]        = useState(profile?.cidade    || "");
   const [bio,           setBio]           = useState(profile?.bio       || "");
   const [avatarUrl,     setAvatarUrl]     = useState(profile?.avatar_url || "");
@@ -1107,7 +1106,6 @@ function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
   useEffect(() => {
     if (profile) {
       setNome(profile.nome      || "");
-      setTelefone(profile.telefone  || "");
       setCidade(profile.cidade    || "");
       setBio(profile.bio       || "");
       setAvatarUrl(profile.avatar_url || "");
@@ -1134,11 +1132,11 @@ function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
         setAvatarPreview("");
       }
       const { error: updateErr } = await authClient.from("profiles")
-        .update({ nome, telefone, cidade, bio, avatar_url: finalAvatarUrl })
+        .update({ nome, cidade, bio, avatar_url: finalAvatarUrl })
         .eq("id", profile.id);
       if (updateErr) throw updateErr;
       setSaved(true);
-      onSaved?.({ ...profile, nome, telefone, cidade, bio, avatar_url: finalAvatarUrl });
+      onSaved?.({ ...profile, nome, cidade, bio, avatar_url: finalAvatarUrl });
       setTimeout(() => setSaved(false), 3000);
     } catch {
       setSaveErr("Erro ao salvar. Verifique sua conexão e tente novamente.");
@@ -1216,11 +1214,6 @@ function ProfileDrawer({ profile, userEmail, onClose, onSaved }) {
             <label style={lbl}>Email</label>
             <input value={userEmail || ""} readOnly style={{ ...inp, background: "#f9fafb", color: GRAY_TEXT, cursor: "default" }} />
             <div style={{ fontSize: 12, color: GRAY_TEXT, marginTop: 4 }}>Para alterar o email, entre em contato</div>
-          </div>
-          <div>
-            <label style={lbl}>Telefone</label>
-            <input value={telefone} onChange={e => setTelefone(e.target.value)} placeholder="+55 11 99999-9999" style={inp}
-              onFocus={e => (e.target.style.borderColor = BLUE)} onBlur={e => (e.target.style.borderColor = BORDER)} />
           </div>
           <div>
             <label style={lbl}>Cidade</label>

@@ -1,125 +1,142 @@
-# WePrompt — Guia do Projeto para Claude Code
+# CLAUDE.md
 
-## O que é a WePrompt
-Marketplace de soluções de IA para o Brasil (Model B — workspace integrado).
-Criadores publicam agentes e prompt packs. Empresas compram e usam dentro da plataforma.
-Tudo acontece DENTRO da WePrompt — sem links externos.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Stack Técnica
-- Framework: Next.js 14 (App Router, arquivos .js — NUNCA TypeScript)
-- Banco de dados: Supabase (PostgreSQL) — região São Paulo
-- Pagamentos: Stripe (produção)
-- Emails: Resend (contato@weprompt.app.br)
-- Deploy: Vercel
-- Auth: Supabase Auth com @supabase/auth-helpers-nextjs
+## Commands
 
-## Estrutura de Pastas
-app/
-  page.js                    # Homepage
-  layout.js                  # Layout global
-  components/                # Componentes compartilhados
-    Navbar.js                # Navbar pública (scroll effect)
-    NavbarDashboard.js       # Navbar simplificada (dashboards)
-    Footer.js                # Footer animado (páginas públicas)
-    FloatingIconsHero.js     # Hero da homepage
-  dashboard/
-    admin/page.js            # Dashboard admin (11 abas)
-    criador/page.js          # Dashboard criador
-    empresa/page.js          # Dashboard empresa
-    empresa/workspace/[id]/  # Workspace do agente
-  solucoes/
-    page.js                  # Catálogo público
-    [id]/page.js             # Página da solução
-  criadores/[id]/page.js     # Perfil público do criador
-  api/
-    workspace/chat/route.js  # API Anthropic
-  lib/
-    email.js                 # Funções Resend
+```bash
+npm run dev      # Start dev server on http://localhost:3000
+npm run build    # Production build (run before every commit)
+npm run start    # Start production server
+npm run lint     # ESLint check
+```
 
-## Banco de Dados (Supabase)
-- profiles: id, nome, role (admin/criador/empresa), cidade, bio
-- solutions: id, titulo, descricao, categoria, preco, tipo (agente/prompt_pack/agente_integracao), status (pending/approved/rejected), creator_id, system_prompt, conteudo_pack, imagem_capa, como_funciona, video_demo, video_tutorial, video_curadoria, apps_integrados, ferramenta_automacao, instrucoes_configuracao, requisitos_tecnicos
-- subscriptions: id, business_id, solution_id, status (active), created_at
-- reviews: id, reviewer_id, creator_id, solution_id, rating, comment
-- workspace_sessions: id, user_id, solution_id, messages (JSONB)
+No test runner is configured. Validation is done via `npm run build` — a clean build is the gate before committing.
 
-## Identidade Visual (NUNCA mudar)
-- Cor primária: #6366F1 (índigo)
-- Cor escura: #0A0F1E
-- Fonte: Inter
-- Logo: /logo.png (escura), /logo-white.png (clara)
-- Ícone: /logo-icon.png, /logo-icon-white.png
-- Botões primários: bg #0A0F1E ou #6366F1, borderRadius 10px
-- Badge oficial WePrompt: creator_id = 00000000-0000-0000-0000-000000000001
+## Stack
 
-## Roles de Usuário
-- admin: acesso total, dashboard em /dashboard/admin
-- criador: publica soluções, dashboard em /dashboard/criador
-- empresa: compra e usa soluções, dashboard em /dashboard/empresa
+- **Framework**: Next.js 16 with App Router — all files are `.js`, never `.ts`/`.tsx`
+- **Database**: Supabase (PostgreSQL, São Paulo region)
+- **Auth**: Supabase Auth via `@supabase/auth-helpers-nextjs`
+- **Payments**: Stripe (subscription + one-time)
+- **Email**: Resend (`contato@weprompt.app.br`)
+- **AI**: Anthropic SDK (`claude-sonnet-4-5` in workspace chat)
+- **Deploy**: Vercel
 
-## Regras de Código (SEMPRE seguir)
-- SEMPRE usar .js, NUNCA .ts ou .tsx
-- SEMPRE 'use client' em componentes com hooks
-- NUNCA usar localStorage ou sessionStorage
-- NUNCA usar framer-motion (causa lentidão — usar CSS animations)
-- Imagens: usar loading="lazy" abaixo do fold
-- Supabase client: createClientComponentClient() no cliente
-- Commits: sempre em inglês, descritivos
-- Antes de criar RLS policies: verificar se já existem
+## Architecture
 
-## Erros Comuns (NUNCA repetir)
-- NÃO usar TypeScript — projeto é 100% JavaScript
-- NÃO modificar logo ou identidade visual sem instrução explícita
-- NÃO hardcodar dados fictícios — sempre buscar do Supabase
-- NÃO criar policies RLS duplicadas
-- NÃO usar email como coluna em profiles — email está em auth.users
-- Subscriptions: filtrar por business_id, não user_id
-- Email dos usuários: usar função RPC get_users_with_email()
+### App structure
+- `app/page.js` — Homepage (all sections inline: `HowItWorks`, `ForCompanies`, `ForCreators`, `Categories`)
+- `app/layout.js` — Root layout: loads Inter font, injects `FooterController`, `PWAInstallPrompt`, `GlobalDrawers`
+- `app/components/` — Shared components used across pages
+- `app/lib/` — `supabase.js`, `stripe.js`, `resend.js`, `email.js`
+- `app/api/` — Route handlers (Next.js App Router)
+- `app/dashboard/` — Three role-based dashboards: `admin/`, `criador/`, `empresa/`
 
-## Fluxo de Aprovação de Soluções
-1. Criador publica → status = pending
-2. Admin aprova/rejeita em /dashboard/admin → aba Solicitações
-3. Email automático enviado via Resend ao criador
-4. Se aprovada → aparece em /solucoes
+### Routing and layout controllers
+`FooterController` and `NavbarController` check `usePathname()` and suppress their component on dashboard/checkout/auth routes. `GlobalDrawers` is always present for app-wide modals. These controllers belong in `layout.js` and should not be added to individual pages.
 
-## Workspace (Fase 3)
-- Empresa compra solução do tipo agente
-- Acessa /dashboard/empresa/workspace/[solution_id]
-- Chat chama /api/workspace/chat → Anthropic API (claude-sonnet-4-5)
-- ANTHROPIC_API_KEY necessária no Vercel
-- Sessões salvas em workspace_sessions
+### Homepage component pattern
+Homepage sections live directly in `app/page.js`. Heavy components (`SolutionsShowcase`) are lazy-loaded with `dynamic(() => import(...), { ssr: false })`. Intersection-observer animations use the local `useFadeIn(dir)` hook — it returns `[ref, style]` and requires no external library.
+
+### Supabase client usage
+- **Client components**: `import { supabase } from "@/app/lib/supabase"` (simple client, no cookies)
+- **Route handlers that need user JWT**: pass `Authorization` header and instantiate with `createClient(url, anonKey, { global: { headers: { Authorization: authHeader } } })`, then call `supabase.auth.getUser()`
+- **Route handlers needing service-role access** (e.g., workspace chat): `createClient(url, SUPABASE_SERVICE_ROLE_KEY)` + `supabaseAdmin.auth.getUser(token)`
+- **Never**: use `getSession()` for auth verification in API routes — always `getUser()`
+
+### API routes pattern
+Every route handler verifies auth before any DB operation. Route files are in `app/api/<name>/route.js`, exported as named async functions (`GET`, `POST`, etc.), and return `NextResponse.json()`.
+
+## Database schema
+
+Tables in Supabase:
+
+| Table | Key columns |
+|---|---|
+| `profiles` | `id` (= auth.users id), `nome`, `role` (admin/criador/empresa), `bio`, `avatar_url`, `cidade`, `created_at` — confirmed schema; `telefone` does NOT exist |
+| `solutions` | `id`, `titulo`, `descricao`, `descricao_curta`, `categoria`, `preco`, `tipo` (agente/prompt_pack/agente_integracao), `status` (pending/approved/rejected), `creator_id`, `system_prompt`, `conteudo_pack`, `cover_url`, `como_funciona`, `video_demo`, `video_tutorial`, `video_curadoria`, `apps_integrados`, `ferramenta_automacao`, `instrucoes_configuracao`, `requisitos_tecnicos`, `ativo`, `payment_type` |
+| `subscriptions` | `id`, `business_id` (empresa user), `solution_id`, `status` (active) |
+| `reviews` | `id`, `reviewer_id`, `creator_id`, `solution_id`, `rating`, `comment` |
+| `workspace_sessions` | `id`, `user_id`, `solution_id`, `messages` (JSONB array) |
+| `categories` | `nome`, `icone`, `cor` |
+
+**Critical rules:**
+- Email is in `auth.users`, never in `profiles` — use RPC `get_users_with_email()` when you need it
+- Always filter `subscriptions` by `business_id`, not `user_id`
+- Always check for existing constraints before `ALTER TABLE`: `SELECT conname, pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid = 'table'::regclass`
+- Always check for existing RLS policies before creating: `SELECT policyname FROM pg_policies WHERE tablename = 'table'`
+
+## Identidade visual
+
+- Primary: `#6366F1` (indigo) — CTAs, icons, active states
+- Dark: `#0A0F1E` — primary buttons, headings
+- Background alt: `#F8F9FB`
+- Text secondary: `#6B7280`
+- Border: `#E5E7EB`
+- Logo files: `/logo.png` (dark bg), `/logo-white.png` (light bg), `/logo-icon.png`
+- Official WePrompt badge: `creator_id === "00000000-0000-0000-0000-000000000001"`
+- Section max-width: `1100px` (content), `1200px` (navbar/footer)
+
+> Note: `PRODUCT.md` in the repo root contains outdated brand specs (`#2563EB`, "no purple"). Ignore it — the actual codebase and `BRAND.md` use `#6366F1`.
+
+## Code rules
+
+- `'use client'` required on any file using hooks or event handlers
+- Inline styles only — no Tailwind utility classes, no framer-motion
+- CSS animations via `@keyframes` in JSX `<style>` blocks
+- Responsive layout: media queries in `<style>` blocks, never `isMobile = useState(window.innerWidth < 768)` (hydration mismatch). Use CSS classes + media queries, or a `useWindowWidth` hook initialized to `1200` and set in `useEffect`.
+- `loading="lazy"` on all images below the fold
+- All clickable elements: `minHeight: 44` (tap targets)
+- Button border-radius: `10px`; card border-radius: `12px`–`20px`
+- Commits in English, one feature per commit, build must pass before pushing
+
+## Roles and dashboards
+
+| Role | Dashboard | Access |
+|---|---|---|
+| `admin` | `/dashboard/admin` | Full platform management (11 tabs) |
+| `criador` | `/dashboard/criador` | Publish and manage solutions |
+| `empresa` | `/dashboard/empresa` | Browse and use purchased solutions |
+
+Auth check pattern in dashboard pages: `supabase.auth.getSession()` → if no session, `router.replace('/login')` → fetch profile → check role.
+
+## Solution types
+
+| `tipo` | Workspace behavior |
+|---|---|
+| `agente` | Full chat interface powered by `system_prompt` via Anthropic API |
+| `prompt_pack` | Content delivery — `conteudo_pack` shown after purchase |
+| `agente_integracao` | Setup panel showing `instrucoes_configuracao`, `apps_integrados`, help mailto |
+
+## Skills disponíveis (.claude/skills/)
+
+| Skill | Quando usar |
+|---|---|
+| `weprompt-design` | Cores, tipografia, botões, cards, badges |
+| `mobile-first` | Responsividade, tap targets, media queries |
+| `supabase-patterns` | Queries, RLS, schema, migrations |
+| `security-review` | API routes, autenticação, env vars |
+| `nextjs-patterns` | Arquivos .js, 'use client', build patterns |
+
+## Subagents disponíveis (.claude/agents/)
+
+| Agente | Quando usar |
+|---|---|
+| `ui-reviewer` | Revisar componentes visuais, responsividade, acessibilidade |
+| `security-agent` | API routes, autenticação, RLS, pré-deploy |
+| `db-agent` | Queries complexas, migrations, RLS policies |
+| `qa-agent` | Testar fluxos críticos antes de deploy |
 
 ## Variáveis de Ambiente
-- NEXT_PUBLIC_SUPABASE_URL
-- NEXT_PUBLIC_SUPABASE_ANON_KEY
-- SUPABASE_SERVICE_ROLE_KEY
-- STRIPE_SECRET_KEY
-- NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-- STRIPE_WEBHOOK_SECRET
-- RESEND_API_KEY
-- ANTHROPIC_API_KEY
 
-## Skills Disponíveis (.claude/skills/)
-Use `/skill <nome>` para carregar uma skill antes de trabalhar em uma área específica.
-
-| Skill | Pasta | Quando usar |
-|-------|-------|-------------|
-| weprompt-design | `.claude/skills/weprompt-design/` | Qualquer trabalho visual — cores, tipografia, botões, cards, badges |
-| mobile-first | `.claude/skills/mobile-first/` | Responsividade, tap targets, media queries, hydration |
-| supabase-patterns | `.claude/skills/supabase-patterns/` | Queries, RLS, schema, migrations, subscriptions |
-| security-review | `.claude/skills/security-review/` | API routes, autenticação, inputs, chaves de ambiente |
-| nextjs-patterns | `.claude/skills/nextjs-patterns/` | Arquivos .js, 'use client', imports dinâmicos, build |
-
-## Subagents Disponíveis (.claude/agents/)
-Use o Agent tool ou `@<nome>` para invocar um subagente especializado.
-
-| Agente | Arquivo | Quando usar |
-|--------|---------|-------------|
-| ui-reviewer | `agents/ui-reviewer.md` | Revisar componentes visuais, responsividade, acessibilidade |
-| security-agent | `agents/security-agent.md` | API routes, autenticação, RLS, pré-deploy |
-| db-agent | `agents/db-agent.md` | Queries complexas, migrations, otimização, RLS policies |
-| qa-agent | `agents/qa-agent.md` | Testar fluxos críticos, validar regressões antes de deploy |
-
-Agentes existentes (anteriores):
-- `uiux-reviewer` — revisão geral de UI (versão anterior do ui-reviewer)
-- `security-reviewer` — revisão de segurança (versão anterior do security-agent)
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY      # server-only
+STRIPE_SECRET_KEY              # server-only
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+STRIPE_WEBHOOK_SECRET          # server-only
+RESEND_API_KEY                 # server-only
+ANTHROPIC_API_KEY              # server-only
+```
