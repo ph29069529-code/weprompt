@@ -1689,7 +1689,7 @@ export default function AdminDashboard() {
         {/* Logo */}
         <div style={{ padding: "20px 16px", borderBottom: `1px solid #E5E7EB`, marginBottom: 8, flexShrink: 0 }}>
           <Link href="/" style={{ textDecoration: "none" }}>
-            <img src="/logo-white.png" alt="WePrompt" style={{ width: 130, height: "auto", display: "block" }} />
+            <img src="/logo.png" alt="WePrompt" style={{ width: 130, height: "auto", display: "block" }} />
           </Link>
         </div>
 
