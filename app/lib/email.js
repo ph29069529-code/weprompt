@@ -66,7 +66,7 @@ export async function sendSolutionApproved({ to, solutionTitulo }) {
       </p>
     </div>
     <div style="text-align:center;">
-      <a href="https://weprompt.app.br/dashboard/criador" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:16px 32px;border-radius:12px;font-family:-apple-system,Arial,sans-serif;">Ver meu dashboard →</a>
+      <a href="https://weprompt.app.br/dashboard/criador" style="display:inline-block;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 32px;border-radius:999px;font-family:-apple-system,Arial,sans-serif;">Ver meu dashboard →</a>
     </div>
   `);
 
@@ -79,7 +79,7 @@ export async function sendSolutionApproved({ to, solutionTitulo }) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   New branded templates (navy header, #0369A1 blue accent)
+   New branded templates (navy header, #6366F1 blue accent)
 ───────────────────────────────────────────────────────────── */
 
 const YEAR = new Date().getFullYear();
@@ -100,7 +100,7 @@ function newBase(bodyHtml) {
   <tr>
     <td style="background:#0A0F1E;border-radius:20px 20px 0 0;padding:32px 40px;text-align:center;">
       <p style="margin:0;font-size:26px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;font-family:-apple-system,Arial,sans-serif;">WePrompt</p>
-      <p style="margin:8px 0 0;font-size:13px;color:#38BDF8;font-weight:500;font-family:-apple-system,Arial,sans-serif;">O 1º Marketplace de IA da América Latina</p>
+      <p style="margin:8px 0 0;font-size:13px;color:#818CF8;font-weight:500;font-family:-apple-system,Arial,sans-serif;">O 1º Marketplace de IA da América Latina</p>
     </td>
   </tr>
 
@@ -116,7 +116,7 @@ function newBase(bodyHtml) {
         © ${YEAR} WePrompt. O 1º marketplace de soluções de IA da América Latina.
       </p>
       <p style="margin:0;font-size:12px;font-family:-apple-system,Arial,sans-serif;">
-        <a href="https://weprompt.app.br/para-empresas/termos" style="color:#0369A1;text-decoration:none;">Termos</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="https://weprompt.app.br/privacidade" style="color:#0369A1;text-decoration:none;">Privacidade</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="mailto:contato@weprompt.app.br" style="color:#0369A1;text-decoration:none;">Contato</a>
+        <a href="https://weprompt.app.br/para-empresas/termos" style="color:#6366F1;text-decoration:none;">Termos</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="https://weprompt.app.br/privacidade" style="color:#6366F1;text-decoration:none;">Privacidade</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="mailto:contato@weprompt.app.br" style="color:#6366F1;text-decoration:none;">Contato</a>
       </p>
     </td>
   </tr>
@@ -133,10 +133,10 @@ export async function sendBoasVindas({ to, nome, role }) {
 
   const creatorSection = `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;">
-      <tr><td style="background:#e0f2fe;border-radius:12px;padding:20px;">
+      <tr><td style="background:#EEF2FF;border-radius:12px;padding:20px;">
         <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#1D1D1F;font-family:-apple-system,Arial,sans-serif;">Pronto para monetizar sua solução? 💡</p>
         <p style="margin:0 0 16px;font-size:13px;color:#6E6E73;line-height:1.65;font-family:-apple-system,Arial,sans-serif;">Como criador, você pode publicar soluções de IA e começar a vender para empresas em toda a América Latina.</p>
-        <a href="https://weprompt.app.br/dashboard/criador" style="display:inline-block;background:#0369A1;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:12px 24px;border-radius:10px;font-family:-apple-system,Arial,sans-serif;">Publicar minha primeira solução →</a>
+        <a href="https://weprompt.app.br/dashboard/criador" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:12px 24px;border-radius:999px;font-family:-apple-system,Arial,sans-serif;">Publicar minha primeira solução →</a>
       </td></tr>
     </table>`;
 
@@ -174,7 +174,7 @@ export async function sendBoasVindas({ to, nome, role }) {
     </table>
 
     <div style="text-align:center;margin-bottom:0;">
-      <a href="https://weprompt.app.br/solucoes" style="display:inline-block;background:#0369A1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:16px 32px;border-radius:12px;font-family:-apple-system,Arial,sans-serif;">Explorar Soluções →</a>
+      <a href="https://weprompt.app.br/solucoes" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 32px;border-radius:999px;font-family:-apple-system,Arial,sans-serif;">Explorar Soluções →</a>
     </div>
 
     ${isCreador ? creatorSection : ''}
@@ -199,11 +199,11 @@ export async function sendConfirmacaoCompra({ to, nome, solutionName, solutionCa
       ${nome ? `Olá, ${nome}! ` : ''}Seu pagamento foi processado com sucesso.
     </p>
 
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:2px solid #0369A1;border-radius:16px;margin-bottom:28px;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:2px solid #6366F1;border-radius:16px;margin-bottom:28px;">
       <tr><td style="padding:24px;">
         <p style="margin:0 0 10px;font-size:20px;font-weight:700;color:#1D1D1F;font-family:-apple-system,Arial,sans-serif;">${solutionName}</p>
-        ${solutionCategory ? `<p style="margin:0 0 12px;"><span style="display:inline-block;background:#e0f2fe;color:#0369A1;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;font-family:-apple-system,Arial,sans-serif;">${solutionCategory}</span></p>` : ''}
-        <p style="margin:0 0 12px;font-size:22px;font-weight:800;color:#0369A1;letter-spacing:-0.5px;font-family:-apple-system,Arial,sans-serif;">${priceLabel}</p>
+        ${solutionCategory ? `<p style="margin:0 0 12px;"><span style="display:inline-block;background:#EEF2FF;color:#6366F1;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;font-family:-apple-system,Arial,sans-serif;">${solutionCategory}</span></p>` : ''}
+        <p style="margin:0 0 12px;font-size:22px;font-weight:800;color:#6366F1;letter-spacing:-0.5px;font-family:-apple-system,Arial,sans-serif;">${priceLabel}</p>
         <p style="margin:0;font-size:13px;font-weight:700;color:#059669;font-family:-apple-system,Arial,sans-serif;">✓ Acesso liberado imediatamente</p>
       </td></tr>
     </table>
@@ -219,7 +219,7 @@ export async function sendConfirmacaoCompra({ to, nome, solutionName, solutionCa
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr>
             <td width="32" valign="top" style="padding-right:12px;">
-              <div style="width:28px;height:28px;border-radius:50%;background:#0369A1;text-align:center;line-height:28px;font-size:13px;font-weight:800;color:#fff;font-family:-apple-system,Arial,sans-serif;">${n}</div>
+              <div style="width:28px;height:28px;border-radius:50%;background:#6366F1;text-align:center;line-height:28px;font-size:13px;font-weight:800;color:#fff;font-family:-apple-system,Arial,sans-serif;">${n}</div>
             </td>
             <td valign="top">
               <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1D1D1F;font-family:-apple-system,Arial,sans-serif;">${title}</p>
@@ -231,11 +231,11 @@ export async function sendConfirmacaoCompra({ to, nome, solutionName, solutionCa
     </table>
 
     <div style="text-align:center;margin-bottom:24px;">
-      <a href="https://weprompt.app.br/dashboard/empresa" style="display:inline-block;background:#0369A1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:16px 32px;border-radius:12px;font-family:-apple-system,Arial,sans-serif;">Acessar Meu Dashboard →</a>
+      <a href="https://weprompt.app.br/dashboard/empresa" style="display:inline-block;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 32px;border-radius:999px;font-family:-apple-system,Arial,sans-serif;">Acessar Meu Dashboard →</a>
     </div>
 
     <p style="font-size:13px;color:#6E6E73;text-align:center;margin:0 0 20px;font-family:-apple-system,Arial,sans-serif;">
-      Dúvidas? Responda este email ou acesse <a href="mailto:contato@weprompt.app.br" style="color:#0369A1;text-decoration:none;">contato@weprompt.app.br</a>
+      Dúvidas? Responda este email ou acesse <a href="mailto:contato@weprompt.app.br" style="color:#6366F1;text-decoration:none;">contato@weprompt.app.br</a>
     </p>
 
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -266,7 +266,7 @@ export async function sendSolutionRejected({ to, solutionTitulo, reason }) {
       <strong>Motivo:</strong> ${reason}
     </div>` : ''}
     <div style="text-align:center;margin-bottom:28px;">
-      <a href="https://weprompt.app.br/dashboard/criador/solucoes" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:16px 32px;border-radius:12px;font-family:-apple-system,Arial,sans-serif;">Ajustar e reenviar →</a>
+      <a href="https://weprompt.app.br/dashboard/criador/solucoes" style="display:inline-block;background:#6366F1;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 32px;border-radius:999px;font-family:-apple-system,Arial,sans-serif;">Ajustar e reenviar →</a>
     </div>
     <p style="font-size:13px;color:#6E6E73;text-align:center;margin:0;font-family:-apple-system,Arial,sans-serif;">
       Dúvidas? Responda este e-mail.
