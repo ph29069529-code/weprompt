@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import { createBrowserClient } from "@supabase/auth-helpers-nextjs";
 import Navbar from "../../components/Navbar";
 
 // ─── MOCK FALLBACK DATA ───────────────────────────────────────────────────────
@@ -242,6 +243,19 @@ export default function CriadorProfilePage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
+  // Auth — who is viewing this profile
+  const [sessionUserId, setSessionUserId] = useState(null);
+
+  // Inline edit mode
+  const [editMode,          setEditMode]          = useState(false);
+  const [editNome,          setEditNome]          = useState("");
+  const [editBio,           setEditBio]           = useState("");
+  const [editCidade,        setEditCidade]        = useState("");
+  const [editAvatarFile,    setEditAvatarFile]    = useState(null);
+  const [editAvatarPreview, setEditAvatarPreview] = useState("");
+  const [editSaving,        setEditSaving]        = useState(false);
+  const [editErr,           setEditErr]           = useState("");
+
   useEffect(() => {
     if (!id) return;
 
@@ -299,6 +313,59 @@ export default function CriadorProfilePage() {
 
     fetchData();
   }, [id]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.id) setSessionUserId(session.user.id);
+    });
+  }, []);
+
+  const isOwner = sessionUserId === id;
+
+  function enterEditMode() {
+    setEditNome(creator?.nome || "");
+    setEditBio(creator?.bio || "");
+    setEditCidade(creator?.cidade || "");
+    setEditAvatarFile(null);
+    setEditAvatarPreview("");
+    setEditErr("");
+    setEditMode(true);
+  }
+
+  async function handleEditSave() {
+    setEditSaving(true);
+    setEditErr("");
+    try {
+      const authClient = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      );
+      let avatarUrl = creator?.avatar_url || null;
+      if (editAvatarFile) {
+        const ext = editAvatarFile.name.split(".").pop();
+        const path = `${id}/avatar.${ext}`;
+        const { error: upErr } = await authClient.storage
+          .from("avatars")
+          .upload(path, editAvatarFile, { upsert: true });
+        if (upErr) throw upErr;
+        const { data: { publicUrl } } = authClient.storage.from("avatars").getPublicUrl(path);
+        avatarUrl = publicUrl;
+      }
+      const { error: updateErr } = await authClient
+        .from("profiles")
+        .update({ nome: editNome.trim(), bio: editBio.trim(), cidade: editCidade.trim(), avatar_url: avatarUrl })
+        .eq("id", id);
+      if (updateErr) throw updateErr;
+      setCreator(prev => ({ ...prev, nome: editNome.trim(), bio: editBio.trim(), cidade: editCidade.trim(), avatar_url: avatarUrl }));
+      setEditAvatarFile(null);
+      setEditAvatarPreview("");
+      setEditMode(false);
+    } catch {
+      setEditErr("Erro ao salvar. Verifique sua conexão e tente novamente.");
+    } finally {
+      setEditSaving(false);
+    }
+  }
 
   // ── Derived display data (real data only, no mock fallbacks) ─────────────
 
@@ -435,36 +502,75 @@ export default function CriadorProfilePage() {
       {/* ── PROFILE BANNER ────────────────────────────────────────────── */}
       <div className="cri-banner" style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #6366F1 100%)" }}>
         <div className="cri-actions">
-          <button
-            onClick={() => router.push("/dashboard/criador/configuracoes")}
-            style={{
+          {isOwner && !editMode && (
+            <button onClick={enterEditMode} style={{
               background: "rgba(255,255,255,0.15)", color: "white",
               border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999,
               padding: "8px 18px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
-            }}
-          >✏ Editar Perfil</button>
-          <button
-            onClick={handleShare}
-            style={{
+            }}>✏ Editar perfil</button>
+          )}
+          {editMode && (
+            <>
+              <button onClick={handleEditSave} disabled={editSaving} style={{
+                background: editSaving ? "rgba(99,102,241,0.5)" : "linear-gradient(135deg, #6366F1, #8B5CF6)",
+                color: "white", border: "none", borderRadius: 999,
+                padding: "8px 20px", fontSize: 14, fontWeight: 600,
+                cursor: editSaving ? "not-allowed" : "pointer", fontFamily: "inherit",
+                boxShadow: editSaving ? "none" : "0 2px 12px rgba(99,102,241,0.4)",
+              }}>
+                {editSaving ? "Salvando…" : "Salvar alterações"}
+              </button>
+              <button onClick={() => setEditMode(false)} disabled={editSaving} style={{
+                background: "rgba(255,255,255,0.15)", color: "white",
+                border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999,
+                padding: "8px 18px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
+              }}>Cancelar</button>
+            </>
+          )}
+          {!editMode && (
+            <button onClick={handleShare} style={{
               background: "rgba(255,255,255,0.15)", color: "white",
               border: "1px solid rgba(255,255,255,0.3)", borderRadius: 999,
               padding: "8px 18px", fontSize: 14, cursor: "pointer", fontFamily: "inherit",
-            }}
-          >Compartilhar ↗</button>
+            }}>Compartilhar ↗</button>
+          )}
         </div>
 
         <div className="cri-profile-row">
           {/* Avatar */}
-          <div style={{
-            width: 120, height: 120, borderRadius: 999,
-            border: "4px solid white", background: "#dbeafe",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0, overflow: "hidden",
-          }}>
-            {creator?.avatar_url
-              ? <img src={creator.avatar_url} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <span style={{ fontSize: 52, fontWeight: 900, color: "#6366F1" }}>{displayName.charAt(0)}</span>
-            }
+          <div style={{ position: "relative", width: 120, height: 120, flexShrink: 0 }}>
+            <div style={{
+              width: 120, height: 120, borderRadius: 999,
+              border: "4px solid white", background: "#dbeafe",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              overflow: "hidden",
+            }}>
+              {(editAvatarPreview || creator?.avatar_url)
+                ? <img src={editAvatarPreview || creator.avatar_url} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : <span style={{ fontSize: 52, fontWeight: 900, color: "#6366F1" }}>{displayName.charAt(0)}</span>
+              }
+            </div>
+            {editMode && (
+              <>
+                <label htmlFor="edit-avatar-upload" style={{
+                  position: "absolute", inset: 0, borderRadius: 999,
+                  background: "rgba(0,0,0,0.45)", display: "flex",
+                  alignItems: "center", justifyContent: "center",
+                  cursor: "pointer",
+                }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
+                </label>
+                <input id="edit-avatar-upload" type="file" accept="image/*" style={{ display: "none" }} onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  setEditAvatarFile(file);
+                  setEditAvatarPreview(URL.createObjectURL(file));
+                }} />
+              </>
+            )}
           </div>
 
           {/* Name + stats */}
@@ -484,7 +590,23 @@ export default function CriadorProfilePage() {
                   return (
                     <>
                       <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-                        <span style={{ fontSize: 28, fontWeight: 900, color: "white" }}>{displayName}</span>
+                        {editMode ? (
+                          <input
+                            value={editNome}
+                            onChange={e => setEditNome(e.target.value)}
+                            placeholder="Seu nome"
+                            style={{
+                              fontSize: 24, fontWeight: 900, color: "white",
+                              background: "rgba(255,255,255,0.15)",
+                              border: "1.5px solid rgba(255,255,255,0.5)",
+                              borderRadius: 12, padding: "6px 14px",
+                              outline: "none", fontFamily: "inherit",
+                              width: "100%", maxWidth: 340,
+                            }}
+                          />
+                        ) : (
+                          <span style={{ fontSize: 28, fontWeight: 900, color: "white" }}>{displayName}</span>
+                        )}
                         <span style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", color: "white", borderRadius: 999, padding: "4px 14px", fontSize: 12, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}>
                           {rep.icon} {rep.label}
                         </span>
@@ -503,11 +625,26 @@ export default function CriadorProfilePage() {
                 {displayHandle && (
                   <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginTop: 4 }}>{displayHandle}</div>
                 )}
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 4 }}>
-                  {displayMemberSince && `Membro desde ${displayMemberSince}`}
-                  {displayMemberSince && displayLocation && " · "}
-                  {displayLocation}
-                </div>
+                {editMode ? (
+                  <input
+                    value={editCidade}
+                    onChange={e => setEditCidade(e.target.value)}
+                    placeholder="Sua cidade (ex: São Paulo, SP)"
+                    style={{
+                      fontSize: 13, color: "white", marginTop: 6,
+                      background: "rgba(255,255,255,0.15)",
+                      border: "1.5px solid rgba(255,255,255,0.4)",
+                      borderRadius: 8, padding: "5px 12px",
+                      outline: "none", fontFamily: "inherit", width: "100%", maxWidth: 280,
+                    }}
+                  />
+                ) : (
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 4 }}>
+                    {displayMemberSince && `Membro desde ${displayMemberSince}`}
+                    {displayMemberSince && displayLocation && " · "}
+                    {displayLocation}
+                  </div>
+                )}
               </>
             )}
 
@@ -737,16 +874,36 @@ export default function CriadorProfilePage() {
                     <Skeleton w="80%" h={16} />
                   </div>
                 )
+                : editMode ? (
+                  <textarea
+                    value={editBio}
+                    onChange={e => setEditBio(e.target.value)}
+                    rows={5}
+                    placeholder="Fale sobre você, suas especialidades e experiência…"
+                    style={{
+                      width: "100%", boxSizing: "border-box",
+                      padding: "12px 14px", borderRadius: 12,
+                      border: "1.5px solid #6366F1",
+                      fontSize: 15, color: "#111827", lineHeight: 1.7,
+                      fontFamily: "inherit", resize: "vertical", outline: "none",
+                    }}
+                  />
+                )
                 : displayBio ? (
                   <p style={{ fontSize: 15, color: "#374151", lineHeight: 1.7, margin: 0 }}>
                     {displayBio}
                   </p>
                 ) : (
                   <p style={{ fontSize: 15, color: "#9ca3af", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>
-                    Este criador ainda não adicionou uma bio.
+                    {isOwner ? "Clique em Editar perfil para adicionar uma bio." : "Este criador ainda não adicionou uma bio."}
                   </p>
                 )
               }
+              {editErr && (
+                <div style={{ marginTop: 12, padding: "10px 14px", background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.2)", borderRadius: 8, fontSize: 13, color: "#B91C1C" }}>
+                  {editErr}
+                </div>
+              )}
               {displayTags.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
                   {displayTags.map(tag => (
