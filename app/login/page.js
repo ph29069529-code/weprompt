@@ -189,14 +189,16 @@ function LoginForm() {
             <img src="/logo.png" alt="WePrompt" style={{ width: 160, height: "auto" }} />
           </a>
 
-          {msg === "ver-solucao" && (
+          {(msg === "ver-solucao" || msg === "catalogo") && (
             <div style={{
               background: "linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08))",
               border: "1px solid rgba(99,102,241,0.2)",
               borderRadius: 12, padding: "12px 16px", marginBottom: 24,
               fontSize: 14, color: "#4F46E5", lineHeight: 1.5,
             }}>
-              🔒 Crie sua conta gratuita para ver os detalhes desta solução.
+              {msg === "catalogo"
+                ? "🔒 Faça login para explorar as soluções disponíveis."
+                : "🔒 Crie sua conta gratuita para ver os detalhes desta solução."}
             </div>
           )}
 

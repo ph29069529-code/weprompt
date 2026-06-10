@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
 import Navbar from "../components/Navbar";
 
@@ -232,12 +233,23 @@ function SolutionCard({ solution }) {
 }
 
 export default function SolucoesPage() {
+  const router = useRouter();
   const [solutions, setSolutions]           = useState([]);
   const [categories, setCategories]         = useState([]);
   const [loading, setLoading]               = useState(true);
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [searchQuery, setSearchQuery]       = useState("");
   const [tipoFilter, setTipoFilter]         = useState("");
+
+  /* ── Auth gate — redirect unauthenticated users before loading data ── */
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.replace("/login?redirect=/solucoes&msg=catalogo");
+      }
+    });
+  }, [router]);
+
   /* ── Supabase queries (unchanged) ── */
   useEffect(() => {
     supabase.from("categories").select("nome, icone, cor").order("nome")
