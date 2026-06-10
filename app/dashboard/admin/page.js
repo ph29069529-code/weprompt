@@ -197,9 +197,14 @@ function DashboardTab({ solutions, profiles, subscriptions, onNavigate }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <style>{`
+        .admin-kpi-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        @media (min-width: 480px) { .admin-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .admin-kpi-grid { grid-template-columns: repeat(4, 1fr); } }
+      `}</style>
 
-      {/* KPI grid — 4 columns × 2 rows */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+      {/* KPI grid — responsive: 1 col mobile → 2 cols tablet → 4 cols desktop */}
+      <div className="admin-kpi-grid">
         {kpiCards.map(c => (
           <div key={c.label} style={{ background: "#fff", borderRadius: 12, border: `1px solid ${BORDER}`, padding: 20, display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ fontSize: 13, color: GRAY_TEXT }}>{c.label}</div>
@@ -263,13 +268,16 @@ function DashboardTab({ solutions, profiles, subscriptions, onNavigate }) {
 
       {/* Quick Actions */}
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <button onClick={() => onNavigate("solicitacoes")} style={{ padding: "10px 20px", borderRadius: 10, border: "1px solid #FED7AA", background: "#FFF7ED", color: "#C2410C", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+        <button onClick={() => onNavigate("solicitacoes")}
+          style={{ padding: "10px 22px", borderRadius: 999, border: "none", background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 1px 8px rgba(99,102,241,0.25)" }}>
           Revisar Pendentes ({pendingCount})
         </button>
-        <button onClick={() => onNavigate("usuarios")} style={{ padding: "10px 20px", borderRadius: 10, border: "1px solid #C7D2FE", background: "#EEF2FF", color: "#4338CA", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+        <button onClick={() => onNavigate("usuarios")}
+          style={{ padding: "10px 22px", borderRadius: 999, border: "1.5px solid #6366F1", background: "transparent", color: "#6366F1", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
           Ver Usuários
         </button>
-        <button onClick={() => onNavigate("transacoes")} style={{ padding: "10px 20px", borderRadius: 10, border: "1px solid #BBF7D0", background: "#F0FDF4", color: "#15803D", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+        <button onClick={() => onNavigate("transacoes")}
+          style={{ padding: "10px 22px", borderRadius: 999, border: "1.5px solid #6366F1", background: "transparent", color: "#6366F1", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
           Ver Transações
         </button>
       </div>
@@ -737,30 +745,78 @@ function EmpresasTab({ profiles, subscriptions, solutions }) {
 
 /* ── WorkspaceTab ── */
 function WorkspaceTab() {
-  const metrics = [
-    { label: "Sessões hoje",       value: "—" },
-    { label: "Agentes executados", value: "—" },
-    { label: "Tempo médio",        value: "—" },
+  const [stats,   setStats]   = useState({ total: null, today: null, topSolutions: [] });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+
+      const [{ count: total }, { data: sessionData }] = await Promise.all([
+        supabase.from("workspace_sessions").select("*", { count: "exact", head: true }),
+        supabase.from("workspace_sessions")
+          .select("solution_id, solutions(titulo), created_at")
+          .order("created_at", { ascending: false })
+          .limit(500),
+      ]);
+
+      const todayCount = (sessionData || []).filter(
+        s => new Date(s.created_at) >= todayStart
+      ).length;
+
+      const counts = {};
+      (sessionData || []).forEach(s => {
+        if (!s.solution_id) return;
+        if (!counts[s.solution_id]) counts[s.solution_id] = { titulo: s.solutions?.titulo || "—", count: 0 };
+        counts[s.solution_id].count++;
+      });
+      const topSolutions = Object.values(counts)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+      setStats({ total: total || 0, today: todayCount, topSolutions });
+      setLoading(false);
+    }
+    loadStats();
+  }, []);
+
+  const kpis = [
+    { label: "Sessões hoje",   value: loading ? "…" : stats.today },
+    { label: "Total de sessões", value: loading ? "…" : stats.total },
   ];
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 400, padding: "48px 24px" }}>
-      <div style={{ border: "2px dashed rgba(99,102,241,0.3)", borderRadius: 16, padding: 48, textAlign: "center", background: "rgba(99,102,241,0.02)", width: "100%", maxWidth: 600, boxSizing: "border-box" }}>
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-          <Icon d={icons.wrench} size={48} />
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+        {kpis.map(m => (
+          <div key={m.label} style={{ background: "#fff", borderRadius: 12, border: `1px solid ${BORDER}`, padding: 20, display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ fontSize: 13, color: GRAY_TEXT }}>{m.label}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: NEAR_BLACK, lineHeight: 1 }}>{m.value}</div>
+            <div style={{ height: 3, borderRadius: 2, background: BLUE, marginTop: 4 }} />
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background: "#fff", borderRadius: 16, border: `1px solid ${BORDER}`, overflow: "hidden" }}>
+        <div style={{ padding: "14px 20px", borderBottom: `1px solid ${BORDER}`, fontSize: 13, fontWeight: 700, color: NEAR_BLACK }}>
+          Soluções mais usadas no Workspace
         </div>
-        <div style={{ fontSize: 20, fontWeight: 700, color: NEAR_BLACK, marginBottom: 12 }}>Workspace</div>
-        <div style={{ fontSize: 14, color: GRAY_TEXT, lineHeight: 1.7, maxWidth: 380, margin: "0 auto" }}>
-          Acompanhe sessões ativas, conversas em andamento e execuções de agentes em tempo real.
-          Disponível na Fase 3.
-        </div>
-        <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 32, flexWrap: "wrap" }}>
-          {metrics.map(m => (
-            <div key={m.label} style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "20px 32px", textAlign: "center" }}>
-              <div style={{ fontSize: 28, fontWeight: 800, color: "#D1D5DB", marginBottom: 6 }}>{m.value}</div>
-              <div style={{ fontSize: 13, color: "#9CA3AF" }}>{m.label}</div>
+        {loading ? (
+          <div style={{ padding: "40px 24px", textAlign: "center", color: GRAY_TEXT, fontSize: 13 }}>Carregando…</div>
+        ) : stats.topSolutions.length === 0 ? (
+          <div style={{ padding: "40px 24px", textAlign: "center", color: GRAY_TEXT, fontSize: 13 }}>Nenhuma sessão registrada ainda.</div>
+        ) : (
+          stats.topSolutions.map((sol, i) => (
+            <div key={i} style={{ padding: "12px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: i < stats.topSolutions.length - 1 ? `1px solid ${BORDER}` : "none" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#EEF2FF", color: BLUE, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: NEAR_BLACK }}>{sol.titulo}</span>
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 700, color: BLUE }}>{sol.count} {sol.count === 1 ? "sessão" : "sessões"}</span>
             </div>
-          ))}
-        </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -898,7 +954,7 @@ function AnalyticsTab({ solutions, profiles, subscriptions }) {
 
   return (
     <>
-    <style>{`.admin-chart-grid { display: grid; grid-template-columns: 1fr; gap: 18; } @media (min-width: 640px) { .admin-chart-grid { grid-template-columns: 1fr 1fr; } }`}</style>
+    <style>{`.admin-chart-grid { display: grid; grid-template-columns: 1fr; gap: 18px; } @media (min-width: 640px) { .admin-chart-grid { grid-template-columns: 1fr 1fr; } }`}</style>
     <div className="admin-chart-grid">
       <div style={chartCard}>
         <div style={{ fontSize: 14, fontWeight: 700, color: NEAR_BLACK, marginBottom: 4 }}>Crescimento de Usuários</div>
@@ -927,13 +983,19 @@ function AnalyticsTab({ solutions, profiles, subscriptions }) {
 
 /* ── CategoriasTab ── */
 function CategoriasTab({ solutions }) {
-  const [categories, setCategories] = useState([
-    "Agentes IA", "Automação", "Marketing", "Analytics",
-    "WhatsApp", "Vendas", "Atendimento", "Conteúdo",
-  ]);
-  const [newCat, setNewCat]     = useState("");
-  const [editing, setEditing]   = useState(null);
-  const [editValue, setEditValue] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [newCat, setNewCat]         = useState("");
+  const [editing, setEditing]       = useState(null);
+  const [editValue, setEditValue]   = useState("");
+
+  useEffect(() => {
+    const distinct = [...new Set(
+      solutions
+        .filter(s => s.status === "approved" && s.categoria)
+        .map(s => s.categoria)
+    )].sort();
+    setCategories(distinct);
+  }, [solutions]);
 
   function addCategory() {
     const trimmed = newCat.trim();
@@ -1609,7 +1671,7 @@ export default function AdminDashboard() {
 
   /* ── Shell ── */
   return (
-    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "'DM Sans', sans-serif", color: NEAR_BLACK, background: BG_GRAY }}>
+    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "Inter, -apple-system, BlinkMacSystemFont, sans-serif", color: NEAR_BLACK, background: BG_GRAY }}>
 
       {/* Mobile backdrop */}
       {isMobile && sidebarOpen && (
