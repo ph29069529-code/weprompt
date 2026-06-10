@@ -65,6 +65,15 @@ export default function CriadorPage() {
   const [activeView, setActiveView] = useState("dashboard");
   const [criadorSubs, setCriadorSubs] = useState([]);
 
+  // Read ?tab= from URL on mount and activate the matching tab
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    if (tab && CRIADOR_TABS.some(t => t.key === tab)) {
+      setActiveView(tab);
+    }
+  }, []);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userName, setUserName] = useState("Criador");
