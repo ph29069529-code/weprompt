@@ -348,37 +348,52 @@ export default function CriadorProfilePage() {
         return;
       }
 
-      // Text update — always runs
-      const { error: updateErr } = await authClient
-        .from("profiles")
-        .update({ nome: editNome.trim(), bio: editBio.trim(), cidade: editCidade.trim() })
-        .eq("id", session.user.id);
-      if (updateErr) throw updateErr;
+      const bearer = `Bearer ${session.access_token}`;
 
-      // Photo upload — only when a new file was selected
+      // Photo upload first — only when a new file was selected
       let avatarUrl = creator?.avatar_url || null;
       if (editAvatarFile) {
         const ext = editAvatarFile.name.split(".").pop();
         const path = session.user.id + "/avatar." + ext;
-        const { error: upErr } = await authClient.storage
+        // Storage upload via a client that carries the JWT explicitly
+        const { createClient } = await import("@supabase/supabase-js");
+        const storageClient = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+          { global: { headers: { Authorization: bearer } } }
+        );
+        const { error: upErr } = await storageClient.storage
           .from("avatars")
           .upload(path, editAvatarFile, { upsert: true });
         if (upErr) throw upErr;
-        const { data: { publicUrl } } = authClient.storage.from("avatars").getPublicUrl(path);
+        const { data: { publicUrl } } = storageClient.storage.from("avatars").getPublicUrl(path);
         avatarUrl = publicUrl;
-        // Persist new avatar_url separately after successful upload
-        await authClient
-          .from("profiles")
-          .update({ avatar_url: avatarUrl })
-          .eq("id", session.user.id);
       }
+
+      // Text + avatar_url update via API route — server-side getUser() validates the JWT
+      const res = await fetch("/api/profile/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": bearer,
+        },
+        body: JSON.stringify({
+          nome: editNome.trim(),
+          bio: editBio.trim(),
+          cidade: editCidade.trim(),
+          avatar_url: avatarUrl,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Erro ao salvar");
 
       setCreator(prev => ({ ...prev, nome: editNome.trim(), bio: editBio.trim(), cidade: editCidade.trim(), avatar_url: avatarUrl }));
       setEditAvatarFile(null);
       setEditAvatarPreview("");
       setEditMode(false);
-    } catch {
-      setEditErr("Erro ao salvar. Verifique sua conexão e tente novamente.");
+    } catch (err) {
+      setEditErr(err.message || "Erro ao salvar. Verifique sua conexão e tente novamente.");
     } finally {
       setEditSaving(false);
     }
