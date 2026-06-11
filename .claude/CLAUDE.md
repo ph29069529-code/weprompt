@@ -140,4 +140,33 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 STRIPE_WEBHOOK_SECRET          # server-only
 RESEND_API_KEY                 # server-only
 ANTHROPIC_API_KEY              # server-only
+CRON_SECRET                    # server-only — protege /api/cron/* de chamadas não autorizadas
 ```
+
+## Segurança
+
+### Rate Limiting
+`app/lib/rateLimiter.js` — Map em memória com cleanup a cada 5 min.
+- `workspace/chat`: 20 req/usuário/hora
+- `api/auth/login`: 5 tentativas/IP/15 min
+- Em produção Vercel, instâncias quentes compartilham estado; cold starts resetam o Map (best-effort).
+
+### Audit Log
+`app/lib/auditLog.js` — Função `logAction()` grava na tabela `audit_logs` via service-role.
+Nunca lança erro. Actions registradas: `login`, `logout`, `purchase_initiated`, `workspace_access`,
+`solution_approved`, `solution_rejected`, `profile_updated`, `rate_limit_hit`.
+
+### Cron Jobs (Vercel — `vercel.json`)
+| Rota | Horário | Função |
+|---|---|---|
+| `/api/cron/security-check` | 08:00 BRT (11:00 UTC) | Detecta anomalias nas últimas 24h e envia email |
+| `/api/cron/backup-check`   | 09:00 BRT (12:00 UTC) | Verifica conectividade e conta registros nas tabelas críticas |
+
+Ambas as rotas exigem header `Authorization: Bearer $CRON_SECRET`. Na Vercel, isso é injetado automaticamente.
+
+### Política de Backup (Supabase)
+- **Free tier**: backup diário automático com retenção de 7 dias.
+- **Pro tier**: Point-in-Time Recovery (PITR) com retenção de 30 dias.
+- Para verificar status de backup: `app.supabase.com > Project > Database > Backups`
+- O cron `backup-check` valida conectividade diariamente e alerta via email se o banco estiver inacessível.
+- Nunca dependa apenas do backup do Supabase — considere exportar `pg_dump` semanalmente para S3/GCS em produção crítica.
