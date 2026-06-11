@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { checkRateLimit, LIMITS } from "../../../lib/rateLimiter";
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -21,6 +22,23 @@ export async function POST(request) {
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
     if (authError || !user) {
       return NextResponse.json({ error: "Token inválido." }, { status: 401 });
+    }
+
+    // Rate limit: 20 messages per user per hour
+    const rl = checkRateLimit(user.id, LIMITS.WORKSPACE_CHAT.limit, LIMITS.WORKSPACE_CHAT.windowMs);
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Limite de mensagens atingido. Tente novamente em breve." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rl.retryAfterSec),
+            "X-RateLimit-Limit": String(LIMITS.WORKSPACE_CHAT.limit),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(Math.ceil(rl.resetAt / 1000)),
+          },
+        }
+      );
     }
 
     const { messages, solutionId } = await request.json();
