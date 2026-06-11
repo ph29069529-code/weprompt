@@ -54,6 +54,7 @@ export async function POST(request) {
       workflow_file_url: body.workflow_file_url || null,
       workflow_nodes: body.workflow_nodes || null,
       workflow_type: body.workflow_type || null,
+      problemas_resolvidos: body.problemas_resolvidos?.length > 0 ? body.problemas_resolvidos : null,
       status: 'pending'
     })
     .select()

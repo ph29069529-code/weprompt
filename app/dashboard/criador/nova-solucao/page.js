@@ -111,7 +111,9 @@ export default function NovaSolucaoPage() {
     ferramenta_automacao: '',
     instrucoes_configuracao: '',
     requisitos_tecnicos: '',
+    problemas_resolvidos: [],
   })
+  const [tagInput, setTagInput] = useState('')
   const [coverFile, setCoverFile] = useState(null)
   const [coverPreview, setCoverPreview] = useState(null)
   const [workflowFile, setWorkflowFile] = useState(null)
@@ -182,6 +184,20 @@ export default function NovaSolucaoPage() {
       }
     }
     reader.readAsText(file)
+  }
+
+  function handleTagKey(e) {
+    if (e.key !== 'Enter' && e.key !== ',') return
+    e.preventDefault()
+    const raw = tagInput.trim().replace(/,$/, '').toLowerCase()
+    if (!raw || form.problemas_resolvidos.length >= 5) return
+    if (form.problemas_resolvidos.includes(raw)) { setTagInput(''); return }
+    set('problemas_resolvidos', [...form.problemas_resolvidos, raw])
+    setTagInput('')
+  }
+
+  function removeTag(tag) {
+    set('problemas_resolvidos', form.problemas_resolvidos.filter(t => t !== tag))
   }
 
   function validate() {
@@ -567,6 +583,46 @@ export default function NovaSolucaoPage() {
               onBlur={e => onBlur(e, !!errors.como_funciona)}
             />
             <FieldError msg={errors.como_funciona} />
+          </div>
+
+          {/* Problemas que resolve */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={lbl}>Problemas que sua solução resolve *</label>
+            {form.problemas_resolvidos.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+                {form.problemas_resolvidos.map(tag => (
+                  <span key={tag} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    background: '#EEF2FF', color: '#4F46E5',
+                    borderRadius: 999, padding: '4px 12px',
+                    fontSize: 13, fontWeight: 600,
+                  }}>
+                    {tag}
+                    <button type="button" onClick={() => removeTag(tag)} style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: '#6366F1', fontSize: 14, lineHeight: 1, padding: 0,
+                      display: 'flex', alignItems: 'center',
+                    }}>×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            {form.problemas_resolvidos.length < 5 && (
+              <input
+                type="text"
+                value={tagInput}
+                onChange={e => setTagInput(e.target.value)}
+                onKeyDown={handleTagKey}
+                placeholder={form.problemas_resolvidos.length === 0 ? 'Ex: aumentar vendas — pressione Enter para adicionar' : 'Adicionar outro problema…'}
+                style={inputStyle(false)}
+                onFocus={onFocus}
+                onBlur={e => onBlur(e, false)}
+              />
+            )}
+            <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6, lineHeight: 1.5 }}>
+              Use linguagem simples, como sua cliente falaria. Pressione Enter ou virgula para adicionar.
+              {form.problemas_resolvidos.length >= 5 && <strong style={{ color: '#D97706' }}> Limite de 5 tags atingido.</strong>}
+            </p>
           </div>
 
           {/* Vídeo de demonstração */}
