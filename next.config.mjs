@@ -2,6 +2,7 @@
 const nextConfig = {
   async headers() {
     return [
+      /* ── Global headers (all routes) ─────────────────────────────────── */
       {
         source: '/(.*)',
         headers: [
@@ -35,6 +36,41 @@ const nextConfig = {
               "form-action 'self'",
             ].join('; '),
           },
+        ],
+      },
+
+      /* ── Dashboard routes — no indexing, no framing ───────────────────── */
+      {
+        source: '/dashboard/:path*',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+        ],
+      },
+
+      /* ── Admin route — same as dashboard ─────────────────────────────── */
+      {
+        source: '/admin',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+        ],
+      },
+
+      /* ── Auth routes — no indexing ────────────────────────────────────── */
+      {
+        source: '/(login|cadastro|completar-perfil)',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+        ],
+      },
+
+      /* ── Checkout routes — no indexing, no framing ────────────────────── */
+      {
+        source: '/checkout/:path*',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+          { key: 'X-Frame-Options', value: 'DENY' },
         ],
       },
     ];

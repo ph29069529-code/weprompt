@@ -19,7 +19,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
     }
 
-    const { solution_id, payment_type = "subscription" } = await request.json();
+    const { solution_id } = await request.json();
 
     if (!solution_id) {
       return NextResponse.json({ error: "Dados inválidos." }, { status: 400 });
@@ -41,7 +41,8 @@ export async function POST(request) {
 
     const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
     const unitAmount = Math.round(Number(solution.preco) * 100);
-    const isSubscription = solution.payment_type !== "one_time" && payment_type !== "one_time";
+    // payment_type comes exclusively from DB — client cannot override billing mode
+    const isSubscription = solution.payment_type !== "one_time";
 
     const priceData = isSubscription
       ? {
@@ -64,7 +65,7 @@ export async function POST(request) {
       metadata: {
         solution_id: String(solution_id),
         user_id: String(user.id),
-        payment_type: isSubscription ? "subscription" : "one_time",
+        payment_type: solution.payment_type || "subscription",
       },
     });
 
