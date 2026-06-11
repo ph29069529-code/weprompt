@@ -1482,6 +1482,61 @@ function SolutionDetailModal({ solution, onClose, onApprove, onConfirmReject }) 
           </div>
         )}
 
+        {/* Workflow detectado */}
+        {isIntegracao && solution.workflow_nodes && Array.isArray(solution.workflow_nodes) && solution.workflow_nodes.length > 0 && (
+          <div style={{ marginBottom: 20, background: "#F8F9FB", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px 18px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase" }}>Workflow detectado</div>
+              {solution.workflow_type && (
+                <span style={{
+                  fontSize: 10, fontWeight: 800, letterSpacing: 0.5, textTransform: "uppercase",
+                  background: solution.workflow_type === 'n8n' ? "#EEF2FF" : "#EDE9FE",
+                  color: solution.workflow_type === 'n8n' ? "#4F46E5" : "#6D28D9",
+                  borderRadius: 99, padding: "2px 8px",
+                }}>
+                  {solution.workflow_type === 'n8n' ? 'N8N' : 'Make'}
+                </span>
+              )}
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: solution.workflow_file_url ? 14 : 0 }}>
+              {solution.workflow_nodes.map((node, i) => {
+                const n8nEmojis = { webhook: '🔗', 'http request': '🌐', gmail: '📧', slack: '💬', 'google sheets': '📊', code: '💻', if: '🔀', set: '⚙️' }
+                const makeEmojis = { http: '🌐', email: '📧', 'google sheets': '📊', webhook: '🔗', router: '🔀' }
+                const emojiMap = solution.workflow_type === 'make' ? makeEmojis : n8nEmojis
+                const key = String(node).toLowerCase()
+                const emoji = Object.entries(emojiMap).find(([k]) => key.includes(k))?.[1] || '🔷'
+                return (
+                  <span key={i} style={{
+                    fontSize: 12, fontWeight: 600,
+                    background: "white", border: "1px solid #E5E7EB",
+                    borderRadius: 99, padding: "4px 12px",
+                    color: NEAR_BLACK, display: "inline-flex", alignItems: "center", gap: 5,
+                  }}>
+                    {emoji} {node}
+                  </span>
+                )
+              })}
+            </div>
+            {solution.workflow_file_url && (
+              <a
+                href={solution.workflow_file_url}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  fontSize: 13, fontWeight: 600, color: "#4F46E5",
+                  background: "#EEF2FF", border: "1px solid rgba(99,102,241,0.2)",
+                  borderRadius: 8, padding: "8px 14px", textDecoration: "none",
+                  transition: "background 0.15s",
+                }}
+              >
+                ⬇ Baixar arquivo do workflow
+              </a>
+            )}
+          </div>
+        )}
+
         {/* Vídeo do criador (curadoria) */}
         {solution.video_curadoria && getEmbedUrl(solution.video_curadoria) && (
           <div style={{ marginBottom: 20 }}>
@@ -1596,7 +1651,7 @@ export default function AdminDashboard() {
 
       const [solRes, subsRes] = await Promise.all([
         supabase.from("solutions")
-          .select("*, profiles:creator_id(nome)")
+          .select("*, profiles:creator_id(nome), workflow_file_url, workflow_nodes, workflow_type")
           .order("created_at", { ascending: false }),
         supabase.from("subscriptions")
           .select("*, solutions(preco)")
