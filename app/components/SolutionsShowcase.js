@@ -153,6 +153,35 @@ export default function SolutionsShowcase() {
           <p style={{ fontSize: 17, color: "#6B7280", maxWidth: 480, margin: "0 auto" }}>
             Escolha, ative e comece a usar em minutos.
           </p>
+          <p style={{ fontSize: 14, color: "#9CA3AF", marginTop: 24, marginBottom: 10 }}>
+            O que você quer resolver hoje?
+          </p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+            {[
+              { label: "📈 Aumentar vendas",     q: "aumentar vendas" },
+              { label: "📧 Responder emails",    q: "responder emails" },
+              { label: "📱 Postar nas redes",    q: "postar nas redes" },
+              { label: "💬 Atender clientes",    q: "atender clientes" },
+              { label: "🎯 Prospectar leads",    q: "prospectar leads" },
+              { label: "⚡ Automatizar tarefas", q: "automatizar tarefas" },
+            ].map(chip => (
+              <a
+                key={chip.q}
+                href={`/solucoes?q=${encodeURIComponent(chip.q)}`}
+                style={{
+                  background: "white", border: "1px solid #E5E7EB",
+                  borderRadius: 999, padding: "8px 16px",
+                  fontSize: 13, fontWeight: 600, color: "#374151",
+                  textDecoration: "none", transition: "all 0.15s",
+                  display: "inline-block",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#EEF2FF"; e.currentTarget.style.color = "#4F46E5"; e.currentTarget.style.borderColor = "rgba(99,102,241,0.35)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "white"; e.currentTarget.style.color = "#374151"; e.currentTarget.style.borderColor = "#E5E7EB"; }}
+              >
+                {chip.label}
+              </a>
+            ))}
+          </div>
         </div>
 
         {/* Skeleton */}

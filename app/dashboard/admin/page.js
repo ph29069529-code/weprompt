@@ -1454,6 +1454,24 @@ function SolutionDetailModal({ solution, onClose, onApprove, onConfirmReject }) 
           </div>
         )}
 
+        {/* Problemas que resolve */}
+        {Array.isArray(solution.problemas_resolvidos) && solution.problemas_resolvidos.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: GRAY_TEXT, letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 8 }}>Problemas que resolve</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {solution.problemas_resolvidos.map((p, i) => (
+                <span key={i} style={{
+                  background: "#EEF2FF", color: "#4F46E5",
+                  borderRadius: 999, padding: "4px 12px",
+                  fontSize: 12, fontWeight: 600,
+                }}>
+                  {p}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Campos específicos — agente_integracao */}
         {isIntegracao && solution.apps_integrados && (
           <div style={{ marginBottom: 20 }}>
@@ -1651,7 +1669,7 @@ export default function AdminDashboard() {
 
       const [solRes, subsRes] = await Promise.all([
         supabase.from("solutions")
-          .select("*, profiles:creator_id(nome), workflow_file_url, workflow_nodes, workflow_type")
+          .select("*, profiles:creator_id(nome), workflow_file_url, workflow_nodes, workflow_type, problemas_resolvidos")
           .order("created_at", { ascending: false }),
         supabase.from("subscriptions")
           .select("*, solutions(preco)")

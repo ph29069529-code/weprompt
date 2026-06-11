@@ -240,6 +240,7 @@ export default function SolucoesPage() {
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [searchQuery, setSearchQuery]       = useState("");
   const [tipoFilter, setTipoFilter]         = useState("");
+  const [problemSearch, setProblemSearch]   = useState("");
 
   /* ── Auth gate — redirect unauthenticated users before loading data ── */
   useEffect(() => {
@@ -248,6 +249,8 @@ export default function SolucoesPage() {
         router.replace("/login?redirect=/solucoes&msg=catalogo");
       }
     });
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (q) setProblemSearch(q);
   }, [router]);
 
   /* ── Supabase queries (unchanged) ── */
@@ -260,7 +263,7 @@ export default function SolucoesPage() {
     async function fetchSolutions() {
       const { data, error } = await supabase
         .from("solutions")
-        .select("id, titulo, descricao_curta, categoria, preco, tipo, status, creator_id, cover_url, payment_type, avg_rating, review_count, ativo")
+        .select("id, titulo, descricao_curta, categoria, preco, tipo, status, creator_id, cover_url, payment_type, avg_rating, review_count, ativo, problemas_resolvidos")
         .eq("status", "approved")
         .order("created_at", { ascending: false });
       if (!error && data) setSolutions(data);
@@ -270,13 +273,18 @@ export default function SolucoesPage() {
   }, []);
 
   const filtered = solutions.filter(s => {
-    const matchCat = activeCategory === "Todos" || s.categoria === activeCategory;
-    const matchTipo = !tipoFilter || s.tipo === tipoFilter;
-    const q = searchQuery.trim().toLowerCase();
+    const matchCat    = activeCategory === "Todos" || s.categoria === activeCategory;
+    const matchTipo   = !tipoFilter || s.tipo === tipoFilter;
+    const q           = searchQuery.trim().toLowerCase();
     const matchSearch = !q
       || s.titulo?.toLowerCase().includes(q)
-      || s.descricao?.toLowerCase().includes(q);
-    return matchCat && matchTipo && matchSearch;
+      || s.descricao_curta?.toLowerCase().includes(q);
+    const pq = problemSearch.trim().toLowerCase();
+    const matchProblem = !pq
+      || s.titulo?.toLowerCase().includes(pq)
+      || s.descricao_curta?.toLowerCase().includes(pq)
+      || (Array.isArray(s.problemas_resolvidos) && s.problemas_resolvidos.some(p => p.toLowerCase().includes(pq)));
+    return matchCat && matchTipo && matchSearch && matchProblem;
   });
 
   return (
@@ -292,10 +300,73 @@ export default function SolucoesPage() {
         @media (min-width: 768px) { .catalog-search { width: 320px; } }
         .catalog-grid { display: grid; grid-template-columns: 1fr; }
         @media (min-width: 640px) { .catalog-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+        .discovery-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .disc-chip { background: white; border: 1px solid #E5E7EB; border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 600; color: #374151; cursor: pointer; transition: all 0.15s; font-family: inherit; white-space: nowrap; }
+        .disc-chip:hover, .disc-chip.active { background: #EEF2FF; color: #4F46E5; border-color: rgba(99,102,241,0.35); }
+        .discovery-input-wrap { position: relative; width: 100%; margin-bottom: 10px; }
+        .discovery-input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9CA3AF; pointer-events: none; }
+        .discovery-input-clear { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #9CA3AF; font-size: 18px; line-height: 1; padding: 0; }
+        .discovery-input-clear:hover { color: #374151; }
       `}</style>
 
       {/* ── MAIN CONTENT ── */}
       <div className="catalog-container">
+
+        {/* ── Discovery por problema ── */}
+        <div style={{ marginBottom: 32 }}>
+          <div className="discovery-input-wrap">
+            <span className="discovery-input-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="m21 21-4.35-4.35"/>
+              </svg>
+            </span>
+            <input
+              type="text"
+              value={problemSearch}
+              onChange={e => setProblemSearch(e.target.value)}
+              placeholder="Qual problema você quer resolver?"
+              style={{
+                width: "100%", boxSizing: "border-box",
+                padding: "16px 44px 16px 48px",
+                borderRadius: 16, border: problemSearch ? "2px solid #6366F1" : "1.5px solid #E5E7EB",
+                fontSize: 16, color: "#111827", background: "white",
+                outline: "none", fontFamily: "inherit",
+                boxShadow: problemSearch ? "0 0 0 3px rgba(99,102,241,0.1)" : "0 2px 8px rgba(0,0,0,0.06)",
+                transition: "border-color 0.15s, box-shadow 0.15s",
+              }}
+              onFocus={e => { e.target.style.borderColor = "#6366F1"; e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.1)"; }}
+              onBlur={e => { if (!problemSearch) { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)"; } }}
+            />
+            {problemSearch && (
+              <button className="discovery-input-clear" onClick={() => setProblemSearch("")} title="Limpar busca">×</button>
+            )}
+          </div>
+          <div className="discovery-chips">
+            {[
+              { label: "📈 Aumentar vendas",    q: "aumentar vendas" },
+              { label: "📧 Responder emails",   q: "responder emails" },
+              { label: "📱 Postar nas redes",   q: "postar nas redes" },
+              { label: "💬 Atender clientes",   q: "atender clientes" },
+              { label: "🎯 Prospectar leads",   q: "prospectar leads" },
+              { label: "⚡ Automatizar tarefas",q: "automatizar tarefas" },
+            ].map(chip => (
+              <button
+                key={chip.q}
+                className={`disc-chip${problemSearch.toLowerCase() === chip.q ? " active" : ""}`}
+                onClick={() => setProblemSearch(problemSearch.toLowerCase() === chip.q ? "" : chip.q)}
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+          {problemSearch.trim() && !loading && (
+            <div style={{ fontSize: 14, color: "#6B7280", marginTop: 12 }}>
+              <strong style={{ color: "#111827" }}>{filtered.length}</strong>{" "}
+              {filtered.length === 1 ? "solução encontrada" : "soluções encontradas"} para{" "}
+              <strong style={{ color: "#4F46E5" }}>"{problemSearch.trim()}"</strong>
+            </div>
+          )}
+        </div>
 
         {/* Header row */}
         <div className="catalog-header" style={{ marginBottom: 32 }}>
@@ -393,22 +464,26 @@ export default function SolucoesPage() {
           }}>
             <div style={{ fontSize: 40, marginBottom: 16, color: BLUE, opacity: 0.2 }}>✦</div>
             <h2 style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 8 }}>
-              {searchQuery.trim()
-                ? `Nenhum resultado para "${searchQuery.trim()}"`
-                : activeCategory === "Todos"
-                  ? "Nenhuma solução disponível ainda"
-                  : `Nenhuma solução em "${activeCategory}"`}
+              {problemSearch.trim()
+                ? `Nenhuma solução encontrada para esse problema`
+                : searchQuery.trim()
+                  ? `Nenhum resultado para "${searchQuery.trim()}"`
+                  : activeCategory === "Todos"
+                    ? "Nenhuma solução disponível ainda"
+                    : `Nenhuma solução em "${activeCategory}"`}
             </h2>
             <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 24, lineHeight: 1.6 }}>
-              {searchQuery.trim()
-                ? "Tente outras palavras-chave ou explore por categoria."
-                : activeCategory === "Todos"
-                  ? "Em breve teremos soluções incríveis de IA para você explorar."
-                  : "Tente outra categoria ou explore todas as soluções disponíveis."}
+              {problemSearch.trim()
+                ? "Que tal explorar por categoria?"
+                : searchQuery.trim()
+                  ? "Tente outras palavras-chave ou explore por categoria."
+                  : activeCategory === "Todos"
+                    ? "Em breve teremos soluções incríveis de IA para você explorar."
+                    : "Tente outra categoria ou explore todas as soluções disponíveis."}
             </p>
-            {(activeCategory !== "Todos" || searchQuery.trim() || tipoFilter) && (
+            {(activeCategory !== "Todos" || searchQuery.trim() || tipoFilter || problemSearch.trim()) && (
               <button
-                onClick={() => { setActiveCategory("Todos"); setSearchQuery(""); setTipoFilter(""); }}
+                onClick={() => { setActiveCategory("Todos"); setSearchQuery(""); setTipoFilter(""); setProblemSearch(""); }}
                 style={{
                   background: "linear-gradient(135deg, #6366F1, #8B5CF6)", color: "#fff", border: "none",
                   borderRadius: 999, padding: "12px 28px",
