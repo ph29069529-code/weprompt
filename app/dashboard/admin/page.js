@@ -1584,14 +1584,14 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     async function init() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { router.replace("/login"); return; }
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) { router.replace("/login"); return; }
 
       const { data: prof } = await supabase
-        .from("profiles").select("*").eq("id", session.user.id).single();
+        .from("profiles").select("*").eq("id", user.id).single();
       if (!prof || prof.role !== "admin") { router.replace("/"); return; }
 
-      setUser(session.user);
+      setUser(user);
       setProfile(prof);
 
       const [solRes, subsRes] = await Promise.all([
@@ -1639,21 +1639,34 @@ export default function AdminDashboard() {
     if (isMobile) setSidebarOpen(false);
   }
 
+  async function adminSolutionAction(solution_id, action, rejection_reason) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) return;
+
+    const res = await fetch("/api/admin/solutions", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ solution_id, action, rejection_reason }),
+    });
+    return res.ok;
+  }
+
   async function handleApprove(id) {
     setActionLoading(id);
-    await supabase.from("solutions").update({ status: "approved" }).eq("id", id);
-    setSolutions(prev => prev.map(s => s.id === id ? { ...s, status: "approved" } : s));
+    const ok = await adminSolutionAction(id, "approve");
+    if (ok) setSolutions(prev => prev.map(s => s.id === id ? { ...s, status: "approved" } : s));
     setActionLoading(null);
   }
 
   async function handleConfirmReject(solution, reason) {
     setActionLoading(solution.id);
-    await supabase.from("solutions")
-      .update({ status: "rejected", rejection_reason: reason })
-      .eq("id", solution.id);
-    setSolutions(prev => prev.map(s =>
-      s.id === solution.id ? { ...s, status: "rejected", rejection_reason: reason } : s
-    ));
+    const ok = await adminSolutionAction(solution.id, "reject", reason);
+    if (ok) {
+      setSolutions(prev => prev.map(s =>
+        s.id === solution.id ? { ...s, status: "rejected", rejection_reason: reason } : s
+      ));
+    }
     setActionLoading(null);
   }
 

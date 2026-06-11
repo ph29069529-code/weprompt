@@ -27,7 +27,10 @@ export async function POST(request) {
       .eq("user_id", user.id)
       .is("read_at", null);
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error("[notifications/read all]", error);
+      return NextResponse.json({ error: "Erro interno. Tente novamente." }, { status: 500 });
+    }
     return NextResponse.json({ ok: true });
   }
 
@@ -41,6 +44,9 @@ export async function POST(request) {
     .eq("id", body.notification_id)
     .eq("user_id", user.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("[notifications/read]", error);
+    return NextResponse.json({ error: "Erro interno. Tente novamente." }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }
