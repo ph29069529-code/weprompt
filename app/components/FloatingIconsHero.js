@@ -168,7 +168,7 @@ export default function FloatingIconsHero() {
           lineHeight: 1.65, margin: '16px auto 40px',
           animation: 'heroFadeUp 0.7s ease-out 0.6s both',
         }}>
-          Soluções de IA curadas, testadas e prontas para usar — com suporte em português.
+          Soluções de IA curadas, testadas e prontas para usar, com suporte em português.
         </p>
 
         {/* Buttons */}

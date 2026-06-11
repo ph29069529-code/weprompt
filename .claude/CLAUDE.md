@@ -90,6 +90,7 @@ Tables in Supabase:
 - All clickable elements: `minHeight: 44` (tap targets)
 - Button border-radius: `10px`; card border-radius: `12px`–`20px`
 - Commits in English, one feature per commit, build must pass before pushing
+- NUNCA usar travessão (—) em nenhum texto da plataforma — substituir sempre por vírgula ou ponto
 
 ## Roles and dashboards
 
