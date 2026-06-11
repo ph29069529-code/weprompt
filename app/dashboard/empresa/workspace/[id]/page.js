@@ -101,6 +101,8 @@ export default function WorkspacePage() {
 
   const [sidebarVisible,    setSidebarVisible]    = useState(false);
   const [showTutorialModal, setShowTutorialModal] = useState(false);
+  const [setupStep,         setSetupStep]         = useState(1);
+  const [setupDone,         setSetupDone]         = useState(false);
 
   const [user,        setUser]        = useState(null);
   const [solution,    setSolution]    = useState(null);
@@ -158,6 +160,7 @@ export default function WorkspacePage() {
         "id", "titulo", "descricao", "descricao_curta", "categoria", "tipo", "cover_url",
         "video_tutorial", "apps_integrados", "ferramenta_automacao",
         "instrucoes_configuracao", "requisitos_tecnicos",
+        "workflow_file_url", "workflow_type",
         "profiles:creator_id(id, nome)",
       ].join(", ");
 
@@ -317,6 +320,8 @@ export default function WorkspacePage() {
   const suggestions = getSuggestions(solution?.categoria);
   const solInitials = solution?.titulo ? initials(solution.titulo) : "IA";
   const isIntegracao = solution?.tipo === "agente_integracao";
+  const hasWorkflow  = !!solution?.workflow_file_url;
+  const toolName     = (solution?.ferramenta_automacao || '').toLowerCase();
 
   /* ── Integration setup panel (for agente_integracao) ── */
   if (isIntegracao) {
@@ -427,51 +432,316 @@ export default function WorkspacePage() {
           <div style={{ flex: 1, overflowY: "auto", padding: "32px 24px" }}>
             <div style={{ maxWidth: 720, margin: "0 auto" }}>
 
-              {/* Header */}
-              <div style={{ marginBottom: 32 }}>
-                <h1 style={{ fontSize: 24, fontWeight: 800, color: "#111827", margin: "0 0 8px" }}>Setup da Integração</h1>
-                <p style={{ fontSize: 15, color: "#6B7280", margin: 0 }}>Siga as instruções abaixo para configurar sua integração.</p>
-              </div>
+              {hasWorkflow ? (
+                /* ── Experiência guiada em 3 passos ── */
+                <>
+                  <style>{`
+                    .ws-step-btn:hover { opacity: 0.88; }
+                    .ws-step-outline:hover { background: rgba(99,102,241,0.06) !important; }
+                    .ws-checkbox-label { display: flex; align-items: center; gap: 10; cursor: pointer; font-size: 15px; font-weight: 600; color: #111827; }
+                    @media (max-width: 600px) {
+                      .ws-step-actions { flex-direction: column !important; }
+                      .ws-step-actions a, .ws-step-actions button { width: 100% !important; justify-content: center !important; }
+                    }
+                  `}</style>
 
-              {/* Apps integrados */}
-              {solution?.apps_integrados && (
-                <div style={{ background: "white", borderRadius: 12, border: "1px solid #E5E7EB", padding: 24, marginBottom: 20 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#9CA3AF", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Apps integrados</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {solution.apps_integrados.split(",").map(app => app.trim()).filter(Boolean).map(app => (
-                      <span key={app} style={{ background: "#EDE9FE", color: "#6D28D9", borderRadius: 999, padding: "6px 14px", fontSize: 14, fontWeight: 600 }}>{app}</span>
-                    ))}
+                  {/* Stepper */}
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 36 }}>
+                    {[1, 2, 3].map((n, i) => {
+                      const done   = setupStep > n;
+                      const active = setupStep === n;
+                      const labels = ["Baixar", "Importar", "Configurar"];
+                      return (
+                        <div key={n} style={{ display: "flex", alignItems: "center", flex: i < 2 ? 1 : 0 }}>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                            <div style={{
+                              width: 36, height: 36, borderRadius: "50%",
+                              background: done || active ? "#6366F1" : "white",
+                              border: done || active ? "2px solid #6366F1" : "2px solid #D1D5DB",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 14, fontWeight: 800,
+                              color: done || active ? "white" : "#9CA3AF",
+                              flexShrink: 0, transition: "all 0.2s",
+                            }}>
+                              {done ? "✓" : n}
+                            </div>
+                            <span style={{ fontSize: 11, fontWeight: 600, color: active ? "#6366F1" : done ? "#6366F1" : "#9CA3AF", whiteSpace: "nowrap" }}>
+                              {labels[i]}
+                            </span>
+                          </div>
+                          {i < 2 && (
+                            <div style={{ flex: 1, height: 2, background: setupStep > n ? "#6366F1" : "#E5E7EB", margin: "0 8px", marginBottom: 22, transition: "background 0.2s" }} />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
+
+                  {/* Passo 1 — Baixar */}
+                  {setupStep === 1 && (
+                    <div style={{ background: "white", borderRadius: 16, border: "1px solid #E5E7EB", padding: 28, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#6366F1", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Passo 1</div>
+                      <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111827", margin: "0 0 8px", letterSpacing: "-0.03em" }}>Baixar o arquivo do workflow</h2>
+                      <p style={{ fontSize: 14, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.6 }}>
+                        Salve o arquivo .json no seu computador. Voce vai precisar dele no proximo passo para importar no {solution?.ferramenta_automacao || "sua ferramenta"}.
+                      </p>
+                      <a
+                        href={solution.workflow_file_url}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ws-step-btn"
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: 8,
+                          background: "linear-gradient(135deg, #6366F1, #8B5CF6)",
+                          color: "white", borderRadius: 999, padding: "13px 28px",
+                          fontSize: 15, fontWeight: 700, textDecoration: "none",
+                          boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+                          transition: "opacity 0.15s",
+                        }}
+                      >
+                        ⬇ Baixar arquivo do workflow
+                      </a>
+                      <div style={{ marginTop: 28, display: "flex", justifyContent: "flex-end" }}>
+                        <button onClick={() => setSetupStep(2)} style={{
+                          background: "#111827", color: "white", border: "none", borderRadius: 999,
+                          padding: "11px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                          fontFamily: "inherit", minHeight: 44,
+                        }}>
+                          Proximo passo →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Passo 2 — Importar */}
+                  {setupStep === 2 && (
+                    <div style={{ background: "white", borderRadius: 16, border: "1px solid #E5E7EB", padding: 28, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#6366F1", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Passo 2</div>
+                      <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111827", margin: "0 0 8px", letterSpacing: "-0.03em" }}>
+                        Importar no {toolName === 'n8n' ? 'N8N' : toolName === 'make' ? 'Make' : solution?.ferramenta_automacao}
+                      </h2>
+                      <p style={{ fontSize: 14, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.6 }}>
+                        Siga os passos abaixo para importar o workflow que voce acabou de baixar.
+                      </p>
+
+                      {/* Steps numbered */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 28 }}>
+                        {(toolName === 'n8n' ? [
+                          "Abra seu N8N",
+                          "Clique em \"New Workflow\"",
+                          "Clique nos tres pontos (menu) e selecione \"Import from file\"",
+                          "Selecione o arquivo .json que voce baixou",
+                          "Clique em \"Save\"",
+                        ] : toolName === 'make' ? [
+                          "Acesse app.make.com",
+                          "Clique em \"Create a new scenario\"",
+                          "Clique nos tres pontinhos e selecione \"Import Blueprint\"",
+                          "Selecione o arquivo .json que voce baixou",
+                          "Configure as conexoes e clique em \"Save\"",
+                        ] : ["Importe o arquivo .json baixado na sua ferramenta de automacao"]).map((step, i) => (
+                          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+                            <div style={{
+                              width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
+                              background: "#EEF2FF", color: "#6366F1",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: 12, fontWeight: 800,
+                            }}>{i + 1}</div>
+                            <span style={{ fontSize: 14, color: "#374151", lineHeight: 1.6, paddingTop: 4 }}>{step}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* External links */}
+                      <div className="ws-step-actions" style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 28 }}>
+                        {toolName === 'n8n' && (
+                          <>
+                            <a href="https://app.n8n.cloud" target="_blank" rel="noopener noreferrer"
+                              className="ws-step-outline"
+                              style={{
+                                display: "inline-flex", alignItems: "center", gap: 6,
+                                border: "1.5px solid #6366F1", color: "#6366F1",
+                                background: "transparent", borderRadius: 999,
+                                padding: "10px 20px", fontSize: 14, fontWeight: 600,
+                                textDecoration: "none", transition: "background 0.15s", minHeight: 44,
+                              }}>
+                              Abrir N8N Cloud ↗
+                            </a>
+                            <a href="https://docs.n8n.io" target="_blank" rel="noopener noreferrer"
+                              className="ws-step-outline"
+                              style={{
+                                display: "inline-flex", alignItems: "center", gap: 6,
+                                border: "1.5px solid #E5E7EB", color: "#6B7280",
+                                background: "transparent", borderRadius: 999,
+                                padding: "10px 20px", fontSize: 14, fontWeight: 600,
+                                textDecoration: "none", transition: "background 0.15s", minHeight: 44,
+                              }}>
+                              Ver documentacao N8N ↗
+                            </a>
+                          </>
+                        )}
+                        {toolName === 'make' && (
+                          <>
+                            <a href="https://app.make.com" target="_blank" rel="noopener noreferrer"
+                              className="ws-step-outline"
+                              style={{
+                                display: "inline-flex", alignItems: "center", gap: 6,
+                                border: "1.5px solid #6366F1", color: "#6366F1",
+                                background: "transparent", borderRadius: 999,
+                                padding: "10px 20px", fontSize: 14, fontWeight: 600,
+                                textDecoration: "none", transition: "background 0.15s", minHeight: 44,
+                              }}>
+                              Abrir Make ↗
+                            </a>
+                            <a href="https://www.make.com/en/help" target="_blank" rel="noopener noreferrer"
+                              className="ws-step-outline"
+                              style={{
+                                display: "inline-flex", alignItems: "center", gap: 6,
+                                border: "1.5px solid #E5E7EB", color: "#6B7280",
+                                background: "transparent", borderRadius: 999,
+                                padding: "10px 20px", fontSize: 14, fontWeight: 600,
+                                textDecoration: "none", transition: "background 0.15s", minHeight: 44,
+                              }}>
+                              Ver documentacao Make ↗
+                            </a>
+                          </>
+                        )}
+                      </div>
+
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <button onClick={() => setSetupStep(1)} style={{
+                          background: "none", color: "#6B7280", border: "1px solid #E5E7EB", borderRadius: 999,
+                          padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer",
+                          fontFamily: "inherit", minHeight: 44,
+                        }}>
+                          ← Voltar
+                        </button>
+                        <button onClick={() => setSetupStep(3)} style={{
+                          background: "#111827", color: "white", border: "none", borderRadius: 999,
+                          padding: "11px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                          fontFamily: "inherit", minHeight: 44,
+                        }}>
+                          Proximo passo →
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Passo 3 — Configurar e ativar */}
+                  {setupStep === 3 && (
+                    <div style={{ background: "white", borderRadius: 16, border: "1px solid #E5E7EB", padding: 28, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#6366F1", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Passo 3</div>
+                      <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111827", margin: "0 0 8px", letterSpacing: "-0.03em" }}>Configurar e ativar</h2>
+                      <p style={{ fontSize: 14, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.6 }}>
+                        Siga as instrucoes do criador para finalizar a configuracao da integracao.
+                      </p>
+
+                      {solution?.instrucoes_configuracao && (
+                        <div style={{ background: "#F8F9FB", border: "1px solid #E5E7EB", borderRadius: 12, padding: "18px 20px", marginBottom: 24 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#9CA3AF", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Instrucoes de configuracao</div>
+                          <div style={{ fontSize: 14, color: "#111827", lineHeight: 1.8, whiteSpace: "pre-line" }}>{solution.instrucoes_configuracao}</div>
+                        </div>
+                      )}
+
+                      {/* Success banner */}
+                      {setupDone && (
+                        <div style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 12, padding: "16px 20px", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <span style={{ fontSize: 20 }}>✅</span>
+                            <div>
+                              <div style={{ fontSize: 15, fontWeight: 700, color: "#15803D" }}>Integracao configurada com sucesso!</div>
+                              <div style={{ fontSize: 13, color: "#16A34A", marginTop: 2 }}>Sua integracao esta pronta para uso.</div>
+                            </div>
+                          </div>
+                          <a
+                            href={`mailto:contato@weprompt.app.br?subject=Ajuda%20com%20integracao%20-%20${encodeURIComponent(solution?.titulo || "")}`}
+                            style={{
+                              display: "inline-flex", alignItems: "center", gap: 6,
+                              border: "1.5px solid #16A34A", color: "#15803D", background: "transparent",
+                              borderRadius: 999, padding: "8px 16px", fontSize: 13, fontWeight: 600,
+                              textDecoration: "none", flexShrink: 0,
+                            }}>
+                            ✉ Preciso de ajuda
+                          </a>
+                        </div>
+                      )}
+
+                      {/* Checkbox */}
+                      {!setupDone && (
+                        <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", marginBottom: 24, fontSize: 15, fontWeight: 600, color: "#111827" }}>
+                          <input
+                            type="checkbox"
+                            checked={setupDone}
+                            onChange={e => setSetupDone(e.target.checked)}
+                            style={{ width: 18, height: 18, accentColor: "#6366F1", cursor: "pointer" }}
+                          />
+                          Concluí a configuracao
+                        </label>
+                      )}
+
+                      <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                        <button onClick={() => setSetupStep(2)} style={{
+                          background: "none", color: "#6B7280", border: "1px solid #E5E7EB", borderRadius: 999,
+                          padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer",
+                          fontFamily: "inherit", minHeight: 44,
+                        }}>
+                          ← Voltar
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                /* ── Setup panel clássico (sem workflow_file_url) ── */
+                <>
+                  {/* Header */}
+                  <div style={{ marginBottom: 32 }}>
+                    <h1 style={{ fontSize: 24, fontWeight: 800, color: "#111827", margin: "0 0 8px" }}>Setup da Integração</h1>
+                    <p style={{ fontSize: 15, color: "#6B7280", margin: 0 }}>Siga as instruções abaixo para configurar sua integração.</p>
+                  </div>
+
+                  {/* Apps integrados */}
+                  {solution?.apps_integrados && (
+                    <div style={{ background: "white", borderRadius: 12, border: "1px solid #E5E7EB", padding: 24, marginBottom: 20 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#9CA3AF", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Apps integrados</div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {solution.apps_integrados.split(",").map(app => app.trim()).filter(Boolean).map(app => (
+                          <span key={app} style={{ background: "#EDE9FE", color: "#6D28D9", borderRadius: 999, padding: "6px 14px", fontSize: 14, fontWeight: 600 }}>{app}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Requisitos técnicos */}
+                  {solution?.requisitos_tecnicos && (
+                    <div style={{ background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 12, padding: 24, marginBottom: 20 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#92400E", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>⚠ Requisitos técnicos</div>
+                      <p style={{ fontSize: 14, color: "#78350F", lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>{solution.requisitos_tecnicos}</p>
+                    </div>
+                  )}
+
+                  {/* Instruções de configuração */}
+                  {solution?.instrucoes_configuracao && (
+                    <div style={{ background: "white", borderRadius: 12, border: "1px solid #E5E7EB", padding: 24, marginBottom: 20 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#9CA3AF", letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>Como configurar</div>
+                      <div style={{ fontSize: 15, color: "#111827", lineHeight: 1.8, whiteSpace: "pre-line" }}>{solution.instrucoes_configuracao}</div>
+                    </div>
+                  )}
+
+                  {/* Preciso de ajuda */}
+                  <div style={{ background: "#F5F3FF", border: "1px solid #DDD6FE", borderRadius: 12, padding: 24, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: "#6D28D9", marginBottom: 4 }}>Precisa de ajuda?</div>
+                      <div style={{ fontSize: 14, color: "#7C3AED" }}>Nossa equipe está pronta para te ajudar a configurar a integração.</div>
+                    </div>
+                    <a href={`mailto:contato@weprompt.app.br?subject=Ajuda%20com%20integração%20-%20${encodeURIComponent(solution?.titulo || "")}`}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#7C3AED", color: "white", borderRadius: 10, padding: "12px 20px", fontSize: 14, fontWeight: 700, textDecoration: "none", flexShrink: 0 }}>
+                      ✉ Preciso de ajuda
+                    </a>
+                  </div>
+                </>
               )}
 
-              {/* Requisitos técnicos */}
-              {solution?.requisitos_tecnicos && (
-                <div style={{ background: "#FFFBEB", border: "1px solid #FDE68A", borderRadius: 12, padding: 24, marginBottom: 20 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#92400E", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>⚠ Requisitos técnicos</div>
-                  <p style={{ fontSize: 14, color: "#78350F", lineHeight: 1.7, margin: 0, whiteSpace: "pre-line" }}>{solution.requisitos_tecnicos}</p>
-                </div>
-              )}
-
-              {/* Instruções de configuração */}
-              {solution?.instrucoes_configuracao && (
-                <div style={{ background: "white", borderRadius: 12, border: "1px solid #E5E7EB", padding: 24, marginBottom: 20 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#9CA3AF", letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>Como configurar</div>
-                  <div style={{ fontSize: 15, color: "#111827", lineHeight: 1.8, whiteSpace: "pre-line" }}>{solution.instrucoes_configuracao}</div>
-                </div>
-              )}
-
-              {/* Preciso de ajuda */}
-              <div style={{ background: "#F5F3FF", border: "1px solid #DDD6FE", borderRadius: 12, padding: 24, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "#6D28D9", marginBottom: 4 }}>Precisa de ajuda?</div>
-                  <div style={{ fontSize: 14, color: "#7C3AED" }}>Nossa equipe está pronta para te ajudar a configurar a integração.</div>
-                </div>
-                <a href={`mailto:contato@weprompt.app.br?subject=Ajuda%20com%20integração%20-%20${encodeURIComponent(solution?.titulo || "")}`}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#7C3AED", color: "white", borderRadius: 10, padding: "12px 20px", fontSize: 14, fontWeight: 700, textDecoration: "none", flexShrink: 0 }}>
-                  ✉ Preciso de ajuda
-                </a>
-              </div>
             </div>
           </div>
         </main>
