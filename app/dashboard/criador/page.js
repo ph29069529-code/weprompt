@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
@@ -15,6 +15,7 @@ const CRIADOR_TABS = [
   { label: "Dashboard",       key: "dashboard"     },
   { label: "Minhas Soluções", key: "solucoes"      },
   { label: "Vendas",          key: "vendas"         },
+  { label: "Ganhos",          key: "ganhos"         },
   { label: "Configurações",   key: "configuracoes"  },
   { label: "Analytics",       key: "analytics"      },
 ];
@@ -57,6 +58,130 @@ function MetricCard({ iconBg, icon, label, value, sub, subColor, onClick, hovere
         <div style={{ fontSize: 28, fontWeight: 800, color: "#111827", lineHeight: 1.1, marginTop: 2 }}>{value}</div>
         {sub && <div style={{ fontSize: 12, color: subColor || "#9ca3af", marginTop: 2, fontWeight: 500 }}>{sub}</div>}
       </div>
+    </div>
+  );
+}
+
+function EarningsChart({ data }) {
+  const [tooltip, setTooltip] = useState(null);
+  const containerRef = useRef(null);
+
+  const CHART_W = 700;
+  const CHART_H = 200;
+  const PAD = { top: 20, right: 16, bottom: 36, left: 58 };
+  const innerW = CHART_W - PAD.left - PAD.right;
+  const innerH = CHART_H - PAD.top - PAD.bottom;
+
+  const maxVal = Math.max(...data.map(d => d.value), 1);
+  const barW = innerW / data.length;
+  const gap = 3;
+
+  const yTicks = [0, 0.25, 0.5, 0.75, 1];
+
+  return (
+    <div ref={containerRef} style={{ position: "relative" }}>
+      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+        <svg
+          viewBox={`0 0 ${CHART_W} ${CHART_H}`}
+          style={{ width: "100%", minWidth: 460, height: CHART_H, display: "block" }}
+          aria-label="Gráfico de receita diária"
+        >
+          {/* Grid lines + Y labels */}
+          {yTicks.map((pct) => {
+            const y = PAD.top + innerH - pct * innerH;
+            const val = maxVal * pct;
+            return (
+              <g key={pct}>
+                <line
+                  x1={PAD.left} y1={y} x2={CHART_W - PAD.right} y2={y}
+                  stroke="#E5E7EB" strokeWidth={1}
+                  strokeDasharray={pct === 0 ? "0" : "3 4"}
+                />
+                <text x={PAD.left - 6} y={y + 4} fontSize={10} fill="#9CA3AF" textAnchor="end">
+                  {val === 0 ? "R$0" : `R$${Math.round(val)}`}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Bars */}
+          {data.map((d, i) => {
+            const x = PAD.left + i * barW + gap / 2;
+            const bh = d.value > 0 ? Math.max((d.value / maxVal) * innerH, 3) : 0;
+            const y = PAD.top + innerH - bh;
+            const w = Math.max(barW - gap, 1);
+            const isHovered = tooltip?.idx === i;
+            return (
+              <rect
+                key={i}
+                x={x} y={y} width={w} height={bh}
+                fill={isHovered ? "#4F46E5" : "#6366F1"}
+                rx={2}
+                style={{ cursor: "pointer", transition: "fill 0.1s" }}
+                onMouseEnter={e => {
+                  if (!containerRef.current) return;
+                  const cr = containerRef.current.getBoundingClientRect();
+                  const er = e.currentTarget.getBoundingClientRect();
+                  setTooltip({
+                    idx: i,
+                    x: er.left + er.width / 2 - cr.left,
+                    y: er.top - cr.top - 10,
+                    date: d.date,
+                    value: d.value,
+                  });
+                }}
+                onMouseLeave={() => setTooltip(null)}
+              />
+            );
+          })}
+
+          {/* X labels — every 5th + last */}
+          {data.map((d, i) =>
+            (i % 5 === 0 || i === data.length - 1) ? (
+              <text
+                key={i}
+                x={PAD.left + i * barW + barW / 2}
+                y={CHART_H - 4}
+                fontSize={9}
+                fill="#9CA3AF"
+                textAnchor="middle"
+              >
+                {d.date}
+              </text>
+            ) : null
+          )}
+        </svg>
+      </div>
+
+      {tooltip && (
+        <div style={{
+          position: "absolute",
+          left: tooltip.x,
+          top: tooltip.y,
+          transform: "translate(-50%, -100%)",
+          background: "#111827",
+          color: "white",
+          padding: "6px 10px",
+          borderRadius: 6,
+          fontSize: 12,
+          fontWeight: 600,
+          pointerEvents: "none",
+          whiteSpace: "nowrap",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+          zIndex: 20,
+        }}>
+          {tooltip.date} — {fmtBRL(tooltip.value)}
+          <div style={{
+            position: "absolute",
+            left: "50%",
+            bottom: -4,
+            transform: "translateX(-50%) rotate(45deg)",
+            width: 8,
+            height: 8,
+            background: "#111827",
+          }} />
+        </div>
+      )}
     </div>
   );
 }
@@ -252,6 +377,10 @@ export default function CriadorPage() {
         @media (min-width: 640px) { .dash-vendas-grid { grid-template-columns: repeat(3, 1fr); } }
         .dash-analytics-2col { display: grid; grid-template-columns: 1fr; gap: 16px; }
         @media (min-width: 640px) { .dash-analytics-2col { grid-template-columns: 1fr 1fr; } }
+        .dash-ganhos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 900px) { .dash-ganhos-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .dash-ganhos-grid { grid-template-columns: 1fr 1fr; } }
+        .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       `}</style>
 
       {/* TABS ROW */}
@@ -477,6 +606,145 @@ export default function CriadorPage() {
             </div>
           </div>
         )}
+
+        {/* ── GANHOS ── */}
+        {activeView === "ganhos" && (() => {
+          const now = new Date();
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+          const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+          const totalGanho  = criadorSubs.reduce((a, s) => a + (s.solutions?.preco || 0) * 0.8, 0);
+          const ganhoMes    = criadorSubs
+            .filter(s => new Date(s.created_at) >= startOfMonth)
+            .reduce((a, s) => a + (s.solutions?.preco || 0) * 0.8, 0);
+          const ganhoSemana = criadorSubs
+            .filter(s => new Date(s.created_at) >= sevenDaysAgo)
+            .reduce((a, s) => a + (s.solutions?.preco || 0) * 0.8, 0);
+
+          const last30 = Array.from({ length: 30 }, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - (29 - i));
+            return {
+              date: d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+              dateStr: d.toISOString().slice(0, 10),
+              value: 0,
+            };
+          });
+          criadorSubs.forEach(s => {
+            const ds = new Date(s.created_at).toISOString().slice(0, 10);
+            const idx = last30.findIndex(d => d.dateStr === ds);
+            if (idx >= 0) last30[idx].value += (s.solutions?.preco || 0) * 0.8;
+          });
+
+          const recentSales = [...criadorSubs]
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            .slice(0, 10);
+
+          return (
+            <div>
+              <div style={{ marginBottom: 24 }}>
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: "#111827", margin: 0 }}>Ganhos</h1>
+                <p style={{ fontSize: 14, color: "#6b7280", marginTop: 4, marginBottom: 0 }}>Acompanhe sua receita e histórico de vendas.</p>
+              </div>
+
+              {/* Nota informativa */}
+              <div style={{
+                background: "#EEF2FF", border: "1px solid rgba(99,102,241,0.2)",
+                borderRadius: 10, padding: "11px 16px", marginBottom: 24,
+                fontSize: 13, color: "#4F46E5", display: "flex", alignItems: "center", gap: 8,
+              }}>
+                <span>💡</span>
+                <span>Você recebe 80% de cada venda. Os pagamentos são processados mensalmente via Stripe.</span>
+              </div>
+
+              {/* 4 Metric Cards */}
+              <div className="dash-ganhos-grid">
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: "18px 20px" }}>
+                  <div style={{ fontSize: 13, color: "#6b7280", fontWeight: 500, marginBottom: 6 }}>Total ganho</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: "#111827", lineHeight: 1.1 }}>{fmtBRL(totalGanho)}</div>
+                  <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>desde o início</div>
+                </div>
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: "18px 20px" }}>
+                  <div style={{ fontSize: 13, color: "#6b7280", fontWeight: 500, marginBottom: 6 }}>Este mês</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: "#111827", lineHeight: 1.1 }}>{fmtBRL(ganhoMes)}</div>
+                  <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>mês atual</div>
+                </div>
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: "18px 20px" }}>
+                  <div style={{ fontSize: 13, color: "#6b7280", fontWeight: 500, marginBottom: 6 }}>Esta semana</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: "#111827", lineHeight: 1.1 }}>{fmtBRL(ganhoSemana)}</div>
+                  <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>últimos 7 dias</div>
+                </div>
+                <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: "18px 20px" }}>
+                  <div style={{ fontSize: 13, color: "#6b7280", fontWeight: 500, marginBottom: 6 }}>Total de vendas</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: "#111827", lineHeight: 1.1 }}>{criadorSubs.length}</div>
+                  <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>assinaturas ativas</div>
+                </div>
+              </div>
+
+              {/* Gráfico de barras */}
+              <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb", padding: "20px 24px", marginBottom: 20 }}>
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "#111827" }}>Receita diária</div>
+                  <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>Últimos 30 dias (R$ que você recebe)</div>
+                </div>
+                <EarningsChart data={last30} />
+              </div>
+
+              {/* Tabela de vendas recentes */}
+              <div style={{ background: "white", borderRadius: 12, border: "1px solid #e5e7eb" }}>
+                <div style={{ padding: "16px 24px", borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 15, fontWeight: 600, color: "#111827" }}>Vendas recentes</span>
+                  {criadorSubs.length > 10 && (
+                    <span style={{ fontSize: 12, color: "#9ca3af" }}>Exibindo últimas 10 de {criadorSubs.length}</span>
+                  )}
+                </div>
+                {recentSales.length === 0 ? (
+                  <div style={{ padding: "56px 24px", textAlign: "center" }}>
+                    <div style={{ fontSize: 32, marginBottom: 12 }}>💸</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Nenhuma venda ainda</div>
+                    <div style={{ fontSize: 13, color: "#9ca3af" }}>Suas vendas aparecerão aqui.</div>
+                  </div>
+                ) : (
+                  <div className="scroll-x">
+                    <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 520 }}>
+                      <thead>
+                        <tr>
+                          {["SOLUÇÃO", "DATA", "VALOR BRUTO", "VOCÊ RECEBE"].map(col => (
+                            <th key={col} style={{ padding: "10px 20px", fontSize: 11, color: "#9ca3af", fontWeight: 600, textAlign: "left", borderBottom: "1px solid #f3f4f6", letterSpacing: 0.5 }}>
+                              {col}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {recentSales.map((s, i) => (
+                          <tr key={s.id || i}
+                            style={{ background: hoveredRow === i ? "#f8faff" : "transparent", transition: "background 0.15s" }}
+                            onMouseEnter={() => setHoveredRow(i)}
+                            onMouseLeave={() => setHoveredRow(null)}
+                          >
+                            <td style={{ padding: "12px 20px", fontSize: 13, color: "#374151", fontWeight: 500, borderBottom: "1px solid #f9fafb" }}>
+                              {s.solutions?.titulo || "—"}
+                            </td>
+                            <td style={{ padding: "12px 20px", fontSize: 13, color: "#6b7280", borderBottom: "1px solid #f9fafb" }}>
+                              {fmtDate(s.created_at)}
+                            </td>
+                            <td style={{ padding: "12px 20px", fontSize: 13, color: "#111827", fontWeight: 600, borderBottom: "1px solid #f9fafb" }}>
+                              {fmtBRL(s.solutions?.preco || 0)}
+                            </td>
+                            <td style={{ padding: "12px 20px", fontSize: 13, fontWeight: 700, color: "#10B981", borderBottom: "1px solid #f9fafb" }}>
+                              {fmtBRL((s.solutions?.preco || 0) * 0.8)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ── CONFIGURAÇÕES ── */}
         {activeView === "configuracoes" && (
