@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn, supabase } from "../lib/supabase";
+import { supabase } from "../lib/supabase";
 import { ShieldCheck, MessageCircle, Users } from "lucide-react";
 import Spinner from "../components/Spinner";
 import Navbar from "../components/Navbar";
@@ -113,32 +113,48 @@ function LoginForm() {
     e.preventDefault();
     setError(""); setSuccess(""); setLoading(true);
 
-    const { error } = await signIn(email, password);
-    if (error) {
+    let res, data;
+    try {
+      res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      data = await res.json();
+    } catch {
+      setError("Erro de conexão. Tente novamente.");
+      setLoading(false);
+      return;
+    }
+
+    if (res.status === 429) {
+      setError("Muitas tentativas. Tente novamente em 15 minutos.");
+      setLoading(false);
+      return;
+    }
+
+    if (!res.ok) {
       setError("Email ou senha incorretos. Tente novamente.");
       setLoading(false);
       return;
     }
 
+    await supabase.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    });
+
     setSuccess("Login realizado com sucesso! Redirecionando…");
 
-    // Use getUser() to get the authenticated user reliably after login
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      router.push("/completar-perfil");
-      return;
-    }
-
     const { data: profile } = await supabase
-      .from("profiles").select("role").eq("id", user.id).single();
+      .from("profiles").select("role").eq("id", data.user.id).single();
 
     if (!profile) {
       const pending = localStorage.getItem("weprompt_pending_profile");
       if (pending) {
         const { nome, role: pendingRole } = JSON.parse(pending);
         const { error: profileError } = await supabase
-          .from("profiles").insert({ id: user.id, nome, role: pendingRole });
+          .from("profiles").insert({ id: data.user.id, nome, role: pendingRole });
         if (profileError) console.error("[login] profile insert error:", profileError);
         else localStorage.removeItem("weprompt_pending_profile");
         router.push(redirectTo || (pendingRole === "empresa" ? "/dashboard/empresa" : "/dashboard/criador"));
