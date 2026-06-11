@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { supabase, uploadSolutionImage } from '@/app/lib/supabase'
+import { supabase, uploadSolutionImage, uploadWorkflowFile } from '@/app/lib/supabase'
 import Spinner from '@/app/components/Spinner'
 
 const ACCENT = '#6366F1'
@@ -114,6 +114,11 @@ export default function NovaSolucaoPage() {
   })
   const [coverFile, setCoverFile] = useState(null)
   const [coverPreview, setCoverPreview] = useState(null)
+  const [workflowFile, setWorkflowFile] = useState(null)
+  const [workflowNodes, setWorkflowNodes] = useState([])
+  const [workflowType, setWorkflowType] = useState(null)
+  const [workflowPreview, setWorkflowPreview] = useState('')
+  const [workflowError, setWorkflowError] = useState('')
   const [errors, setErrors] = useState({})
   const [loadingDraft, setLoadingDraft] = useState(false)
   const [loadingSubmit, setLoadingSubmit] = useState(false)
@@ -134,6 +139,49 @@ export default function NovaSolucaoPage() {
     setCoverFile(file)
     setCoverPreview(URL.createObjectURL(file))
     setErrors(err => ({ ...err, cover: '' }))
+  }
+
+  function handleWorkflowFile(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setWorkflowFile(file)
+    setWorkflowPreview('')
+    setWorkflowError('')
+    const reader = new FileReader()
+    reader.onload = (evt) => {
+      try {
+        const json = JSON.parse(evt.target.result)
+        const ferramenta = (form.ferramenta_automacao || '').toLowerCase()
+        if (ferramenta === 'n8n') {
+          const nodes = (json.nodes || [])
+            .map(n => n.name || (n.type ? n.type.split('.').pop() : ''))
+            .filter(Boolean)
+          setWorkflowNodes(nodes)
+          setWorkflowType('n8n')
+          setWorkflowPreview(`${nodes.length} ${nodes.length === 1 ? 'no detectado' : 'nos detectados'}${nodes.length > 0 ? ': ' + nodes.slice(0, 4).join(', ') : ''}`)
+        } else if (ferramenta === 'make') {
+          const modules = (json.flow || json.modules || [])
+            .map(m => {
+              const raw = m.module || m.name || ''
+              return raw.includes(':') ? raw.split(':')[1] : raw
+            })
+            .filter(Boolean)
+          setWorkflowNodes(modules)
+          setWorkflowType('make')
+          setWorkflowPreview(`${modules.length} ${modules.length === 1 ? 'modulo detectado' : 'modulos detectados'}${modules.length > 0 ? ': ' + modules.slice(0, 4).join(', ') : ''}`)
+        } else {
+          setWorkflowNodes([])
+          setWorkflowType(null)
+          setWorkflowPreview('Arquivo carregado (deteccao automatica indisponivel para esta ferramenta)')
+        }
+      } catch {
+        setWorkflowNodes([])
+        setWorkflowType(null)
+        setWorkflowPreview('')
+        setWorkflowError('Arquivo JSON invalido. Verifique o arquivo e tente novamente.')
+      }
+    }
+    reader.readAsText(file)
   }
 
   function validate() {
@@ -167,16 +215,18 @@ export default function NovaSolucaoPage() {
     setGlobalError('')
 
     try {
-      let cover_url = null
-      if (coverFile) {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session?.user) {
-          cover_url = await uploadSolutionImage(coverFile, session.user.id)
-        }
-      }
-
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { router.replace('/login'); return }
+
+      let cover_url = null
+      if (coverFile) {
+        cover_url = await uploadSolutionImage(coverFile, session.user.id)
+      }
+
+      let workflow_file_url = null
+      if (workflowFile && (form.ferramenta_automacao === 'n8n' || form.ferramenta_automacao === 'Make')) {
+        workflow_file_url = await uploadWorkflowFile(workflowFile, session.user.id)
+      }
 
       const res = await fetch('/api/solucoes', {
         method: 'POST',
@@ -184,7 +234,14 @@ export default function NovaSolucaoPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ ...form, cover_url, status }),
+        body: JSON.stringify({
+          ...form,
+          cover_url,
+          workflow_file_url,
+          workflow_nodes: workflowNodes.length > 0 ? workflowNodes : null,
+          workflow_type: workflowType,
+          status,
+        }),
       })
 
       const json = await res.json()
@@ -313,6 +370,45 @@ export default function NovaSolucaoPage() {
                 <option value="Outro">Outro</option>
               </select>
             </div>
+
+            {(form.ferramenta_automacao === 'n8n' || form.ferramenta_automacao === 'Make') && (
+              <div style={{ marginBottom: 18 }}>
+                <label style={lbl}>Upload do Workflow (opcional)</label>
+                <div style={{
+                  border: '2px dashed #D1D5DB', borderRadius: 10, padding: '18px 16px',
+                  background: workflowFile ? 'rgba(99,102,241,0.03)' : '#FAFAFA',
+                  cursor: 'pointer', transition: 'border-color 0.15s',
+                }}>
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleWorkflowFile}
+                    style={{ display: 'block', width: '100%', fontSize: 14, color: '#374151', cursor: 'pointer', fontFamily: 'inherit' }}
+                  />
+                </div>
+                {workflowPreview && !workflowError && (
+                  <div style={{
+                    marginTop: 10, background: '#F0FDF4', border: '1px solid #BBF7D0',
+                    borderRadius: 8, padding: '10px 14px',
+                    fontSize: 13, color: '#15803D', fontWeight: 500,
+                  }}>
+                    ✓ {workflowPreview}
+                  </div>
+                )}
+                {workflowError && (
+                  <div style={{
+                    marginTop: 10, background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.25)',
+                    borderRadius: 8, padding: '10px 14px',
+                    fontSize: 13, color: '#DC2626',
+                  }}>
+                    {workflowError}
+                  </div>
+                )}
+                <p style={{ fontSize: 12, color: '#9CA3AF', marginTop: 6 }}>
+                  Arquivo .json exportado do {form.ferramenta_automacao}. Permite instalacao guiada para o comprador.
+                </p>
+              </div>
+            )}
 
             <div style={{ marginBottom: 18 }} data-error={!form.instrucoes_configuracao ? undefined : undefined}>
               <label style={lbl}>Instruções de configuração *</label>

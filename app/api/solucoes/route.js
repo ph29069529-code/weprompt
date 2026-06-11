@@ -51,6 +51,9 @@ export async function POST(request) {
       ferramenta_automacao: body.ferramenta_automacao || null,
       instrucoes_configuracao: body.instrucoes_configuracao || null,
       requisitos_tecnicos: body.requisitos_tecnicos || null,
+      workflow_file_url: body.workflow_file_url || null,
+      workflow_nodes: body.workflow_nodes || null,
+      workflow_type: body.workflow_type || null,
       status: 'pending'
     })
     .select()

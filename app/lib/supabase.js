@@ -24,6 +24,18 @@ export async function signOut() {
   return { error };
 }
 
+export async function uploadWorkflowFile(file, userId) {
+  const fileName = `${userId}/${Date.now()}.json`
+  const { error } = await supabase.storage
+    .from('workflows')
+    .upload(fileName, file, { upsert: true, contentType: 'application/json' })
+  if (error) throw error
+  const { data: { publicUrl } } = supabase.storage
+    .from('workflows')
+    .getPublicUrl(fileName)
+  return publicUrl
+}
+
 export async function uploadSolutionImage(file, userId) {
   const fileExt = file.name.split('.').pop()
   const fileName = `${userId}/${Date.now()}.${fileExt}`
