@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { checkRateLimit, LIMITS } from "../../../lib/rateLimiter";
+import { logAction } from "../../../lib/auditLog";
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -27,6 +28,10 @@ export async function POST(request) {
     // Rate limit: 20 messages per user per hour
     const rl = checkRateLimit(user.id, LIMITS.WORKSPACE_CHAT.limit, LIMITS.WORKSPACE_CHAT.windowMs);
     if (!rl.allowed) {
+      logAction(user.id, "rate_limit_hit", "workspace_chat", null, request, {
+        limit: LIMITS.WORKSPACE_CHAT.limit,
+        windowMs: LIMITS.WORKSPACE_CHAT.windowMs,
+      });
       return NextResponse.json(
         { error: "Limite de mensagens atingido. Tente novamente em breve." },
         {
@@ -67,6 +72,11 @@ export async function POST(request) {
     if (!sub) {
       return NextResponse.json({ error: "Assinatura ativa necessária." }, { status: 403 });
     }
+
+    // Log workspace access (fire-and-forget — must not block the response)
+    logAction(user.id, "workspace_access", "solutions", solutionId, request, {
+      message_count: messages.length,
+    });
 
     const { data: sol } = await supabaseAdmin
       .from("solutions")

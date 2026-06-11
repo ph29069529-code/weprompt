@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { logAction } from "../../../lib/auditLog";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -55,6 +56,14 @@ export async function PATCH(request) {
     console.error("[admin/solutions PATCH]", error);
     return NextResponse.json({ error: "Erro interno. Tente novamente." }, { status: 500 });
   }
+
+  // Audit log — fire and forget
+  const auditAction = action === "approve" ? "solution_approved" : "solution_rejected";
+  logAction(admin.id, auditAction, "solutions", solution_id, request, {
+    solution_titulo: solution.titulo,
+    creator_id: solution.creator_id,
+    rejection_reason: rejection_reason ?? null,
+  });
 
   return NextResponse.json({ success: true, solution });
 }

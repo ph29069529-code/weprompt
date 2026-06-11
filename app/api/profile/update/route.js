@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { logAction } from "../../../lib/auditLog";
 
 const MAX_NOME   = 100;
 const MAX_BIO    = 500;
@@ -65,6 +66,11 @@ export async function POST(request) {
     console.error("[profile/update]", updateErr);
     return NextResponse.json({ error: "Erro ao atualizar perfil. Tente novamente." }, { status: 500 });
   }
+
+  // Audit log — fire and forget, never include values (privacy)
+  logAction(user.id, "profile_updated", "profiles", user.id, request, {
+    fields_changed: Object.keys(patch),
+  });
 
   return NextResponse.json({ success: true });
 }

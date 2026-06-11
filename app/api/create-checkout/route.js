@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "../../lib/stripe";
 import { createClient } from "@supabase/supabase-js";
+import { logAction } from "../../lib/auditLog";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -67,6 +68,14 @@ export async function POST(request) {
         user_id: String(user.id),
         payment_type: solution.payment_type || "subscription",
       },
+    });
+
+    // Audit log — fire and forget
+    logAction(user.id, "purchase_initiated", "solutions", solution_id, request, {
+      solution_titulo: solution.titulo,
+      preco: solution.preco,
+      payment_type: solution.payment_type,
+      stripe_session_id: session.id,
     });
 
     return NextResponse.json({ url: session.url });
