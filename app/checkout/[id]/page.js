@@ -363,7 +363,9 @@ function CheckoutContent({ isMobile }) {
     if (!id) return;
     async function init() {
       const [solRes, sessionRes] = await Promise.all([
-        supabase.from("solutions").select("*").eq("id", id).eq("status", "approved").single(),
+        supabase.from("solutions")
+          .select("id, titulo, descricao, descricao_curta, categoria, preco, tipo, status, creator_id, cover_url, payment_type, avg_rating, review_count")
+          .eq("id", id).eq("status", "approved").single(),
         supabase.auth.getSession(),
       ]);
 

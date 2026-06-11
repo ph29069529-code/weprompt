@@ -153,10 +153,17 @@ export default function WorkspacePage() {
 
       if (!sub && !isAdmin) { setDenied(true); setPageLoading(false); return; }
 
-      /* solution details */
+      /* solution details — excludes agent_system_prompt, system_prompt, conteudo_pack (server-only) */
+      const WORKSPACE_SAFE_FIELDS = [
+        "id", "titulo", "descricao", "descricao_curta", "categoria", "tipo", "cover_url",
+        "video_tutorial", "apps_integrados", "ferramenta_automacao",
+        "instrucoes_configuracao", "requisitos_tecnicos",
+        "profiles:creator_id(id, nome)",
+      ].join(", ");
+
       const { data: sol } = await supabase
         .from("solutions")
-        .select("*, profiles:creator_id(id, nome)")
+        .select(WORKSPACE_SAFE_FIELDS)
         .eq("id", id)
         .single();
 

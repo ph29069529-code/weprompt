@@ -286,7 +286,7 @@ export default function CriadorProfilePage() {
       // 2. Fetch solutions
       const { data: solutionsData } = await supabase
         .from("solutions")
-        .select("*")
+        .select("id, titulo, descricao_curta, categoria, preco, tipo, status, creator_id, cover_url, payment_type, avg_rating, review_count")
         .eq("creator_id", id)
         .eq("status", "approved")
         .order("review_count", { ascending: false });

@@ -259,7 +259,8 @@ export default function SolucoesPage() {
   useEffect(() => {
     async function fetchSolutions() {
       const { data, error } = await supabase
-        .from("solutions").select("*")
+        .from("solutions")
+        .select("id, titulo, descricao_curta, categoria, preco, tipo, status, creator_id, cover_url, payment_type, avg_rating, review_count, ativo")
         .eq("status", "approved")
         .order("created_at", { ascending: false });
       if (!error && data) setSolutions(data);

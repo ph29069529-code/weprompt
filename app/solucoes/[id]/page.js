@@ -326,8 +326,19 @@ function SolutionDetail() {
   useEffect(() => {
     if (!id) return;
     async function init() {
+      const SAFE_SOLUTION_FIELDS = [
+        "id", "titulo", "descricao", "descricao_curta", "categoria", "preco",
+        "tipo", "status", "creator_id", "cover_url", "como_funciona",
+        "video_demo", "video_tutorial", "video_curadoria",
+        "apps_integrados", "ferramenta_automacao", "instrucoes_configuracao",
+        "requisitos_tecnicos", "ativo", "payment_type",
+        "avg_rating", "review_count",
+        "delivery_instructions", "delivery_files", "delivery_links", "criador_nome",
+      ].join(", ");
+      // Excludes: system_prompt, agent_system_prompt, conteudo_pack (creator IP — server-only)
+
       const [solRes, sessionRes] = await Promise.all([
-        supabase.from("solutions").select("*").eq("id", id).eq("ativo", true).eq("status", "approved").single(),
+        supabase.from("solutions").select(SAFE_SOLUTION_FIELDS).eq("id", id).eq("ativo", true).eq("status", "approved").single(),
         supabase.auth.getSession(),
       ]);
 
