@@ -149,6 +149,11 @@ function LoginForm() {
       access_token: data.access_token,
       refresh_token: data.refresh_token,
     });
+    // Sync session to localStorage so dashboard pages (plain supabase client) can read it
+    await supabase.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    });
 
     setSuccess("Login realizado com sucesso! Redirecionando…");
 
